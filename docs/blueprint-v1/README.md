@@ -1,10 +1,10 @@
 # Turing Browser Blueprint v1
 
-Status: architecture and execution baseline
-Working codename: Turing
-License decision: MPL-2.0 for original source, with third-party components retaining their own compatible licenses
-Primary implementation language: Rust
-Engine policy: independent web engine; no Chromium, WebKit, Gecko, Electron, CEF, or system web-view dependency
+- Status: architecture and execution baseline
+- Working codename: Turing
+- License decision: MPL-2.0 for original source, with third-party components retaining their own compatible licenses
+- Primary implementation language: Rust
+- Engine policy: independent web engine; no Chromium, WebKit, Gecko, Electron, CEF, system web-view, or remote-rendering dependency
 
 ## Mission
 
@@ -39,10 +39,18 @@ This blueprint separates four layers that are often confused:
 | [16 — Governance and contributing](16-governance-contributing.md) | How are decisions, changes, security reports, ownership, and quality controlled? |
 | [17 — Architecture decision records](17-architecture-decisions.md) | Which foundational choices are locked and how can they be revisited? |
 | [18 — Source bibliography](18-source-bibliography.md) | Which standards and primary references define the program? |
+| [19 — Initial engineering backlog](19-initial-backlog.md) | Which dependency-ordered work packages start the implementation program? |
+| [20 — Definition of done](20-definition-of-done.md) | What evidence is required for each class of engineering work? |
+| [21 — Product requirements](21-product-requirements.md) | Which product, engine, security, performance, accessibility, AI, and operations requirements are normative? |
+| [22 — Research and measurement program](22-research-program.md) | Which unknowns must be researched and how will evidence be recorded? |
+
+## Machine-readable companions
+
+The `machine/` directory contains requirements, risks, work packages, process capabilities, benchmark-manifest schemas, and agent-action schemas. These files are not secondary exports: they must remain consistent with the prose in the same change.
 
 ## Executable bootstrap
 
-[`prototype/`](../prototype/) is not a rendering engine yet. It is a small, buildable Rust model of the core invariants:
+The code under `prototype/` is not a rendering engine yet. Its canonical description is [`docs/prototype.md`](../prototype.md). It is a small, buildable Rust model of core invariants:
 
 - process roles are explicit and capabilities are deny-by-default;
 - IPC messages are typed and bounded;
@@ -65,6 +73,12 @@ A milestone is not complete because a demo looks correct. Every milestone define
 - crash, hang, data-loss, and recovery behavior;
 - source, license, and reproducibility evidence.
 
+## Documentation governance
+
+All changes to the Blueprint, prototype, registries, workflows, or future implementation must follow the [documentation policy](../documentation-policy.md). Repository additions, removals, and renames must also update the [repository map](../repository-map.md).
+
 ## Success criteria
 
-Turing succeeds as an engineering project before it succeeds as a consumer browser if it produces independently useful work: a memory-accountable process model, a standards-driven engine architecture, a capability-safe agent protocol, a reproducible benchmark corpus, and a transparent record of tradeoffs. Production readiness is a later claim requiring sustained compatibility, security response, signed distribution, and independent review.
+Turing succeeds as an engineering project before it succeeds as a consumer browser if it produces independently useful work: a memory-accountable process model, a standards-driven engine architecture, a capability-safe agent protocol, a reproducible benchmark corpus, and a transparent record of tradeoffs.
+
+Production readiness is a later claim requiring sustained compatibility, security response, signed distribution, incident operations, accessibility evidence, and independent review.

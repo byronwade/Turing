@@ -1,4 +1,4 @@
-name: Blueprint v1 validation
+name: Repository validation
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: blueprint-v1-${{ github.workflow }}-${{ github.ref }}
+  group: repository-validation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Show tool versions
         run: |
@@ -28,8 +30,15 @@ jobs:
           rustc --version
           cargo --version
 
-      - name: Validate documentation and registries
+      - name: Validate repository and documentation
         run: python3 tools/validate_blueprint.py
+
+      - name: Enforce same-change documentation
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 tools/check_documentation_change.py "$BASE_SHA" "$HEAD_SHA"
 
       - name: Format check
         run: cargo fmt --manifest-path prototype/Cargo.toml -- --check
