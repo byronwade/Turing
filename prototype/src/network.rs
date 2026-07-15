@@ -46,9 +46,7 @@ impl Origin {
     pub fn parse_ascii(value: impl Into<String>) -> Result<Self, ContextError> {
         let value = value.into();
         if value.len() > 4096
-            || !(value.starts_with("https://")
-                || value.starts_with("http://")
-                || value == "opaque")
+            || !(value.starts_with("https://") || value.starts_with("http://") || value == "opaque")
         {
             return Err(ContextError::InvalidOrigin);
         }
@@ -67,9 +65,7 @@ pub struct TopLevelSite(String);
 impl TopLevelSite {
     pub fn parse_ascii(value: impl Into<String>) -> Result<Self, ContextError> {
         let value = value.into();
-        if value.len() > 4096
-            || !(value.starts_with("https://") || value.starts_with("http://"))
-        {
+        if value.len() > 4096 || !(value.starts_with("https://") || value.starts_with("http://")) {
             return Err(ContextError::InvalidTopLevelSite);
         }
         Ok(Self(value))
@@ -111,8 +107,7 @@ impl RequestContext {
     ) -> Result<Self, ContextError> {
         let destination_url = destination_url.into();
         if destination_url.len() > 8192
-            || !(destination_url.starts_with("https://")
-                || destination_url.starts_with("http://"))
+            || !(destination_url.starts_with("https://") || destination_url.starts_with("http://"))
         {
             return Err(ContextError::InvalidDestination);
         }

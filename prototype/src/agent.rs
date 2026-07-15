@@ -39,9 +39,7 @@ impl ActionKind {
             Self::Observe => RiskClass::Observe,
             Self::Navigate | Self::OrganizeTabs | Self::EditText => RiskClass::ReversibleLocal,
             Self::SubmitSearch | Self::Download => RiskClass::ExternalLowImpact,
-            Self::Upload | Self::SendOrPublish | Self::DevToolsEvaluate => {
-                RiskClass::Consequential
-            }
+            Self::Upload | Self::SendOrPublish | Self::DevToolsEvaluate => RiskClass::Consequential,
             Self::Purchase
             | Self::CredentialUse
             | Self::PermissionGrant
@@ -155,9 +153,13 @@ mod tests {
             principal_id: "agent.local.dev".to_string(),
             profile: profile(),
             allowed_origins: [origin("https://example.test")].into_iter().collect(),
-            allowed_actions: [ActionKind::Observe, ActionKind::Navigate, ActionKind::Upload]
-                .into_iter()
-                .collect(),
+            allowed_actions: [
+                ActionKind::Observe,
+                ActionKind::Navigate,
+                ActionKind::Upload,
+            ]
+            .into_iter()
+            .collect(),
             expires_at_unix_seconds: 2_000,
             maximum_actions: 10,
         }
@@ -208,12 +210,7 @@ mod tests {
         let mut stale = action(ActionKind::Upload);
         stale.confirmed = true;
         assert_eq!(
-            authorize(
-                1_000,
-                DocumentEpoch::new(6).unwrap(),
-                &grant(),
-                &stale
-            ),
+            authorize(1_000, DocumentEpoch::new(6).unwrap(), &grant(), &stale),
             Decision::Denied(DenyReason::StaleDocument)
         );
     }
@@ -223,12 +220,7 @@ mod tests {
         let mut injected = action(ActionKind::Navigate);
         injected.origin = origin("https://attacker.test");
         assert_eq!(
-            authorize(
-                1_000,
-                DocumentEpoch::new(5).unwrap(),
-                &grant(),
-                &injected
-            ),
+            authorize(1_000, DocumentEpoch::new(5).unwrap(), &grant(), &injected),
             Decision::Denied(DenyReason::OriginNotGranted)
         );
     }

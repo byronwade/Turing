@@ -82,8 +82,10 @@ impl TabLifecycle {
             });
         }
 
-        if matches!(next, TabState::Frozen | TabState::Serialized | TabState::Discarded)
-            && !self.protections.is_empty()
+        if matches!(
+            next,
+            TabState::Frozen | TabState::Serialized | TabState::Discarded
+        ) && !self.protections.is_empty()
         {
             return Err(LifecycleError::Protected {
                 requested: next,
@@ -143,7 +145,10 @@ const fn is_legal_edge(from: TabState, to: TabState) -> bool {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LifecycleError {
-    IllegalTransition { from: TabState, to: TabState },
+    IllegalTransition {
+        from: TabState,
+        to: TabState,
+    },
     Protected {
         requested: TabState,
         reasons: Vec<ProtectionReason>,

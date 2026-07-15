@@ -57,9 +57,7 @@ impl CapabilitySet {
             ProcessRole::Network => [Capability::OpenNetworkSockets].into_iter().collect(),
             ProcessRole::Storage => [Capability::AccessProfileStorage].into_iter().collect(),
             ProcessRole::Gpu => [Capability::AccessGraphicsDevice].into_iter().collect(),
-            ProcessRole::MediaUtility => {
-                [Capability::AccessTaskScopedInput].into_iter().collect()
-            }
+            ProcessRole::MediaUtility => [Capability::AccessTaskScopedInput].into_iter().collect(),
             ProcessRole::ExtensionHost => [Capability::UseExtensionApi].into_iter().collect(),
             ProcessRole::DevTools => [Capability::InspectAttachedTarget].into_iter().collect(),
             ProcessRole::AgentHost => [Capability::RequestModelInference].into_iter().collect(),
