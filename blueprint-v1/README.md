@@ -1,9 +1,9 @@
 # Turing Browser Blueprint v1
 
-Status: architecture and execution baseline  
-Working codename: Turing  
-License decision: MPL-2.0 for original source, with third-party components retaining their own compatible licenses  
-Primary implementation language: Rust  
+Status: architecture and execution baseline
+Working codename: Turing
+License decision: MPL-2.0 for original source, with third-party components retaining their own compatible licenses
+Primary implementation language: Rust
 Engine policy: independent web engine; no Chromium, WebKit, Gecko, Electron, CEF, or system web-view dependency
 
 ## Mission
