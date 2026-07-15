@@ -119,7 +119,7 @@ As implementation begins, new crates must have explicit subsystem ownership, pri
 
 Repository-local validation scripts with no third-party Python dependency:
 
-- `validate_blueprint.py` validates the static repository and documentation graph.
+- `validate_blueprint.py` validates the static repository and documentation graph. It permits exactly two trailing spaces only when used as an intentional Markdown hard break and rejects other trailing spaces or tabs.
 - `check_documentation_change.py` validates minimum documentation impact across a Git diff.
 
 ## Placement rules

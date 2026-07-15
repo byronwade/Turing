@@ -13,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 BLUEPRINT = DOCS / "blueprint-v1"
 MACHINE = BLUEPRINT / "machine"
-
 CHAPTERS = [
     (1, "charter-and-principles"),
     (2, "capability-parity"),
@@ -38,7 +37,6 @@ CHAPTERS = [
     (21, "product-requirements"),
     (22, "research-program"),
 ]
-
 REQUIRED_DOCS = [
     ROOT / "README.md",
     ROOT / "AGENTS.md",
@@ -59,7 +57,6 @@ REQUIRED_DOCS = [
     ROOT / "tools" / "check_documentation_change.py",
     ROOT / ".github" / "workflows" / "repository-validation.yml",
 ]
-
 REQUIRED_MACHINE_FILES = [
     MACHINE / "agent-action.schema.json",
     MACHINE / "backlog.json",
@@ -68,7 +65,6 @@ REQUIRED_MACHINE_FILES = [
     MACHINE / "requirements.json",
     MACHINE / "risks.json",
 ]
-
 ALLOWED_MARKDOWN_OUTSIDE_DOCS = {
     ROOT / "README.md",
     ROOT / "AGENTS.md",
@@ -76,7 +72,6 @@ ALLOWED_MARKDOWN_OUTSIDE_DOCS = {
     ROOT / "SECURITY.md",
     ROOT / ".github" / "pull_request_template.md",
 }
-
 FORBIDDEN_LEGACY_PATHS = [
     ROOT / "START_HERE.md",
     ROOT / "blueprint-v1",
@@ -87,7 +82,6 @@ FORBIDDEN_LEGACY_PATHS = [
     ROOT / ".github" / "workflows" / "bootstrap-repair.yml",
     ROOT / ".github" / "workflows" / "expand-bootstrap.yml",
 ]
-
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 STABLE_ID = re.compile(
     r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|[A-Z]+-GATE-\d+)\b"
@@ -118,31 +112,24 @@ def check_required_files() -> None:
     ]
     if missing:
         fail("missing required files: " + ", ".join(map(str, missing)))
-
     stale = [relative(path) for path in FORBIDDEN_LEGACY_PATHS if path.exists()]
     if stale:
         fail("forbidden legacy paths remain: " + ", ".join(map(str, stale)))
 
 
 def check_document_locations() -> None:
-    outside = []
-    for path in ROOT.rglob("*.md"):
-        if path.is_relative_to(DOCS):
-            continue
-        if path in ALLOWED_MARKDOWN_OUTSIDE_DOCS:
-            continue
-        outside.append(relative(path))
-
+    outside = [
+        relative(path)
+        for path in ROOT.rglob("*.md")
+        if not path.is_relative_to(DOCS) and path not in ALLOWED_MARKDOWN_OUTSIDE_DOCS
+    ]
     if outside:
         fail(
             "canonical Markdown must live under docs/; unexpected files: "
             + ", ".join(map(str, sorted(outside)))
         )
-
     for path in DOCS.rglob("*"):
-        if not path.is_file():
-            continue
-        if path.suffix == ".md":
+        if not path.is_file() or path.suffix == ".md":
             continue
         if path.is_relative_to(MACHINE) and path.suffix == ".json":
             continue
@@ -153,10 +140,8 @@ def check_json_registries() -> None:
     requirements = load_json(MACHINE / "requirements.json")
     risks = load_json(MACHINE / "risks.json")
     backlog = load_json(MACHINE / "backlog.json")
-    load_json(MACHINE / "benchmark-manifest.schema.json")
-    load_json(MACHINE / "agent-action.schema.json")
-    load_json(MACHINE / "process-capabilities.json")
-
+    for path in REQUIRED_MACHINE_FILES[:4]:
+        load_json(path)
     if not isinstance(requirements, dict) or not isinstance(
         requirements.get("requirements"), list
     ):
@@ -169,21 +154,18 @@ def check_json_registries() -> None:
     requirement_ids = [item.get("id") for item in requirements["requirements"]]
     risk_ids = [item.get("id") for item in risks["risks"]]
     work_ids = [item.get("id") for item in backlog["items"]]
-
     if len(requirement_ids) != 46:
         fail(f"expected 46 requirements, found {len(requirement_ids)}")
     if len(risk_ids) != 40:
         fail(f"expected 40 risks, found {len(risk_ids)}")
     if len(work_ids) != 18:
         fail(f"expected 18 work packages, found {len(work_ids)}")
-
     if len(requirement_ids) != len(set(requirement_ids)):
         fail("duplicate requirement IDs")
     if len(risk_ids) != len(set(risk_ids)):
         fail("duplicate risk IDs")
     if len(work_ids) != len(set(work_ids)):
         fail("duplicate work-package IDs")
-
     if requirement_ids != sorted(requirement_ids):
         fail("requirements must be sorted by stable ID")
     if risk_ids != [f"R-{index:03d}" for index in range(1, 41)]:
@@ -212,11 +194,9 @@ def local_target(source: Path, raw_target: str) -> Path | None:
     target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
     if not target or target.startswith(("#", "http://", "https://", "mailto:")):
         return None
-
     target = unquote(target.split("#", 1)[0])
     if not target:
         return None
-
     resolved = (source.parent / target).resolve()
     try:
         resolved.relative_to(ROOT.resolve())
@@ -236,11 +216,12 @@ def check_markdown() -> tuple[int, int]:
         if "\r" in text:
             fail(f"{relative(path)} contains CR line endings")
         for line_number, line in enumerate(text.splitlines(), start=1):
-            if line.rstrip() != line:
-                fail(f"{relative(path)}:{line_number} has trailing whitespace")
-
+            trailing = line[len(line.rstrip(" \t")) :]
+            if trailing and trailing != "  ":
+                fail(
+                    f"{relative(path)}:{line_number} has accidental trailing whitespace"
+                )
         identifiers.update(STABLE_ID.findall(text))
-
         for raw_target in MARKDOWN_LINK.findall(text):
             resolved = local_target(path, raw_target)
             if resolved is None:
@@ -260,7 +241,6 @@ def check_markdown() -> tuple[int, int]:
         fail(f"expected at least 35 Markdown documents, found {len(markdown_files)}")
     if len(identifiers) < 80:
         fail(f"expected at least 80 stable identifiers in prose, found {len(identifiers)}")
-
     canonical_docs = set(DOCS.rglob("*.md"))
     unindexed = sorted(canonical_docs - {DOCS / "README.md"} - referenced_docs)
     if unindexed:
@@ -268,7 +248,6 @@ def check_markdown() -> tuple[int, int]:
             "canonical documents without an inbound Markdown link: "
             + ", ".join(map(str, (relative(path) for path in unindexed)))
         )
-
     return len(markdown_files), links_checked
 
 
@@ -283,19 +262,17 @@ def check_policy_markers() -> None:
     missing = [phrase for phrase in required_phrases if phrase not in agents]
     if missing:
         fail("AGENTS.md is missing mandatory policy markers: " + ", ".join(missing))
-
-    root_contributing = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
-    root_security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
-    if "docs/contributing.md" not in root_contributing:
+    if "docs/contributing.md" not in (ROOT / "CONTRIBUTING.md").read_text(
+        encoding="utf-8"
+    ):
         fail("root CONTRIBUTING.md must point to docs/contributing.md")
-    if "docs/security.md" not in root_security:
+    if "docs/security.md" not in (ROOT / "SECURITY.md").read_text(encoding="utf-8"):
         fail("root SECURITY.md must point to docs/security.md")
 
 
 def check_source_hygiene() -> None:
     forbidden_suffixes = {".pem", ".key", ".p12", ".pfx"}
     forbidden_names = {".env", ".env.local", "id_rsa", "id_ed25519"}
-
     for path in ROOT.rglob("*"):
         if not path.is_file():
             continue
@@ -314,7 +291,6 @@ def main() -> int:
     except ValueError as error:
         print(f"validation failed: {error}", file=sys.stderr)
         return 1
-
     print(
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
