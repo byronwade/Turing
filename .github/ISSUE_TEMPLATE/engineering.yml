@@ -1,0 +1,42 @@
+name: Engineering work or defect
+description: Propose or report non-security work with evidence and scope.
+title: "[component] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report suspected exploitable vulnerabilities here. Use the private security advisory flow.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and impact
+      description: What behavior, requirement, user, or developer workflow is affected?
+    validations:
+      required: true
+  - type: input
+    id: identifiers
+    attributes:
+      label: Requirement, risk, ADR, or milestone IDs
+      placeholder: REQ-..., R-..., ADR-..., M...
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproduction or evidence
+      description: Include commit, platform, configuration, deterministic steps, traces, tests, or standards references. Remove secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior and acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: implications
+    attributes:
+      label: Security, privacy, accessibility, compatibility, performance, and platform implications
+      description: Address each relevant area; do not treat a visual demo as completion.
+  - type: textarea
+    id: unsupported
+    attributes:
+      label: Known unsupported cases and dependencies
