@@ -12,34 +12,63 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 BLUEPRINT = ROOT / "blueprint-v1"
 
+DOC_SLUGS = [
+    "charter-and-principles",
+    "capability-parity",
+    "language-and-dependency-strategy",
+    "system-architecture",
+    "web-engine",
+    "javascript-runtime",
+    "network-storage-media",
+    "security-and-sandbox",
+    "performance-memory",
+    "ai-agent-platform",
+    "product-ui-devtools",
+    "testing-compatibility",
+    "build-release-operations",
+    "roadmap-work-breakdown",
+    "risk-register",
+    "governance-contributing",
+    "architecture-decisions",
+    "source-bibliography",
+    "initial-backlog",
+    "definition-of-done",
+    "product-requirements",
+    "research-program",
+]
+
 REQUIRED_DOCS = [
+    ROOT / "README.md",
+    ROOT / "START_HERE.md",
     BLUEPRINT / "README.md",
-    *[BLUEPRINT / f"{number:02d}-{slug}.md" for number, slug in [
-        (1, "charter-and-principles"),
-        (2, "capability-parity"),
-        (3, "language-and-dependency-strategy"),
-        (4, "system-architecture"),
-        (5, "web-engine"),
-        (6, "javascript-runtime"),
-        (7, "network-storage-media"),
-        (8, "security-and-sandbox"),
-        (9, "performance-memory"),
-        (10, "ai-agent-platform"),
-        (11, "product-ui-devtools"),
-        (12, "testing-compatibility"),
-        (13, "build-release-operations"),
-        (14, "roadmap-work-breakdown"),
-        (15, "risk-register"),
-        (16, "governance-contributing"),
-        (17, "architecture-decisions"),
-        (18, "source-bibliography"),
-    ]],
+    *[
+        BLUEPRINT / f"{number:02d}-{slug}.md"
+        for number, slug in enumerate(DOC_SLUGS, start=1)
+    ],
+    ROOT / "CONTRIBUTING.md",
+    ROOT / "SECURITY.md",
+    ROOT / "prototype" / "README.md",
     ROOT / "prototype" / "Cargo.toml",
     ROOT / "prototype" / "src" / "main.rs",
 ]
 
+MACHINE_FILES = [
+    BLUEPRINT / "machine" / "requirements.json",
+    BLUEPRINT / "machine" / "risks.json",
+    BLUEPRINT / "machine" / "benchmark-manifest.schema.json",
+    BLUEPRINT / "machine" / "agent-action.schema.json",
+    BLUEPRINT / "machine" / "process-capabilities.json",
+]
+
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 STABLE_ID = re.compile(r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|[A-Z]+-GATE-\d+)\b")
+TEMPORARY_PATHS = [
+    ROOT / "bootstrap",
+    ROOT / "RESUME_MARKER.md",
+    ROOT / ".github" / "workflows" / "bootstrap.yml",
+    ROOT / ".github" / "workflows" / "bootstrap-repair.yml",
+    ROOT / ".github" / "workflows" / "expand-bootstrap.yml",
+]
 
 
 def fail(message: str) -> None:
@@ -55,19 +84,20 @@ def load_json(path: Path) -> object:
 
 
 def check_required_files() -> None:
-    missing = [path.relative_to(ROOT) for path in REQUIRED_DOCS if not path.is_file()]
+    required = [*REQUIRED_DOCS, *MACHINE_FILES]
+    missing = [path.relative_to(ROOT) for path in required if not path.is_file()]
     if missing:
         fail("missing required files: " + ", ".join(map(str, missing)))
+    leftovers = [path.relative_to(ROOT) for path in TEMPORARY_PATHS if path.exists()]
+    if leftovers:
+        fail("temporary publication artifacts remain: " + ", ".join(map(str, leftovers)))
 
 
 def check_json_registries() -> None:
-    requirements_path = BLUEPRINT / "machine" / "requirements.json"
-    risks_path = BLUEPRINT / "machine" / "risks.json"
-    requirements = load_json(requirements_path)
-    risks = load_json(risks_path)
-    load_json(BLUEPRINT / "machine" / "benchmark-manifest.schema.json")
-    load_json(BLUEPRINT / "machine" / "agent-action.schema.json")
-    load_json(BLUEPRINT / "machine" / "process-capabilities.json")
+    requirements = load_json(MACHINE_FILES[0])
+    risks = load_json(MACHINE_FILES[1])
+    for path in MACHINE_FILES[2:]:
+        load_json(path)
 
     if not isinstance(requirements, dict) or not isinstance(requirements.get("requirements"), list):
         fail("requirements.json must contain a requirements array")
@@ -90,6 +120,15 @@ def check_json_registries() -> None:
         fail("risk IDs must be contiguous R-001 through R-040")
 
 
+def valid_markdown_trailing_space(line: str) -> bool:
+    """Allow no trailing spaces or the exact two-space Markdown hard break."""
+    if line.endswith("\t"):
+        return False
+    stripped = line.rstrip(" ")
+    trailing_spaces = len(line) - len(stripped)
+    return trailing_spaces in (0, 2)
+
+
 def check_markdown() -> tuple[int, int]:
     markdown_files = sorted(ROOT.rglob("*.md"))
     links_checked = 0
@@ -100,8 +139,8 @@ def check_markdown() -> tuple[int, int]:
         if "\r" in text:
             fail(f"{path.relative_to(ROOT)} contains CR line endings")
         for line_number, line in enumerate(text.splitlines(), start=1):
-            if line.rstrip() != line:
-                fail(f"{path.relative_to(ROOT)}:{line_number} has trailing whitespace")
+            if not valid_markdown_trailing_space(line):
+                fail(f"{path.relative_to(ROOT)}:{line_number} has invalid trailing whitespace")
         identifiers.update(STABLE_ID.findall(text))
 
         for raw_target in MARKDOWN_LINK.findall(text):
@@ -120,8 +159,8 @@ def check_markdown() -> tuple[int, int]:
                 fail(f"{path.relative_to(ROOT)} has broken link: {target}")
             links_checked += 1
 
-    if len(markdown_files) < 19:
-        fail(f"expected at least 19 Markdown documents, found {len(markdown_files)}")
+    if len(markdown_files) < 28:
+        fail(f"expected at least 28 Markdown documents, found {len(markdown_files)}")
     if len(identifiers) < 60:
         fail(f"expected at least 60 stable identifiers in prose, found {len(identifiers)}")
     return len(markdown_files), links_checked
@@ -132,6 +171,10 @@ def check_source_hygiene() -> None:
     for path in ROOT.rglob("*"):
         if path.is_file() and path.suffix.lower() in forbidden_suffixes:
             fail(f"forbidden secret-like file: {path.relative_to(ROOT)}")
+
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    if "not yet a usable or security-reviewed browser" not in readme:
+        fail("root README must retain the research-build safety warning")
 
 
 def main() -> int:
