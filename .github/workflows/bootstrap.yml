@@ -1,0 +1,52 @@
+name: Bootstrap Turing browser program
+
+on:
+  push:
+    branches:
+      - agent/bootstrap-browser-program
+    paths:
+      - bootstrap/data.py
+      - bootstrap/generate.py
+      - .github/workflows/bootstrap.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-turing-browser-program
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out bootstrap branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/bootstrap-browser-program
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate complete repository
+        run: python3 bootstrap/generate.py
+
+      - name: Validate generated repository
+        run: python3 scripts/validate_repository.py
+
+      - name: Commit generated program
+        shell: bash
+        run: |
+          git config user.name "turing-bootstrap[bot]"
+          git config user.email "turing-bootstrap[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "Bootstrap independent browser program"
+          git push origin HEAD:agent/bootstrap-browser-program
