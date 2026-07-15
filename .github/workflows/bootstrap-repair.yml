@@ -1,0 +1,60 @@
+name: Ensure Turing bootstrap completion
+
+on:
+  push:
+    branches:
+      - agent/bootstrap-browser-program
+    paths:
+      - bootstrap/trigger.txt
+      - .github/workflows/bootstrap-repair.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-turing-browser-program
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out bootstrap branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/bootstrap-browser-program
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate or clean final tree
+        shell: bash
+        run: |
+          if test -f bootstrap/generate.py && test -f bootstrap/data.py; then
+            python3 bootstrap/generate.py
+          else
+            rm -f bootstrap/trigger.txt
+            rm -f .github/workflows/bootstrap.yml
+            rm -f .github/workflows/bootstrap-repair.yml
+            rmdir bootstrap 2>/dev/null || true
+          fi
+
+      - name: Validate final repository
+        run: python3 scripts/validate_repository.py
+
+      - name: Commit final tree
+        shell: bash
+        run: |
+          git config user.name "turing-bootstrap[bot]"
+          git config user.email "turing-bootstrap[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Repository already matches the validated final tree"
+            exit 0
+          fi
+          git commit -m "Finalize independent browser program bootstrap"
+          git push origin HEAD:agent/bootstrap-browser-program
