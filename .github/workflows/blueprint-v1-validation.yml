@@ -1,0 +1,41 @@
+name: Blueprint v1 validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - agent/bootstrap-browser-program
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blueprint-v1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Show tool versions
+        run: |
+          python3 --version
+          rustc --version
+          cargo --version
+
+      - name: Validate documentation and registries
+        run: python3 tools/validate_blueprint.py
+
+      - name: Format check
+        run: cargo fmt --manifest-path prototype/Cargo.toml -- --check
+
+      - name: Compile and test architecture prototype
+        run: cargo test --manifest-path prototype/Cargo.toml --all-targets
+
+      - name: Run architecture prototype
+        run: cargo run --manifest-path prototype/Cargo.toml --quiet
