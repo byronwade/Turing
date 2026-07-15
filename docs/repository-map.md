@@ -91,7 +91,7 @@ This directory contains GitHub-specific workflow and contribution interfaces:
 - `ISSUE_TEMPLATE/config.yml` directs security reports away from public issues.
 - `ISSUE_TEMPLATE/engineering.yml` requires evidence, impact, and documentation analysis.
 - `pull_request_template.md` requires requirements, risks, tests, and documentation impact.
-- `workflows/repository-validation.yml` validates documentation, registries, Rust formatting, tests, and the executable prototype.
+- `workflows/repository-validation.yml` validates documentation, registries, Rust formatting, tests, and the executable prototype, and retains the validator output as a short-lived diagnostic artifact for every run.
 
 Workflow files are operational configuration, not the canonical description of policy. The corresponding policy remains under `docs/`.
 
