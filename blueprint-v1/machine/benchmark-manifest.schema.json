@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-manifest-v1.json",
+  "title": "Turing Benchmark Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","benchmark_id","browser","environment","workload","security","lifecycle","samples"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "benchmark_id": {"type":"string","pattern":"^[A-Z0-9][A-Z0-9._-]+$"},
+    "recorded_at": {"type":"string","format":"date-time"},
+    "browser": {
+      "type":"object","additionalProperties":false,
+      "required":["name","version","commit","channel","build_profile","arguments","features"],
+      "properties": {
+        "name":{"type":"string"},"version":{"type":"string"},"commit":{"type":"string"},
+        "channel":{"type":"string"},"build_profile":{"type":"string"},
+        "arguments":{"type":"array","items":{"type":"string"}},
+        "features":{"type":"object","additionalProperties":{"type":["string","number","boolean","null"]}}
+      }
+    },
+    "environment": {
+      "type":"object","additionalProperties":false,
+      "required":["hardware_id","cpu","logical_cores","memory_bytes","gpu","os","os_version","power_mode","thermal_state"],
+      "properties": {
+        "hardware_id":{"type":"string"},"cpu":{"type":"string"},"logical_cores":{"type":"integer","minimum":1},
+        "memory_bytes":{"type":"integer","minimum":1},"gpu":{"type":"string"},"os":{"type":"string"},
+        "os_version":{"type":"string"},"power_mode":{"type":"string"},"thermal_state":{"type":"string"},
+        "display_hz":{"type":"number","exclusiveMinimum":0},"scale_factor":{"type":"number","exclusiveMinimum":0}
+      }
+    },
+    "workload": {
+      "type":"object","additionalProperties":false,
+      "required":["corpus_version","scenario","cache_state","network_profile","tabs"],
+      "properties": {
+        "corpus_version":{"type":"string"},"scenario":{"type":"string"},
+        "cache_state":{"enum":["cold","warm","mixed"]},"network_profile":{"type":"string"},
+        "extensions":{"type":"array","items":{"type":"string"}},
+        "agent_mode":{"enum":["disabled","idle","local","remote"]},
+        "tabs":{"type":"array","items":{"$ref":"#/$defs/tab"},"minItems":1}
+      }
+    },
+    "security": {
+      "type":"object","additionalProperties":false,
+      "required":["sandbox","site_isolation","jit","mitigations"],
+      "properties": {
+        "sandbox":{"type":"boolean"},"site_isolation":{"type":"boolean"},"jit":{"type":"string"},
+        "mitigations":{"type":"array","items":{"type":"string"}},
+        "exceptions":{"type":"array","items":{"type":"string"}}
+      }
+    },
+    "lifecycle": {
+      "type":"object","additionalProperties":false,
+      "required":["process_count","renderer_count","state_counts"],
+      "properties": {
+        "process_count":{"type":"integer","minimum":1},"renderer_count":{"type":"integer","minimum":0},
+        "state_counts":{"type":"object","additionalProperties":false,"required":["active","background","throttled","frozen","serialized","discarded","crashed"],
+          "properties":{"active":{"type":"integer","minimum":0},"background":{"type":"integer","minimum":0},"throttled":{"type":"integer","minimum":0},"frozen":{"type":"integer","minimum":0},"serialized":{"type":"integer","minimum":0},"discarded":{"type":"integer","minimum":0},"crashed":{"type":"integer","minimum":0}}},
+        "protected_tabs":{"type":"array","items":{"type":"object","required":["tab_id","reason"],"properties":{"tab_id":{"type":"string"},"reason":{"type":"string"}}}}
+      }
+    },
+    "samples": {
+      "type":"array","minItems":1,
+      "items":{"type":"object","additionalProperties":false,"required":["iteration","metrics"],
+        "properties":{"iteration":{"type":"integer","minimum":1},"metrics":{"type":"object","additionalProperties":{"type":"number"}},"notes":{"type":"array","items":{"type":"string"}}}}
+    },
+    "failures":{"type":"array","items":{"type":"object","required":["target","classification"],"properties":{"target":{"type":"string"},"classification":{"type":"string"},"detail":{"type":"string"}}}},
+    "raw_artifacts":{"type":"array","items":{"type":"object","required":["kind","sha256"],"properties":{"kind":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"path":{"type":"string"}}}}
+  },
+  "$defs": {
+    "tab": {
+      "type":"object","additionalProperties":false,
+      "required":["tab_id","corpus_case","top_level_site","state","site_instances","renderer_process","protected"],
+      "properties": {
+        "tab_id":{"type":"string"},"corpus_case":{"type":"string"},"top_level_site":{"type":"string"},
+        "state":{"enum":["active","background","throttled","frozen","serialized","discarded","crashed"]},
+        "site_instances":{"type":"integer","minimum":0},"renderer_process":{"type":["string","null"]},
+        "protected":{"type":"boolean"},"protection_reason":{"type":["string","null"]},
+        "revival_ms":{"type":["number","null"],"minimum":0},"lost_state":{"type":"array","items":{"type":"string"}}
+      }
+    }
+  }
+}
