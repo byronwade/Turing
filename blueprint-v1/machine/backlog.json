@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "items": [
+    {"id":"WP-001","title":"Repository validation and evidence foundation","milestone":"M0","depends_on":[],"requirements":["REQ-ENG-007","REQ-OPS-001"]},
+    {"id":"WP-002","title":"Kernel identities process roles capabilities and bounded IPC","milestone":"M1","depends_on":["WP-001"],"requirements":["REQ-SEC-003","REQ-PERF-004"]},
+    {"id":"WP-003","title":"Cross-platform renderer sandbox probes","milestone":"M1","depends_on":["WP-002"],"requirements":["REQ-SEC-001"]},
+    {"id":"WP-004","title":"Native accessible browser shell spike","milestone":"M1","depends_on":["WP-002"],"requirements":["REQ-PROD-001","REQ-PROD-003","REQ-A11Y-001"]},
+    {"id":"WP-005","title":"Tab lifecycle resource attribution and thirty-tab simulator","milestone":"M1","depends_on":["WP-002","WP-004"],"requirements":["REQ-PROD-005","REQ-PERF-001","REQ-PERF-002","REQ-PERF-003"]},
+    {"id":"WP-006","title":"HTML tokenizer and tree builder","milestone":"M2","depends_on":["WP-001"],"requirements":["REQ-ENG-001"]},
+    {"id":"WP-007","title":"DOM arena mutation epochs and events","milestone":"M2","depends_on":["WP-006"],"requirements":["REQ-ENG-002"]},
+    {"id":"WP-008","title":"CSS parser selectors cascade and computed values","milestone":"M2","depends_on":["WP-007"],"requirements":["REQ-ENG-003"]},
+    {"id":"WP-009","title":"Block text layout display list and reference raster","milestone":"M2","depends_on":["WP-008"],"requirements":["REQ-ENG-004","REQ-ENG-005","REQ-ENG-006"]},
+    {"id":"WP-010","title":"JavaScript parser bytecode interpreter and Test262 harness","milestone":"M3","depends_on":["WP-001"],"requirements":["REQ-JS-001"]},
+    {"id":"WP-011","title":"Exact tracing GC and Web IDL bindings","milestone":"M3","depends_on":["WP-007","WP-010"],"requirements":["REQ-JS-002","REQ-JS-003"]},
+    {"id":"WP-012","title":"Navigation transactions site instances and renderer swaps","milestone":"M4","depends_on":["WP-002","WP-007"],"requirements":["REQ-SEC-002"]},
+    {"id":"WP-013","title":"Scoped HTTP TLS cache cookies and hermetic server","milestone":"M4","depends_on":["WP-002","WP-012"],"requirements":["REQ-NET-001","REQ-NET-002","REQ-NET-003"]},
+    {"id":"WP-014","title":"Storage broker quota migrations and service-worker foundation","milestone":"M4","depends_on":["WP-002","WP-013"],"requirements":["REQ-STO-001","REQ-STO-002","REQ-STO-003"]},
+    {"id":"WP-015","title":"Versioned DevTools automation protocol and trace viewer","milestone":"M2","depends_on":["WP-002","WP-009"],"requirements":["REQ-DEV-001","REQ-DEV-002","REQ-DEV-003"]},
+    {"id":"WP-016","title":"Capability-safe agent reference implementation","milestone":"M6","depends_on":["WP-002","WP-007","WP-015"],"requirements":["REQ-AI-001","REQ-AI-002","REQ-AI-003","REQ-AI-004","REQ-AI-005"]},
+    {"id":"WP-017","title":"Signed update rollback and profile migration laboratory","milestone":"M5","depends_on":["WP-001","WP-002","WP-014"],"requirements":["REQ-SEC-004","REQ-SEC-005","REQ-OPS-001"]},
+    {"id":"WP-018","title":"Fixed-hardware compatibility performance and energy lab","milestone":"M5","depends_on":["WP-005","WP-009","WP-013"],"requirements":["REQ-PERF-001","REQ-PERF-002","REQ-PERF-003"]}
+  ]
+}
