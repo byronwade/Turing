@@ -1,0 +1,251 @@
+  'IME/transliteration/keyboard workflows and platform text-input constraints.',
+  'https://chromewebstore.google.com/detail/google-input-tools/mclkkofklkfljcocdinagocijmpgbhab'),
+ ('Video Speed Controller',
+  '3M',
+  'media',
+  'Simple cross-site media controls, keyboard accessibility, and per-site preferences.',
+  'https://chromewebstore.google.com/detail/video-speed-controller/nffaoalbilbmmfgbnbgppjihopabppdk'),
+ ('Momentum',
+  '2M',
+  'new tab/focus',
+  'Calm new-tab UX, focus, tasks, customization, sync, package/idle cost, and AI boundaries.',
+  'https://chromewebstore.google.com/detail/momentum/laookkfknpbbblfpciffpaejjkokdgca'),
+ ('Google Dictionary',
+  '2M',
+  'language',
+  'Selection definitions, translation, history, export, and optional data retention.',
+  'https://chromewebstore.google.com/detail/google-dictionary-by-goog/mgijmajocgfcbeboacabfgobmjgjcoja'),
+ ('JSON Formatter',
+  '2M',
+  'developer tools',
+  'Tiny, fast, local-only formatting, large-document streaming, and safe structured viewers.',
+  'https://chromewebstore.google.com/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa'),
+ ('Notion Web Clipper',
+  '1M',
+  'clipping',
+  'Save page/selection to a chosen destination with clear website-content disclosure.',
+  'https://chromewebstore.google.com/detail/notion-web-clipper/knheggckgoiihginacbkhaalnibhilkk'),
+ ('Redux DevTools',
+  '1M',
+  'developer tools',
+  'State timeline and framework adapters; open protocol hooks should avoid private engine APIs.',
+  'https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd'),
+ ('Todoist',
+  '500K',
+  'tasks',
+  'Convert page or selection to a task, explicit account integration, and low package overhead.',
+  'https://chromewebstore.google.com/detail/todoist-for-chrome-planne/jldhpllghnbhlbpcmnajkpdmadaolakh')]
+
+
+def clean(text: str) -> str:
+    return dedent(text).strip() + "\n"
+
+
+def write(path: str, content: str) -> None:
+    target = ROOT / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(clean(content), encoding="utf-8")
+
+
+def replace_once(path: str, old: str, new: str) -> None:
+    target = ROOT / path
+    text = target.read_text(encoding="utf-8")
+    if new in text:
+        return
+    if old not in text:
+        raise RuntimeError(f"{path}: expected replacement anchor not found: {old!r}")
+    target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def append_once(path: str, marker: str, section: str) -> None:
+    target = ROOT / path
+    text = target.read_text(encoding="utf-8")
+    if marker in text:
+        return
+    target.write_text(text.rstrip() + "\n\n" + clean(section), encoding="utf-8")
+
+
+def insert_before(path: str, anchor: str, marker: str, section: str) -> None:
+    target = ROOT / path
+    text = target.read_text(encoding="utf-8")
+    if marker in text:
+        return
+    if anchor not in text:
+        raise RuntimeError(f"{path}: insertion anchor not found: {anchor!r}")
+    text = text.replace(anchor, clean(section) + "\n" + anchor, 1)
+    target.write_text(text, encoding="utf-8")
+
+
+def bullets(items: list[str]) -> str:
+    return "\n".join(f"- {item}" for item in items)
+
+
+def chapter(book: str, item: dict[str, object], overview: str, related: list[tuple[str, str]]) -> str:
+    source_lines = "\n".join(f"- [{name}]({url})" for name, url in item["sources"])
+    related_lines = "\n".join(f"- [{name}]({url})" for name, url in related)
+    return f"""# {item['title']}
+
+Status: detailed research and design baseline  
+Owner: {item['owner']}  
+Book index: [{book.replace('-', ' ').title()}](README.md)  
+Canonical overview: [Turing Blueprint](../blueprint-v1/README.md)
+
+## Purpose
+
+{item['purpose']}
+
+This chapter is research and design, not an implementation, compatibility, security, performance, or support claim.
+
+## Program position
+
+{overview}
+
+## Proposed decisions
+
+{bullets(item['decisions'])}
+
+## Architecture and interface contract
+
+{bullets(item['architecture'])}
+
+## Security, privacy, performance, and maintenance risks
+
+{bullets(item['risks'])}
+
+## Falsifiable experiments
+
+{bullets(item['experiments'])}
+
+Every experiment records the source commit, toolchain, platform, hardware, build flags, supported feature set, security settings, process topology, page or API corpus, sample count, raw samples, failures, unsupported cases, confidence, and revisit trigger. A microbenchmark cannot decide a security boundary or a public compatibility promise.
+
+## Required evidence before adoption
+
+- normative or upstream behavior source;
+- exact dependency or protocol revision;
+- license and provenance review;
+- threat model and least-authority boundary;
+- fuzz, malformed-input, cancellation, timeout, OOM, and recovery coverage;
+- compatibility and accessibility consequences;
+- startup, memory, CPU, latency, energy, binary, package, and maintenance cost;
+- replacement or rollback plan;
+- owning ADR, requirement, risk, work package, and support statement updates.
+
+## Primary sources
+
+{source_lines or "- See the book research report and Blueprint bibliography."}
+
+## Related Turing documentation
+
+{related_lines}
+
+## Change discipline
+
+A proposal becomes normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, machine registries, tests, and support statements change together.
+"""
+
+
+def book_index(title: str, directory: str, description: str, chapters: list[dict[str, object]],
+               principles: list[str], related: list[tuple[str, str]]) -> str:
+    order = "\n".join(
+        f"{index}. [{item['title']}]({item['filename']})"
+        for index, item in enumerate(chapters, 1)
+    )
+    related_lines = "\n".join(f"- [{name}]({url})" for name, url in related)
+    return f"""# {title}
+
+Status: detailed research and design baseline  
+Owner: architecture, security, developer experience, and subsystem maintainers
+
+{description}
+
+This book does not assert that Turing currently implements or leads in any capability described here.
+
+## Reading order
+
+{order}
+
+## Non-negotiable principles
+
+{bullets(principles)}
+
+## Decision method
+
+Every framework, API, plug-in capability, compatibility surface, binding, or embedding feature moves through:
+
+1. user or developer need;
+2. primary-source and standards research;
+3. alternatives and threat model;
+4. minimal prototype;
+5. correctness and conformance evidence;
+6. security, privacy, accessibility, and abuse review;
+7. performance, memory, energy, binary, package, and operational measurement;
+8. maintenance and replacement analysis;
+9. accepted ADR and versioned support commitment.
+
+## Related material
+
+{related_lines}
+"""
+
+
+def render_books() -> None:
+    technology_overview = (
+        "Turing is Rust-first but not dependency-naive. Specialist foundations are reused behind "
+        "Turing-owned policy, identity, lifecycle, observability, and replacement boundaries."
+    )
+    plugin_overview = (
+        "Turing Plug-ins are separately identified, least-privileged principals. They are not legacy "
+        "in-process native plug-ins, and neither first-party status nor compatibility grants ambient authority."
+    )
+    embedding_overview = (
+        "Turing exposes one engine through a canonical Rust API, stable C ABI, generated language SDKs, "
+        "and WIT component interfaces. Safe defaults should be concise without hiding security or lifecycle."
+    )
+
+    write(
+        "docs/technology-stack/README.md",
+        book_index(
+            "Technology Stack, Languages, Frameworks, and Tooling",
+            "technology-stack",
+            "This book defines the proposed implementation and tooling stack for a top-tier independent browser engine, product shell, plug-in platform, and embedding SDK.",
+            TECHNOLOGY_CHAPTERS,
+            [
+                "Rust is the default implementation language; language choice follows component trust and lifecycle.",
+                "Turing owns browser semantics and policy even when it uses audited specialist libraries.",
+                "No existing browser engine, Electron, CEF, system web view, or remote renderer enters the release rendering path.",
+                "Dependencies are replaceable, pinned, measured, fuzzed, licensed, and operationally owned.",
+                "Build and benchmark evidence uses release-equivalent security and feature settings.",
+            ],
+            [
+                ("Language and dependency strategy", "../blueprint-v1/03-language-and-dependency-strategy.md"),
+                ("System architecture", "../blueprint-v1/04-system-architecture.md"),
+                ("Security engineering", "../security-engine/README.md"),
+                ("Performance engineering", "../performance/README.md"),
+                ("Embedding book", "../embedding/README.md"),
+            ],
+        ),
+    )
+    for item in TECHNOLOGY_CHAPTERS:
+        write(
+            f"docs/technology-stack/{item['filename']}",
+            chapter(
+                "technology-stack",
+                item,
+                technology_overview,
+                [
+                    ("Technology stack index", "README.md"),
+                    ("Blueprint language strategy", "../blueprint-v1/03-language-and-dependency-strategy.md"),
+                    ("Source bibliography", "../blueprint-v1/18-source-bibliography.md"),
+                    ("Dependency and embedding research", "../research/technology-stack-servo-and-embedding-study-2026-07.md"),
+                ],
+            ),
+        )
+
+    write(
+        "docs/plugins/README.md",
+        book_index(
+            "Turing Plug-in Platform Engineering",
+            "plugins",
+            "This book defines Turing's user-facing Plug-in platform, WebExtensions compatibility adapter, component runtime, native connector boundary, first-party portfolio, store, SDK, and quality gates.",
+            PLUGIN_CHAPTERS,
+            [
