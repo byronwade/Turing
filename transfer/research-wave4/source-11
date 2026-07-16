@@ -1,0 +1,156 @@
+            "docs/blueprint-v1/11-product-ui-devtools.md",
+            "## Plug-in manager and embedding developer experience",
+            """## Plug-in manager and embedding developer experience
+
+The product exposes installed Plug-ins, publisher/review state, permissions and host grants, background/activity state, CPU/memory/network/storage/wakeup use, updates, quarantine/revocation, data practices, profile/private-session access, and developer mode.
+
+DevTools exposes Plug-in processes, workers, content contexts, component calls, broker decisions, messages, errors, storage, network rules, resource attribution, and compatibility differences. Embedding SDKs provide safe-default examples, generated API documentation, traces, diagnostic bundles, and migration tools.
+""",
+        ),
+        (
+            "docs/blueprint-v1/12-testing-compatibility.md",
+            "## Plug-in and embedding verification",
+            """## Plug-in and embedding verification
+
+- Manifest, permission, message, component, native-connector, package, update, and store parsers are fuzzed.
+- A compromised Plug-in cannot access ungranted pages, profiles, credentials, files, sockets, devices, internal UI, DevTools, agents, or other Plug-ins.
+- The WebExtensions adapter reports the complete supported denominator, semantic differences, failures, crashes, and timeouts.
+- First-party Plug-ins are tested through public APIs without hidden test-only privileges.
+- Every SDK runs one shared lifecycle, navigation, capture, cancellation, error, and shutdown conformance scenario.
+- ABI compatibility, stale handles, callbacks, reentrancy, wrong-thread calls, malformed buffers, and old/new version combinations are tested.
+- Plug-in idle/active resource use, accessibility, update, crash loop, quarantine, rollback, and 30-tab impact are release evidence.
+""",
+        ),
+        (
+            "docs/blueprint-v1/16-governance-contributing.md",
+            "## Plug-in and SDK ownership",
+            """## Plug-in and SDK ownership
+
+Before supported release, the Plug-in platform, store/review, first-party portfolio, WebExtensions adapter, component runtime, native connector boundary, stable ABI, and each supported language SDK have named primary and backup owners.
+
+A first-party Plug-in proposal includes product need, why the capability belongs in a Plug-in rather than core, authority, data flow, provider/service dependencies, accessibility, resource budgets, update/incident obligations, and maintenance exit plan. Popularity alone is insufficient.
+""",
+        ),
+        (
+            "docs/blueprint-v1/20-definition-of-done.md",
+            "## Framework, Plug-in, or embedding SDK",
+            """## Framework, Plug-in, or embedding SDK
+
+- user/developer need and alternatives documented;
+- canonical Blueprint owner and detailed book agree;
+- dependency/API revision, license, provenance, owners, update SLA, and replacement boundary recorded;
+- authority, process, profile/origin/resource scope, data flow, secrets, and compromised-component behavior threat-modeled;
+- manifest/schema/ABI and generated clients versioned and bounded;
+- malformed input, stale handles, wrong thread, reentrancy, cancellation, timeout, OOM, crash, restart, update, rollback, and removal tested;
+- compatibility denominator and semantic differences published;
+- keyboard, screen-reader, localization, zoom, contrast, and reduced-motion paths tested where visible;
+- idle/active startup, CPU, memory, wakeups, storage, network, energy, binary/package, and 30-tab impact measured;
+- signed/verifiable packages, SBOM/provenance, supported versions, migration, incident response, and deprecation plan exist before support claims.
+""",
+        ),
+    ]
+    for path, marker, section in sections:
+        append_once(path, marker, section)
+
+    append_once(
+        "docs/blueprint-v1/18-source-bibliography.md",
+        "## Technology stack, embedding, and Plug-in sources",
+        """## Technology stack, embedding, and Plug-in sources
+
+### Embedding and language bindings
+
+- Servo project and embedding goals — https://servo.org/ and https://servo.org/about/
+- Servo source and documentation — https://github.com/servo/servo and https://book.servo.org/
+- UniFFI — https://mozilla.github.io/uniffi-rs/
+- cbindgen — https://github.com/mozilla/cbindgen
+- PyO3 — https://pyo3.rs/
+- napi-rs — https://napi.rs/
+- JNI specification — https://docs.oracle.com/en/java/javase/24/docs/specs/jni/
+- WebAssembly Component Model — https://component-model.bytecodealliance.org/
+- WASI — https://wasi.dev/
+- Wasmtime — https://wasmtime.dev/
+
+### Plug-ins and extension compatibility
+
+- Chrome Manifest V3 — https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3
+- Chrome extension manifest — https://developer.chrome.com/docs/extensions/reference/manifest
+- Chrome extension service workers — https://developer.chrome.com/docs/extensions/develop/concepts/service-workers
+- Chrome Web Store program policies — https://developer.chrome.com/docs/webstore/program-policies/
+- W3C WebExtensions Community Group — https://github.com/w3c/webextensions
+- Dated Chrome reference cohort — [Plug-in demand study](../research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md)
+
+A store user count or vendor claim is a dated discovery signal, not independent evidence of safety, performance, or product quality.
+""",
+    )
+    append_once(
+        "docs/blueprint-v1/22-research-program.md",
+        "## RQ-41 — Which technology stack gives the best total browser outcome?",
+        """## RQ-41 — Which technology stack gives the best total browser outcome?
+
+Evaluate languages, graphics/text/network/storage/runtime foundations, build/test tools, and dependency boundaries against correctness, security, compatibility, latency, memory, energy, binary size, build time, maintainability, licensing, staffing, and replacement cost.
+
+Decision output: accepted/evaluated/rejected technology ledger and component-language map.
+
+## RQ-42 — Which embedding ABI and SDK architecture can remain simple and stable?
+
+Prototype the canonical Rust API, stable C ABI, Rust/C/C++/Python/Node/Swift/Kotlin/Java/C#/Go SDKs, package distribution, async/cancellation mapping, UI/headless modes, and cross-version compatibility.
+
+Decision output: ABI epoch, API conventions, package matrix, support window, and two-line safe-default examples.
+
+## RQ-43 — Which Plug-in architecture balances compatibility, authority, and performance?
+
+Compare WebExtensions-compatible workers, WIT components, and out-of-process native connectors. Measure API coverage, permissions, isolation, startup, idle/active resources, update/revocation, developer experience, accessibility, and malicious behavior resistance.
+
+Decision output: Turing Plug-in manifest, tiers, capability model, compatibility subset, store policy, and release gates.
+
+## RQ-44 — Which first-party Plug-ins should Turing maintain?
+
+Use the dated Chrome cohort, direct user/developer research, product-semantic advantage, privacy/security leverage, engineering and maintenance cost, and browser differentiation to prioritize the proposed portfolio.
+
+Decision output: first implementation set, ownership, maintenance budgets, service/provider policy, and exit criteria.
+""",
+    )
+
+    crosslinks = [
+        (
+            "docs/extensions-enterprise/README.md",
+            "## Turing Plug-in terminology",
+            """## Turing Plug-in terminology
+
+The user-facing product is now specified as [Turing Plug-ins](../plugins/README.md). This existing book remains the detailed owner for extension-compatible execution, enterprise policy, accounts, and sync. “Extension” is retained only for WebExtensions compatibility and external ecosystems. Legacy in-process native plug-ins remain prohibited.
+""",
+        ),
+        (
+            "docs/api-design/README.md",
+            "## Embedding and Plug-in API application",
+            """## Embedding and Plug-in API application
+
+The common identity, authority, bounds, cancellation, schema, error, authentication, and redaction rules apply to the [stable embedding API](../embedding/README.md) and [Turing Plug-in API](../plugins/README.md). Generated SDKs and compatibility adapters cannot omit security fields for convenience.
+""",
+        ),
+        (
+            "docs/developer-experience/README.md",
+            "## Plug-in and embedder tooling",
+            """## Plug-in and embedder tooling
+
+DevTools treats Plug-ins and embedders as first-class targets with process, capability, message, resource, error, update, compatibility, and audit views. The public [Plug-in SDK](../plugins/README.md) and [embedding SDKs](../embedding/README.md) use the same schema and diagnostic model.
+""",
+        ),
+        (
+            "docs/security-engine/README.md",
+            "## Plug-in and FFI assurance",
+            """## Plug-in and FFI assurance
+
+The [Plug-in](../plugins/README.md) and [embedding](../embedding/README.md) books add explicit hostile-principal, WebAssembly runtime, native connector, ABI lifetime, callback, package/update, store, first-party authority, and SDK supply-chain boundaries. No first-party package or ergonomic binding can bypass security gates.
+""",
+        ),
+        (
+            "docs/competitive/04-servo.md",
+            "## Embedding baseline and collaboration decision",
+            """## Embedding baseline and collaboration decision
+
+The [Servo and embedding study](../research/technology-stack-servo-and-embedding-study-2026-07.md) treats Servo as the strongest Rust-first embedding reference. Under current policy, it is a capability/architecture/benchmark baseline rather than a silently embedded release engine. Source reuse or a fork requires an explicit ADR, provenance and MPL-2.0 review, security and performance evidence, maintenance ownership, and an upstream strategy.
+""",
+        ),
+        (
+            "docs/release-operations/README.md",
