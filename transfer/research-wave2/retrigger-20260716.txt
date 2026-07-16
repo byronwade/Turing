@@ -1,0 +1,1 @@
+Retrigger the checksum-verified documentation expansion workflow after write-capability recovery.
