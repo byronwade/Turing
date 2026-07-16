@@ -1,0 +1,4 @@
+  File "tools/research_wave4_generator.py", line 126
+    'architecture': ['Pull requests: formatting, linting, unit/component tests, docs/links/schemas, dependency 
+                     ^
+SyntaxError: unterminated string literal (detected at line 126)
