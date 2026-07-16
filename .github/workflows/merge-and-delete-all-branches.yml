@@ -1,0 +1,241 @@
+name: Merge substantive branches and delete old branches
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: turing-final-branch-consolidation
+  cancel-in-progress: false
+
+jobs:
+  consolidate:
+    if: github.event.issue.title == 'Run Turing final branch consolidation' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out main and fetch every branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Configure repository identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'turing-research[bot]'
+          git config user.email 'turing-research[bot]@users.noreply.github.com'
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Reconcile the remaining substantive branch changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          governance = Path('docs/blueprint-v1/16-governance-contributing.md')
+          text = governance.read_text(encoding='utf-8')
+          anchor = '- **Program lead:** scope, milestones, release label, staffing, public claims.\n'
+          additions = (
+              '- **Product owner:** user needs, workflow coherence, product requirements, usability evidence, migration, and support scope.\n'
+              '- **Market strategy owner:** competitive method, opportunity evidence, positioning, contrary evidence, and promotion or rejection of `OP-*` proposals.\n'
+          )
+          if additions not in text:
+              if anchor not in text:
+                  raise SystemExit('governance role anchor not found')
+              text = text.replace(anchor, anchor + additions, 1)
+              governance.write_text(text, encoding='utf-8')
+
+          research_log = Path('docs/research-log.md')
+          text = research_log.read_text(encoding='utf-8')
+          heading = '## 2026-07-16 — Market strategy consistency and validator hardening'
+          if heading not in text:
+              text = text.rstrip() + (
+                  '\n\n' + heading + '\n\n'
+                  'After the market-strategy merge, a repository-wide audit corrected canonical table placement, added explicit product ownership, normalized release-review scope naming, and extended validation to `OP-*` IDs, reviewer-to-owner resolution, market index invariants, and globally unique research-question identifiers. No opportunity was promoted and no implementation or support status changed.\n'
+              )
+              research_log.write_text(text, encoding='utf-8')
+
+          validator = Path('tools/validate_blueprint.py')
+          text = validator.read_text(encoding='utf-8')
+          old_regex = r'r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|"'
+          new_regex = r'r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|OP-\d{3}|"'
+          if 'OP-\\d{3}' not in text:
+              if old_regex not in text:
+                  raise SystemExit('stable identifier regex anchor not found')
+              text = text.replace(old_regex, new_regex, 1)
+
+          function = '''def check_professional_controls() -> None:
+              owners = load_json(MACHINE / "professional-owners.json")
+              rules = load_json(MACHINE / "professional-review-rules.json")
+              if not isinstance(owners, dict) or not isinstance(owners.get("owners"), list):
+                  fail("professional-owners.json must contain an owners array")
+              if not isinstance(rules, dict) or not isinstance(rules.get("rules"), list):
+                  fail("professional-review-rules.json must contain a rules array")
+
+              owner_scopes = [item.get("scope") for item in owners["owners"]]
+              if len(owner_scopes) != len(set(owner_scopes)):
+                  fail("professional owner scopes must be unique")
+              required_owner_scopes = {"product", "market-strategy"}
+              missing_owner_scopes = required_owner_scopes - set(owner_scopes)
+              if missing_owner_scopes:
+                  fail(
+                      "missing professional owner scopes: "
+                      + ", ".join(sorted(missing_owner_scopes))
+                  )
+
+              allowed_reviewers = set(owner_scopes) | {"owner"}
+              rule_ids = [item.get("id") for item in rules["rules"]]
+              if len(rule_ids) != len(set(rule_ids)):
+                  fail("professional review rule IDs must be unique")
+              if "REV-MARKET" not in rule_ids:
+                  fail("professional review rules must include REV-MARKET")
+              for rule in rules["rules"]:
+                  reviewers = rule.get("reviewers")
+                  if not isinstance(reviewers, list) or not reviewers:
+                      fail(f"{rule.get('id')}: reviewers must be a non-empty array")
+                  unknown = set(reviewers) - allowed_reviewers
+                  if unknown:
+                      fail(
+                          f"{rule.get('id')}: unknown reviewer scopes: "
+                          + ", ".join(sorted(unknown))
+                      )
+
+              docs_index = (DOCS / "README.md").read_text(encoding="utf-8")
+              if "\\n\\n| [Market Strategy and Differentiation]" in docs_index:
+                  fail("docs/README.md separates market strategy from the books table")
+              market_research_row = (
+                  "| [Browser market gap and differentiation research — July 2026]"
+              )
+              if market_research_row not in docs_index:
+                  fail("docs/README.md active research table is missing the market-gap report")
+
+              blueprint_index = (BLUEPRINT / "README.md").read_text(encoding="utf-8")
+              if "\\n\\n- [Market Strategy and Differentiation]" in blueprint_index:
+                  fail("Blueprint index separates market strategy from the engineering-book list")
+              if "../research/browser-market-gap-2026-07.md" not in blueprint_index:
+                  fail("Blueprint current reports are missing the market-gap report")
+
+
+          '''
+          if 'def check_professional_controls()' not in text:
+              marker = 'def check_market_opportunities() -> None:\n'
+              if marker not in text:
+                  raise SystemExit('market-opportunity validator anchor not found')
+              text = text.replace(marker, function + marker, 1)
+
+          call_anchor = '        check_json_registries()\n        check_market_opportunities()\n'
+          call_replacement = '        check_json_registries()\n        check_professional_controls()\n        check_market_opportunities()\n'
+          if '        check_professional_controls()\n' not in text:
+              if call_anchor not in text:
+                  raise SystemExit('validator main-call anchor not found')
+              text = text.replace(call_anchor, call_replacement, 1)
+
+          validator.write_text(text, encoding='utf-8')
+          PY
+
+          git add docs/blueprint-v1/16-governance-contributing.md docs/research-log.md tools/validate_blueprint.py
+          if ! git diff --cached --quiet; then
+            git commit -m 'Reconcile remaining validator hardening into main'
+          fi
+
+      - name: Merge every remaining substantive branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -vE '^(HEAD|main)$' \
+              | sort -u
+          )
+
+          printf '%s\n' "${branches[@]:-}" > /tmp/turing-branches-before.txt
+
+          for branch in "${branches[@]:-}"; do
+            test -n "$branch" || continue
+            case "$branch" in
+              agent/bootstrap-browser-program|docs/research-wave*|docs/technology-plugins-embedding|docs/professional-buildout*|docs/market-strategy-integration|docs/market-strategy-consistency|docs/market-strategy-validator-hardening|ops/*)
+                echo "Classified as obsolete publication or operational branch: $branch"
+                continue
+                ;;
+            esac
+
+            if git merge-base --is-ancestor "origin/$branch" HEAD; then
+              echo "Already contained in main: $branch"
+              continue
+            fi
+
+            echo "Merging substantive branch: $branch"
+            if ! git merge --no-ff --no-edit "origin/$branch"; then
+              git merge --abort || true
+              echo "Merge conflict in $branch; no branches will be deleted." >&2
+              exit 1
+            fi
+          done
+
+          rm -rf transfer prototype/target tools/__pycache__ target coverage artifacts
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
+
+      - name: Validate consolidated main
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          CARGO_TARGET_DIR: /tmp/turing-final-branch-consolidation-target
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+          test ! -e prototype/target
+          test ! -e tools/__pycache__
+
+      - name: Push consolidated main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Consolidate all substantive branch work'
+          fi
+          git push origin HEAD:main
+
+      - name: Delete every non-default branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -vE '^(HEAD|main)$' \
+              | sort -u
+          )
+          for branch in "${branches[@]:-}"; do
+            test -n "$branch" || continue
+            git push origin --delete "$branch"
+          done
+          remaining=$(git ls-remote --heads origin | awk '{print $2}' | sed 's#refs/heads/##' | grep -v '^main$' || true)
+          if test -n "$remaining"; then
+            echo 'Non-default branches remain:' >&2
+            echo "$remaining" >&2
+            exit 1
+          fi
+
+      - name: Remove one-shot workflow from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/merge-and-delete-all-branches.yml
+          git add -A
+          git commit -m 'Remove final branch consolidation workflow'
+          git push origin HEAD:main
