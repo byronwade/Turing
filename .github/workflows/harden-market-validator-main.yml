@@ -87,3 +87,5 @@ jobs:
               git push origin --delete "${branch}"
             fi
           done
+
+# Pull-request trigger: 2026-07-16T23:45:00Z
