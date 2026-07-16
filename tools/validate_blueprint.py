@@ -303,7 +303,7 @@ FORBIDDEN_LEGACY_PATHS = [
 
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 STABLE_ID = re.compile(
-    r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|"
+    r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|OP-\d{3}|"
     r"EXP-[A-Z0-9-]+|ENGINE-P-\d{3}|[A-Z]+-GATE-\d+)\b"
 )
 
@@ -427,6 +427,58 @@ def check_json_registries() -> None:
             )
 
 
+def check_professional_controls() -> None:
+    owners = load_json(MACHINE / "professional-owners.json")
+    rules = load_json(MACHINE / "professional-review-rules.json")
+    if not isinstance(owners, dict) or not isinstance(owners.get("owners"), list):
+        fail("professional-owners.json must contain an owners array")
+    if not isinstance(rules, dict) or not isinstance(rules.get("rules"), list):
+        fail("professional-review-rules.json must contain a rules array")
+
+    owner_scopes = [item.get("scope") for item in owners["owners"]]
+    if len(owner_scopes) != len(set(owner_scopes)):
+        fail("professional owner scopes must be unique")
+    required_owner_scopes = {"product", "market-strategy"}
+    missing_owner_scopes = required_owner_scopes - set(owner_scopes)
+    if missing_owner_scopes:
+        fail(
+            "missing professional owner scopes: "
+            + ", ".join(sorted(missing_owner_scopes))
+        )
+
+    allowed_reviewers = set(owner_scopes) | {"owner"}
+    rule_ids = [item.get("id") for item in rules["rules"]]
+    if len(rule_ids) != len(set(rule_ids)):
+        fail("professional review rule IDs must be unique")
+    if "REV-MARKET" not in rule_ids:
+        fail("professional review rules must include REV-MARKET")
+    for rule in rules["rules"]:
+        reviewers = rule.get("reviewers")
+        if not isinstance(reviewers, list) or not reviewers:
+            fail(f"{rule.get('id')}: reviewers must be a non-empty array")
+        unknown = set(reviewers) - allowed_reviewers
+        if unknown:
+            fail(
+                f"{rule.get('id')}: unknown reviewer scopes: "
+                + ", ".join(sorted(unknown))
+            )
+
+    docs_index = (DOCS / "README.md").read_text(encoding="utf-8")
+    if "\n\n| [Market Strategy and Differentiation]" in docs_index:
+        fail("docs/README.md separates market strategy from the books table")
+    market_research_row = (
+        "| [Browser market gap and differentiation research — July 2026]"
+    )
+    if market_research_row not in docs_index:
+        fail("docs/README.md active research table is missing the market-gap report")
+
+    blueprint_index = (BLUEPRINT / "README.md").read_text(encoding="utf-8")
+    if "\n\n- [Market Strategy and Differentiation]" in blueprint_index:
+        fail("Blueprint index separates market strategy from the engineering-book list")
+    if "../research/browser-market-gap-2026-07.md" not in blueprint_index:
+        fail("Blueprint current reports are missing the market-gap report")
+
+
 def check_market_opportunities() -> None:
     path = DOCS / "market-strategy" / "machine" / "feature-opportunities.json"
     payload = load_json(path)
@@ -546,6 +598,7 @@ def main() -> int:
         check_document_locations()
         check_book_topology()
         check_json_registries()
+        check_professional_controls()
         check_market_opportunities()
         markdown_count, links_checked = check_markdown()
         check_policy_markers()

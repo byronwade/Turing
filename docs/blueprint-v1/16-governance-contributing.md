@@ -9,6 +9,8 @@ Turing needs enough process to protect architecture, security, compatibility, an
 Initial roles may be held by the same person, but responsibilities remain distinct:
 
 - **Program lead:** scope, milestones, release label, staffing, public claims.
+- **Product owner:** user needs, workflow coherence, product requirements, usability evidence, migration, and support scope.
+- **Market strategy owner:** competitive method, opportunity evidence, positioning, contrary evidence, and promotion or rejection of `OP-*` proposals.
 - **Architecture owner:** cross-component contracts, dependency boundaries, ADR process.
 - **Security owner:** threat model, sandbox, vulnerability response, supply chain, release gates.
 - **Engine owners:** DOM/HTML, CSS/layout, graphics/text/accessibility.

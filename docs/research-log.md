@@ -276,3 +276,7 @@ A repository-wide review found that the remaining gap was the project control pl
 ## 2026-07-16 — Project-browser market gap
 
 Added the Market Strategy and Differentiation book, dated browser-market study, `OP-001` through `OP-014` registry, opportunity-promotion template, cross-document product hypotheses, and validator coverage. No opportunity became an accepted requirement, implementation claim, risk status, or support promise.
+
+## 2026-07-16 — Market strategy consistency and validator hardening
+
+After the market-strategy merge, a repository-wide audit corrected canonical table placement, added explicit product ownership, normalized release-review scope naming, and extended validation to `OP-*` IDs, reviewer-to-owner resolution, and market index invariants. No opportunity was promoted and no implementation or support status changed.
