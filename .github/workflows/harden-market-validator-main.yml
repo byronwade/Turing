@@ -88,4 +88,4 @@ jobs:
             fi
           done
 
-# Pull-request trigger: 2026-07-16T23:45:00Z
+# Pull-request retrigger after corrected generator: 2026-07-16T23:49:00Z
