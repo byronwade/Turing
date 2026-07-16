@@ -18,11 +18,17 @@ Convert conceptual roles into an executable ownership model for every subsystem,
 
 ## Required contract
 
-- Record primary, backup, architecture, security, accessibility, performance, release, and documentation reviewers.
-- Define contributor, reviewer, subsystem maintainer, security maintainer, release maintainer, and program-owner levels.
+- Record primary, backup, architecture, security, accessibility, performance, release, product, market-strategy, and documentation reviewers.
+- Define contributor, reviewer, subsystem maintainer, security maintainer, release maintainer, product maintainer, and program-owner levels.
 - Document promotion, probation, recusal, inactivity, removal, succession, and emergency replacement.
 - Use two-person control for stable signing, update trust, supported-version changes, and irreversible migrations.
 - Review ownership and access quarterly and before every release phase.
+
+## Product and market-strategy ownership
+
+The product owner is accountable for coherent user workflows, product requirements, usability evidence, migration, lifecycle expectations, and supported product scope. The market-strategy owner is accountable for competitive method, source freshness, positioning evidence, contrary evidence, `OP-*` status, and the documented promotion, deferral, rejection, or expiry of market opportunities.
+
+One person may provisionally hold both roles during the research phase, but the responsibilities and review records remain distinct. Product popularity does not override security, accessibility, compatibility, performance, legal, or operational review.
 
 ## Professional workflow
 
@@ -38,6 +44,7 @@ Convert conceptual roles into an executable ownership model for every subsystem,
 - Critical scopes have tested escalation and backup coverage.
 - CODEOWNERS patterns match representative paths.
 - Departed maintainers retain no privileged access.
+- Every reviewer scope named by a machine-readable review rule resolves to a registered owner scope or the change owner.
 
 ## Risks and failure modes
 
@@ -45,6 +52,7 @@ Convert conceptual roles into an executable ownership model for every subsystem,
 - Too-granular ownership creates review bottlenecks.
 - Stale access survives social role changes.
 - Titles without operational duties create false assurance.
+- Market and product roles can collapse into feature advocacy unless contrary evidence and rejection authority remain explicit.
 
 ## Primary sources
 
