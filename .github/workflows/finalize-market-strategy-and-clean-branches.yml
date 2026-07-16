@@ -109,4 +109,4 @@ jobs:
             exit 1
           fi
 
-# Pull-request retrigger path: 2026-07-16
+# Pull-request audit trigger: 2026-07-16T-final
