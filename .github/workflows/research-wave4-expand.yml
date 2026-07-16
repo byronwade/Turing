@@ -7,6 +7,12 @@ on:
     paths:
       - transfer/research-wave4/**
       - .github/workflows/research-wave4-expand.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - transfer/research-wave4/**
+      - .github/workflows/research-wave4-expand.yml
 
 permissions:
   contents: write
