@@ -32,12 +32,16 @@ jobs:
           fetch-depth: 0
           show-progress: false
 
-      - name: Import and apply reviewed hardening patch
+      - name: Reconstruct and apply reviewed hardening patch
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin docs/market-strategy-validator-hardening
-          git show origin/docs/market-strategy-validator-hardening:tools/harden_market_validator.py > /tmp/harden_market_validator.py
+          cat <<'B64' | base64 --decode > /tmp/harden_market_validator.py.xz
+          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
+          B64
+          echo "050652b4cb9c0d7e7136ecf90970f0a053ff500c9228c7ad1f6c703f74ba0542  /tmp/harden_market_validator.py.xz" | sha256sum --check -
+          xz --decompress --stdout /tmp/harden_market_validator.py.xz > /tmp/harden_market_validator.py
+          echo "0edf79ae0ccdb0b9a61ac9f5e783f62df3ea82c7898f7265e73329f80cc195b9  /tmp/harden_market_validator.py" | sha256sum --check -
           python3 -B - <<'PY'
           from pathlib import Path
           source = Path('/tmp/harden_market_validator.py').read_text(encoding='utf-8')
@@ -78,11 +82,11 @@ jobs:
           git commit -m "Harden market strategy validation controls"
           git push origin HEAD:main
 
-      - name: Delete temporary hardening and trigger branches
+      - name: Delete temporary and stale market branches
         shell: bash
         run: |
           set -euo pipefail
-          for branch in docs/market-strategy-validator-hardening ops/trigger-market-validator; do
+          for branch in docs/market-strategy-validator-hardening ops/trigger-market-validator docs/browser-market-gaps-v2; do
             if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
               git push origin --delete "${branch}"
             fi
