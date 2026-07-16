@@ -48,6 +48,15 @@ A memory-safe language materially improves the baseline but does not replace iso
 
 Security leadership means measurable containment and response, not absence of public incidents. Turing should publish sandbox evidence, process/capability maps, fuzzing status, unsafe/native dependency inventories, update provenance, release-hardening flags, supported-version policy, independent review results, and closed systemic lessons without exposing active users to unnecessary risk.
 
+## Advanced research
+
+7. [Speculation, Timers, and Side Channels](07-speculation-timers-and-side-channels.md)
+8. [Native Parser and Codec Isolation](08-native-parser-and-codec-isolation.md)
+9. [Heap Sandboxes, Pointer Tables, and JIT Compartments](09-heap-sandboxes-pointer-tables-and-jit-compartments.md)
+10. [Capability Provenance, Attenuation, and Revocation](10-capability-provenance-attenuation-and-revocation.md)
+11. [Developer, Extension, Automation, and Agent Attack Surfaces](11-developer-extension-automation-and-agent-attack-surfaces.md)
+12. [Anti-Phishing, Reputation, Abuse Resistance, and Trusted UI](12-anti-phishing-reputation-and-trusted-ui.md)
+
 ## Related material
 
 - [Browser engine book](../engine/README.md)

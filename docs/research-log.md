@@ -2,6 +2,59 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-16 — Performance, security, developer, and missing-systems research expansion
+
+Question:
+
+Which browser-scale domains still lacked implementation-grade research contracts after the first eight detailed books?
+
+Sources and versions:
+
+- Turing main at the 95-document engineering-library baseline;
+- official WHATWG, W3C, RFC, TC39, WPT, platform, accessibility, reproducible-build, update-security, benchmark, and primary security sources retrieved 2026-07-16;
+- existing Turing requirements, risks, work packages, benchmark schema, process capability registry, and prototype.
+
+Method and environment:
+
+Repository-wide architecture and documentation audit followed by deterministic generation of eleven new books, sixteen advanced performance/security/developer chapters, a dated audit, navigation, research questions, bibliography, and validator topology. No implementation, benchmark, conformance run, independent audit, or supported-feature evidence was produced.
+
+Observations:
+
+- network, storage, media/document, platform, accessibility, release, extension/enterprise/sync, web-platform governance, benchmark, quality, and everyday product areas required independent owners and evidence contracts;
+- performance leadership requires locality, allocation, virtual-memory, IPC, startup, PGO, tail-latency, causal-trace, energy, pressure, and recovery work;
+- security leadership requires native/JIT compartments, side-channel policy, capability provenance, privileged developer/extension/agent controls, trusted UI, phishing defense, update response, and independent assurance;
+- developer leadership requires deterministic replay, safe local-workspace integration, automatic reduction, generated SDKs, and cross-domain causal explanations.
+
+Decision:
+
+- add eleven detailed books and 81 chapters;
+- add sixteen advanced chapters to performance, security, and developer experience;
+- publish the [expansion audit](research/performance-security-developer-expansion-audit-2026-07.md);
+- add RQ-26 through RQ-40 and corresponding experiment families;
+- strengthen the repository validator to require 204 Markdown documents and nineteen book indexes.
+
+Security/privacy impact:
+
+The research strengthens least authority, partitioning, brokered devices and sockets, native/JIT containment, update integrity, trusted UI, phishing defenses, redaction, private reporting, and explicit unsafe early-release warnings. It changes no current security claim.
+
+Compatibility/accessibility impact:
+
+The expansion adds open-web feature governance, full-denominator conformance, platform accessibility bridges, assistive-technology latency, browser UI workflows, and cross-browser protocol studies. It changes no support matrix.
+
+Performance/memory/energy impact:
+
+The expansion defines measurement and experiments for data locality, allocators, pages, IPC, scheduling, startup, PGO/LTO, GPU, 30 tabs, energy, thermal behavior, background work, and recovery. All proposed advantages remain unmeasured hypotheses.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- requirement count remains 46; risk count remains 40; work-package count remains 18;
+- no ADR or status changes;
+- all nineteen detailed book indexes, the documentation and Blueprint indexes, repository map, research index/log/program, bibliography, definition of done, policies, and validator are synchronized.
+
+Next evidence required:
+
+Run the fixed-hardware baseline, then execute the representation, process, sandbox, networking, storage, replay, accessibility, release, and product experiments defined by RQ-26 through RQ-40.
+
 ## 2026-07-16 — Detailed browser engineering research library
 
 Question:

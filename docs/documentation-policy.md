@@ -171,3 +171,9 @@ Documentation is complete when:
 - risks and unsupported behavior are explicit;
 - evidence supports status and performance claims;
 - validation passes.
+
+## 10. Detailed research library coverage
+
+Changes to networking, storage, media/documents, native platform integration, accessibility, release operations, extensions/enterprise/sync, web-platform governance, benchmark operations, quality assurance, or everyday product workflows must inspect the corresponding detailed book in addition to the owning Blueprint chapters. Performance, security, and developer-tool changes must also inspect their advanced chapters for locality, allocation, IPC, startup, profiling, side channels, native/JIT containment, capability provenance, replay, reduction, SDKs, and cross-domain diagnostics.
+
+A dated research report remains evidence, not an accepted decision. Book topology, child links, repository mapping, research logs, bibliography, questions, and validation change together.

@@ -44,13 +44,13 @@ The Blueprint is the normative overview. The detailed books expand implementatio
 The repository currently contains:
 
 - the normative product and engineering Blueprint;
-- eight detailed engineering and competitive research books;
+- nineteen detailed engineering and competitive research books;
 - dated engine-landscape and documentation-gap research;
 - machine-readable requirements, risks, work packages, process capabilities, benchmark and agent-action schemas;
 - repository validation and documentation-governance checks;
 - a dependency-free Rust architecture prototype.
 
-Detailed books now cover browser-engine internals, JavaScript runtime/compiler design, security containment and response, DevTools/developer workflows, API conventions, performance/memory/energy, AI agents and tools, and competitive engine/product studies. These are research and design baselines, not evidence that the systems exist.
+Detailed books now cover networking, storage, media/documents, native platforms, accessibility, release operations, extensions/enterprise/sync, open-web governance, benchmark operations, quality assurance, everyday product experience, browser-engine internals, JavaScript runtime/compiler design, security containment and response, DevTools/developer workflows, API conventions, performance/memory/energy, AI agents and tools, and competitive engine/product studies. These are research and design baselines, not evidence that the systems exist.
 
 ## Current implementation state
 

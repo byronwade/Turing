@@ -172,6 +172,66 @@ A number-one claim must be defined as a current multi-dimensional scorecard rath
 
 Decision output: competitive scorecard, adopt/adapt/reject/defer ledger, contributor and security-response targets, product research cadence, and claim-expiry rules.
 
+## RQ-26 — Which network process, Fetch-policy, cache, cookie, and transport architecture is fastest without widening authority?
+
+Prototype kernel-issued request context, a brokered network process, DNS/proxy/TLS/HTTP variants, redirect and Fetch policy, partitioned caches/cookies, streaming, fault injection, and fixed-hardware resource attribution. Decision output: network-service boundaries, protocol stack, policy core, partition keys, budgets, diagnostics, and support matrix.
+
+## RQ-27 — Which storage architecture survives crashes, migrations, corruption, disk pressure, and clearing correctly?
+
+Compare SQLite-backed, log-structured, and store-specific designs for IndexedDB, Cache Storage, service workers, history, bookmarks, settings, sessions, and quotas. Decision output: store backends, transaction/durability levels, migration and recovery policy, encryption boundaries, and repair tools.
+
+## RQ-28 — Which media, codec, DRM, PDF, and printing architecture balances compatibility, containment, energy, and licensing?
+
+Measure decoder processes, software/hardware paths, playback clocks, WebRTC/capture, PDF and print pipelines, malformed inputs, licenses, and unsupported proprietary services. Decision output: process/codec matrix, protected-content boundary, document viewer, printing path, and distribution policy.
+
+## RQ-29 — Which native browser-shell and platform-adapter architecture meets latency, accessibility, containment, and support goals?
+
+Prototype retained browser chrome plus macOS, Windows, and Linux adapters. Measure startup, input/IME, window/surface lifecycle, accessibility, credential/device portals, packaging, power, and sandbox evidence. Decision output: UI scene graph, adapter APIs, native-control policy, and supported platform matrix.
+
+## RQ-30 — Which accessibility architecture minimizes stale semantics and assistive-technology latency across processes?
+
+Prototype semantic epochs, remote frame trees, platform bridges, text ranges, browser UI, DevTools, automation, and agent snapshots. Decision output: tree schema, process composition, event/coalescing policy, platform mappings, latency budgets, and release matrix.
+
+## RQ-31 — Which reproducible-build, signing, update, migration, and incident process can meet browser emergency timelines?
+
+Run clean rebuilds, provenance/SBOM verification, key-compromise drills, update tamper/replay/rollback tests, migration interruption, crash-report redaction, and emergency patch exercises. Decision output: release trust, packaging, update metadata, rollout, support lifecycle, and staffing gates.
+
+## RQ-32 — Which extension, enterprise-policy, account, and sync subset is useful without recreating ambient authority and background waste?
+
+Prototype isolated worlds/processes, optional host grants, event-driven lifetimes, rules, native messaging, policy precedence, encrypted sync, conflicts, quotas, and audit. Decision output: supported extension surface, policy schema, account boundary, sync envelope, and compatibility gaps.
+
+## RQ-33 — Which open-web feature lifecycle best aligns user needs, standards, tests, privacy, accessibility, and compatibility?
+
+Build dependency graphs from specifications, WPT, Interop, application needs, security controls, and platform work. Study experimental APIs, deprecation, and public compatibility interventions. Decision output: proposal checklist, maturity stages, experiment rules, and public dashboard.
+
+## RQ-34 — Which fixed-hardware benchmark-laboratory design produces comparable, repeatable, decision-grade browser evidence?
+
+Version machines, OS images, corpora, servers, power/thermal controls, adapters, raw result formats, statistics, and publication. Decision output: lab inventory, benchmark manifests, acceptance thresholds, regression policy, and claim-expiry rules.
+
+## RQ-35 — Which data-layout, allocator, virtual-memory, and reclamation strategies minimize sustained working set and latency?
+
+Compare compact handles, field splitting, arrays, arenas, slabs, general allocators, page release, huge/guard pages, frozen-tab trimming, cache locality, and hardware tiers. Decision output: representation budgets, allocator classes, page policy, and unsafe boundaries.
+
+## RQ-36 — Which IPC, shared-memory, serialization, copy, batching, and backpressure choices dominate isolation-adjusted performance?
+
+Measure message sizes, copies, mappings, validation, cache coherency, priorities, batching delay, queue pressure, cancellation, crash cleanup, and semantic attribution. Decision output: domain encodings, shared-buffer contracts, queue budgets, and overload policy.
+
+## RQ-37 — Which PGO, LTO, binary-layout, process-launch, and preinitialization techniques improve startup without harming reproducibility or memory?
+
+Compare profiles, Thin/full LTO, function ordering, hot/cold splitting, demand paging, library layout, warm pools, preinitialized immutable state, and invalidation. Decision output: release profile, binary layout, startup architecture, and rollback triggers.
+
+## RQ-38 — Which layered native, heap, JIT, and side-channel containment mechanisms produce the best security/performance frontier?
+
+Compare process isolation, RLBox/Wasm-like compartments, heap cages, pointer tables, W^X, CFI/PAC/CET, timer policy, site isolation, and mitigations on equivalent workloads. Decision output: compartment strategy, threat assumptions, platform matrix, and residual risks.
+
+## RQ-39 — Which deterministic replay and causal-observability model makes difficult browser bugs reproducible and explainable?
+
+Prototype virtual time/random/network/input, state capture, trace causality, divergence detection, redaction, automatic reduction, source maps, and cross-domain policy explanations. Decision output: trace/replay schema, capture boundary, SDKs, and developer workflow targets.
+
+## RQ-40 — Which anti-phishing, trusted-UI, resource-management, recovery, onboarding, and everyday workflows create measurable user leadership?
+
+Study origin comprehension, IDN/lookalikes, reputation privacy, prompts, credentials, agent confirmation, tab/workspace pressure, migration, safe mode, updates, support, keyboard, screen-reader, and recovery tasks. Decision output: trusted UI, reputation approach, resource manager, workflow priorities, and usability gates.
+
 ## Research protocol
 
 Every study publishes:

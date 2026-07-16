@@ -234,6 +234,62 @@ Use of any listed project is not automatic approval. It remains subject to the d
 - Microsoft accessibility testing — https://learn.microsoft.com/en-us/windows/apps/design/accessibility/accessibility-testing
 - GNOME accessibility — https://developer.gnome.org/documentation/guidelines/accessibility.html
 
+## Networking, storage, media, platform, operations, and verification sources
+
+### Networking and transport
+
+- DNS concepts — RFC 1034 and RFC 1035: https://www.rfc-editor.org/rfc/rfc1034 and https://www.rfc-editor.org/rfc/rfc1035
+- Happy Eyeballs v2 — RFC 8305: https://www.rfc-editor.org/rfc/rfc8305
+- HTTP Semantics and HTTP/1.1/2/3 — RFC 9110, 9112, 9113, 9114
+- QUIC — RFC 9000: https://www.rfc-editor.org/rfc/rfc9000
+- TLS 1.3 — RFC 8446: https://www.rfc-editor.org/rfc/rfc8446
+- Fetch, URL, Streams, WebSocket, WebTransport, CSP, CORS-related WPT, and Public Suffix List upstreams
+
+### Storage and reliability
+
+- Storage Standard: https://storage.spec.whatwg.org/
+- Indexed Database API: https://w3c.github.io/IndexedDB/
+- Service Workers: https://w3c.github.io/ServiceWorker/
+- Clear Site Data: https://w3c.github.io/webappsec-clear-site-data/
+- SQLite: https://sqlite.org/
+
+### Media, documents, and devices
+
+- Media Source Extensions: https://w3c.github.io/media-source/
+- WebCodecs: https://www.w3.org/TR/webcodecs/
+- WebRTC: https://w3c.github.io/webrtc-pc/
+- Encrypted Media Extensions: https://www.w3.org/TR/encrypted-media/
+- PNG, AV1, WebM, OpenType, PDF Association, and platform printing documentation
+
+### Platform and accessibility
+
+- Apple AppKit, Platform Security, accessibility, sandbox, signing, and notarization documentation
+- Microsoft Windows application, graphics, UI Automation, AppContainer, mitigation, packaging, and signing documentation
+- Wayland, XDG portals, PipeWire, Linux namespaces, seccomp, Landlock, and AT-SPI documentation
+- WAI-ARIA, Accessible Name and Description Computation, WCAG, and ARIA Authoring Practices
+
+### Build, release, and update trust
+
+- Reproducible Builds: https://reproducible-builds.org/
+- SLSA: https://slsa.dev/
+- in-toto: https://in-toto.io/
+- The Update Framework: https://theupdateframework.io/
+- Sigstore: https://www.sigstore.dev/
+- SPDX and CycloneDX
+
+### Performance, security, and developer evidence
+
+- Perfetto: https://perfetto.dev/
+- Windows Performance Toolkit and Event Tracing for Windows
+- Apple Instruments and signposts
+- Linux perf and platform power/energy interfaces
+- Spectre paper: https://spectreattack.com/spectre.pdf
+- RLBox paper: https://www.usenix.org/conference/usenixsecurity20/presentation/narayan
+- LLVM CFI and sanitizer documentation
+- WebDriver BiDi, Chrome DevTools Protocol, Firefox Remote Protocol, and WebKit Inspector documentation
+
+All sources require exact revision, retrieval date, license/provenance, tested platform, and local patch recording before they support implementation or product claims.
+
 ## Browser security research inputs
 
 Primary research should be added as individual annotated references tied to a design decision. Relevant domains include site isolation, sandbox architecture, capability systems, memory-safe browser components, browser fuzzing, JIT hardening, CFI, pointer authentication, allocator hardening, renderer exploit chains, origin isolation, storage partitioning, update security, provider/tool isolation, and trusted UI.

@@ -125,3 +125,21 @@ This checklist prevents architecture work from becoming presentation-only.
 - profile migration/downgrade behavior defined;
 - signing authority and audit reviewed;
 - emergency response and supported-version impact documented.
+
+## Networking, storage, media, platform, accessibility, and operations research
+
+- the owning detailed book and Blueprint chapter agree;
+- identities, authority, lifetime, limits, failure, recovery, platform variance, and unsupported cases are explicit;
+- primary specifications and test-suite revisions are recorded;
+- threat, privacy, accessibility, compatibility, performance, memory, energy, licensing, and operational effects are reviewed;
+- falsifiable experiments, fixed environments, raw evidence, confidence, owners, and revisit triggers are defined;
+- no research statement is presented as implemented or supported.
+
+## Developer tooling or diagnostic workflow
+
+- target, profile, origin, frame, process, realm, and document epoch are explicit;
+- protocol messages are versioned, bounded, cancellable, authenticated where remote, and redacted by default;
+- trace causality, replay limitations, divergence, failure, and partial output are visible;
+- keyboard and screen-reader workflows are tested;
+- diagnostic bundles preview included fields and exclude secrets;
+- workflow time and failure rate are measured against reference tools where leadership is claimed.

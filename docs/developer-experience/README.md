@@ -31,6 +31,14 @@ Portable automation belongs in WebDriver BiDi. Turing-specific introspection bel
 - Developer tools remain keyboard and screen-reader operable.
 - Failures, unsupported domains, breaking changes, and support windows are published.
 
+## Advanced research
+
+6. [Deterministic Replay, Virtual Time, and State Capture](06-deterministic-replay-virtual-time-and-state-capture.md)
+7. [Source Maps, Live Editing, and Local Development](07-source-maps-live-editing-and-local-development.md)
+8. [Diagnostic Bundles and Automatic Reduction](08-diagnostic-bundles-and-automatic-reduction.md)
+9. [Generated SDKs, Plugins, and Compatibility Adapters](09-generated-sdks-plugins-and-compatibility-adapters.md)
+10. [Integrated Accessibility, Security, Network, and Storage Debugging](10-integrated-accessibility-security-network-and-storage-debugging.md)
+
 ## Related material
 
 - [API design book](../api-design/README.md)

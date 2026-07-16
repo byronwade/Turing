@@ -26,12 +26,23 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 |---|---|
 | [Browser engine engineering](engine/README.md) | Pipeline artifacts, HTML/DOM, CSS, invalidation, layout, paint, GPU, text, media, input, accessibility, memory, and observability |
 | [JavaScript runtime engineering](javascript/README.md) | Front end, bytecode, interpreter, values, objects, inline caches, GC, JIT, Web IDL, event loop, WebAssembly, testing, and performance |
-| [Browser security engineering](security-engine/README.md) | Threat model, process/site isolation, sandbox brokers, platform containment, memory/JIT hardening, privacy, trusted UI, updates, and release gates |
-| [Developer experience and DevTools](developer-experience/README.md) | Protocols, workflows, UI, tracing, replay, automation, headless mode, and advanced diagnosis |
-| [API design](api-design/README.md) | Design principles, identity, authority, bounds, async operations, streaming, cancellation, schemas, errors, compatibility, SDKs, authentication, and redaction |
-| [Performance engineering](performance/README.md) | Critical paths, memory, allocation, caches, scheduling, adaptive parallelism, graphics, energy, startup, recovery, statistics, and regression governance |
+| [Browser security engineering](security-engine/README.md) | Threat model, isolation, sandbox brokers, native/JIT hardening, side channels, trusted UI, updates, and assurance |
+| [Developer experience and DevTools](developer-experience/README.md) | Protocols, workflows, causal tracing, replay, automation, SDKs, reduction, and integrated diagnosis |
+| [API design](api-design/README.md) | Identity, authority, bounds, async work, streaming, cancellation, schemas, errors, compatibility, SDKs, authentication, and redaction |
+| [Performance engineering](performance/README.md) | Critical paths, locality, allocation, virtual memory, IPC, scheduling, graphics, energy, startup, PGO, profiling, and regression governance |
 | [AI and agent engineering](ai/README.md) | Trust boundaries, observations, redaction, actions, grants, confirmation, audit, memory, planning, providers, local models, MCP/tools, and evaluation |
 | [Competitive browser and engine studies](competitive/README.md) | Chromium, WebKit, Gecko, Servo, Ladybird, browser-product lessons, valid comparison, and adoption rules |
+| [Networking Engineering](networking/README.md) | Request identity, the network service, DNS, proxies, TLS, HTTP, Fetch policy, caches, cookies, streaming transports, downloads, diagnostics, testing, and resource budgets. |
+| [Storage and Recovery Engineering](storage/README.md) | Storage keys, quotas, IndexedDB, Cache Storage, service workers, cookies, profile stores, migrations, corruption, encryption boundaries, clearing, repair, and recovery. |
+| [Media, Documents, and Printing Engineering](media-documents/README.md) | Sandboxed decoders, images, fonts, audio/video, WebRTC, capture, codecs, hardware acceleration, DRM, PDF, printing, accessibility, licensing, testing, and energy. |
+| [Native Platform and Browser Chrome Engineering](platform/README.md) | Browser chrome, windows, surfaces, input, IME, clipboard, drag-and-drop, macOS, Windows, Linux, credentials, notifications, external protocols, packaging, startup, power, and support evidence. |
+| [Accessibility Engineering](accessibility/README.md) | Engine semantics, accessible names, text ranges, cross-process trees, platform bridges, browser UI, DevTools, automation, agents, latency, testing, and release gates. |
+| [Build, Release, Update, and Incident Operations Engineering](release-operations/README.md) | Build identity, hermetic toolchains, reproducibility, provenance, SBOMs, signing, packaging, updates, rollout, rollback, migrations, crash reporting, incident response, and support lifecycle. |
+| [Extensions, Enterprise Policy, Accounts, and Sync Engineering](extensions-enterprise/README.md) | Extension processes, worlds, grants, event execution, rules, native messaging, updates, DevTools and agents, enterprise policy, accounts, encrypted sync, conflicts, schemas, and quotas. |
+| [Open Web Platform Governance Engineering](web-platform/README.md) | User needs, standards participation, feature lifecycle, dependency graphs, tests, interoperability, privacy/security/accessibility review, experiments, deprecation, compatibility interventions, and evidence dashboards. |
+| [Fixed-Hardware Benchmark Laboratory](benchmark-lab/README.md) | Hardware tiers, OS images, corpora, servers, startup, navigation, input, frame pacing, memory, process topology, 30 tabs, energy, accessibility, developer, agent, recovery, statistics, artifacts, and claims. |
+| [Quality Assurance, Conformance, and Verification Engineering](quality-assurance/README.md) | Conformance suites, reduced tests, fuzzing, property/model/formal methods, differential testing, fault injection, chaos, longevity, security assurance, independent review, flakes, and release evidence. |
+| [Everyday Product Experience Engineering](product-experience/README.md) | Tabs, groups, workspaces, command field, onboarding, migration, profiles, private sessions, permissions, credentials, agents, resource manager, lifecycle, recovery, settings, updates, support, usability, and accessibility. |
 
 ## Active research
 
@@ -39,6 +50,8 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 |---|---|
 | [Browser engine landscape and Turing excellence strategy — July 2026](research/browser-engine-landscape-2026-07.md) | Primary-source comparison of Chromium, WebKit, Gecko, Servo, and Ladybird; proposed performance, API, standards, open-source, and measurement strategy |
 | [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |
+
+| [Performance, security, developer, and missing-systems expansion audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Adds eleven books and advanced performance, security, and developer research; no implementation or support claim |
 
 Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 

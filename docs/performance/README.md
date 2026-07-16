@@ -34,6 +34,14 @@ Performance is architectural. Data representation, process topology, site isolat
 
 Turing should claim performance leadership only from an evidence package showing startup, input-to-present tails, frame pacing, page stages, 30-tab behavior, memory attribution, CPU/wakeups, energy/thermal behavior, crash recovery, developer tooling overhead, AI costs, and compatibility coverage across fixed hardware tiers.
 
+## Advanced research
+
+6. [Data Locality, CPU Caches, and NUMA](06-data-locality-cpu-caches-and-numa.md)
+7. [Allocators, Virtual Memory, and Page Reclamation](07-allocators-virtual-memory-and-page-reclamation.md)
+8. [IPC, Shared Memory, Serialization, and Batching](08-ipc-shared-memory-serialization-and-batching.md)
+9. [PGO, LTO, Binary Layout, and Startup](09-pgo-lto-binary-layout-and-startup.md)
+10. [Causal Profiling and Regression Diagnosis](10-causal-profiling-and-regression-diagnosis.md)
+
 ## Related material
 
 - [Browser engine book](../engine/README.md)

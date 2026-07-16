@@ -13,6 +13,8 @@ This directory contains dated research artifacts that inform, challenge, or vali
 | [Browser engine landscape and Turing excellence strategy — July 2026](browser-engine-landscape-2026-07.md) | Which lessons from Chromium, WebKit, Gecko, Servo, and Ladybird should shape a top-tier independent engine for developers and everyday users? | Research baseline; recommendations require experiments |
 | [Documentation expansion audit — July 2026](documentation-expansion-audit-2026-07.md) | Where was the Blueprint too compressed for implementation research, what detailed books were required, and what gaps remain? | Completed documentation audit; no implementation claim |
 
+| [Performance, security, developer, and missing-systems expansion audit — July 2026](performance-security-developer-expansion-audit-2026-07.md) | Which performance, security, developer, systems, operations, quality, benchmark, accessibility, and product areas still required detailed ownership? | Completed documentation audit; recommendations require experiments |
+
 ## Research operating rules
 
 Every study must:
@@ -37,6 +39,17 @@ Every study must:
 - [Performance engineering](../performance/README.md)
 - [AI and agent engineering](../ai/README.md)
 - [Competitive browser and engine studies](../competitive/README.md)
+- [Networking Engineering](../networking/README.md)
+- [Storage and Recovery Engineering](../storage/README.md)
+- [Media, Documents, and Printing Engineering](../media-documents/README.md)
+- [Native Platform and Browser Chrome Engineering](../platform/README.md)
+- [Accessibility Engineering](../accessibility/README.md)
+- [Build, Release, Update, and Incident Operations Engineering](../release-operations/README.md)
+- [Extensions, Enterprise Policy, Accounts, and Sync Engineering](../extensions-enterprise/README.md)
+- [Open Web Platform Governance Engineering](../web-platform/README.md)
+- [Fixed-Hardware Benchmark Laboratory](../benchmark-lab/README.md)
+- [Quality Assurance, Conformance, and Verification Engineering](../quality-assurance/README.md)
+- [Everyday Product Experience Engineering](../product-experience/README.md)
 
 These libraries are detailed research and design baselines. They remain subordinate to the owning Blueprint chapters and do not silently change accepted status.
 

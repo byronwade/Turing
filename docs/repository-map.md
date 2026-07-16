@@ -31,7 +31,8 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   ├── research/
 │   │   ├── README.md
 │   │   ├── browser-engine-landscape-2026-07.md
-│   │   └── documentation-expansion-audit-2026-07.md
+│   │   ├── documentation-expansion-audit-2026-07.md
+│   │   └── performance-security-developer-expansion-audit-2026-07.md
 │   ├── engine/
 │   │   ├── 01-pipeline-and-artifacts.md
 │   │   ├── 02-html-parser-and-dom.md
@@ -58,6 +59,12 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   ├── 04-web-security-privacy-and-trusted-ui.md
 │   │   ├── 05-update-supply-chain-and-vulnerability-response.md
 │   │   ├── 06-security-verification-and-release-gates.md
+│   │   ├── 07-speculation-timers-and-side-channels.md
+│   │   ├── 08-native-parser-and-codec-isolation.md
+│   │   ├── 09-heap-sandboxes-pointer-tables-and-jit-compartments.md
+│   │   ├── 10-capability-provenance-attenuation-and-revocation.md
+│   │   ├── 11-developer-extension-automation-and-agent-attack-surfaces.md
+│   │   ├── 12-anti-phishing-reputation-and-trusted-ui.md
 │   │   └── README.md
 │   ├── developer-experience/
 │   │   ├── 01-protocol-architecture-and-versioning.md
@@ -65,6 +72,11 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   ├── 03-observability-tracing-and-replay.md
 │   │   ├── 04-automation-headless-and-reproducibility.md
 │   │   ├── 05-debugging-memory-performance-and-security.md
+│   │   ├── 06-deterministic-replay-virtual-time-and-state-capture.md
+│   │   ├── 07-source-maps-live-editing-and-local-development.md
+│   │   ├── 08-diagnostic-bundles-and-automatic-reduction.md
+│   │   ├── 09-generated-sdks-plugins-and-compatibility-adapters.md
+│   │   ├── 10-integrated-accessibility-security-network-and-storage-debugging.md
 │   │   └── README.md
 │   ├── api-design/
 │   │   ├── 01-design-principles.md
@@ -78,6 +90,11 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   ├── 03-scheduler-parallelism-and-latency.md
 │   │   ├── 04-graphics-energy-startup-and-recovery.md
 │   │   ├── 05-benchmarks-statistics-and-regression-governance.md
+│   │   ├── 06-data-locality-cpu-caches-and-numa.md
+│   │   ├── 07-allocators-virtual-memory-and-page-reclamation.md
+│   │   ├── 08-ipc-shared-memory-serialization-and-batching.md
+│   │   ├── 09-pgo-lto-binary-layout-and-startup.md
+│   │   ├── 10-causal-profiling-and-regression-diagnosis.md
 │   │   └── README.md
 │   ├── ai/
 │   │   ├── 01-agent-architecture-and-trust-boundaries.md
@@ -95,6 +112,109 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   ├── 05-ladybird.md
 │   │   ├── 06-browser-products.md
 │   │   ├── 07-comparison-scorecard-and-adoption-rules.md
+│   │   └── README.md
+│   ├── networking/
+│   │   ├── 01-identities-and-request-context.md
+│   │   ├── 02-network-service-and-brokers.md
+│   │   ├── 03-dns-proxies-and-connection-racing.md
+│   │   ├── 04-tls-certificates-and-client-auth.md
+│   │   ├── 05-http1-http2-http3-and-quic.md
+│   │   ├── 06-fetch-redirects-cors-and-security-policy.md
+│   │   ├── 07-cache-preload-speculation-and-service-workers.md
+│   │   ├── 08-cookies-partitioning-and-tracking-resistance.md
+│   │   ├── 09-streaming-websocket-webtransport-and-downloads.md
+│   │   ├── 10-observability-testing-and-resource-budgets.md
+│   │   └── README.md
+│   ├── storage/
+│   │   ├── 01-storage-keys-buckets-and-partitioning.md
+│   │   ├── 02-quota-eviction-and-pressure.md
+│   │   ├── 03-indexeddb-transactions-and-durability.md
+│   │   ├── 04-cache-storage-service-workers-and-background-work.md
+│   │   ├── 05-cookies-sessions-and-private-data.md
+│   │   ├── 06-profile-history-bookmarks-settings-and-journals.md
+│   │   ├── 07-migrations-corruption-disk-full-and-power-loss.md
+│   │   ├── 08-encryption-credentials-clearing-and-export.md
+│   │   ├── 09-observability-repair-and-testing.md
+│   │   └── README.md
+│   ├── media-documents/
+│   │   ├── 01-decoder-processes-and-input-limits.md
+│   │   ├── 02-images-fonts-color-and-animation.md
+│   │   ├── 03-audio-video-clocks-buffering-and-seeking.md
+│   │   ├── 04-webrtc-capture-and-devices.md
+│   │   ├── 05-codecs-hardware-acceleration-and-licensing.md
+│   │   ├── 06-drm-and-content-decryption-boundaries.md
+│   │   ├── 07-pdf-viewer-and-document-security.md
+│   │   ├── 08-printing-pagination-accessibility-and-quality.md
+│   │   └── README.md
+│   ├── platform/
+│   │   ├── 01-browser-chrome-scene-graph-and-trusted-surfaces.md
+│   │   ├── 02-windows-surfaces-displays-and-lifecycle.md
+│   │   ├── 03-input-ime-clipboard-and-drag-drop.md
+│   │   ├── 04-macos-integration.md
+│   │   ├── 05-windows-integration.md
+│   │   ├── 06-linux-integration.md
+│   │   ├── 07-credentials-notifications-and-external-protocols.md
+│   │   ├── 08-packaging-startup-power-and-support-matrix.md
+│   │   └── README.md
+│   ├── accessibility/
+│   │   ├── 01-engine-semantics-and-tree-generation.md
+│   │   ├── 02-names-relations-text-ranges-and-editing.md
+│   │   ├── 03-cross-process-and-cross-origin-composition.md
+│   │   ├── 04-platform-accessibility-bridges.md
+│   │   ├── 05-browser-ui-devtools-automation-and-agents.md
+│   │   ├── 06-latency-event-coalescing-and-resource-use.md
+│   │   ├── 07-testing-assistive-technology-matrices-and-release-gates.md
+│   │   └── README.md
+│   ├── release-operations/
+│   │   ├── 01-build-identity-and-hermetic-toolchains.md
+│   │   ├── 02-reproducible-builds-provenance-and-sbom.md
+│   │   ├── 03-signing-keys-and-package-attestation.md
+│   │   ├── 04-platform-packaging-and-installers.md
+│   │   ├── 05-update-metadata-rollout-and-rollback.md
+│   │   ├── 06-profile-migrations-and-downgrade-protection.md
+│   │   ├── 07-crash-reporting-symbols-and-redaction.md
+│   │   ├── 08-vulnerability-response-and-supported-lifecycle.md
+│   │   └── README.md
+│   ├── extensions-enterprise/
+│   │   ├── 01-extension-processes-worlds-and-isolation.md
+│   │   ├── 02-permissions-host-grants-and-user-control.md
+│   │   ├── 03-event-driven-background-work-and-quotas.md
+│   │   ├── 04-declarative-network-rules-and-native-messaging.md
+│   │   ├── 05-extension-updates-devtools-and-agents.md
+│   │   ├── 06-enterprise-policy-precedence-and-audit.md
+│   │   ├── 07-accounts-sync-encryption-conflicts-and-quotas.md
+│   │   └── README.md
+│   ├── web-platform/
+│   │   ├── 01-user-needs-and-design-principles.md
+│   │   ├── 02-feature-lifecycle-and-standards-participation.md
+│   │   ├── 03-tests-interop-and-dependency-graphs.md
+│   │   ├── 04-privacy-security-accessibility-and-abuse-review.md
+│   │   ├── 05-experiments-deprecation-and-compatibility-interventions.md
+│   │   ├── 06-governance-evidence-and-public-dashboard.md
+│   │   └── README.md
+│   ├── benchmark-lab/
+│   │   ├── 01-hardware-os-power-and-thermal-control.md
+│   │   ├── 02-corpus-servers-and-network-control.md
+│   │   ├── 03-startup-navigation-and-input-latency.md
+│   │   ├── 04-frame-pacing-raster-composite-and-gpu.md
+│   │   ├── 05-memory-process-topology-and-thirty-tabs.md
+│   │   ├── 06-energy-accessibility-developer-agent-and-recovery.md
+│   │   ├── 07-statistics-artifacts-regressions-and-claims.md
+│   │   └── README.md
+│   ├── quality-assurance/
+│   │   ├── 01-conformance-suites-and-reduced-tests.md
+│   │   ├── 02-fuzzing-property-model-and-formal-methods.md
+│   │   ├── 03-differential-testing-and-oracles.md
+│   │   ├── 04-fault-injection-chaos-and-long-duration.md
+│   │   ├── 05-security-assurance-and-independent-review.md
+│   │   ├── 06-flakes-release-evidence-and-go-no-go.md
+│   │   └── README.md
+│   ├── product-experience/
+│   │   ├── 01-tabs-groups-workspaces-and-command-field.md
+│   │   ├── 02-onboarding-migration-profiles-and-private-sessions.md
+│   │   ├── 03-permissions-credentials-agents-and-trusted-ux.md
+│   │   ├── 04-resource-manager-lifecycle-and-recovery.md
+│   │   ├── 05-settings-updates-support-usability-and-accessibility.md
 │   │   └── README.md
 │   └── blueprint-v1/
 │       ├── README.md
@@ -182,14 +302,25 @@ This is the canonical documentation root.
 
 The following directories expand Blueprint chapters without replacing their normative ownership:
 
-- `engine/` owns detailed rendering-engine research and contracts.
-- `javascript/` owns detailed ECMAScript, GC, JIT, Web IDL, and WebAssembly research.
-- `security-engine/` owns detailed process, sandbox, hardening, update, and assurance research.
-- `developer-experience/` owns DevTools, protocol workflows, observability, automation, and diagnosis research.
-- `api-design/` owns common interface, schema, versioning, cancellation, SDK, authentication, and redaction rules.
-- `performance/` owns critical-path, memory, scheduler, graphics, energy, startup, recovery, and measurement research.
-- `ai/` owns agent trust, observations, actions, memory, providers, MCP/tools, and evaluation research.
-- `competitive/` owns per-engine, browser-product, comparison, and adoption studies.
+- `engine/` owns pipeline artifacts, html/dom, css, invalidation, layout, paint, gpu, text, media, input, accessibility, memory, and observability.
+- `javascript/` owns front end, bytecode, interpreter, values, objects, inline caches, gc, jit, web idl, event loop, webassembly, testing, and performance.
+- `security-engine/` owns threat model, isolation, sandbox brokers, native/jit hardening, side channels, trusted ui, updates, and assurance.
+- `developer-experience/` owns protocols, workflows, causal tracing, replay, automation, sdks, reduction, and integrated diagnosis.
+- `api-design/` owns identity, authority, bounds, async work, streaming, cancellation, schemas, errors, compatibility, sdks, authentication, and redaction.
+- `performance/` owns critical paths, locality, allocation, virtual memory, ipc, scheduling, graphics, energy, startup, pgo, profiling, and regression governance.
+- `ai/` owns trust boundaries, observations, redaction, actions, grants, confirmation, audit, memory, planning, providers, local models, mcp/tools, and evaluation.
+- `competitive/` owns chromium, webkit, gecko, servo, ladybird, browser-product lessons, valid comparison, and adoption rules.
+- `networking/` owns request identity, the network service, dns, proxies, tls, http, fetch policy, caches, cookies, streaming transports, downloads, diagnostics, testing, and resource budgets.
+- `storage/` owns storage keys, quotas, indexeddb, cache storage, service workers, cookies, profile stores, migrations, corruption, encryption boundaries, clearing, repair, and recovery.
+- `media-documents/` owns sandboxed decoders, images, fonts, audio/video, webrtc, capture, codecs, hardware acceleration, drm, pdf, printing, accessibility, licensing, testing, and energy.
+- `platform/` owns browser chrome, windows, surfaces, input, ime, clipboard, drag-and-drop, macos, windows, linux, credentials, notifications, external protocols, packaging, startup, power, and support evidence.
+- `accessibility/` owns engine semantics, accessible names, text ranges, cross-process trees, platform bridges, browser ui, devtools, automation, agents, latency, testing, and release gates.
+- `release-operations/` owns build identity, hermetic toolchains, reproducibility, provenance, sboms, signing, packaging, updates, rollout, rollback, migrations, crash reporting, incident response, and support lifecycle.
+- `extensions-enterprise/` owns extension processes, worlds, grants, event execution, rules, native messaging, updates, devtools and agents, enterprise policy, accounts, encrypted sync, conflicts, schemas, and quotas.
+- `web-platform/` owns user needs, standards participation, feature lifecycle, dependency graphs, tests, interoperability, privacy/security/accessibility review, experiments, deprecation, compatibility interventions, and evidence dashboards.
+- `benchmark-lab/` owns hardware tiers, os images, corpora, servers, startup, navigation, input, frame pacing, memory, process topology, 30 tabs, energy, accessibility, developer, agent, recovery, statistics, artifacts, and claims.
+- `quality-assurance/` owns conformance suites, reduced tests, fuzzing, property/model/formal methods, differential testing, fault injection, chaos, longevity, security assurance, independent review, flakes, and release evidence.
+- `product-experience/` owns tabs, groups, workspaces, command field, onboarding, migration, profiles, private sessions, permissions, credentials, agents, resource manager, lifecycle, recovery, settings, updates, support, usability, and accessibility.
 
 Each directory has a `README.md` index. Child documents must link back to the relevant Blueprint owner and cannot silently change requirements, risks, ADRs, or support statements.
 

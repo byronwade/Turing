@@ -4,7 +4,7 @@ Turing is the working codename for an independent, Rust-first browser and web-en
 
 The long-term target is a minimal, fast, secure, developer-first browser that can also serve everyday users and capability-scoped AI agents. The engine is intended to be independent: release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operating-system web view, or remote rendering.
 
-This repository is not yet a production browser and is not safe for sensitive or arbitrary hostile browsing. It currently contains the architecture, security model, compatibility inventory, performance contract, AI authorization model, roadmap, risk register, machine-readable requirements, active engine research, detailed engineering books, and a small executable Rust model of foundational invariants.
+This repository is not yet a production browser and is not safe for sensitive or arbitrary hostile browsing. It currently contains the architecture, security model, compatibility inventory, performance contract, AI authorization model, roadmap, risk register, machine-readable requirements, active engine research, nineteen detailed engineering books, and a small executable Rust model of foundational invariants.
 
 ## Start here
 

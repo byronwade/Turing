@@ -181,3 +181,17 @@ python3 tools/check_documentation_change.py <base-sha> <head-sha>
 ```
 
 Do not bypass, weaken, or delete a failing validation rule without updating the governing documentation and explaining why the previous invariant is no longer correct.
+
+## Detailed book expansion map
+
+- Networking and request policy: `docs/networking/` plus Blueprint 07, 08, 09, and 12.
+- Storage, migration, quota, and recovery: `docs/storage/` plus Blueprint 07, 08, 09, 12, and 13.
+- Media, codecs, DRM, PDF, and printing: `docs/media-documents/` plus Blueprint 02, 07, 08, 12, 13, and risks.
+- Native shell and platform adapters: `docs/platform/` plus Blueprint 04, 08, 09, 11, and 13.
+- Accessibility architecture and testing: `docs/accessibility/` plus Blueprint 05, 11, 12, and product requirements.
+- Build, release, updates, and response: `docs/release-operations/` plus Blueprint 08, 13, and `docs/security.md`.
+- Extensions, enterprise, accounts, and sync: `docs/extensions-enterprise/` plus Blueprint 02, 07, 08, 10, 11, and 13.
+- Web-platform feature governance: `docs/web-platform/` plus Blueprint 01, 02, 05, 06, 07, and 12.
+- Measurement infrastructure: `docs/benchmark-lab/` plus `docs/performance/`, Blueprint 09 and 12, and benchmark manifests.
+- Verification: `docs/quality-assurance/` plus Blueprint 08, 12, 13, and 20.
+- Everyday product workflows: `docs/product-experience/` plus Blueprint 02, 09, 10, 11, and accessibility requirements.

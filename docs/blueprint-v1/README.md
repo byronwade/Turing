@@ -46,7 +46,7 @@ This blueprint separates four layers that are often confused:
 
 ## Detailed engineering books
 
-The Blueprint remains the normative owner. These books expand implementation research, experiments, evidence, and risks without silently changing accepted decisions:
+The Blueprint remains the normative owner. These books expand implementation research, experiments, evidence, failure contracts, and risks without silently changing accepted decisions:
 
 - [Browser engine engineering](../engine/README.md)
 - [JavaScript runtime engineering](../javascript/README.md)
@@ -56,8 +56,19 @@ The Blueprint remains the normative owner. These books expand implementation res
 - [Performance engineering](../performance/README.md)
 - [AI and agent engineering](../ai/README.md)
 - [Competitive browser and engine studies](../competitive/README.md)
+- [Networking Engineering](../networking/README.md)
+- [Storage and Recovery Engineering](../storage/README.md)
+- [Media, Documents, and Printing Engineering](../media-documents/README.md)
+- [Native Platform and Browser Chrome Engineering](../platform/README.md)
+- [Accessibility Engineering](../accessibility/README.md)
+- [Build, Release, Update, and Incident Operations Engineering](../release-operations/README.md)
+- [Extensions, Enterprise Policy, Accounts, and Sync Engineering](../extensions-enterprise/README.md)
+- [Open Web Platform Governance Engineering](../web-platform/README.md)
+- [Fixed-Hardware Benchmark Laboratory](../benchmark-lab/README.md)
+- [Quality Assurance, Conformance, and Verification Engineering](../quality-assurance/README.md)
+- [Everyday Product Experience Engineering](../product-experience/README.md)
 
-The [documentation expansion audit](../research/documentation-expansion-audit-2026-07.md) explains why these books were added, which gaps they close, and which detailed areas remain queued.
+The [performance, security, developer, and missing-systems audit](../research/performance-security-developer-expansion-audit-2026-07.md) records this expansion and its limitations.
 
 ## Machine-readable companions
 
@@ -71,6 +82,7 @@ Current reports:
 
 - [Browser engine landscape and Turing excellence strategy — July 2026](../research/browser-engine-landscape-2026-07.md)
 - [Documentation expansion audit — July 2026](../research/documentation-expansion-audit-2026-07.md)
+- [Performance, security, developer, and missing-systems expansion audit — July 2026](../research/performance-security-developer-expansion-audit-2026-07.md)
 
 Recommendations from a report or detailed book become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
 
