@@ -1,0 +1,90 @@
+name: Finalize technology Plug-in and embedding research
+
+on:
+  push:
+    branches:
+      - docs/technology-plugins-embedding
+    paths:
+      - .github/workflows/research-wave4-finalize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-wave4-finalize
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out latest publication branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/technology-plugins-embedding
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Generate documentation when the clean tree is not present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f docs/technology-stack/README.md \
+             && test -f docs/plugins/README.md \
+             && test -f docs/embedding/README.md; then
+            echo "Clean generated books already exist; generation is not repeated."
+          else
+            test -d transfer/research-wave4
+            : > tools/research_wave4_generator.py
+            cat transfer/research-wave4/source-00 >> tools/research_wave4_generator.py
+            printf "'\n" >> tools/research_wave4_generator.py
+            for part in transfer/research-wave4/source-{01..12}; do
+              cat "$part" >> tools/research_wave4_generator.py
+            done
+            echo "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d  tools/research_wave4_generator.py" | sha256sum --check -
+            python3 -m py_compile tools/research_wave4_generator.py
+            python3 tools/research_wave4_generator.py
+          fi
+
+      - name: Require the expected research surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/technology-stack/README.md
+          test -f docs/plugins/README.md
+          test -f docs/embedding/README.md
+          test -f docs/research/chrome-extension-demand-reference-2026-07.md
+          test -f docs/research/technology-plugins-embedding-audit-2026-07.md
+          grep -q '22 detailed engineering books' tools/validate_blueprint.py
+
+      - name: Remove every publication artifact
+        shell: bash
+        run: |
+          rm -f tools/research_wave4_generator.py
+          rm -rf transfer/research-wave4
+          rmdir transfer 2>/dev/null || true
+          rm -f .github/workflows/research-wave4-expand.yml
+          rm -f .github/workflows/research-wave4-promote.yml
+          rm -f .github/workflows/research-wave4-finalize.yml
+
+      - name: Validate clean repository and prototype
+        run: |
+          python3 tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+
+      - name: Commit and fast-forward main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Document technology stack Plug-ins and embedding SDKs"
+          git fetch origin main
+          git merge-base --is-ancestor origin/main HEAD
+          git push origin HEAD:docs/technology-plugins-embedding
+          git push origin HEAD:main
