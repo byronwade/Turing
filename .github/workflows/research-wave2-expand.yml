@@ -1,0 +1,57 @@
+name: Expand research wave 2
+
+on:
+  push:
+    branches:
+      - docs/research-wave2-transfer
+    paths:
+      - transfer/research-wave2/**
+      - .github/workflows/research-wave2-expand.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-wave2-expand
+  cancel-in-progress: false
+
+jobs:
+  expand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out transfer branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/research-wave2-transfer
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Reconstruct and run documentation generator
+        shell: bash
+        run: |
+          cat transfer/research-wave2/part-* | base64 --decode > /tmp/research-wave2.py.xz
+          echo "62efe1e4bd6f50cb8acf8494fcb0d55bac2d9ac0b0697d93cb49a33292a0d603  /tmp/research-wave2.py.xz" | sha256sum --check -
+          xz --decompress /tmp/research-wave2.py.xz
+          python3 /tmp/research-wave2.py
+          rm -rf transfer/research-wave2
+          rmdir transfer 2>/dev/null || true
+          rm -f .github/workflows/research-wave2-expand.yml
+
+      - name: Validate repository and prototype
+        run: |
+          python3 tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+
+      - name: Commit generated documentation
+        shell: bash
+        run: |
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Expand systems and operations research library"
+          git push origin HEAD:docs/research-wave2-transfer
