@@ -1,0 +1,169 @@
+    append_once(
+        "docs/research/README.md",
+        "### Technology, Plug-ins, and embedding libraries",
+        """### Technology, Plug-ins, and embedding libraries
+
+- [Technology stack](../technology-stack/README.md)
+- [Turing Plug-ins](../plugins/README.md)
+- [Engine embedding and SDKs](../embedding/README.md)
+""",
+    )
+
+    insert_before(
+        "docs/blueprint-v1/README.md",
+        "The [documentation expansion audit]",
+        "../technology-stack/README.md",
+        """- [Technology stack, languages, frameworks, and tooling](../technology-stack/README.md)
+- [Turing Plug-in platform](../plugins/README.md)
+- [Engine embedding and multi-language SDKs](../embedding/README.md)
+""",
+    )
+    insert_before(
+        "docs/blueprint-v1/README.md",
+        "Recommendations from a report",
+        "technology-stack-servo-and-embedding-study-2026-07.md",
+        """- [Technology stack, Servo, and embedding study — July 2026](../research/technology-stack-servo-and-embedding-study-2026-07.md)
+- [Chrome extension demand and first-party Plug-in study — July 2026](../research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md)
+""",
+    )
+
+    append_once(
+        "AGENTS.md",
+        "### Technology, Plug-in, and embedding impact",
+        """### Technology, Plug-in, and embedding impact
+
+| Change area | Required documents to inspect |
+|---|---|
+| language, framework, foundational dependency, build or binding tool | `docs/technology-stack/`, Blueprint 03, 13, 18, security, performance, and release operations |
+| plug-in manifest, API, capability, runtime, store, first-party package, or compatibility adapter | `docs/plugins/`, Blueprint 02, 08, 11, 12, `docs/extensions-enterprise/`, security, performance, accessibility, and product experience |
+| engine embedding, stable ABI, SDK, package, component interface, UI/headless mode | `docs/embedding/`, Blueprint 03, 04, 08, 11, 12, `docs/api-design/`, platform, security, performance, and release operations |
+
+Plug-ins never receive hidden first-party authority, and native plug-ins never load into the browser kernel or renderer. Servo source reuse or an engine fork requires an explicit ADR changing the current independent-engine policy.
+""",
+    )
+    append_once(
+        "AGENTS.md",
+        "- Technology stack, frameworks, and bindings:",
+        """- Technology stack, frameworks, and bindings: `docs/technology-stack/`.
+- Turing Plug-in platform and first-party portfolio: `docs/plugins/`.
+- Engine embedding, Servo comparison, ABI, and SDKs: `docs/embedding/`.
+""",
+    )
+
+    append_once(
+        "docs/documentation-policy.md",
+        "## Technology stack, Plug-in, and embedding ownership",
+        """## Technology stack, Plug-in, and embedding ownership
+
+- `technology-stack/` owns detailed language, framework, library, toolchain, and dependency-candidate research. Blueprint 03 remains the normative language/dependency owner.
+- `plugins/` owns detailed Turing Plug-in terminology, manifest, capabilities, runtime tiers, compatibility, first-party portfolio, store, SDK, and quality research. Blueprint 02, 08, 11, and 12 own accepted capability and security statements.
+- `embedding/` owns detailed Servo comparison, Rust API, stable C ABI, language SDK, WIT component, packaging, and support research. Blueprint 03, 04, 08, 11, and 13 own accepted architecture and release commitments.
+
+A popular extension, framework, or upstream engine is evidence to investigate—not approval to copy source, adopt a dependency, widen authority, or make a support claim.
+""",
+    )
+
+    append_once(
+        "docs/repository-map.md",
+        "### Technology, Plug-in, and embedding books",
+        """### Technology, Plug-in, and embedding books
+
+- `technology-stack/` contains the language/component map, framework and library candidates, build/test tooling, subsystem stack, platform adapters, and dependency governance.
+- `plugins/` contains Turing Plug-in terminology, manifest/capabilities, runtime isolation, WebExtensions adapter, first-party portfolio, dated Chrome reference cohort, store/update governance, and SDK/quality requirements.
+- `embedding/` contains Servo comparison, canonical Rust API, stable C ABI, generated language SDKs, WIT components, embedding modes, concise examples, versioning, and support.
+
+New framework, plug-in, or embedding documents belong in these indexed books and must retain a canonical Blueprint owner.
+""",
+    )
+    tree_block = """│   ├── technology-stack/
+│   │   ├── 01-language-and-component-map.md
+│   │   ├── 02-foundational-frameworks-and-libraries.md
+│   │   ├── 03-build-test-analysis-and-supply-chain-tooling.md
+│   │   ├── 04-graphics-network-storage-runtime-stack.md
+│   │   ├── 05-cross-platform-ui-and-platform-adapters.md
+│   │   ├── 06-dependency-evaluation-versioning-and-replacement.md
+│   │   └── README.md
+│   ├── plugins/
+│   │   ├── 01-terminology-product-model-and-compatibility.md
+│   │   ├── 02-manifest-capabilities-permissions-and-lifecycle.md
+│   │   ├── 03-runtime-isolation-webassembly-and-native-connectors.md
+│   │   ├── 04-plugin-api-surface-and-webextensions-adapter.md
+│   │   ├── 05-first-party-plugin-portfolio.md
+│   │   ├── 06-high-adoption-chrome-extension-reference-cohort.md
+│   │   ├── 07-store-signing-updates-review-and-governance.md
+│   │   ├── 08-sdk-testing-performance-accessibility-and-devtools.md
+│   │   └── README.md
+│   ├── embedding/
+│   │   ├── 01-servo-baseline-and-turing-differentiation.md
+│   │   ├── 02-rust-api-engine-builder-and-lifecycle.md
+│   │   ├── 03-stable-c-abi-ownership-errors-and-async.md
+│   │   ├── 04-language-sdks-and-package-distribution.md
+│   │   ├── 05-wasm-component-model-wit-and-sandboxed-components.md
+│   │   ├── 06-ui-headless-and-service-embedding-modes.md
+│   │   ├── 07-two-line-integration-examples-versioning-and-support.md
+│   │   └── README.md
+"""
+    insert_before("docs/repository-map.md", "│   └── blueprint-v1/", "│   ├── technology-stack/", tree_block)
+    replace_once(
+        "docs/repository-map.md",
+        "│   │   └── performance-security-developer-expansion-audit-2026-07.md",
+        """│   │   ├── performance-security-developer-expansion-audit-2026-07.md
+│   │   ├── technology-stack-servo-and-embedding-study-2026-07.md
+│   │   └── chrome-extension-demand-and-first-party-plugin-study-2026-07.md""",
+    )
+
+
+def update_blueprint_and_related_books() -> None:
+    sections = [
+        (
+            "docs/blueprint-v1/02-capability-parity.md",
+            "## Turing Plug-in capability surface",
+            """## Turing Plug-in capability surface
+
+The product term is **Turing Plug-in**. Turing tracks:
+
+- a documented WebExtensions/Manifest V3 compatibility subset;
+- Turing Component plug-ins using WIT-defined WebAssembly components;
+- separately installed, signed, out-of-process native connectors;
+- first-party maintained Plug-ins implemented through public capability APIs;
+- store, signing, updates, revocation, enterprise catalogs, developer mode, accessibility, performance, and incident response.
+
+Legacy in-process native browser plug-ins are not part of capability parity. Popular Chrome extension features inform the [Plug-in research book](../plugins/README.md) and dated demand study, but do not authorize source copying or unqualified compatibility claims.
+""",
+        ),
+        (
+            "docs/blueprint-v1/03-language-and-dependency-strategy.md",
+            "## Detailed technology and SDK stack",
+            """## Detailed technology and SDK stack
+
+The [technology stack book](../technology-stack/README.md) expands the component-language map, framework/library candidates, build/test tooling, subsystem foundations, platform adapters, and dependency replacement rules. The [embedding book](../embedding/README.md) defines the proposed Rust API, stable C ABI, language SDKs, package formats, and WIT components.
+
+No listed framework is approved merely by appearing in research. Each runtime dependency requires the existing decision record, threat model, license, fuzz, performance, operational, and replacement evidence.
+""",
+        ),
+        (
+            "docs/blueprint-v1/04-system-architecture.md",
+            "## Embedders and Plug-in principals",
+            """## Embedders and Plug-in principals
+
+An embedder is an explicitly identified host with configured platform, profile, network, storage, UI, plug-in, agent, and diagnostic capabilities. It does not receive raw engine pointers or browser-kernel authority.
+
+Turing Plug-ins are separate principals and process/resource owners. Web-compatible plug-ins, WIT components, and native connectors have distinct containment. First-party packages use the same broker policy as third-party packages. See [engine embedding](../embedding/README.md) and [Plug-in platform](../plugins/README.md).
+""",
+        ),
+        (
+            "docs/blueprint-v1/08-security-and-sandbox.md",
+            "## Plug-in and embedding security boundary",
+            """## Plug-in and embedding security boundary
+
+- No native plug-in is loaded into the browser kernel, renderer, network service, credential broker, updater, or another plug-in.
+- Web-compatible Plug-ins run in isolated contexts/processes; component Plug-ins receive only declared WIT imports; native connectors are separately installed and mutually authenticated.
+- First-party status does not bypass permissions, profile/origin scope, resource limits, audit, or update verification.
+- The embedding ABI uses opaque handles, explicit ownership, stable validation, thread/reentrancy rules, and no Rust unwinding across FFI.
+- Embedders cannot replace trusted origin, permission, credential, Plug-in install, or agent confirmation UI with spoofable page content.
+- Remote executable Plug-in code is prohibited.
+
+The detailed boundaries are in the [Plug-in](../plugins/README.md) and [embedding](../embedding/README.md) books.
+""",
+        ),
+        (
