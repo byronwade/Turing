@@ -1,0 +1,120 @@
+                   'policy, selected fuzz seeds, generated binding diffs.',
+                   'Merge/release: sanitizers, full conformance shards, sandbox negative tests, '
+                   'reproducible-build comparison, SBOM, provenance, signing dry-run, packaging smoke tests.',
+                   'Nightly: broad WPT/Test262, fuzzing, long-duration stability, corpus minimization, '
+                   'fixed-hardware performance and energy.',
+                   'Security builds preserve symbols and exploit mitigations; diagnostic bundles are '
+                   'redacted and tied to build identity.',
+                   'Generated code names its source schema and regeneration command; handwritten patches to '
+                   'generated output are rejected.'],
+  'risks': ['Tooling can provide false confidence when release-equivalent flags differ.',
+            'Advisory databases are incomplete and cannot replace dependency review.',
+            'Flaky performance or conformance tests can normalize real failures.',
+            'Build scripts and procedural macros execute trusted build-time code.'],
+  'experiments': ['Rebuild release artifacts independently and compare bitwise or normalized outputs.',
+                  'Measure compile, link, binary, startup, and symbol costs across build profiles.',
+                  'Exercise emergency dependency and compiler updates through a timed response drill.'],
+  'sources': [('Cargo', 'https://doc.rust-lang.org/cargo/'),
+              ('Miri', 'https://github.com/rust-lang/miri'),
+              ('Rust Fuzz Book', 'https://rust-fuzz.github.io/book/'),
+              ('SLSA', 'https://slsa.dev/'),
+              ('in-toto', 'https://in-toto.io/'),
+              ('SPDX', 'https://spdx.dev/'),
+              ('CycloneDX', 'https://cyclonedx.org/')]},
+ {'filename': '04-graphics-network-storage-runtime-stack.md',
+  'title': 'Graphics, Network, Storage, and Runtime Stack',
+  'owner': 'engine, graphics, network, storage, and runtime architecture',
+  'purpose': 'Map candidate frameworks to subsystem boundaries and make clear which semantics remain '
+             'Turing-owned.',
+  'decisions': ['The graphics stack has a portable validated command model, a CPU reference implementation, '
+                'and platform GPU backends isolated from renderers.',
+                'The network stack uses specialist protocol and TLS primitives but one Turing request-policy '
+                'core for Fetch, redirects, credentials, cookies, caches, security headers, service workers, '
+                'and partitioning.',
+                'Persistent stores use transactionally durable backends with Turing-owned schemas, quotas, '
+                'migration journals, corruption recovery, and clear-site-data semantics.',
+                'The JavaScript runtime owns ECMAScript semantics, object representation, GC, Web IDL, event '
+                'loops, modules, and tiering; a compiler backend is replaceable infrastructure.',
+                'Plug-in WebAssembly components use a separate runtime and capability model from page '
+                'WebAssembly and page JavaScript.'],
+  'architecture': ['GPU candidate stack: Turing display list and compositor protocol; wgpu or direct APIs in '
+                   'the GPU process; platform surface adapters; software raster oracle.',
+                   'Network candidate stack: rustls/webpki, protocol building blocks such as h2/h3/QUIC '
+                   'libraries, bounded DNS/proxy adapters, Turing cache/cookie/request policy.',
+                   'Storage candidate stack: SQLite and append-only journals where appropriate, encrypted OS '
+                   'credential stores, separate profile databases, deterministic migrations.',
+                   'Runtime candidate stack: Turing lexer/parser/bytecode/interpreter/GC, Cranelift '
+                   'evaluation, explicit W^X and no-JIT mode.',
+                   'Media candidate stack: sandboxed codec processes using audited upstream implementations '
+                   'with metadata-before-allocation limits.'],
+  'risks': ['A shared utility library can become an implicit cross-profile or cross-origin channel.',
+            'Protocol libraries may not implement browser-specific cancellation, prioritization, or privacy '
+            'semantics.',
+            'GPU abstraction layers can obscure device-loss and memory accounting.',
+            'Compiler backend changes can introduce miscompilation or hardening regressions.'],
+  'experiments': ['Compare direct and abstracted GPU backends on the same compositor trace corpus.',
+                  'Run equivalent Fetch/navigation policy traces with multiple protocol foundations.',
+                  'Inject disk-full, corruption, rollback, and migration interruption across storage '
+                  'candidates.',
+                  'Compare interpreter/baseline backend combinations on correctness-adjusted interaction '
+                  'latency.'],
+  'sources': [('WebGPU', 'https://www.w3.org/TR/webgpu/'),
+              ('HTTP semantics', 'https://www.rfc-editor.org/rfc/rfc9110'),
+              ('QUIC', 'https://www.rfc-editor.org/rfc/rfc9000'),
+              ('SQLite', 'https://sqlite.org/'),
+              ('ECMAScript', 'https://tc39.es/ecma262/')]},
+ {'filename': '05-cross-platform-ui-and-platform-adapters.md',
+  'title': 'Cross-Platform UI and Platform Adapters',
+  'owner': 'product UI and platform integration',
+  'purpose': 'Define how Turing can provide a coherent, fast browser shell without making the web engine or '
+             'a heavy application framework responsible for trusted chrome.',
+  'decisions': ['Essential browser chrome uses a Turing-owned retained scene graph and command model, with '
+                'native platform adapters and selective native controls where accessibility or platform '
+                'correctness requires them.',
+                'A renderer crash cannot remove the address bar, origin display, permission UI, credential '
+                'UI, plug-in controls, agent stop control, or recovery UI.',
+                'winit/raw-window-handle/accesskit-like foundations may be evaluated, but platform window, '
+                'input, accessibility, signing, sandbox, and lifecycle behavior remains explicitly owned.',
+                'Electron, CEF, system web views, and another browser engine are prohibited for essential '
+                'release UI.',
+                'DevTools and plug-in option pages may use constrained TypeScript/Web UI in dedicated '
+                'processes; they receive no generic privileged bridge.'],
+  'architecture': ['macOS: AppKit/Swift or Objective-C shim, CoreText, accessibility, Keychain, App Sandbox, '
+                   'Hardened Runtime, notarization.',
+                   'Windows: Win32/Windows App SDK or C++/WinRT shim, DirectWrite, UI Automation, Credential '
+                   'Manager, AppContainer and mitigations, signing.',
+                   'Linux: Wayland-first with documented X11 fallback, portals, AT-SPI, PipeWire, '
+                   'namespaces/seccomp/Landlock, distro/package variation.',
+                   'Shared Rust UI model owns commands, navigation, profiles, tabs, workspaces, resource '
+                   'manager, plug-in surfaces, and agent state.',
+                   'Platform adapters expose capabilities rather than generic native handles.'],
+  'risks': ['A custom UI can underperform native accessibility, IME, menus, drag-and-drop, and power '
+            'integration.',
+            'Cross-platform abstraction can force lowest-common-denominator behavior.',
+            'A web-rendered trusted UI can become spoofable or dependent on renderer health.'],
+  'experiments': ['Prototype tab strip, command field, permission prompt, plug-in manager, and resource '
+                  'manager on all target platforms.',
+                  'Measure key-to-paint, startup, frame pacing, memory, screen-reader latency, IME, '
+                  'drag/drop, high contrast, and low-power behavior.',
+                  'Compare selective native controls with fully custom controls under accessibility and '
+                  'spoofing tests.'],
+  'sources': [('Apple AppKit', 'https://developer.apple.com/documentation/appkit'),
+              ('Windows App SDK', 'https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/'),
+              ('Wayland', 'https://wayland.freedesktop.org/'),
+              ('AccessKit', 'https://github.com/AccessKit/accesskit')]},
+ {'filename': '06-dependency-evaluation-versioning-and-replacement.md',
+  'title': 'Dependency Evaluation, Versioning, and Replacement',
+  'owner': 'architecture, security, release, and licensing',
+  'purpose': 'Make dependency selection a reproducible engineering decision and keep every major framework '
+             'replaceable.',
+  'decisions': ['Dependencies are classified as foundation, platform, build-only, SDK/binding, convenience, '
+                'experimental, or prohibited.',
+                'A dependency proposal records exact purpose, source and commit/version, maintainers, '
+                'release cadence, bus factor, license/patent terms, advisories, transitive graph, build '
+                'scripts, unsafe/native code, platform matrix, deterministic-build behavior, fuzz coverage, '
+                'resource cost, and replacement plan.',
+                'Runtime dependencies receive a narrow adapter and conformance suite before broad use.',
+                'Version updates are reviewed as behavior changes, with corpus, benchmark, security, ABI, '
+                'and packaging evidence.',
+                'Unreviewed binary blobs, hidden network services, ad/analytics SDKs, ambient-authority '
+                'plugins, and existing browser engines in the release rendering path are prohibited.'],
