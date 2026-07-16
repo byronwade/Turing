@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - .github/workflows/finalize-market-strategy-and-clean-branches.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/finalize-market-strategy-and-clean-branches.yml
 
 permissions:
   contents: write
@@ -42,6 +37,9 @@ jobs:
           test -f docs/templates/market-opportunity.md
           grep -q '24 detailed engineering books' tools/validate_blueprint.py
           grep -q '12 machine-readable registries' tools/validate_blueprint.py
+          grep -q '"scope": "product"' docs/blueprint-v1/machine/professional-owners.json
+          grep -q '"scope": "market-strategy"' docs/blueprint-v1/machine/professional-owners.json
+          grep -q '"release-operations"' docs/blueprint-v1/machine/professional-review-rules.json
           test ! -e transfer
           test ! -e prototype/target
           test ! -e tools/__pycache__
@@ -60,7 +58,7 @@ jobs:
           test ! -e prototype/target
           test ! -e tools/__pycache__
 
-      - name: Remove obsolete remote branches
+      - name: Remove all known merged, abandoned, verification, and cleanup branches
         shell: bash
         run: |
           set -euo pipefail
@@ -72,21 +70,31 @@ jobs:
             docs/professional-buildout
             docs/professional-buildout-v2
             docs/market-strategy-integration
+            docs/market-strategy-consistency
             ops/finalize-market-strategy
+            ops/cleanup-stale-doc-branches
+            ops/cleanup-market-consistency
+            ops/verify-market-main
+            ops/cleanup-main-verification
           )
           : > /tmp/turing-remaining-branches
           for branch in "${branches[@]}"; do
-            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-              if ! git push origin --delete "$branch"; then
-                echo "$branch" >> /tmp/turing-remaining-branches
+            if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
+              if ! git push origin --delete "${branch}"; then
+                echo "${branch}" >> /tmp/turing-remaining-branches
               fi
             fi
           done
           for branch in "${branches[@]}"; do
-            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-              grep -qxF "$branch" /tmp/turing-remaining-branches || echo "$branch" >> /tmp/turing-remaining-branches
+            if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
+              grep -qxF "${branch}" /tmp/turing-remaining-branches || echo "${branch}" >> /tmp/turing-remaining-branches
             fi
           done
+          if test -s /tmp/turing-remaining-branches; then
+            echo 'The following branches could not be removed:' >&2
+            cat /tmp/turing-remaining-branches >&2
+            exit 1
+          fi
 
       - name: Remove one-shot workflow and commit clean main
         shell: bash
@@ -99,14 +107,3 @@ jobs:
           git diff --cached --quiet && exit 1
           git commit -m 'Finalize market strategy documentation and branch cleanup'
           git push origin HEAD:main
-
-      - name: Require complete branch cleanup
-        shell: bash
-        run: |
-          if test -s /tmp/turing-remaining-branches; then
-            echo 'The following branches could not be removed:' >&2
-            cat /tmp/turing-remaining-branches >&2
-            exit 1
-          fi
-
-# Pull-request retrigger path: 2026-07-16
