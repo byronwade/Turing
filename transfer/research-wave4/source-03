@@ -1,0 +1,116 @@
+  'experiments': ['Compromise harnesses attempt file, socket, credential, clipboard, device, cross-profile, '
+                  'and internal-page access from each plug-in tier.',
+                  'Measure cold start, event latency, idle memory, steady CPU, code cache, and cancellation '
+                  'for worker and component runtimes.',
+                  'Fuzz every manifest, message, WIT adapter, native connector, and update boundary.'],
+  'sources': [('Wasmtime security', 'https://docs.wasmtime.dev/security.html'),
+              ('WASI', 'https://wasi.dev/'),
+              ('WebAssembly Component Model', 'https://component-model.bytecodealliance.org/')]},
+ {'filename': '04-plugin-api-surface-and-webextensions-adapter.md',
+  'title': 'Plug-in API Surface and WebExtensions Adapter',
+  'owner': 'plug-in API and compatibility',
+  'purpose': 'Define a small, stable Turing API while supporting a measured WebExtensions migration path.',
+  'decisions': ['Core APIs cover identity/session, tabs/windows/workspaces, navigation, commands, content '
+                'scripts, declarative network rules, storage, downloads, capture, clipboard, notifications, '
+                'accessibility, DevTools, AI providers/tools, and selected files.',
+                'Security-sensitive capabilities use task-specific broker methods, not generic IPC or '
+                'arbitrary browser evaluation.',
+                'Portable extension behavior is exposed through a compatibility layer whose supported '
+                'manifest keys, APIs, events, and semantic differences are published.',
+                'Turing-only APIs are namespaced, capability-discoverable, versioned, cancellable, bounded, '
+                'and available through generated TypeScript/Rust bindings.',
+                'A CDP or browser-private API is not a plug-in authority shortcut.'],
+  'architecture': ['Stable API domains have explicit support windows; experimental domains are separate and '
+                   'removable.',
+                   'Every request carries plug-in principal, profile, target, document epoch, deadline, '
+                   'idempotency key, and expected effect where relevant.',
+                   'Streaming APIs implement flow control and cancellation.',
+                   'Errors are structured into invalid input, unsupported, denied, stale, conflict, resource '
+                   'exhausted, timeout, unavailable, and internal failure.',
+                   'Compatibility tests run representative WebExtensions against reference browsers and '
+                   'Turing without silently dropping failures.'],
+  'risks': ['Large compatibility surfaces can freeze weak legacy semantics.',
+            'Generic scripting/evaluation methods can bypass user intent.',
+            'Adapter differences can cause data loss or security surprises.'],
+  'experiments': ['Implement a minimal adapter for commands, activeTab, storage, content scripts, capture, '
+                  'declarative network rules, and DevTools panels.',
+                  'Generate TypeScript and Rust SDKs from the canonical schema and run cross-version tests.',
+                  'Measure per-call and streaming overhead with malformed and adversarial clients.'],
+  'sources': [('W3C WebExtensions CG', 'https://github.com/w3c/webextensions'),
+              ('Chrome Extensions APIs', 'https://developer.chrome.com/docs/extensions/reference/api'),
+              ('WebDriver BiDi', 'https://w3c.github.io/webdriver-bidi/')]},
+ {'filename': '05-first-party-plugin-portfolio.md',
+  'title': 'First-Party Maintained Plug-in Portfolio',
+  'owner': 'product, plug-in, security, accessibility, and developer experience',
+  'purpose': 'Translate proven browser-extension demand into a maintainable first-party portfolio without '
+             'copying proprietary code or weakening browser architecture.',
+  'decisions': ['Turing maintains a focused portfolio when a capability is broadly useful, tightly coupled '
+                'to browser semantics, privacy-sensitive, or necessary to demonstrate the plug-in SDK.',
+                'Feature requirements may be informed by popular extensions, but implementation is original '
+                'or uses separately reviewed open-source code with preserved license and provenance.',
+                'Core security functions such as network blocking, credentials, capture permission, and '
+                'agent authorization remain browser services; a plug-in may provide rules or UI but not '
+                'bypass the broker.',
+                'Every first-party plug-in can be disabled or updated independently unless it is explicitly '
+                'part of the supported browser baseline.'],
+  'architecture': ['Turing Shield — declarative ad/tracker/malware filtering UI and signed rule packages '
+                   'over the browser network policy.',
+                   'Turing Capture — visible-area, full-page, element, region, annotation, PDF, clipboard, '
+                   'redaction, and developer trace capture.',
+                   'Turing Write — grammar, clarity, tone, translation, summarization, and optional AI '
+                   'assistance with local/remote provider disclosure.',
+                   'Turing Translate & Define — selection, page-language assistance, dictionary, '
+                   'transliteration, and accessibility-friendly pronunciation.',
+                   'Turing Vault — UI for credential/passkey availability and filling through the credential '
+                   'broker; no plug-in plaintext secret access.',
+                   'Turing Clip — save page, selection, reader snapshot, citation metadata, tags, and export '
+                   'to local or explicitly connected services.',
+                   'Turing Focus — dark mode, reader mode, distraction controls, new-tab focus, workspace '
+                   'and tab cleanup.',
+                   'Turing Tasks — convert pages or selections into local tasks and optionally connected '
+                   'task services.',
+                   'Turing Research — citations, DOI/metadata lookup, library links, reading lists, and '
+                   'reproducible research bundles.',
+                   'Turing Media Controls — playback speed, skip/rewind, per-site rules, captions and '
+                   'keyboard accessibility.',
+                   'Turing Scripts — developer-only userscripts with per-origin grants, code review, no '
+                   'remote code, and isolated test profiles.',
+                   'Turing Framework Inspector — plug-in adapters for React, Redux, and future frameworks '
+                   'using the DevTools plug-in API.',
+                   'Turing JSON & Data Inspector — safe JSON/text viewers, schema hints, large-data '
+                   'streaming, copy/export, and no arbitrary execution.',
+                   'Turing Color & Layout Tools — eyedropper, palettes, contrast, CSS values, grid/flex '
+                   'overlays and accessibility diagnostics.',
+                   'Turing AI Agent — capability-scoped page assistance and typed actions using the existing '
+                   'agent policy.',
+                   'Turing Web3 Bridge — optional, separately audited, disabled by default, with transaction '
+                   'simulation and strong confirmation; not a baseline plug-in.'],
+  'risks': ['Maintaining too many first-party products can distract from engine foundations.',
+            'AI, password, blocking, and web3 plug-ins have elevated privacy or security obligations.',
+            'Bundled plug-ins can create hidden startup, update, or telemetry cost.'],
+  'experiments': ['Prioritize the portfolio by user value, browser-semantic advantage, security leverage, '
+                  'engineering cost, maintenance cost, and offline capability.',
+                  'Prototype Capture, Shield, Framework Inspector, and AI Agent as SDK reference '
+                  'implementations.',
+                  'Measure each plug-in disabled, installed-idle, active, under 30 tabs, and during '
+                  'update/crash recovery.'],
+  'sources': [('Chrome Web Store', 'https://chromewebstore.google.com/'),
+              ('Web Platform Design Principles', 'https://www.w3.org/TR/design-principles/')]},
+ {'filename': '06-high-adoption-chrome-extension-reference-cohort.md',
+  'title': 'High-Adoption Chrome Extension Reference Cohort',
+  'owner': 'product research and plug-in strategy',
+  'purpose': 'Record a dated reference cohort of twenty high-adoption or high-signal Chrome Web Store '
+             'extensions and derive capability categories, not source-code copying instructions.',
+  'decisions': ['This is not claimed as an exact global top-20 ranking. Chrome Web Store user counts are '
+                'rounded, dynamic, and not a direct measure of quality, retention, safety, or performance.',
+                'The cohort is selected from public store adoption plus category coverage as of 2026-07-16.',
+                'Turing derives original product requirements and clean-room implementations. Names, code, '
+                'artwork, services, trademarks, and proprietary behavior are not copied.',
+                'Open-source projects remain subject to license, provenance, security, dependency, and '
+                'maintenance review.'],
+  'architecture': ['The demand clusters are privacy/blocking, writing/AI, translation/language, capture, '
+                   'credentials, userscripts, appearance/accessibility, developer tools, research, media '
+                   'control, new-tab/focus, clipping, and tasks.',
+                   'High adoption does not justify broad permissions. Turing should move repeatable '
+                   'security-sensitive work into declarative browser services.',
+                   'Store data is a discovery signal; usability studies, privacy/security review, resource '
