@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "default": "deny",
+  "roles": {
+    "browser_kernel": {
+      "may_launch": ["renderer","network","storage","gpu","media_utility","extension_host","devtools","agent_host","updater","crash_handler"],
+      "capabilities": ["profile_registry","process_broker","navigation_commit","permission_policy","agent_policy","session_journal","ui_commands"]
+    },
+    "renderer": {
+      "may_launch": [],
+      "capabilities": ["assigned_ipc","assigned_shared_memory","assigned_surface","read_only_font_handles"],
+      "forbidden": ["ambient_network","arbitrary_filesystem","credential_store","process_creation","debug_attach","raw_devices","global_clipboard","update_service","browser_internal_protocol"]
+    },
+    "network": {
+      "may_launch": [],
+      "capabilities": ["network_sockets","proxy_resolution","certificate_verification_adapter","http_cache","cookie_attachment"],
+      "forbidden": ["password_vault","arbitrary_profile_files","browser_ui","agent_confirmation"]
+    },
+    "storage": {
+      "may_launch": [],
+      "capabilities": ["profile_storage_roots","quota_database","logical_origin_stores"],
+      "forbidden": ["network_sockets","credential_secret_export","browser_ui","process_creation"]
+    },
+    "gpu": {
+      "may_launch": [],
+      "capabilities": ["graphics_device","assigned_surfaces","validated_shared_memory"],
+      "forbidden": ["profile_storage","network_sockets","credential_store","arbitrary_filesystem"]
+    },
+    "media_utility": {
+      "may_launch": [],
+      "capabilities": ["task_scoped_input","bounded_output","optional_assigned_device_handle"],
+      "forbidden": ["ambient_network","arbitrary_filesystem","profile_storage","browser_ui","credential_store"]
+    },
+    "extension_host": {
+      "may_launch": [],
+      "capabilities": ["declared_extension_apis","granted_hosts","extension_storage"],
+      "forbidden": ["kernel_memory","ungranted_profiles","ambient_native_messaging","update_signing","agent_confirmation"]
+    },
+    "devtools": {
+      "may_launch": [],
+      "capabilities": ["attached_target_protocol","local_frontend_resources"],
+      "forbidden": ["unattached_profiles","ambient_remote_listener","release_signing","agent_confirmation"]
+    },
+    "agent_host": {
+      "may_launch": [],
+      "capabilities": ["granted_observations","model_adapter","proposed_actions","audit_append"],
+      "forbidden": ["raw_cookies","password_vault","direct_renderer_memory","direct_input_injection","confirmation_approval","ungranted_files","ungranted_origins"]
+    },
+    "updater": {
+      "may_launch": [],
+      "capabilities": ["update_endpoint","signed_metadata","staging_directory","version_install_roots"],
+      "forbidden": ["web_profile_content","browser_history","agent_data","arbitrary_execution"]
+    },
+    "crash_handler": {
+      "may_launch": [],
+      "capabilities": ["crash_channels","bounded_dump_directory","build_id_symbols"],
+      "forbidden": ["ambient_profile_read","network_without_consent","credential_store","browser_commands"]
+    }
+  }
+}

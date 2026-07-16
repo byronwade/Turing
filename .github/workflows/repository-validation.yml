@@ -1,0 +1,66 @@
+name: Repository validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - agent/bootstrap-browser-program
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Show tool versions
+        run: |
+          python3 --version
+          rustc --version
+          cargo --version
+
+      - name: Validate repository and documentation
+        shell: bash
+        run: |
+          set +e
+          python3 tools/validate_blueprint.py > repository-validation.log 2>&1
+          status=$?
+          cat repository-validation.log
+          exit "$status"
+
+      - name: Upload validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-validation-${{ github.run_id }}
+          path: repository-validation.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce same-change documentation
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 tools/check_documentation_change.py "$BASE_SHA" "$HEAD_SHA"
+
+      - name: Format check
+        run: cargo fmt --manifest-path prototype/Cargo.toml -- --check
+
+      - name: Compile and test architecture prototype
+        run: cargo test --manifest-path prototype/Cargo.toml --all-targets
+
+      - name: Run architecture prototype
+        run: cargo run --manifest-path prototype/Cargo.toml --quiet

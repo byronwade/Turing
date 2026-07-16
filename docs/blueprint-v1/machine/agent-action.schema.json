@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/agent-action-v1.json",
+  "title": "Turing Agent Action Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","action_id","idempotency_key","session_id","principal_id","grant_id","profile_id","tab_id","frame_id","document_epoch","action","risk_class","preconditions","timeout_ms"],
+  "properties": {
+    "schema_version":{"const":1},
+    "action_id":{"type":"string","minLength":8,"maxLength":128},
+    "idempotency_key":{"type":"string","minLength":8,"maxLength":128},
+    "session_id":{"type":"string","minLength":8,"maxLength":128},
+    "principal_id":{"type":"string","minLength":8,"maxLength":128},
+    "grant_id":{"type":"string","minLength":8,"maxLength":128},
+    "profile_id":{"type":"string","minLength":1,"maxLength":128},
+    "tab_id":{"type":"string","minLength":1,"maxLength":128},
+    "frame_id":{"type":"string","minLength":1,"maxLength":128},
+    "document_epoch":{"type":"integer","minimum":1},
+    "origin":{"type":"string","maxLength":4096},
+    "top_level_site":{"type":"string","maxLength":4096},
+    "action":{"oneOf":[
+      {"$ref":"#/$defs/navigate"},{"$ref":"#/$defs/activate"},{"$ref":"#/$defs/insert_text"},
+      {"$ref":"#/$defs/choose_option"},{"$ref":"#/$defs/scroll"},{"$ref":"#/$defs/wait"},
+      {"$ref":"#/$defs/download"},{"$ref":"#/$defs/upload"},{"$ref":"#/$defs/devtools_evaluate"}
+    ]},
+    "risk_class":{"type":"integer","minimum":0,"maximum":4},
+    "claimed_intent":{"type":"string","maxLength":2000},
+    "preconditions":{"type":"array","maxItems":32,"items":{"$ref":"#/$defs/precondition"}},
+    "expected_postcondition":{"type":["object","null"],"maxProperties":16},
+    "timeout_ms":{"type":"integer","minimum":1,"maximum":120000},
+    "retry":{"type":"object","additionalProperties":false,"properties":{"maximum_attempts":{"type":"integer","minimum":1,"maximum":3},"only_if_no_effect":{"type":"boolean"}}}
+  },
+  "$defs": {
+    "target":{"type":"object","additionalProperties":false,"required":["node_ref"],"properties":{"node_ref":{"type":"string","maxLength":256},"role":{"type":["string","null"],"maxLength":128},"accessible_name":{"type":["string","null"],"maxLength":512},"fallback_locator":{"type":["string","null"],"maxLength":1024}}},
+    "precondition":{"type":"object","additionalProperties":false,"required":["kind"],"properties":{"kind":{"enum":["document_epoch","origin","visible","enabled","focused","value_equals","url_matches","confirmation_present","user_activation"]},"value":{}}},
+    "navigate":{"type":"object","additionalProperties":false,"required":["kind","url"],"properties":{"kind":{"const":"navigate"},"url":{"type":"string","maxLength":8192},"disposition":{"enum":["current_tab","new_tab","new_window"]}}},
+    "activate":{"type":"object","additionalProperties":false,"required":["kind","target"],"properties":{"kind":{"const":"activate"},"target":{"$ref":"#/$defs/target"},"activation":{"enum":["primary","secondary","keyboard"]}}},
+    "insert_text":{"type":"object","additionalProperties":false,"required":["kind","target","text","mode"],"properties":{"kind":{"const":"insert_text"},"target":{"$ref":"#/$defs/target"},"text":{"type":"string","maxLength":100000},"mode":{"enum":["replace","insert","append"]},"sensitive_handle":{"type":["string","null"],"maxLength":256}}},
+    "choose_option":{"type":"object","additionalProperties":false,"required":["kind","target","value"],"properties":{"kind":{"const":"choose_option"},"target":{"$ref":"#/$defs/target"},"value":{"type":"string","maxLength":4096}}},
+    "scroll":{"type":"object","additionalProperties":false,"required":["kind"],"properties":{"kind":{"const":"scroll"},"target":{"oneOf":[{"$ref":"#/$defs/target"},{"type":"null"}]},"x":{"type":"number"},"y":{"type":"number"},"behavior":{"enum":["instant","smooth"]}}},
+    "wait":{"type":"object","additionalProperties":false,"required":["kind","condition"],"properties":{"kind":{"const":"wait"},"condition":{"enum":["navigation","document_stable","network_idle","target_present","target_absent","text_present","confirmation_result"]},"target":{"oneOf":[{"$ref":"#/$defs/target"},{"type":"null"}]}}},
+    "download":{"type":"object","additionalProperties":false,"required":["kind","target","destination_handle"],"properties":{"kind":{"const":"download"},"target":{"$ref":"#/$defs/target"},"destination_handle":{"type":"string","maxLength":256},"expected_mime":{"type":["string","null"],"maxLength":256}}},
+    "upload":{"type":"object","additionalProperties":false,"required":["kind","target","file_handles"],"properties":{"kind":{"const":"upload"},"target":{"$ref":"#/$defs/target"},"file_handles":{"type":"array","minItems":1,"maxItems":32,"items":{"type":"string","maxLength":256}}}},
+    "devtools_evaluate":{"type":"object","additionalProperties":false,"required":["kind","expression","developer_grant"],"properties":{"kind":{"const":"devtools_evaluate"},"expression":{"type":"string","maxLength":100000},"developer_grant":{"type":"string","minLength":8,"maxLength":256},"return_by_value":{"type":"boolean"}}}
+  }
+}

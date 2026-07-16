@@ -1,0 +1,53 @@
+name: Engineering work or defect
+description: Propose or report non-security work with evidence, scope, and documentation impact.
+title: "[component] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report suspected exploitable vulnerabilities here. Use the private security advisory flow.
+
+        Turing is a research program. Distinguish current behavior from targets and proposals.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and impact
+      description: What behavior, requirement, user, developer workflow, or research question is affected?
+    validations:
+      required: true
+  - type: input
+    id: identifiers
+    attributes:
+      label: Requirement, risk, ADR, work-package, or milestone IDs
+      placeholder: REQ-..., R-..., ADR-..., WP-..., M...
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproduction or evidence
+      description: Include commit, platform, configuration, deterministic steps, traces, tests, standards references, or measurements. Remove secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior and acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: implications
+    attributes:
+      label: Cross-cutting implications
+      description: Address security, privacy, accessibility, compatibility, performance, memory, energy, platform, operations, and AI-agent impact.
+    validations:
+      required: true
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation impact
+      description: List canonical documents, requirements, risks, ADRs, registries, tests, indexes, and repository-map entries that must change.
+    validations:
+      required: true
+  - type: textarea
+    id: unsupported
+    attributes:
+      label: Known unsupported cases, residual risks, and dependencies
