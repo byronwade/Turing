@@ -8,6 +8,7 @@ Describe the change, why it belongs in Turing, and whether it is research, speci
 - Risks:
 - ADRs/design notes:
 - Work packages/milestones:
+- Research questions/experiments:
 
 ## Behavior and architecture
 
@@ -22,10 +23,11 @@ Describe user-visible and developer-visible behavior, process roles, data flow, 
 - Performance, memory, startup, and energy:
 - Accessibility/platform validation:
 - Reproduction environment:
+- Research sources/versions and confidence:
 
 ## Security and privacy
 
-Describe trust-boundary, sandbox, site-isolation, origin/site/profile, credential, update, logging, crash-reporting, extension, DevTools, automation, and agent implications. Write `none` only after considering each relevant category.
+Describe trust-boundary, sandbox, site-isolation, origin/site/profile, credential, update, logging, crash-reporting, extension, DevTools, automation, provider/tool, and agent implications. Write `none` only after considering each relevant category.
 
 ## Compatibility and unsupported behavior
 
@@ -33,18 +35,20 @@ State standards behavior, platform differences, media/printing/PDF implications,
 
 ## Dependencies and unsafe code
 
-List dependency, license, generated-code, native-code, schema, toolchain, or `unsafe` changes.
+List dependency, license, generated-code, native-code, schema, toolchain, model/tool/provider, or `unsafe` changes.
 
 ## Documentation impact
 
-- Canonical documents updated:
+- Owning Blueprint chapters updated:
+- Detailed engineering books updated:
+- Canonical policy/research documents updated:
 - Documents reviewed but unchanged, with reason:
 - Requirements/risks/ADRs/backlog/registries updated:
 - `docs/repository-map.md` updated for additions, removals, or renames:
-- `docs/README.md` and inbound links updated for documentation topology changes:
+- `docs/README.md`, affected book indexes, and inbound links updated for documentation topology changes:
 - Stale claims and obsolete paths removed:
 
-A non-documentation change without affected canonical documentation is incomplete.
+A non-documentation change without affected canonical documentation is incomplete. A research document does not change accepted architecture until the owning records are updated.
 
 ## Validation
 
@@ -57,4 +61,4 @@ cargo run --manifest-path prototype/Cargo.toml --quiet
 
 ## Release impact
 
-State the maturity label and release gates affected. A visual demo is not production-readiness evidence.
+State the maturity label and release gates affected. A visual demo, detailed design, or competitive study is not production-readiness evidence.

@@ -1,6 +1,98 @@
 # Research Log
 
-This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, or indexed research report.
+This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
+
+## 2026-07-16 — Detailed browser engineering research library
+
+Question:
+
+Where was the initial Blueprint too compressed to guide implementation research, and which detailed subsystem books were required before architecture experiments and code could proceed without inventing undocumented assumptions?
+
+Sources and versions:
+
+- complete Turing Blueprint and repository policies at merge commit `70f151f74a6e199415c7125169230ae1231fb561`;
+- official Chromium, WebKit, Gecko, Servo, Ladybird, Rust, platform sandbox, W3C/WHATWG, WPT, BrowserBench, WebDriver BiDi, MCP, and browser-product sources retrieved 2026-07-16;
+- W3C Web Platform Design Principles Group Note dated 2026-02-24;
+- current MCP specification version identified as 2025-11-25 at retrieval;
+- current official product/project pages recorded in the new competitive studies.
+
+Method and environment:
+
+Repository-wide documentation audit. The audit tested whether each major area had enough detail to define identities, inputs, outputs, ownership, lifetimes, invalidation, failure, security, accessibility, limits, observability, experiments, and acceptance evidence. No implementation, fixed-hardware benchmark, or independent security review was performed.
+
+Observations:
+
+- the 22 Blueprint chapters covered the correct browser-scale surface but several combined too many independently reviewable subsystems;
+- implementation research needed deeper contracts for rendering, runtime, security, developer protocols, APIs, performance, agents, and comparative adoption;
+- the existing documentation governance could support nested engineering books if indexes, repository mapping, research status, and validation were updated together;
+- networking, storage, media, PDF, printing, native platform adapters, accessibility bridges, extensions, enterprise/sync, and release operations remain future detailed-book candidates.
+
+Inference:
+
+Keeping the Blueprint as the normative overview while adding indexed detailed books gives the project enough depth for experiments without prematurely freezing implementation. A large body of prose is useful only if status, ownership, evidence, and change discipline remain explicit.
+
+Decision:
+
+- add a [browser engine engineering book](engine/README.md);
+- add a [JavaScript runtime engineering book](javascript/README.md);
+- add a [browser security engineering book](security-engine/README.md);
+- add a [developer experience and DevTools book](developer-experience/README.md);
+- add an [API design book](api-design/README.md);
+- add a [performance engineering book](performance/README.md);
+- add an [AI and agent engineering book](ai/README.md);
+- add [competitive browser and engine studies](competitive/README.md);
+- publish the [documentation expansion audit](research/documentation-expansion-audit-2026-07.md);
+- add RQ-18 through RQ-25 to the research program;
+- document the repository-owner, documentation-only direct-main exception requested for the single-owner research phase;
+- strengthen repository validation so the complete detailed-book topology is required.
+
+Alternatives rejected:
+
+- expanding only the existing Blueprint chapters, because they would become difficult to navigate and own;
+- creating disconnected essays without canonical relationships, because they would drift;
+- changing requirements, risks, ADRs, or work-package status based only on desk research;
+- treating competitor architecture descriptions or vendor benchmarks as measured Turing evidence.
+
+Security/privacy impact:
+
+The new security and AI books deepen containment, platform sandbox evidence, unsafe/native governance, trusted UI, update response, semantic redaction, tool/MCP boundaries, and adversarial evaluation. They do not change the existing warning that Turing is not safe for hostile or sensitive browsing.
+
+Compatibility/accessibility impact:
+
+The engine, runtime, DevTools, API, competitive, and AI books reinforce standards-first development, full WPT/Test262 accounting, explicit unsupported behavior, semantic accessibility, platform assistive technology, keyboard workflows, and cross-browser automation.
+
+Performance/memory/energy impact:
+
+The performance and subsystem books establish representation budgets, critical-path graphs, semantic resource attribution, adaptive parallelism, cache and pressure policy, tail-latency rules, energy/startup/recovery measurement, and benchmark governance. These remain hypotheses until experiments run.
+
+Licensing/operational impact:
+
+The MPL-2.0 direction is unchanged. External implementations remain research and differential references. Primary sources are linked; no external source code was copied. The expansion increases maintenance load and requires future owners to refresh changing product/project information.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- no requirement, risk, ADR, or work-package status changed;
+- root `README.md`;
+- `AGENTS.md`;
+- `docs/README.md`;
+- `docs/start-here.md`;
+- `docs/repository-map.md`;
+- `docs/research/README.md`;
+- `docs/blueprint-v1/README.md`;
+- `docs/blueprint-v1/16-governance-contributing.md`;
+- `docs/blueprint-v1/18-source-bibliography.md`;
+- `docs/blueprint-v1/22-research-program.md`;
+- `tools/validate_blueprint.py`;
+- all new documents under the eight detailed book directories;
+- the dated documentation audit.
+
+Unresolved questions:
+
+See RQ-18 through RQ-25 and each new book's evidence and risk sections. The most immediate empirical gap is the fixed-hardware cross-engine baseline.
+
+Next evidence required:
+
+Execute issue #14, then build the smallest engine-artifact, process-topology, platform-sandbox, protocol, runtime-tiering, and scheduling prototypes needed to falsify the proposed designs.
 
 ## 2026-07-16 — Browser engine landscape and excellence strategy
 
@@ -11,7 +103,7 @@ Which documented lessons from Chromium, WebKit, Gecko, Servo, and Ladybird shoul
 Sources and versions:
 
 - official engine architecture and source documentation retrieved 2026-07-16;
-- WebDriver BiDi Editor’s Draft dated 2026-07-15;
+- WebDriver BiDi Editor's Draft dated 2026-07-15;
 - W3C Web Platform Design Principles Group Note dated 2026-02-24;
 - Interop 2026 material published 2026-02-12;
 - current WPT and BrowserBench documentation.
@@ -67,7 +159,7 @@ Affected records:
 
 Unresolved questions:
 
-See the study’s experiment queue and unresolved-question section.
+See the study's experiment queue and unresolved-question section.
 
 Next evidence required:
 

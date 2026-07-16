@@ -1,6 +1,6 @@
 # 22 — Research and Measurement Program
 
-Turing’s high-risk architectural choices must be tested against alternatives before they become irreversible. This document defines the initial research questions and required evidence.
+Turing's high-risk architectural choices must be tested against alternatives before they become irreversible. This document defines the initial research questions and required evidence.
 
 ## RQ-01 — Can compact Rust data structures materially reduce engine memory?
 
@@ -104,9 +104,73 @@ Decision output: an evidence-ranked list of architecture patterns to adopt, reje
 
 Prototype WebDriver BiDi integration plus a schema-generated Turing engine-instrumentation protocol. Compare capability negotiation, versioning, generated clients, command/event latency, streaming, backpressure, cancellation, authentication, redaction, replay, malformed input, and support-window cost.
 
-Evaluate common developer workflows across Chromium CDP, Firefox remote protocols, WebKit Inspector Protocol, and Turing’s proposal without making another engine’s protocol the internal source of truth.
+Evaluate common developer workflows across Chromium CDP, Firefox remote protocols, WebKit Inspector Protocol, and Turing's proposal without making another engine's protocol the internal source of truth.
 
 Decision output: protocol layering, version policy, stable and experimental domains, client-generation plan, security boundary, and compatibility-adapter policy.
+
+## RQ-18 — Which pipeline artifact and invalidation model is most correct, compact, and observable?
+
+Prototype versioned parser output, DOM mutation epochs, computed-style blocks, layout fragments, paint chunks, display lists, accessibility snapshots, and compositor state. Compare mutable object graphs, immutable epoch artifacts, hybrid retention, and full-recomputation oracles across static, mutation-heavy, animation, editing, accessibility, and adversarial pages.
+
+Measure bytes, allocations, rebuild scope, invalidation correctness, trace clarity, parallel publication, cancellation, and stale-artifact rejection.
+
+Decision output: engine artifact identity, lifetime, invalidation, retention, and diagnostic contracts.
+
+## RQ-19 — Which runtime tiering and collector architecture gives the best interaction-adjusted performance?
+
+Build a constrained but semantically precise interpreter, object/shape model, exact collector, baseline compiler, and optional simple mid-tier. Compare register/hybrid bytecode, compiler backend, code memory, warm-up, GC pause distribution, external-memory accounting, deoptimization, no-JIT mode, and end-to-end application interaction.
+
+Security, Test262 coverage, debugger fidelity, and platform W^X/signing evidence accompany every result.
+
+Decision output: runtime tier responsibilities, GC baseline, code-generation boundary, and revisit trigger for a high-optimization tier.
+
+## RQ-20 — What platform sandbox and broker design can be proven on macOS, Windows, and Linux?
+
+Generate role-specific capability manifests and effective sandbox policies for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater processes. Compare App Sandbox/seatbelt and hardened runtime, AppContainer/tokens/jobs/mitigations, and namespaces/seccomp/Landlock/portals.
+
+Run packaged-build negative tests for files, sockets, processes, debugging, devices, credentials, platform IPC, dynamic code, shared memory, and other profiles. Measure process launch, broker latency, compatibility, and policy complexity.
+
+Decision output: supported platform/process matrix, broker interfaces, effective evidence format, degraded/unsupported modes, and SEC-GATE-1 criteria.
+
+## RQ-21 — Which developer workflows and protocol surfaces create measurable leadership?
+
+Measure time, errors, required steps, protocol round trips, data volume, accessibility, and success for cascade diagnosis, forced-layout analysis, input latency, memory retainers, network/security policy failure, worker debugging, crash reduction, cross-origin automation, and trace comparison.
+
+Compare WebDriver BiDi, CDP, Firefox remote protocols, WebKit Inspector Protocol where accessible, and the proposed Turing protocol. Domain count alone is not a success metric.
+
+Decision output: stable Turing protocol domains, UI workflow priorities, compatibility adapters, trace schema, and support-window budget.
+
+## RQ-22 — Which API conventions minimize misuse and long-term compatibility cost?
+
+Prototype schema-generated internal/public APIs with typed identity, capability discovery, structured errors, deadlines, cancellation, streaming, backpressure, idempotency, partial failure, authentication, authorization, redaction, and Rust/TypeScript/Python clients.
+
+Measure malformed-input safety, allocation and latency, generated-code quality, developer comprehension, cross-version compatibility, and deprecation cost.
+
+Decision output: common API conventions, schema language/encoding, error taxonomy, versioning model, SDK targets, and prohibited generic interfaces.
+
+## RQ-23 — Which scheduling, memory, cache, and energy policies dominate sustained browser performance?
+
+Compare critical-path/deadline scheduling, serial/fixed/work-stealing/adaptive parallelism, semantic memory ownership, arena/slab/general allocation, cache admission/eviction, pressure escalation, warm process pools, and lifecycle reclamation across Tier L/M/H.
+
+Measure p50/p95/p99 input, frame pacing, startup, 30-tab mixed/all-live, allocator live/reserved/resident state, GPU, swap, wakeups, energy, thermal degradation, recovery, and compatibility.
+
+Decision output: scheduler, pool, allocation, cache, pressure, startup, and benchmark-governance policies.
+
+## RQ-24 — Which agent observation, action, memory, provider, and tool design is safest and most useful?
+
+Compare semantic and vision observations, redaction strategies, opaque credential/file handles, action schemas, risk classification, confirmation, working/long-term memory, multi-agent delegation, recovery, local/remote providers, MCP/tool gateways, and resource budgets.
+
+Report task success separately from unauthorized action, secret/cross-origin leakage, stale-target behavior, user comprehension, accessibility, cancellation, audit, tokens, cost, RAM/VRAM, CPU/GPU, energy, and 30-tab impact.
+
+Decision output: observation schema, provider/tool manifest, memory policy, action/risk/confirmation model, MCP boundary, resource classes, and release evaluation corpus.
+
+## RQ-25 — Which product and open-source practices can sustain a number-one claim?
+
+Study current engine projects and browser products for governance, contributor onboarding, subsystem ownership, review latency, standards/test contributions, security response, release continuity, product workflows, privacy communication, tab/workspace design, accessibility, and support lifecycle.
+
+A number-one claim must be defined as a current multi-dimensional scorecard rather than a synthetic benchmark. Track how quickly evidence and product status become stale.
+
+Decision output: competitive scorecard, adopt/adapt/reject/defer ledger, contributor and security-response targets, product research cadence, and claim-expiry rules.
 
 ## Research protocol
 

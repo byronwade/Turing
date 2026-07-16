@@ -43,7 +43,7 @@ This checklist prevents architecture work from becoming presentation-only.
 
 ## Engine rendering feature
 
-- parsing/style/layout/paint/accessibility semantics documented;
+- parsing/style/layout/paint/accessibility semantics documented in the owning Blueprint and [engine book](../engine/README.md);
 - full recomputation and incremental result agree;
 - WPT/reduced semantic tests and pixel/geometry tests added;
 - invalidation reason and performance trace exposed;
@@ -54,6 +54,7 @@ This checklist prevents architecture work from becoming presentation-only.
 
 - Test262 or specification cases added;
 - interpreter/reference semantics established;
+- detailed runtime contracts updated in the [JavaScript book](../javascript/README.md);
 - GC root/barrier/weak/finalization behavior stress-tested;
 - JIT tiers differentially equivalent and W^X enforced;
 - deoptimization, traps, exceptions, OOM, and cancellation covered;
@@ -72,16 +73,27 @@ This checklist prevents architecture work from becoming presentation-only.
 ## Security or sandbox
 
 - threat model and protected assets updated;
+- [security engineering book](../security-engine/README.md) updated for affected boundaries and evidence;
 - negative capability tests added on each affected platform;
 - exploit chain and residual risk described;
 - mitigations enabled in release-equivalent configuration;
 - update and incident implications addressed;
 - independent review requirement identified.
 
+## Developer protocol, DevTools, API, or automation
+
+- public and internal contract boundaries documented in the [developer](../developer-experience/README.md) and [API](../api-design/README.md) books;
+- schema, identity, authority, bounds, deadlines, cancellation, backpressure, partial failure, and redaction defined;
+- stable/experimental status and compatibility support window declared;
+- generated clients and conformance tests updated where applicable;
+- remote attachment, headless, and automation profile security tested;
+- trace/event causality and unsupported behavior visible.
+
 ## Agent feature
 
 - observation fields, sources, redaction, and cross-origin scope documented;
 - action schema, preconditions, document epoch, idempotency, and postcondition defined;
+- detailed trust, provider, planning, memory, and evaluation contracts updated in the [AI book](../ai/README.md);
 - risk classification and confirmation behavior deterministic;
 - prompt-injection, stale target, secret request, cancellation, and resource exhaustion tests added;
 - provider/local data flow visible and auditable;
@@ -90,11 +102,21 @@ This checklist prevents architecture work from becoming presentation-only.
 ## Performance optimization
 
 - correctness/security/accessibility baseline unchanged or differences explicitly approved;
+- [performance book](../performance/README.md) updated for affected critical paths, accounting, or measurement;
 - before/after raw samples, environment, workload, process topology, lifecycle, and statistical method attached;
 - memory attribution reconciled;
 - no benchmark-specific path;
 - regression threshold and rollback plan defined;
 - claimed scope does not exceed measured scope.
+
+## Research or competitive study
+
+- question, sources/versions, method, observation, inference, confidence, limitations, and falsifying evidence recorded;
+- official or primary sources preferred and retrieval date recorded for changing systems;
+- product, engine, runtime, service, and platform conclusions kept separate;
+- recommendations mapped to an experiment and owning Blueprint/detailed book;
+- requirements, risks, ADRs, or work-package status changed only when decision evidence justifies it;
+- study linked from an indexed document and research log updated.
 
 ## Release or update change
 

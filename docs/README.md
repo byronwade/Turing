@@ -16,13 +16,29 @@ Documentation changes are part of the implementation. Every addition, modificati
 | [Architecture prototype](prototype.md) | Exact purpose, commands, invariants, and limitations of `prototype/` |
 | [Research log](research-log.md) | Chronological record of material research and documentation-governance decisions |
 | [Research index](research/README.md) | Dated evidence reports, competitive studies, hypotheses, and experiment queues |
-| [Blueprint v1](blueprint-v1/README.md) | Complete product, engine, runtime, platform, security, performance, AI, UI, testing, release, roadmap, risk, requirements, and research baseline |
+| [Blueprint v1](blueprint-v1/README.md) | Normative product, engine, runtime, platform, security, performance, AI, UI, testing, release, roadmap, risk, requirements, and research baseline |
+
+## Detailed engineering books
+
+The Blueprint owns accepted high-level architecture. These books expand it into subsystem contracts, experiments, invariants, evidence requirements, risks, and implementation questions. They do not silently change requirements or make implementation claims.
+
+| Book | Scope |
+|---|---|
+| [Browser engine engineering](engine/README.md) | Pipeline artifacts, HTML/DOM, CSS, invalidation, layout, paint, GPU, text, media, input, accessibility, memory, and observability |
+| [JavaScript runtime engineering](javascript/README.md) | Front end, bytecode, interpreter, values, objects, inline caches, GC, JIT, Web IDL, event loop, WebAssembly, testing, and performance |
+| [Browser security engineering](security-engine/README.md) | Threat model, process/site isolation, sandbox brokers, platform containment, memory/JIT hardening, privacy, trusted UI, updates, and release gates |
+| [Developer experience and DevTools](developer-experience/README.md) | Protocols, workflows, UI, tracing, replay, automation, headless mode, and advanced diagnosis |
+| [API design](api-design/README.md) | Design principles, identity, authority, bounds, async operations, streaming, cancellation, schemas, errors, compatibility, SDKs, authentication, and redaction |
+| [Performance engineering](performance/README.md) | Critical paths, memory, allocation, caches, scheduling, adaptive parallelism, graphics, energy, startup, recovery, statistics, and regression governance |
+| [AI and agent engineering](ai/README.md) | Trust boundaries, observations, redaction, actions, grants, confirmation, audit, memory, planning, providers, local models, MCP/tools, and evaluation |
+| [Competitive browser and engine studies](competitive/README.md) | Chromium, WebKit, Gecko, Servo, Ladybird, browser-product lessons, valid comparison, and adoption rules |
 
 ## Active research
 
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape and Turing excellence strategy — July 2026](research/browser-engine-landscape-2026-07.md) | Primary-source comparison of Chromium, WebKit, Gecko, Servo, and Ladybird; proposed performance, API, standards, open-source, and measurement strategy |
+| [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |
 
 Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 

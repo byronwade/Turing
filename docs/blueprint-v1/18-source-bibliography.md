@@ -2,7 +2,7 @@
 
 This program uses standards, official platform documentation, upstream test suites, and peer-reviewed or primary technical material as sources of truth. Existing browser implementations may be studied for interoperability and research, subject to license/provenance rules, but they are not copied into Turing or treated as normative when they conflict with standards.
 
-Links below are starting points. Each implemented feature records the exact standard revision/test commit used by the corresponding milestone.
+Links below are starting points. Each implemented feature records the exact standard revision/test commit used by the corresponding milestone. Dated comparative studies additionally record retrieval date, product version, platform, and current project status where those can change.
 
 ## Web platform
 
@@ -30,6 +30,14 @@ Links below are starting points. Each implemented feature records the exact stan
 - WebGPU — https://www.w3.org/TR/webgpu/
 - WebAssembly specifications — https://webassembly.github.io/spec/
 
+## Web principles and standards process
+
+- WHATWG working mode — https://whatwg.org/working-mode
+- W3C Web Platform Design Principles — https://www.w3.org/TR/design-principles/
+- W3C Ethical Web Principles — https://www.w3.org/TR/ethical-web-principles/
+
+These principles guide user needs, interoperability, safety, privacy, accessibility, feature detection, trusted UI, and transparent failure. They do not replace individual normative specifications.
+
 ## JavaScript
 
 - ECMA-262 ECMAScript Language Specification — https://tc39.es/ecma262/
@@ -44,6 +52,80 @@ Links below are starting points. Each implemented feature records the exact stan
 - Interop project — https://wpt.fyi/interop
 - WebDriver tests within WPT — https://github.com/web-platform-tests/wpt/tree/master/webdriver
 - ARIA Authoring Practices — https://www.w3.org/WAI/ARIA/apg/
+
+## Browser architecture and runtime references
+
+These sources support comparative research and falsifiable hypotheses. They do not define Turing behavior and do not authorize source copying.
+
+### Chromium, Blink, and V8
+
+- Chromium RenderingNG architecture — https://developer.chrome.com/docs/chromium/renderingng-architecture
+- Chromium RenderingNG key data structures — https://developer.chrome.com/docs/chromium/renderingng-data-structures
+- Chromium LayoutNG — https://developer.chrome.com/docs/chromium/layoutng
+- Chromium process model and site isolation — https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md
+- Chromium sandbox — https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md
+- Chrome DevTools Protocol — https://chromedevtools.github.io/devtools-protocol/
+- V8 Sparkplug baseline compiler — https://v8.dev/blog/sparkplug
+- V8 Maglev compiler — https://v8.dev/blog/maglev
+- Chromium source license — https://chromium.googlesource.com/chromium/src/+/main/LICENSE
+
+### WebKit and JavaScriptCore
+
+- WebKit documentation — https://docs.webkit.org/
+- WebKit2 multiprocess architecture — https://docs.webkit.org/Deep%20Dive/Architecture/WebKit2.html
+- WebKit site isolation — https://docs.webkit.org/Deep%20Dive/SiteIsolation.html
+- JavaScriptCore overview — https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html
+- WebKit WPT integration — https://docs.webkit.org/Testing/WebPlatformTests.html
+- WebKit licensing — https://webkit.org/licensing-webkit/
+
+### Gecko and SpiderMonkey
+
+- Firefox process model — https://firefox-source-docs.mozilla.org/dom/ipc/process_model.html
+- SpiderMonkey overview — https://firefox-source-docs.mozilla.org/js/index.html
+- Firefox performance documentation — https://firefox-source-docs.mozilla.org/performance/index.html
+- Firefox Remote Protocol — https://firefox-source-docs.mozilla.org/remote/index.html
+- Firefox source license — https://github.com/mozilla-firefox/firefox/blob/main/LICENSE
+
+### Independent engines
+
+- Servo project goals and governance — https://servo.org/about/
+- Servo repository — https://github.com/servo/servo
+- Servo project updates — https://servo.org/blog/
+- Servo license — https://github.com/servo/servo/blob/main/LICENSE
+- Ladybird project — https://ladybird.org/
+- Ladybird repository and architecture overview — https://github.com/LadybirdBrowser/ladybird
+- Ladybird license — https://github.com/LadybirdBrowser/ladybird/blob/master/LICENSE
+
+## Browser benchmarks
+
+- BrowserBench index — https://browserbench.org/
+- Speedometer 3.1 — https://browserbench.org/Speedometer3.1/
+- MotionMark 1.3 — https://browserbench.org/MotionMark1.3/
+
+BrowserBench suites are diagnostics. Product claims also require compatibility coverage, real interaction workloads, memory, energy, process/isolation disclosure, failure accounting, and fixed hardware.
+
+## Developer protocols, agents, and tools
+
+- WebDriver BiDi Editor's Draft — https://w3c.github.io/webdriver-bidi/
+- Chrome DevTools Protocol — https://chromedevtools.github.io/devtools-protocol/
+- Firefox Remote Protocol — https://firefox-source-docs.mozilla.org/remote/index.html
+- Model Context Protocol specification, version 2025-11-25 at retrieval — https://modelcontextprotocol.io/specification/2025-11-25
+- Model Context Protocol architecture — https://modelcontextprotocol.io/docs/learn/architecture
+
+MCP is evaluated as an external tool/resource transport subordinate to Turing grants and policy, not as a browser authority model.
+
+## Browser product references
+
+Product references support dated UX, privacy, workflow, distribution, and governance studies. Their marketing or benchmark claims are not accepted as independent evidence.
+
+- Brave — https://brave.com/
+- Brave Shields — https://brave.com/shields/
+- Arc — https://arc.net/
+- Arc feature documentation — https://resources.arc.net/hc/en-us/categories/16435255982103-Features
+- Zen Browser — https://zen-browser.app/
+- Zen Browser source — https://github.com/zen-browser/desktop
+- Orion Browser — https://orionbrowser.com/
+- Safari — https://www.apple.com/safari/
 
 ## Networking
 
@@ -61,6 +143,7 @@ Links below are starting points. Each implemented feature records the exact stan
 
 - Unicode Standard — https://www.unicode.org/standard/standard.html
 - Unicode Standard Annexes — https://www.unicode.org/reports/
+- Unicode Bidirectional Algorithm — https://www.unicode.org/reports/tr9/
 - Common Locale Data Repository — https://cldr.unicode.org/
 - International Components for Unicode — https://icu.unicode.org/
 - HarfBuzz — https://harfbuzz.github.io/
@@ -153,7 +236,7 @@ Use of any listed project is not automatic approval. It remains subject to the d
 
 ## Browser security research inputs
 
-Primary research should be added as individual annotated references tied to a design decision. Relevant domains include site isolation, sandbox architecture, capability systems, memory-safe browser components, browser fuzzing, JIT hardening, CFI, pointer authentication, allocator hardening, renderer exploit chains, origin isolation, storage partitioning, and update security.
+Primary research should be added as individual annotated references tied to a design decision. Relevant domains include site isolation, sandbox architecture, capability systems, memory-safe browser components, browser fuzzing, JIT hardening, CFI, pointer authentication, allocator hardening, renderer exploit chains, origin isolation, storage partitioning, update security, provider/tool isolation, and trusted UI.
 
 Do not cite a secondary blog when an original paper, standard, advisory, platform document, or source repository is available.
 
@@ -174,4 +257,4 @@ notes: What behavior or decision it supports
 license_or_access: Applicable terms
 ```
 
-The implementation’s behavior notes should quote minimally and describe algorithms in original language. Test imports preserve upstream licenses and revision metadata.
+The implementation's behavior notes should quote minimally and describe algorithms in original language. Test imports preserve upstream licenses and revision metadata.

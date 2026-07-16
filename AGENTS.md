@@ -25,7 +25,8 @@ Before changing anything, read:
 3. [`docs/documentation-policy.md`](docs/documentation-policy.md)
 4. [`docs/repository-map.md`](docs/repository-map.md)
 5. the relevant Blueprint v1 chapters under [`docs/blueprint-v1/`](docs/blueprint-v1/README.md)
-6. [`docs/security.md`](docs/security.md) for any trust-boundary or hostile-input work
+6. the relevant detailed engineering book linked from [`docs/README.md`](docs/README.md#detailed-engineering-books)
+7. [`docs/security.md`](docs/security.md) and the [security engineering book](docs/security-engine/README.md) for trust-boundary or hostile-input work
 
 ## Core priorities
 
@@ -52,7 +53,7 @@ Do not add custom cryptography.
 
 Canonical project documentation lives in `docs/`. The root `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, and `SECURITY.md`, plus GitHub templates under `.github/`, are deliberate discovery and workflow exceptions.
 
-Every change must update every affected document in the same commit or pull request. Affected documentation includes prose, requirements, risks, ADRs, work packages, machine-readable registries, test plans, support statements, and repository navigation.
+Every change must update every affected document in the same commit or pull request. Affected documentation includes prose, detailed engineering books, requirements, risks, ADRs, work packages, machine-readable registries, test plans, support statements, and repository navigation.
 
 Do not touch unrelated documents merely to create churn. “Update all documentation” means update all documents whose truth, scope, status, links, ownership, assumptions, commands, interfaces, risks, or acceptance criteria changed.
 
@@ -61,7 +62,7 @@ Do not touch unrelated documents merely to create churn. “Update all documenta
 For every addition, modification, rename, or removal:
 
 1. identify the user-visible, developer-visible, architectural, security, compatibility, performance, accessibility, operational, and AI-agent effects;
-2. update the relevant canonical documents;
+2. update the relevant canonical documents and detailed books;
 3. update stable requirements, risks, ADRs, backlog entries, and machine registries when their meaning changes;
 4. update `docs/repository-map.md` for any repository-structure change;
 5. update `docs/README.md` and all inbound links for any documentation addition, rename, move, or deletion;
@@ -71,25 +72,29 @@ For every addition, modification, rename, or removal:
 
 A code-only feature change is incomplete. A documentation-only claim without evidence is also incomplete.
 
+During the current single-owner research phase, documentation-only work may be committed directly to `main` only under the controlled exception in [`docs/blueprint-v1/16-governance-contributing.md`](docs/blueprint-v1/16-governance-contributing.md). The change must be atomic, main must not have moved, validation must pass, and implementation, accepted decisions, machine-registry status, security fixes, releases, and embargoed findings remain outside that exception.
+
 ### Documentation impact map
 
 Use this as the minimum mapping, not a limit:
 
 | Change area | Required documents to inspect |
 |---|---|
-| charter, scope, product claims | `01-charter-and-principles.md`, `02-capability-parity.md`, `21-product-requirements.md` |
+| charter, scope, product claims | `01-charter-and-principles.md`, `02-capability-parity.md`, `21-product-requirements.md`, `docs/competitive/` |
 | dependencies or language choices | `03-language-and-dependency-strategy.md`, `13-build-release-operations.md`, `18-source-bibliography.md` |
-| process model, IPC, lifecycle, architecture | `04-system-architecture.md`, `08-security-and-sandbox.md`, `17-architecture-decisions.md` |
-| HTML, DOM, CSS, layout, paint, accessibility tree | `05-web-engine.md`, `11-product-ui-devtools.md`, `12-testing-compatibility.md` |
-| JavaScript, WebAssembly, GC, JIT, bindings | `06-javascript-runtime.md`, `08-security-and-sandbox.md`, `12-testing-compatibility.md` |
+| process model, IPC, lifecycle, architecture | `04-system-architecture.md`, `08-security-and-sandbox.md`, `17-architecture-decisions.md`, `docs/security-engine/` |
+| HTML, DOM, CSS, layout, paint, accessibility tree | `05-web-engine.md`, `11-product-ui-devtools.md`, `12-testing-compatibility.md`, `docs/engine/` |
+| JavaScript, WebAssembly, GC, JIT, bindings | `06-javascript-runtime.md`, `08-security-and-sandbox.md`, `12-testing-compatibility.md`, `docs/javascript/` |
 | network, storage, credentials, media, printing, PDF | `07-network-storage-media.md`, `08-security-and-sandbox.md`, `12-testing-compatibility.md` |
-| performance, memory, startup, energy, tab lifecycle | `09-performance-memory.md`, benchmark manifests, roadmap and risks |
-| AI observations, actions, providers, grants, audit | `10-ai-agent-platform.md`, `08-security-and-sandbox.md`, agent-action schema and risks |
-| UI, accessibility, DevTools, automation | `11-product-ui-devtools.md`, `12-testing-compatibility.md`, product requirements |
-| build, signing, updates, release, incident response | `13-build-release-operations.md`, `08-security-and-sandbox.md`, `docs/security.md` |
+| performance, memory, startup, energy, tab lifecycle | `09-performance-memory.md`, `docs/performance/`, benchmark manifests, roadmap, and risks |
+| AI observations, actions, providers, grants, audit | `10-ai-agent-platform.md`, `08-security-and-sandbox.md`, `docs/ai/`, agent-action schema, and risks |
+| UI, accessibility, DevTools, automation | `11-product-ui-devtools.md`, `12-testing-compatibility.md`, `docs/developer-experience/`, `docs/api-design/`, product requirements |
+| build, signing, updates, release, incident response | `13-build-release-operations.md`, `08-security-and-sandbox.md`, `docs/security.md`, `docs/security-engine/` |
 | roadmap, milestone, backlog, or status | `14-roadmap-work-breakdown.md`, `19-initial-backlog.md`, `20-definition-of-done.md`, machine backlog |
 | risk or architectural decision | `15-risk-register.md`, `17-architecture-decisions.md`, corresponding machine registry |
 | repository layout, tools, CI, contributor workflow | `docs/repository-map.md`, `docs/documentation-policy.md`, `docs/contributing.md`, this file |
+
+Blueprint paths in this table are relative to `docs/blueprint-v1/`.
 
 ## Research requirements
 
@@ -103,7 +108,7 @@ Research must be source-backed and reproducible.
 - Record benchmark hardware, operating system, build profile, workload, process model, site-isolation state, tab state, sample count, and statistical method.
 - Never compare memory or speed using undisclosed tab discarding, different workloads, different security settings, or unmatched builds.
 
-Add durable findings to the relevant Blueprint chapter, bibliography, research program, requirements, risks, ADRs, or backlog. The chat, issue, or pull-request description is not the canonical record.
+Add durable findings to the relevant Blueprint chapter, detailed engineering book, bibliography, research program, requirements, risks, ADRs, or backlog. The chat, issue, or commit message is not the canonical record.
 
 ## Security and privacy rules
 
@@ -151,7 +156,7 @@ New prose documentation must be Markdown under `docs/` and must be linked from `
 A task is complete only when all applicable items are true:
 
 - implementation and documentation agree;
-- affected requirements, risks, ADRs, backlog items, and registries agree;
+- affected Blueprint chapters, detailed books, requirements, risks, ADRs, backlog items, and registries agree;
 - unsupported cases and residual risks are explicit;
 - relevant tests and evidence exist;
 - relative links resolve;

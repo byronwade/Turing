@@ -2,7 +2,7 @@
 
 ## 1. Governance objective
 
-Turing needs enough process to protect architecture, security, compatibility, and contributors without turning a research program into paperwork. Decisions are written because a browser’s behavior is too interconnected to live in one maintainer’s memory.
+Turing needs enough process to protect architecture, security, compatibility, and contributors without turning a research program into paperwork. Decisions are written because a browser's behavior is too interconnected to live in one maintainer's memory.
 
 ## 2. Roles
 
@@ -16,18 +16,34 @@ Initial roles may be held by the same person, but responsibilities remain distin
 - **Network/storage owner:** URL/Fetch/protocols/cookies/cache/databases/service workers.
 - **Platform owners:** macOS, Windows, Linux UI/sandbox/packaging.
 - **DevTools/automation owner.**
+- **API/protocol owner.**
 - **AI/agent safety owner.**
 - **Quality/performance owner.**
 - **Release/operations owner.**
 - **Accessibility owner.**
+- **Documentation/research owner.**
 
-A supported subsystem has a primary and backup owner before stable release.
+A supported subsystem has a primary and backup owner before stable release. Detailed engineering books identify the future subsystem ownership needed even while one person currently holds multiple roles.
 
 ## 3. Decision classes
 
 ### Routine implementation
 
-Changes that preserve approved interfaces and behavior proceed through normal pull-request review.
+Changes that preserve approved interfaces and behavior proceed through normal review.
+
+### Documentation and research expansion
+
+A documentation-only change may add or refine research, indexes, detailed engineering books, bibliography, measurement plans, or non-normative proposals. It must preserve status language and cannot silently change an accepted requirement, risk, ADR, work package, release claim, or security policy.
+
+The repository owner may commit documentation-only work directly to `main` when:
+
+- the change is atomic and `main` is verified not to have moved;
+- every affected index, repository map, policy, research log, Blueprint reference, and validator rule is updated in the same commit;
+- no implementation, machine registry, release artifact, secret, or security-embargo content is changed;
+- repository validation, formatting, tests, and prototype smoke execution pass;
+- the commit message and research log clearly distinguish research from accepted decisions.
+
+This exception exists for the current documentation-intensive research phase. It must be reconsidered before multiple maintainers, protected branch enforcement, or release engineering begin. Implementation, machine-registry status changes, security fixes, release changes, and accepted architecture decisions continue to require review through a pull request or equivalent multi-party process.
 
 ### Design note
 
@@ -65,6 +81,7 @@ A pull request states:
 - security, privacy, accessibility, compatibility, performance, memory, and platform impact;
 - tests and benchmark results;
 - dependency/unsafe/generated-code changes;
+- owning Blueprint and detailed engineering documentation impact;
 - unsupported behavior and follow-up;
 - screenshots/traces only when they add evidence and are redacted.
 
@@ -84,12 +101,14 @@ Review focuses on invariants and tests, not formatting already enforced by tools
 
 ## 6. Commit and branch policy
 
-- `main` is protected and expected to remain buildable;
-- work lands through pull requests and merge queue;
+- `main` is expected to remain buildable and internally consistent;
+- implementation, accepted architecture, machine-registry status, security, release, and operational changes land through pull requests or an equivalent reviewed merge process;
+- during the single-owner research phase, documentation-only changes may use the controlled direct-main exception above;
+- direct-main documentation commits never bypass repository validation and never create intermediate broken topology;
 - branches use descriptive prefixes such as `engine/`, `security/`, `agent/`, `platform/`, `docs/`;
 - generated files are updated in the same change as source schemas;
 - commits should be bisectable; security embargo branches use restricted access;
-- force-push policy is allowed on personal branches but not protected release refs;
+- force-push is prohibited on `main` and protected release refs;
 - releases use signed annotated tags from protected commits.
 
 ## 7. Issue taxonomy
@@ -97,12 +116,12 @@ Review focuses on invariants and tests, not formatting already enforced by tools
 Labels or fields cover:
 
 - component and platform;
-- type: bug, feature, conformance, security, performance, accessibility, docs, operations;
+- type: bug, feature, conformance, security, performance, accessibility, docs, research, operations;
 - severity/priority;
 - milestone/gate;
 - good-first/requires-design/blocked/external;
 - reproducibility and affected versions;
-- risk ID and requirement IDs.
+- risk, requirement, research-question, experiment, and work-package IDs.
 
 Security vulnerabilities are not filed publicly before coordinated disclosure.
 
@@ -110,17 +129,17 @@ Security vulnerabilities are not filed publicly before coordinated disclosure.
 
 A change is done when:
 
-- behavior and unsupported cases are documented;
-- stable requirements are updated;
+- behavior, status, and unsupported cases are documented;
+- the owning Blueprint chapter and detailed engineering book agree;
+- stable requirements, risks, ADRs, work packages, and machine registries are updated when their meaning changes;
 - tests include negative/error/lifecycle behavior;
 - relevant WPT/Test262 or reduced test exists;
 - fuzz target/corpus is updated for new parsers/state machines;
 - security/privacy/accessibility impacts are addressed;
 - performance/memory baseline is recorded for hot paths;
 - logs/traces are redacted and bounded;
-- dependencies/licenses/notices are updated;
-- platform behavior is implemented or explicitly gated;
-- no ownerless follow-up is required for the claimed milestone.
+- indexes, repository map, links, and research log are current;
+- repository validation passes.
 
 A demo is not definition of done.
 
@@ -179,11 +198,11 @@ Researchers are not asked to test real users, exfiltrate data, persist, or disru
 
 ## 12. Contributor provenance and licensing
 
-Original Turing code is MPL-2.0 unless a file states otherwise. Contributors certify they have the right to submit code through the project’s chosen DCO or CLA policy; the initial recommendation is Developer Certificate of Origin for an open research project, revisited before commercial relicensing is contemplated.
+Original Turing code is MPL-2.0 unless a file states otherwise. Contributors certify they have the right to submit code through the project's chosen DCO or CLA policy; the initial recommendation is Developer Certificate of Origin for an open research project, revisited before commercial relicensing is contemplated.
 
 Copied code from Chromium, WebKit, Gecko, Servo, other engines, proprietary SDKs, tutorials, generated AI output, or third parties must not enter without provenance and license review. “Rewritten” code that closely follows a protected implementation may still create concerns; use standards, papers, clean-room notes, and independent tests.
 
-AI-assisted contributions remain the contributor’s responsibility. The contributor must review correctness, security, originality, license implications, and tests; prompts or model output are not evidence of provenance.
+AI-assisted contributions remain the contributor's responsibility. The contributor must review correctness, security, originality, license implications, and tests; prompts or model output are not evidence of provenance.
 
 ## 13. Code of conduct and community safety
 

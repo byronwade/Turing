@@ -1,7 +1,7 @@
 # Documentation Policy
 
-Status: mandatory repository policy
-Scope: all human and software-agent changes
+Status: mandatory repository policy  
+Scope: all human and software-agent changes  
 Primary goal: keep implementation, architecture, risks, requirements, and project claims consistent over time
 
 ## 1. Policy
@@ -49,9 +49,15 @@ Each fact should have one canonical owner.
 
 Indexes summarize and link; they must not silently redefine the canonical owner.
 
+### Detailed engineering books
+
+The directories `engine/`, `javascript/`, `security-engine/`, `developer-experience/`, `api-design/`, `performance/`, `ai/`, and `competitive/` are detailed research and design companions. They expand subsystem contracts, experiments, evidence requirements, risks, and implementation questions. They do not replace Blueprint ownership or change requirement, risk, ADR, milestone, backlog, or support status unless the owning records are updated in the same change.
+
+Where a Blueprint topic has a detailed book, both must be inspected. The Blueprint owns the accepted summary; the book owns detailed research depth and must link back to the Blueprint.
+
 ## 3. Mandatory impact review
 
-Every pull request must answer:
+Every change must answer:
 
 1. What user-visible and developer-visible behavior changes?
 2. What architecture, process, IPC, lifecycle, data-flow, or privilege boundary changes?
@@ -59,7 +65,7 @@ Every pull request must answer:
 4. What compatibility, platform, accessibility, localization, media, printing, PDF, enterprise, or migration behavior changes?
 5. What performance, memory, startup, latency, energy, tab lifecycle, or resource-accounting behavior changes?
 6. What dependencies, licenses, unsafe code, generated code, schemas, protocols, profile formats, or build/release steps change?
-7. Which requirements, risks, ADRs, milestones, work packages, tests, benchmarks, support statements, and registries are affected?
+7. Which Blueprint chapters, detailed books, requirements, risks, ADRs, milestones, work packages, tests, benchmarks, support statements, and registries are affected?
 8. Which documents were updated, and why are the remaining documents unaffected?
 
 Writing “none” is acceptable only after the category was considered.
@@ -70,20 +76,20 @@ At minimum, inspect these documents:
 
 | Change | Documents and registries |
 |---|---|
-| product scope or claim | charter, capability parity, requirements, risk register |
+| product scope or claim | charter, capability parity, requirements, risk register, competitive scorecard |
 | dependency or language | language strategy, bibliography, build/release, license notices |
-| architecture, process role, IPC, lifecycle | system architecture, threat model, ADRs, requirements, risks |
-| engine parsing, DOM, CSS, layout, paint | web engine, compatibility/testing, roadmap, backlog |
-| JavaScript, GC, JIT, WebAssembly, bindings | JavaScript runtime, threat model, compatibility/testing |
-| network, storage, credential, media, PDF, printing | platform services, threat model, compatibility/testing |
-| performance or memory optimization | performance contract, benchmark schema, roadmap, risks |
-| AI capability | AI platform, threat model, agent schema, requirements, risks |
-| UI, accessibility, DevTools, automation | UI/DevTools, testing, requirements, capability parity |
-| signing, update, release, telemetry, incident response | build/release, threat model, security policy, risks |
-| new or changed requirement | requirements prose and JSON, roadmap, backlog, tests |
-| new or changed risk | risk prose and JSON, mitigation owner, affected roadmap/ADR |
-| new or changed ADR | ADR document, affected architecture and risk documents |
-| new or changed work package | backlog prose and JSON, dependencies, milestones |
+| architecture, process role, IPC, lifecycle | system architecture, threat model, security-engine book, ADRs, requirements, risks |
+| engine parsing, DOM, CSS, layout, paint | web engine, engine book, compatibility/testing, roadmap, backlog |
+| JavaScript, GC, JIT, WebAssembly, bindings | JavaScript runtime, JavaScript book, threat model, compatibility/testing |
+| network, storage, credential, media, PDF, printing | platform services, threat model, engine media chapter, compatibility/testing |
+| performance or memory optimization | performance contract, performance book, benchmark schema, roadmap, risks |
+| AI capability | AI platform, AI book, threat model, agent schema, requirements, risks |
+| UI, accessibility, DevTools, automation | UI/DevTools, developer-experience and API books, testing, requirements, capability parity |
+| signing, update, release, telemetry, incident response | build/release, threat model, security policy, security-engine book, risks |
+| new or changed requirement | requirements prose and JSON, roadmap, backlog, tests, affected detailed books |
+| new or changed risk | risk prose and JSON, mitigation owner, affected roadmap/ADR/books |
+| new or changed ADR | ADR document, affected architecture, detailed books, and risk documents |
+| new or changed work package | backlog prose and JSON, dependencies, milestones, detailed design owner |
 | repository file or directory added/removed/renamed | repository map, documentation index, links, validation, CI |
 | command, tool, or workflow changed | contributing guide, repository map, agent instructions, CI docs |
 
@@ -100,15 +106,15 @@ Research entries must record enough context to reproduce the conclusion:
 - observations separated from inferences;
 - contradictory evidence and unresolved questions;
 - security, licensing, accessibility, compatibility, performance, and operational implications;
-- resulting requirement, risk, ADR, benchmark, backlog, or design changes.
+- resulting Blueprint, detailed-book, requirement, risk, ADR, benchmark, backlog, or design changes.
 
-Use primary sources where possible. Secondary material may identify leads but should not be the sole authority for security or architecture decisions.
+Use primary sources where possible. Secondary material may identify leads but should not be the sole authority for security or architecture decisions. Dated product and project studies must state when information may become stale.
 
 ## 6. Feature and status language
 
 Use exact maturity labels: `unplanned`, `specified`, `prototype`, `partial`, `conformant-subset`, `release-gated`, or `supported`.
 
-Do not use “implemented,” “compatible,” “secure,” “production-ready,” “faster,” “lower memory,” “Chrome-equivalent,” or similar unqualified language unless the required evidence and comparison definition are present.
+Do not use “implemented,” “compatible,” “secure,” “production-ready,” “faster,” “lower memory,” “Chrome-equivalent,” “number one,” or similar unqualified language unless the required evidence and comparison definition are present.
 
 Document unsupported cases, failure behavior, recovery behavior, and residual risk beside successful behavior.
 
@@ -117,7 +123,7 @@ Document unsupported cases, failure behavior, recovery behavior, and residual ri
 ### Add
 
 - Place new prose under `docs/` as `.md`.
-- Choose one canonical owner.
+- Choose one canonical owner or identify the owning Blueprint chapter for a detailed companion.
 - Link it from `docs/README.md` or an indexed child.
 - Update `repository-map.md`.
 - Add required-file or registry validation when omission would make the repository inconsistent.
@@ -134,12 +140,12 @@ Document unsupported cases, failure behavior, recovery behavior, and residual ri
 
 - Remove or replace every inbound reference.
 - Record why the information is obsolete or where it moved.
-- Update requirements, risks, ADRs, milestones, and support statements that depended on it.
+- Update Blueprint chapters, detailed books, requirements, risks, ADRs, milestones, and support statements that depended on it.
 - Update `docs/README.md`, `repository-map.md`, and validation.
 
 ## 8. Review and enforcement
 
-`tools/validate_blueprint.py` enforces repository structure, required documents, JSON registries, Markdown hygiene, link integrity, index coverage, legacy-path removal, and source hygiene.
+`tools/validate_blueprint.py` enforces repository structure, required documents, detailed-book topology, JSON registries, Markdown hygiene, link integrity, index coverage, legacy-path removal, and source hygiene.
 
 `tools/check_documentation_change.py` enforces the minimum same-change rule in pull requests:
 
@@ -150,11 +156,13 @@ Document unsupported cases, failure behavior, recovery behavior, and residual ri
 
 Automation cannot prove semantic completeness. Reviewers and agents remain responsible for the full impact matrix.
 
+During the current single-owner research phase, the repository owner may use the controlled documentation-only direct-main exception defined in [Blueprint 16](blueprint-v1/16-governance-contributing.md). The exception does not apply to implementation, accepted architecture, machine-registry status, security fixes, release operations, or embargoed findings, and it never bypasses validation.
+
 ## 9. Definition of done
 
 Documentation is complete when:
 
-- all affected canonical documents agree;
+- all affected Blueprint chapters, detailed books, and policies agree;
 - machine-readable and prose records agree;
 - every new or moved document is indexed;
 - all relative links resolve;

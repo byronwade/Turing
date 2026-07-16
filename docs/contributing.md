@@ -9,7 +9,9 @@ Read:
 - [Start here](start-here.md)
 - [Documentation policy](documentation-policy.md)
 - [Blueprint v1](blueprint-v1/README.md)
+- the relevant [detailed engineering book](README.md#detailed-engineering-books)
 - [Threat model](blueprint-v1/08-security-and-sandbox.md)
+- [Security engineering book](security-engine/README.md) for hostile-input or trust-boundary work
 - [Architecture decisions](blueprint-v1/17-architecture-decisions.md)
 - root [`AGENTS.md`](../AGENTS.md)
 
@@ -19,12 +21,13 @@ Do not add Chromium, Blink, V8, WebKit, JavaScriptCore, Gecko, SpiderMonkey, Ele
 
 ## Documentation requirement
 
-Every change must update every affected canonical document in the same pull request. This includes code, configuration, workflows, dependencies, features, interfaces, risks, requirements, ADRs, benchmarks, schemas, repository structure, and removals.
+Every change must update every affected canonical document and detailed engineering companion in the same commit or pull request. This includes code, configuration, workflows, dependencies, features, interfaces, risks, requirements, ADRs, benchmarks, schemas, repository structure, and removals.
 
 At minimum:
 
 - update `repository-map.md` for every file or directory addition, deletion, or rename;
-- update `README.md` for documentation topology changes;
+- update `README.md` and affected book indexes for documentation topology changes;
+- update the owning Blueprint chapter and detailed book together when their truth changes;
 - update prose and machine-readable registries together;
 - update all relative links and commands;
 - state unsupported behavior and residual risks;
@@ -53,7 +56,7 @@ A pull request must state:
 - security, privacy, accessibility, compatibility, performance, memory, energy, platform, and agent impact;
 - tests, conformance results, fuzzing, sanitizers, and benchmarks;
 - dependency, license, unsafe-code, generated-code, protocol, schema, or profile-format changes;
-- documentation updated and documents reviewed but unchanged;
+- Blueprint and detailed-book documentation updated and documents reviewed but unchanged;
 - unsupported cases, residual risks, rollback, and follow-up work.
 
 A visual demo without negative tests, lifecycle behavior, failure handling, recovery, resource accounting, and explicit unsupported cases is not complete.
@@ -96,7 +99,7 @@ A dependency proposal must document:
 
 ## Licensing
 
-By contributing, you certify that you have the right to submit the contribution under the project’s MPL-2.0 policy. Developer Certificate of Origin enforcement is planned before broad external contribution intake.
+By contributing, you certify that you have the right to submit the contribution under the project's MPL-2.0 policy. Developer Certificate of Origin enforcement is planned before broad external contribution intake.
 
 ## Conduct
 

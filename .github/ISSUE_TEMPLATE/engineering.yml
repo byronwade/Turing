@@ -7,24 +7,24 @@ body:
       value: |
         Do not report suspected exploitable vulnerabilities here. Use the private security advisory flow.
 
-        Turing is a research program. Distinguish current behavior from targets and proposals.
+        Turing is a research program. Distinguish current behavior from targets, detailed designs, comparative observations, and accepted decisions.
   - type: textarea
     id: problem
     attributes:
       label: Problem and impact
-      description: What behavior, requirement, user, developer workflow, or research question is affected?
+      description: What behavior, requirement, user, developer workflow, research question, experiment, or detailed engineering contract is affected?
     validations:
       required: true
   - type: input
     id: identifiers
     attributes:
-      label: Requirement, risk, ADR, work-package, or milestone IDs
-      placeholder: REQ-..., R-..., ADR-..., WP-..., M...
+      label: Requirement, risk, ADR, work-package, milestone, research, or experiment IDs
+      placeholder: REQ-..., R-..., ADR-..., WP-..., M..., RQ-..., EXP-...
   - type: textarea
     id: evidence
     attributes:
       label: Reproduction or evidence
-      description: Include commit, platform, configuration, deterministic steps, traces, tests, standards references, or measurements. Remove secrets.
+      description: Include commit, source/version, retrieval date, platform, configuration, deterministic steps, traces, tests, standards references, or measurements. Remove secrets.
     validations:
       required: true
   - type: textarea
@@ -37,14 +37,14 @@ body:
     id: implications
     attributes:
       label: Cross-cutting implications
-      description: Address security, privacy, accessibility, compatibility, performance, memory, energy, platform, operations, and AI-agent impact.
+      description: Address security, privacy, accessibility, compatibility, performance, memory, energy, platform, operations, developer APIs, providers/tools, and AI-agent impact.
     validations:
       required: true
   - type: textarea
     id: documentation
     attributes:
       label: Documentation impact
-      description: List canonical documents, requirements, risks, ADRs, registries, tests, indexes, and repository-map entries that must change.
+      description: List owning Blueprint chapters, detailed engineering books, canonical policies/research, requirements, risks, ADRs, registries, tests, indexes, and repository-map entries that must change.
     validations:
       required: true
   - type: textarea

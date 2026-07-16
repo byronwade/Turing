@@ -44,6 +44,21 @@ This blueprint separates four layers that are often confused:
 | [21 — Product requirements](21-product-requirements.md) | Which product, engine, security, performance, accessibility, AI, and operations requirements are normative? |
 | [22 — Research and measurement program](22-research-program.md) | Which unknowns must be researched and how will evidence be recorded? |
 
+## Detailed engineering books
+
+The Blueprint remains the normative owner. These books expand implementation research, experiments, evidence, and risks without silently changing accepted decisions:
+
+- [Browser engine engineering](../engine/README.md)
+- [JavaScript runtime engineering](../javascript/README.md)
+- [Browser security engineering](../security-engine/README.md)
+- [Developer experience and DevTools](../developer-experience/README.md)
+- [API design](../api-design/README.md)
+- [Performance engineering](../performance/README.md)
+- [AI and agent engineering](../ai/README.md)
+- [Competitive browser and engine studies](../competitive/README.md)
+
+The [documentation expansion audit](../research/documentation-expansion-audit-2026-07.md) explains why these books were added, which gaps they close, and which detailed areas remain queued.
+
 ## Machine-readable companions
 
 The `machine/` directory contains requirements, risks, work packages, process capabilities, benchmark-manifest schemas, and agent-action schemas. These files are not secondary exports: they must remain consistent with the prose in the same change.
@@ -52,11 +67,12 @@ The `machine/` directory contains requirements, risks, work packages, process ca
 
 Dated evidence reports live in the [research index](../research/README.md). They inform and challenge this Blueprint but do not silently change accepted requirements or decisions.
 
-Current report:
+Current reports:
 
 - [Browser engine landscape and Turing excellence strategy — July 2026](../research/browser-engine-landscape-2026-07.md)
+- [Documentation expansion audit — July 2026](../research/documentation-expansion-audit-2026-07.md)
 
-Recommendations from a report become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
+Recommendations from a report or detailed book become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
 
 ## Executable bootstrap
 
@@ -85,7 +101,7 @@ A milestone is not complete because a demo looks correct. Every milestone define
 
 ## Documentation governance
 
-All changes to the Blueprint, prototype, registries, workflows, or future implementation must follow the [documentation policy](../documentation-policy.md). Repository additions, removals, and renames must also update the [repository map](../repository-map.md).
+All changes to the Blueprint, detailed engineering books, prototype, registries, workflows, or future implementation must follow the [documentation policy](../documentation-policy.md). Repository additions, removals, and renames must also update the [repository map](../repository-map.md).
 
 ## Success criteria
 
