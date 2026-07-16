@@ -1,0 +1,128 @@
+              ('Servo about and goals', 'https://servo.org/about/'),
+              ('Servo repository', 'https://github.com/servo/servo'),
+              ('Servo Book', 'https://book.servo.org/'),
+              ('Servo components', 'https://book.servo.org/hacking/components.html')]},
+ {'filename': '02-rust-api-engine-builder-and-lifecycle.md',
+  'title': 'Rust API, Engine Builder, and Lifecycle',
+  'owner': 'embedding API and Rust SDK',
+  'purpose': 'Define the canonical high-level API from which all other language SDKs derive.',
+  'decisions': ['The Rust SDK is the canonical typed API and uses builders for engine, profile, view, '
+                'headless session, and plug-in host creation.',
+                'No process-global singleton is required. Multiple engines or profiles are explicit and '
+                'isolation semantics are documented.',
+                'Construction is fallible and returns structured errors; startup can be asynchronous and '
+                'cancellable.',
+                'Views, profiles, requests, streams, captures, and plug-in calls have explicit ownership and '
+                'shutdown.',
+                'The convenience layer remains small while the lower-level API exposes deterministic '
+                'lifecycle and observability.'],
+  'architecture': ['Proposed minimal use: `let engine = turing::Engine::builder().build()?;` followed by '
+                   '`let view = engine.view().url("https://example.com").build().await?;`.',
+                   'EngineBuilder selects platform integration, data directory or ephemeral profile, sandbox '
+                   'mode, GPU policy, network adapter, logging, crash policy, plug-in policy, and feature '
+                   'capabilities.',
+                   'ViewBuilder selects profile, URL/content, viewport, visibility, lifecycle policy, '
+                   'accessibility, and event handlers.',
+                   'Long operations return futures/streams with cancellation tokens and deadlines.',
+                   'Events include target identity, monotonic time, document epoch, causal parent, and '
+                   'redacted payload class.'],
+  'risks': ['An ergonomic builder can hide expensive or unsafe defaults.',
+            'Async runtime coupling can force an embedder-wide executor.',
+            'Callbacks can outlive views or cross thread-affinity boundaries.'],
+  'experiments': ['Prototype APIs with Tokio, runtime-neutral futures, explicit polling, and callback '
+                  'adapters.',
+                  'Build examples for desktop view, offscreen rendering, PDF/capture, test automation, and '
+                  'custom network policy.',
+                  'Fuzz lifecycle misuse including double shutdown, stale handles, cancellation, and '
+                  'embedder callback failure.'],
+  'sources': [('Rust API Guidelines', 'https://rust-lang.github.io/api-guidelines/'),
+              ('Rust async book', 'https://rust-lang.github.io/async-book/')]},
+ {'filename': '03-stable-c-abi-ownership-errors-and-async.md',
+  'title': 'Stable C ABI, Ownership, Errors, and Async',
+  'owner': 'ABI and SDK infrastructure',
+  'purpose': 'Provide a universal, long-lived binary boundary suitable for C, C++, Swift, Kotlin/JNI, C#, '
+             'Go, Python, Node, and other bindings.',
+  'decisions': ['The public ABI uses opaque handles, fixed-width integers, explicit byte/string views, '
+                'versioned structs with size fields, and exported functions using a documented calling '
+                'convention.',
+                'Rust enums, traits, references, layouts, panics, allocators, and unwinding never cross the '
+                'ABI.',
+                'Every owned object has create/retain-or-clone/release semantics or a uniquely owned handle; '
+                'ownership is visible in names and documentation.',
+                'Errors are structured handles or caller-provided result records with stable codes, '
+                'messages, cause chains, and redacted diagnostic metadata.',
+                'Async operations use operation handles with poll/callback completion, progress, '
+                'cancellation, and deadlines; language bindings map them to native futures/promises/tasks.'],
+  'architecture': ['ABI version negotiation occurs before object creation.',
+                   'Capability discovery prevents callers from guessing based on library version.',
+                   'Callbacks declare thread and reentrancy rules. UI-affine callbacks are dispatched '
+                   'through an embedder-provided executor.',
+                   'Buffers can be copied or explicitly borrowed for a bounded call; zero-copy shared memory '
+                   'uses separate validated APIs.',
+                   'The library never frees caller memory or asks callers to free Rust allocations without a '
+                   'matching exported function.'],
+  'risks': ['ABI compatibility can preserve weak early designs indefinitely.',
+            'Incorrect lifetime mapping can produce use-after-free outside Rust.',
+            'Callback reentrancy can corrupt engine state.'],
+  'experiments': ['Run ABI compatibility tests across old/new library and SDK combinations.',
+                  'Use C sanitizers and fuzz harnesses to misuse every handle, buffer, callback, and async '
+                  'operation.',
+                  'Measure crossing overhead and batch high-frequency APIs.'],
+  'sources': [('Rust Nomicon FFI', 'https://doc.rust-lang.org/nomicon/ffi.html'),
+              ('cbindgen', 'https://github.com/mozilla/cbindgen')]},
+ {'filename': '04-language-sdks-and-package-distribution.md',
+  'title': 'Language SDKs and Package Distribution',
+  'owner': 'SDK, release, and developer experience',
+  'purpose': 'Make Turing easy to embed from major languages while keeping behavior, security, and support '
+             'consistent.',
+  'decisions': ['Rust: native crate with high-level builders and low-level protocol/ABI crates.',
+                'C/C++: installed headers, shared/static libraries, CMake and pkg-config metadata, RAII C++ '
+                'wrapper.',
+                'Python: platform wheels with PyO3 or generated bindings over the stable core, async '
+                'integration, typed stubs, and no compiler requirement for common platforms.',
+                'Node.js/TypeScript: napi-rs-style prebuilt packages, promises/streams, type declarations, '
+                'and Electron-independent use.',
+                'Swift: Swift Package plus XCFramework, async/await, MainActor UI rules, and macOS/iOS '
+                'support only when the platform feature matrix permits.',
+                'Kotlin/Java: Maven artifacts and JNI/UniFFI-style bindings, coroutines, Android view '
+                'adapter, and desktop JVM support where packaged.',
+                'C#: NuGet packages with generated P/Invoke and safe handle wrappers.',
+                'Go: module plus cgo bridge initially; no goroutine or pointer is retained across C without '
+                'an explicit bridge.',
+                'WIT: component SDK generation for sandboxed plug-ins and portable service adapters.'],
+  'architecture': ['All SDKs are generated from canonical schema/ABI metadata plus a small handwritten '
+                   'idiomatic layer.',
+                   'Package versions report engine build identity, ABI epoch, API capabilities, supported '
+                   'platforms, security channel, and minimum runtime.',
+                   'Prebuilt binaries are signed, reproducible or verifiable, and accompanied by '
+                   'SBOM/provenance.',
+                   'Examples and tests run in release CI for every supported SDK.',
+                   'Unsupported platform/language combinations fail clearly at install or capability '
+                   'negotiation.'],
+  'risks': ['Prebuilt package matrices create a large signing and update burden.',
+            'Language-specific wrappers can diverge semantically.',
+            'Native packaging failures can make a good API unusable.'],
+  'experiments': ['Publish private test packages and measure installation success on clean CI images.',
+                  'Run one shared conformance scenario through every language SDK.',
+                  'Measure package size, cold load, crossing overhead, async cancellation, crash behavior, '
+                  'and diagnostics.'],
+  'sources': [('UniFFI', 'https://mozilla.github.io/uniffi-rs/'),
+              ('PyO3', 'https://pyo3.rs/'),
+              ('napi-rs', 'https://napi.rs/'),
+              ('JNI', 'https://docs.oracle.com/en/java/javase/24/docs/specs/jni/')]},
+ {'filename': '05-wasm-component-model-wit-and-sandboxed-components.md',
+  'title': 'WebAssembly Component Model, WIT, and Sandboxed Components',
+  'owner': 'portable components and plug-in runtime',
+  'purpose': 'Use language-neutral component contracts where sandboxing and portability matter more than '
+             'native ABI throughput.',
+  'decisions': ['WIT defines capability-oriented interfaces for Turing Component plug-ins and selected '
+                'embedder service adapters.',
+                'Components receive no ambient WASI filesystem, socket, clock, random, environment, or '
+                'process authority; imports are explicitly constructed.',
+                'Component interfaces use owned values, resources, results, streams/futures where supported, '
+                'and versioned packages.',
+                'The component runtime has memory, table, code, fuel/epoch, wall-clock, concurrency, log, '
+                'storage, and network budgets.',
+                'Components are not used to replace the page JavaScript runtime or hide remote rendering.'],
+  'architecture': ['Host resources represent scoped browser objects such as selected tab, capture stream, '
+                   'note store, AI tool, or DevTools trace—not raw pointers.',
