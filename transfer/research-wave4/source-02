@@ -1,0 +1,122 @@
+  'architecture': ['The dependency ledger maps every crate/library to owners, trust level, inputs, release '
+                   'artifacts, licenses, advisories, and update SLA.',
+                   'Feature flags are minimized and release feature sets are checked into source.',
+                   'Vendoring or content-addressed mirrors are used where reproducibility and emergency '
+                   'patching require them.',
+                   'Replacement tests assert Turing semantics above the dependency adapter.',
+                   'Forks require an explicit maintenance budget and upstream strategy.'],
+  'risks': ['A small direct dependency can import a large or unmaintained transitive graph.',
+            'Semver-compatible releases can still change performance or security behavior.',
+            'A project may be healthy today but unsustainable over a browser support lifetime.',
+            'Forking can create a permanent private maintenance burden.'],
+  'experiments': ['Build a dependency scorecard and reject candidates that cannot meet evidence '
+                  'requirements.',
+                  'Perform replacement drills for TLS, graphics, compiler, and storage adapters.',
+                  'Measure update-to-release time for a simulated critical advisory.'],
+  'sources': [('RustSec', 'https://rustsec.org/'),
+              ('OpenSSF Scorecard', 'https://securityscorecards.dev/'),
+              ('Mozilla Public License 2.0', 'https://www.mozilla.org/MPL/2.0/'),
+              ('Sigstore', 'https://www.sigstore.dev/')]}]
+PLUGIN_CHAPTERS = [{'filename': '01-terminology-product-model-and-compatibility.md',
+  'title': 'Terminology, Product Model, and Compatibility',
+  'owner': 'plug-in platform and product architecture',
+  'purpose': 'Define Turing Plug-ins without reviving unsafe historical in-process browser plug-in models.',
+  'decisions': ['The user-facing name is **Turing Plug-ins**. Source paths, schema fields, and identifiers '
+                'use `plugin`.',
+                '“WebExtension” or “extension” is used only when describing cross-browser compatibility, '
+                'imported manifests, or external ecosystems.',
+                'Turing Plug-ins are not NPAPI, PPAPI, in-process DLLs, arbitrary native libraries, or '
+                'page-controlled browser modules.',
+                'First-party plug-ins and third-party plug-ins use the same capability, lifecycle, audit, '
+                'resource, and update machinery. Preinstallation does not imply ambient authority.',
+                'A WebExtensions compatibility adapter translates a supported subset into the Turing model; '
+                "compatibility does not dictate Turing's internal architecture."],
+  'architecture': ['Tier 1 — Web-compatible plug-ins: packaged HTML/CSS/JavaScript or WebAssembly, isolated '
+                   'worlds, event-driven workers, WebExtension-compatible APIs.',
+                   'Tier 2 — Turing Component plug-ins: WIT-described WebAssembly components in a '
+                   'resource-limited component runtime with no ambient DOM, filesystem, network, or browser '
+                   'authority.',
+                   'Tier 3 — Native connectors: separately installed, signed, visible, out-of-process '
+                   'helpers for narrowly approved enterprise/developer integrations.',
+                   'Built-in product capabilities may expose a plug-in UI or declarative rule package while '
+                   'security-sensitive enforcement stays in browser services.'],
+  'risks': ['The word plug-in may be confused with legacy native plug-ins.',
+            'Compatibility pressure can recreate overbroad host permissions and persistent background '
+            'execution.',
+            'First-party status can become a hidden privilege bypass.'],
+  'experiments': ['Import representative Manifest V3 extensions through a compatibility adapter and classify '
+                  'semantic gaps.',
+                  'Run user studies on install prompts, permissions, activity indicators, and the '
+                  'distinction between built-in and third-party plug-ins.',
+                  'Verify that identical capabilities produce identical broker decisions for first- and '
+                  'third-party packages.'],
+  'sources': [('Chrome Manifest V3',
+               'https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3'),
+              ('W3C WebExtensions Community Group', 'https://github.com/w3c/webextensions'),
+              ('WebAssembly Component Model', 'https://component-model.bytecodealliance.org/')]},
+ {'filename': '02-manifest-capabilities-permissions-and-lifecycle.md',
+  'title': 'Manifest, Capabilities, Permissions, and Lifecycle',
+  'owner': 'plug-in API, security, and lifecycle',
+  'purpose': 'Specify a versioned manifest and deny-by-default capability system that is understandable to '
+             'users and mechanically enforceable.',
+  'decisions': ['The manifest declares package identity, entry points, API version, compatible engine range, '
+                'permissions, host grants, UI surfaces, background mode, content scripts/components, '
+                'resource limits, data practices, update channel, and signing identity.',
+                'Permissions are split into install-time, optional runtime, per-site, per-tab, per-document, '
+                'selected-resource, developer, enterprise, and prohibited classes.',
+                'Host access is not equivalent to browser history, credentials, cross-origin response '
+                'bodies, local files, or browser-internal pages.',
+                'Background execution is event-driven by default. Persistent background processes require a '
+                'documented product class and explicit resource budget.',
+                'Capabilities carry issuer, principal, profile, scope, operation set, expiry, count, '
+                'document epoch, and revocation state.'],
+  'architecture': ['Manifest and API schemas are canonical and code-generating.',
+                   'Permission prompts identify the plug-in, profile, target origins/resources, data '
+                   'classes, duration, and why the permission is needed.',
+                   'Content scripts run in isolated worlds; page objects cross the boundary only through '
+                   'structured, validated values.',
+                   'Lifecycle states include installed, disabled, enabled, starting, idle, running, '
+                   'suspended, updating, quarantined, revoked, and removed.',
+                   'Updates cannot silently add permissions; material authority changes require review and '
+                   'user or enterprise approval.'],
+  'risks': ['Permission fatigue can turn consent into a ritual.',
+            'Broad host patterns can expose authentication and personal data.',
+            'Event replay and update races can act on stale documents.'],
+  'experiments': ['Prototype capability attenuation and revocation across navigation, profile changes, '
+                  'private sessions, and updates.',
+                  'Measure prompt comprehension and approval errors for common plug-in classes.',
+                  'Model-check lifecycle and update state transitions.'],
+  'sources': [('Chrome extension manifest',
+               'https://developer.chrome.com/docs/extensions/reference/manifest'),
+              ('Chrome extension service workers',
+               'https://developer.chrome.com/docs/extensions/develop/concepts/service-workers'),
+              ('Permissions API', 'https://www.w3.org/TR/permissions/')]},
+ {'filename': '03-runtime-isolation-webassembly-and-native-connectors.md',
+  'title': 'Runtime Isolation, WebAssembly Components, and Native Connectors',
+  'owner': 'plug-in runtime and browser security',
+  'purpose': 'Keep plug-in failures and compromises from becoming browser-kernel, profile, or cross-origin '
+             'compromise.',
+  'decisions': ['Plug-in code does not execute in the browser kernel, network broker, credential broker, '
+                "updater, or another plug-in's process.",
+                'Web-compatible plug-ins run in dedicated plug-in/extension processes or constrained workers '
+                'with typed broker APIs.',
+                'Turing Component plug-ins run as WebAssembly components with WIT interfaces, fuel or epoch '
+                'interruption, memory/table limits, deterministic cancellation, and capability-scoped WASI '
+                'resources.',
+                'Native connectors are never loaded in-process. They are separate signed applications with '
+                'an allowlisted protocol, explicit user/enterprise installation, mutual authentication, and '
+                'visible activity.',
+                'Remote hosted executable code is prohibited; reviewed packages are immutable and '
+                'content-addressed.'],
+  'architecture': ['Each plug-in has a principal, profile binding, process identity, resource owner, storage '
+                   'partition, and audit stream.',
+                   'Cross-plug-in communication requires explicit shared interfaces and cannot transfer '
+                   'broader capabilities than the sender holds.',
+                   'DOM/page access occurs through isolated content contexts and versioned messages, not raw '
+                   'engine pointers.',
+                   'Component plug-ins receive only imported WIT capabilities; ungranted imports fail at '
+                   'instantiation.',
+                   'Crash loops trigger backoff, quarantine, and user-visible recovery.'],
+  'risks': ['A WebAssembly runtime or JIT is itself a high-value attack surface.',
+            'Native connectors can become local privilege bridges.',
+            'Shared process pooling can create covert or cross-principal channels.'],
