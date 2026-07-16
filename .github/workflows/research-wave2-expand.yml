@@ -1,6 +1,12 @@
 name: Expand research wave 2
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - transfer/research-wave2/**
+      - .github/workflows/research-wave2-expand.yml
   push:
     branches:
       - docs/research-wave2-transfer
@@ -55,5 +61,3 @@ jobs:
           git diff --cached --quiet && exit 1
           git commit -m "Expand systems and operations research library"
           git push origin HEAD:docs/research-wave2-transfer
-
-# Manual retrigger: 2026-07-16
