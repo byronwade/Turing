@@ -43,6 +43,10 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Fixed-Hardware Benchmark Laboratory](benchmark-lab/README.md) | Hardware tiers, OS images, corpora, servers, startup, navigation, input, frame pacing, memory, process topology, 30 tabs, energy, accessibility, developer, agent, recovery, statistics, artifacts, and claims. |
 | [Quality Assurance, Conformance, and Verification Engineering](quality-assurance/README.md) | Conformance suites, reduced tests, fuzzing, property/model/formal methods, differential testing, fault injection, chaos, longevity, security assurance, independent review, flakes, and release evidence. |
 | [Everyday Product Experience Engineering](product-experience/README.md) | Tabs, groups, workspaces, command field, onboarding, migration, profiles, private sessions, permissions, credentials, agents, resource manager, lifecycle, recovery, settings, updates, support, usability, and accessibility. |
+| [Technology Stack and Engineering Toolchain](technology-stack/README.md) | Language map, framework/library candidates, build/test/security tooling, and dependency lifecycle |
+| [Turing Plug-in Platform](plugins/README.md) | Native Plug-ins, capabilities, Wasm/WIT, WebExtensions adapter, first-party portfolio, store, SDK, accessibility, and resources |
+| [Embedding and Multi-language SDK](embedding/README.md) | Rust API, stable C ABI, generated SDKs, lifecycle, surfaces, host security, packaging, and conformance |
+| [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |
 
 ## Active research
 
@@ -52,6 +56,7 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |
 
 | [Performance, security, developer, and missing-systems expansion audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Adds eleven books and advanced performance, security, and developer research; no implementation or support claim |
+| [Professional buildout gap audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, source strategy, technology, Plug-in, embedding, operations, legal, data, product, and sustainability controls |
 
 Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 

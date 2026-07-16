@@ -62,3 +62,11 @@ cargo run --manifest-path prototype/Cargo.toml --quiet
 ## Release impact
 
 State the maturity label and release gates affected. A visual demo, detailed design, or competitive study is not production-readiness evidence.
+
+## Professional controls
+
+- Owner and backup status:
+- RFC/ADR/design-note class:
+- Traceability/phase impact:
+- Required cross-cutting reviews:
+- Configuration, Plug-in, embedding, dependency, migration, release, support, and expiring exception impact:

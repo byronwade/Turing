@@ -169,3 +169,7 @@ Reopen the primary-language decision only if one of the following is demonstrate
 - staffing or toolchain viability changes enough to threaten program continuity.
 
 Preference or benchmark micro-wins alone are insufficient.
+
+## Detailed technology selection
+
+The [Technology Stack](../technology-stack/README.md) documents candidates and adoption gates. A named library is not approved without exact source/version, owner, license/provenance, unsafe/native and hostile-input review, fuzzing, platform/performance/build evidence, Turing-owned adapter, and replacement plan.

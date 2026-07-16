@@ -177,3 +177,7 @@ Documentation is complete when:
 Changes to networking, storage, media/documents, native platform integration, accessibility, release operations, extensions/enterprise/sync, web-platform governance, benchmark operations, quality assurance, or everyday product workflows must inspect the corresponding detailed book in addition to the owning Blueprint chapters. Performance, security, and developer-tool changes must also inspect their advanced chapters for locality, allocation, IPC, startup, profiling, side channels, native/JIT containment, capability provenance, replay, reduction, SDKs, and cross-domain diagnostics.
 
 A dated research report remains evidence, not an accepted decision. Book topology, child links, repository mapping, research logs, bibliography, questions, and validation change together.
+
+## Professional control-plane records
+
+Changes must inspect the professional ownership, traceability, phase, review, and exception registries under `blueprint-v1/machine/`, the project-buildout handbook, and the relevant technology, Plug-in, embedding, and template records. Research recommendations never silently change accepted implementation or support status.

@@ -248,3 +248,35 @@ Every study publishes:
 - recommendation, confidence, and revisit trigger.
 
 A benchmark result cannot decide a security boundary alone. A decision that affects open-web semantics also requires conformance evidence. Findings that do not reproduce remain exploratory.
+
+## RQ-41 — Technology and dependency set
+
+Which languages, frameworks, and foundations minimize total security, performance, build, license, and maintenance cost?
+
+## RQ-42 — Native Plug-ins
+
+Which capability/Wasm/WebExtensions architecture is safest and most useful?
+
+## RQ-43 — Embedding contract
+
+Which Rust/C/generated-SDK contract remains simple without freezing internals?
+
+## RQ-44 — Servo relationship
+
+Which clean, selective, upstream, derived, or charter-change option best serves Turing?
+
+## RQ-45 — Project controls
+
+Which ownership, review, traceability, phase, and evidence controls reduce defects without blocking work?
+
+## RQ-46 — Reproducible environment
+
+Which bootstrap, cache, linker, test runner, and host matrix is fast and maintainable?
+
+## RQ-47 — Traceability at browser scale
+
+Can requirement-to-evidence records remain accurate and useful?
+
+## RQ-48 — Capacity and sustainability
+
+What staffing, funding, infrastructure, and support capacity is required at each maturity?

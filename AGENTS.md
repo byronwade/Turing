@@ -195,3 +195,7 @@ Do not bypass, weaken, or delete a failing validation rule without updating the 
 - Measurement infrastructure: `docs/benchmark-lab/` plus `docs/performance/`, Blueprint 09 and 12, and benchmark manifests.
 - Verification: `docs/quality-assurance/` plus Blueprint 08, 12, 13, and 20.
 - Everyday product workflows: `docs/product-experience/` plus Blueprint 02, 09, 10, 11, and accessibility requirements.
+
+## Professional project-control requirements
+
+Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.

@@ -361,3 +361,13 @@ For every structural change:
 6. update build, workflow, packaging, and ownership configuration;
 7. remove obsolete references;
 8. run repository validation.
+
+## Professional buildout additions
+
+- `docs/project-buildout/`: professional lifecycle, ownership, review, traceability, engineering, operations, source-strategy, product, and sustainability controls.
+- `docs/technology-stack/`: language, framework, toolchain, and dependency research.
+- `docs/plugins/`: native Plug-in platform and compatibility research.
+- `docs/embedding/`: Rust/C/generated-SDK embedding contract.
+- `docs/templates/`: engineering artifact structures.
+- `docs/blueprint-v1/machine/professional-*.json`: ownership, traceability, phase, review, and exception companions.
+- `.github/CODEOWNERS`: provisional research-phase review routing.

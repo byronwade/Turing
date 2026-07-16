@@ -40,3 +40,7 @@ cargo run --manifest-path prototype/Cargo.toml --quiet
 ```
 
 All durable prose documentation belongs under `docs/`. Every code, configuration, dependency, interface, feature, risk, or repository-structure change must update every affected document in the same change.
+
+## Professional buildout
+
+The [Professional Project Buildout and Operating Handbook](docs/project-buildout/README.md), [Technology Stack](docs/technology-stack/README.md), [Turing Plug-in Platform](docs/plugins/README.md), and [Embedding SDK](docs/embedding/README.md) define the proposed professional implementation control plane. They are research and operating baselines, not implementation or support claims.

@@ -63,3 +63,7 @@ Do not use current or early Turing builds for sensitive accounts, private data, 
 ## Documentation rule
 
 All canonical project documentation lives under `docs/`. Every feature, code, configuration, dependency, interface, risk, requirement, benchmark, or repository-structure change must update every affected document in the same change. See [the documentation policy](documentation-policy.md) and the root [`AGENTS.md`](../AGENTS.md).
+
+## Professional implementation controls
+
+Read the [project-buildout handbook](project-buildout/README.md), [technology stack](technology-stack/README.md), [Plug-in platform](plugins/README.md), [embedding SDK](embedding/README.md), and [templates](templates/README.md) before implementation work.

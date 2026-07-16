@@ -314,3 +314,16 @@ license_or_access: Applicable terms
 ```
 
 The implementation's behavior notes should quote minimally and describe algorithms in original language. Test imports preserve upstream licenses and revision metadata.
+
+## Professional buildout sources
+
+- NIST SSDF — https://csrc.nist.gov/pubs/sp/800/218/final
+- NIST Incident Response — https://csrc.nist.gov/pubs/sp/800/61/r3/final
+- SLSA — https://slsa.dev/spec/v1.2/
+- Reproducible Builds — https://reproducible-builds.org/
+- GitHub CODEOWNERS — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+- Semantic Versioning — https://semver.org/
+- JSON Schema — https://json-schema.org/draft/2020-12
+- Servo — https://servo.org/
+- WebAssembly Component Model — https://component-model.bytecodealliance.org/
+- Chrome Extensions — https://developer.chrome.com/docs/extensions/

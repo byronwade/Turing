@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "REV-ROUTINE",
+      "match": "low-risk internal behavior",
+      "artifacts": [
+        "tests",
+        "documentation impact"
+      ],
+      "reviewers": [
+        "owner"
+      ],
+      "minimum_approvals": 1
+    },
+    {
+      "id": "REV-SECURITY",
+      "match": "trust boundary, parser, IPC, permission, credential, update, Plug-in, DevTools, automation, or agent change",
+      "artifacts": [
+        "threat-model delta",
+        "negative tests",
+        "security review"
+      ],
+      "reviewers": [
+        "owner",
+        "security"
+      ],
+      "minimum_approvals": 2
+    },
+    {
+      "id": "REV-PUBLIC-API",
+      "match": "public API, ABI, schema, profile, policy, Plug-in, embedding, or compatibility change",
+      "artifacts": [
+        "RFC",
+        "compatibility tests",
+        "migration"
+      ],
+      "reviewers": [
+        "owner",
+        "api-protocol",
+        "architecture"
+      ],
+      "minimum_approvals": 2
+    },
+    {
+      "id": "REV-PERFORMANCE",
+      "match": "hot path, allocator, scheduler, memory layout, GPU, startup, or benchmark claim",
+      "artifacts": [
+        "performance plan",
+        "raw evidence",
+        "guardrails"
+      ],
+      "reviewers": [
+        "owner",
+        "performance"
+      ],
+      "minimum_approvals": 2
+    },
+    {
+      "id": "REV-RELEASE",
+      "match": "signing, update, release trust, supported-version, or irreversible migration",
+      "artifacts": [
+        "RFC",
+        "threat model",
+        "rollout/rollback",
+        "release readiness"
+      ],
+      "reviewers": [
+        "owner",
+        "security",
+        "release",
+        "architecture"
+      ],
+      "minimum_approvals": 3
+    }
+  ]
+}

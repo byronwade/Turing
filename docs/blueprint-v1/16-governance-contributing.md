@@ -241,3 +241,7 @@ Track without gaming:
 - user-reported data loss, spoofing, unauthorized agent action, and crashes.
 
 Lines of code, number of features, closed issues, or benchmark wins are not standalone success metrics.
+
+## Professional operating controls
+
+`.github/CODEOWNERS` and the professional machine records operationalize ownership, traceability, phase, review, and exceptions. Current assignments are provisional and do not satisfy preview/beta/stable multi-person gates.

@@ -108,3 +108,7 @@ Technical criticism should be specific, evidence-based, and respectful. Security
 ## Expanded research library
 
 Before work in networking, storage, media/documents, platform integration, accessibility, release operations, extensions/enterprise/sync, web-platform behavior, benchmarks, quality assurance, or everyday product workflows, read the corresponding index linked from [the documentation index](README.md#detailed-engineering-books). Research proposals include exact sources, experiments, evidence, risks, unsupported behavior, and the owning Blueprint relationship.
+
+## Professional change workflow
+
+Significant work identifies owner and backup status, requirement/traceability impact, RFC/ADR class, required cross-cutting reviewers, configuration, Plug-in/embedding, dependency/provenance, migration, evidence, rollback, release/support, and any expiring exception.

@@ -67,6 +67,10 @@ The Blueprint remains the normative owner. These books expand implementation res
 - [Fixed-Hardware Benchmark Laboratory](../benchmark-lab/README.md)
 - [Quality Assurance, Conformance, and Verification Engineering](../quality-assurance/README.md)
 - [Everyday Product Experience Engineering](../product-experience/README.md)
+- [Technology Stack and Engineering Toolchain](../technology-stack/README.md)
+- [Turing Plug-in Platform](../plugins/README.md)
+- [Embedding and Multi-language SDK](../embedding/README.md)
+- [Professional Project Buildout and Operating Handbook](../project-buildout/README.md)
 
 The [performance, security, developer, and missing-systems audit](../research/performance-security-developer-expansion-audit-2026-07.md) records this expansion and its limitations.
 
@@ -83,6 +87,7 @@ Current reports:
 - [Browser engine landscape and Turing excellence strategy — July 2026](../research/browser-engine-landscape-2026-07.md)
 - [Documentation expansion audit — July 2026](../research/documentation-expansion-audit-2026-07.md)
 - [Performance, security, developer, and missing-systems expansion audit — July 2026](../research/performance-security-developer-expansion-audit-2026-07.md)
+- [Professional buildout gap audit — July 2026](../research/professional-buildout-gap-audit-2026-07.md)
 
 Recommendations from a report or detailed book become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
 

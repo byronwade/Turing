@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-16",
+  "phases": [
+    {
+      "id": "M0",
+      "status": "in_progress",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": [
+        "Professional controls and multi-person ownership incomplete."
+      ]
+    },
+    {
+      "id": "M1",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M2",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M3",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M4",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M5",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M6",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M7",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M8",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "M9",
+      "status": "not_started",
+      "owner_scope": "program",
+      "evidence": [],
+      "blockers": []
+    }
+  ]
+}

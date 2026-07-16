@@ -312,3 +312,7 @@ At the end of each milestone answer:
 - Should a component be simplified, delayed, replaced behind its interface, or abandoned?
 
 The long-term vision is fixed; implementation choices remain empirical.
+
+## Professional buildout prerequisite
+
+Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. This refines M0 without changing WP-001 through WP-018 status.

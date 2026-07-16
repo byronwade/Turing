@@ -207,3 +207,21 @@ Build browser chrome with a Turing-owned retained UI model and native platform a
 ### Revisit when
 
 The Turing web engine is mature enough for nonessential internal surfaces and a security review approves the boundary; critical trusted controls remain independent.
+
+## Proposed decisions requiring review
+
+### ADR-0009 — Servo relationship and source strategy
+
+Status: proposed. Compare clean implementation informed by Servo, selective components, upstream-first collaboration, Servo-derived engine, and explicit charter change. No Servo-derived release code before evidence and acceptance.
+
+### ADR-0010 — Stable C ABI and generated SDKs
+
+Status: proposed. Canonical Rust API, minimal opaque C ABI, generated language SDKs, host responsibility matrix, and conformance suite.
+
+### ADR-0011 — Capability-based Turing Plug-ins
+
+Status: proposed. Prefer WIT/WebAssembly components, isolate WebExtensions, and prohibit ambient authority/native code.
+
+### ADR-0012 — Machine-readable professional control plane
+
+Status: proposed. Ownership, traceability, phase, review, and exception records become canonical Blueprint companions after a usability pilot.

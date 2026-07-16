@@ -143,3 +143,15 @@ This checklist prevents architecture work from becoming presentation-only.
 - keyboard and screen-reader workflows are tested;
 - diagnostic bundles preview included fields and exclude secrets;
 - workflow time and failure rate are measured against reference tools where leadership is claimed.
+
+## Framework or dependency adoption
+
+Exact source/version, owner, alternatives, privilege, hostile input, unsafe/native, license/provenance, fuzzing, platforms, performance/build cost, update and replacement are reviewed. Research mention is not adoption.
+
+## Plug-in or embedding feature
+
+Manifest/API, authority, identity, lifecycle, cancellation, resource, data, accessibility, compatibility, packaging, update, conformance, failure, and support are explicit.
+
+## Professional control-plane change
+
+Ownership, traceability, phase, decision class, review, evidence, exception, documentation, release, and capacity records agree.

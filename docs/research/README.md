@@ -75,3 +75,11 @@ The next evidence reports should cover:
 - browser-shell UI stacks, native integration, and power behavior;
 - networking, storage, media, PDF, printing, extensions, sync, enterprise, and release-operation detailed books;
 - open-source governance models, contributor throughput, security response, and release sustainability.
+
+## Professional buildout audit
+
+- [Professional buildout gap audit — July 2026](professional-buildout-gap-audit-2026-07.md)
+- [Technology Stack](../technology-stack/README.md)
+- [Turing Plug-ins](../plugins/README.md)
+- [Embedding SDK](../embedding/README.md)
+- [Professional Project Buildout](../project-buildout/README.md)
