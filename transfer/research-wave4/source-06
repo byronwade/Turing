@@ -1,0 +1,150 @@
+                   'WIT worlds separate content, DevTools, AI, storage, and enterprise capability sets.',
+                   'Component packages are signed and content-addressed with declared imports/exports and '
+                   'data practices.',
+                   'Bindings can be generated for Rust, C/C++, C#, Go, JavaScript, Python, and other '
+                   'component-model languages as toolchains mature.',
+                   'A native fast path is a separate interface and cannot silently expand component '
+                   'authority.'],
+  'risks': ['Component Model and async tooling continue to evolve.',
+            'Runtime/JIT complexity adds attack surface and binary cost.',
+            'Canonical ABI conversion may be too expensive for fine-grained rendering calls.'],
+  'experiments': ['Implement capture, clip, JSON inspection, and AI-tool components with the same WIT '
+                  'capability model.',
+                  'Compare component and native plug-in startup, memory, throughput, cancellation, and '
+                  'security evidence.',
+                  'Test cross-language component generation and version evolution.'],
+  'sources': [('WebAssembly Component Model', 'https://component-model.bytecodealliance.org/'),
+              ('WASI', 'https://wasi.dev/'),
+              ('Wasmtime', 'https://wasmtime.dev/')]},
+ {'filename': '06-ui-headless-and-service-embedding-modes.md',
+  'title': 'UI, Headless, and Service Embedding Modes',
+  'owner': 'embedding, platform, automation, and security',
+  'purpose': 'Support common product integrations without maintaining divergent engines.',
+  'decisions': ['Interactive view, offscreen/headless, deterministic test, and local service-process '
+                'embeddings share the same parser, runtime, networking, storage, sandbox, accessibility, and '
+                'plug-in policy unless a documented capability differs.',
+                'Headless is not a security-disabled mode. Permissions, origin policy, site isolation, '
+                'downloads, credentials, plug-ins, and agent confirmation remain enforced unless an '
+                'explicitly isolated automation profile is configured.',
+                'A local service-process mode may isolate the engine from the host application, but Turing '
+                'does not provide remote rendering as a substitute for the independent engine.',
+                'Embedders can provide surfaces, input, network adapters, storage roots, accessibility '
+                'bridges, and policy hooks only through validated interfaces.'],
+  'architecture': ['UI mode returns a platform view/surface adapter and browser-controlled trusted overlays.',
+                   'Offscreen mode returns bounded frame/capture streams with color-space and '
+                   'synchronization metadata.',
+                   'Headless mode supports WebDriver BiDi and Turing diagnostics with authentication.',
+                   'Local service mode uses versioned IPC and can restart engine processes independently.',
+                   'All modes expose resource attribution and lifecycle controls.'],
+  'risks': ['Mode-specific code paths can become compatibility or security gaps.',
+            'Host applications may try to render trusted prompts themselves.',
+            'Offscreen frame transport can consume large memory and bandwidth.'],
+  'experiments': ['Run the same WPT, navigation, storage, plug-in, accessibility, and security cases in UI '
+                  'and headless modes.',
+                  'Measure startup, frame transport, input latency, process recovery, memory, and GPU use '
+                  'across modes.',
+                  'Attempt to bypass trusted UI and permissions through embedder hooks.'],
+  'sources': [('WebDriver BiDi', 'https://w3c.github.io/webdriver-bidi/'),
+              ('Servo embedding goals', 'https://servo.org/about/')]},
+ {'filename': '07-two-line-integration-examples-versioning-and-support.md',
+  'title': 'Two-Line Integration Examples, Versioning, and Support',
+  'owner': 'SDK product and developer relations',
+  'purpose': 'Set the usability target: a safe default integration should be only a few lines, while '
+             'advanced control remains explicit.',
+  'decisions': ['Every supported SDK provides a two-to-five-line safe-default example and a separate '
+                'explicit-production configuration example.',
+                'Short examples never disable sandboxing, certificate verification, site isolation, updates, '
+                'permissions, or plug-in policy.',
+                'SDK semantic versions, engine build identity, stable ABI epochs, capability negotiation, '
+                'deprecation windows, and supported platform matrices are published.',
+                'A long-term-support commitment is made only when the project has security response and '
+                'packaging capacity.'],
+  'architecture': ['Rust proposal: `let engine = turing::Engine::builder().build()?;` then '
+                   '`engine.view().url("https://example.com").show().await?;`.',
+                   'Python proposal: `engine = turing.Engine()` then `view = await '
+                   'engine.open("https://example.com")`.',
+                   'TypeScript proposal: `const engine = await Turing.create();` then `const view = await '
+                   "engine.open('https://example.com');`.",
+                   'Swift proposal: `let engine = try await TuringEngine()` then `let view = try await '
+                   'engine.open("https://example.com")`.',
+                   'Kotlin proposal: `val engine = TuringEngine.create()` then `val view = '
+                   'engine.open("https://example.com")`.',
+                   'C# proposal: `await using var engine = await TuringEngine.CreateAsync();` then `var view '
+                   '= await engine.OpenAsync("https://example.com");`.',
+                   'C and C++ expose slightly more explicit lifecycle but include a high-level RAII wrapper.',
+                   'Go proposal: `engine, _ := turing.New()` then `view, _ := engine.Open(ctx, '
+                   '"https://example.com")`.'],
+  'risks': ['Marketing a two-line API can obscure platform setup, binary distribution, event loops, and '
+            'production operations.',
+            'Overpromising language support creates abandoned SDKs.',
+            'Deprecation without migration tooling harms embedders.'],
+  'experiments': ['Run onboarding studies from a clean machine to first rendered page, first automated test, '
+                  'first custom policy, and first plug-in.',
+                  'Measure documentation search, errors, binary setup, packaging, and upgrade effort.',
+                  'Maintain compatibility fixtures for at least the documented support window.'],
+  'sources': [('Semantic Versioning', 'https://semver.org/'),
+              ('Rust API Guidelines', 'https://rust-lang.github.io/api-guidelines/')]}]
+COHORT = [('Adblock Plus',
+  '37M',
+  'privacy/blocking',
+  'Declarative filtering, rule updates, permissions, and transparent data policy.',
+  'https://chromewebstore.google.com/detail/adblock-plus-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb'),
+ ('Grammarly',
+  '35M',
+  'writing/AI',
+  'Inline writing assistance, cross-site editing UX, provider data disclosure, and high resource '
+  'sensitivity.',
+  'https://chromewebstore.google.com/detail/grammarly-ai-writing-and/kbfnbcaeplbcioakkpcpgfkobkghlhen'),
+ ('Google Translate',
+  '30M',
+  'language',
+  'Selection translation, multilingual UX, small package, and browser-native versus plug-in boundaries.',
+  'https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb'),
+ ('uBlock Origin Lite',
+  '15M',
+  'privacy/blocking',
+  'Browser-owned declarative filtering can eliminate persistent background CPU and memory.',
+  'https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh'),
+ ('MetaMask',
+  '12M',
+  'web3/credentials',
+  'High-risk signing, transaction confirmation, page injection, and optional—not baseline—support.',
+  'https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn'),
+ ('GoFullPage',
+  '11M',
+  'capture',
+  'Full-page stitching, iframe/fixed-element edge cases, PDF export, and minimal permission design.',
+  'https://chromewebstore.google.com/detail/gofullpage-full-page-scre/fdpohaocaechififmbbbbbknoalclacl'),
+ ('Tampermonkey',
+  '11M',
+  'userscripts',
+  'Strong customization demand paired with code provenance, host grants, and update risk.',
+  'https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo'),
+ ('LastPass',
+  '8M',
+  'credentials',
+  'Credential UX demand; Turing must keep secrets in a browser broker rather than plug-in memory.',
+  'https://chromewebstore.google.com/detail/lastpass-free-password-ma/hdokiejnpimakedhajhdlcegeplioahd'),
+ ('Dark Reader',
+  '6M',
+  'appearance/accessibility',
+  'Per-site appearance, system theme, performance, and accessibility-preserving transforms.',
+  'https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh'),
+ ('React Developer Tools',
+  '5M',
+  'developer tools',
+  'Framework-specific trees and profilers through a stable DevTools plug-in API.',
+  'https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi'),
+ ('ColorZilla',
+  '4M',
+  'developer tools',
+  'Eyedropper, palettes, CSS values, clipboard, and page-inspection permissions.',
+  'https://chromewebstore.google.com/detail/colorzilla/bhlhnicpbhignbdhedgjhgdocnmhomnp'),
+ ('Google Scholar Button',
+  '3M',
+  'research',
+  'Metadata lookup, citations, library access, save/export, and selected-text workflows.',
+  'https://chromewebstore.google.com/detail/google-scholar-button/ldipcbpaocekfooobnbcddclnhejkcpn'),
+ ('Google Input Tools',
+  '3M',
+  'language/input',
