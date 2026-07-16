@@ -281,3 +281,7 @@ Added the Market Strategy and Differentiation book, dated browser-market study, 
 ## 2026-07-16 — Research-question identifier correction
 
 Renumbered market-differentiation studies from the conflicting `RQ-45`–`RQ-50` range to `RQ-49`–`RQ-54`, preserving `RQ-45`–`RQ-48` for the professional-buildout program. Added a repository validator that requires globally unique, contiguous research-question headings. No research conclusion, requirement, risk, work package, implementation status, or support claim changed.
+
+## 2026-07-16 — Market strategy consistency and validator hardening
+
+After the market-strategy merge, a repository-wide audit corrected canonical table placement, added explicit product ownership, normalized release-review scope naming, and extended validation to `OP-*` IDs, reviewer-to-owner resolution, and market index invariants. No opportunity was promoted and no implementation or support status changed.
