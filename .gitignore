@@ -1,0 +1,20 @@
+# Rust and native build output
+/target/
+/prototype/target/
+**/target/
+
+# Python bytecode and caches
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Local tooling and editor state
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary benchmark, trace, and coverage output
+/coverage/
+/artifacts/
+*.profraw
+*.profdata
