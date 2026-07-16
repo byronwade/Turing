@@ -30,3 +30,8 @@ The [feature opportunity registry](machine/feature-opportunities.json) records `
 ## Portfolio discipline
 
 The primary integrated hypothesis is a project-native Space that owns organization, identity, recovery, resource policy, Plug-ins, and scoped agent authority. The project must resist implementing fourteen disconnected features. User studies and architecture experiments should determine which opportunities combine coherently, which belong in Plug-ins, and which should be rejected.
+
+<!-- MARKET-RQ-ID-CORRECTION-2026-07 -->
+## Research-question ownership
+
+Market validation is owned by `RQ-49` through `RQ-54`. `RQ-45` through `RQ-48` remain assigned to professional project controls, reproducible environments, traceability, and sustainability. Research-question identifiers are globally unique and contiguous.

@@ -276,3 +276,8 @@ A repository-wide review found that the remaining gap was the project control pl
 ## 2026-07-16 — Project-browser market gap
 
 Added the Market Strategy and Differentiation book, dated browser-market study, `OP-001` through `OP-014` registry, opportunity-promotion template, cross-document product hypotheses, and validator coverage. No opportunity became an accepted requirement, implementation claim, risk status, or support promise.
+
+<!-- MARKET-RQ-ID-CORRECTION-2026-07 -->
+## 2026-07-16 — Research-question identifier correction
+
+Renumbered market-differentiation studies from the conflicting `RQ-45`–`RQ-50` range to `RQ-49`–`RQ-54`, preserving `RQ-45`–`RQ-48` for the professional-buildout program. Added a repository validator that requires globally unique, contiguous research-question headings. No research conclusion, requirement, risk, work package, implementation status, or support claim changed.

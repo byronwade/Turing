@@ -510,6 +510,21 @@ def check_markdown() -> tuple[int, int]:
     return len(markdown_files), links_checked
 
 
+def check_research_question_ids() -> None:
+    path = BLUEPRINT / "22-research-program.md"
+    text = path.read_text(encoding="utf-8")
+    ids = re.findall(r"^## RQ-(\d{2})\b", text, re.MULTILINE)
+    if not ids:
+        fail("research program contains no RQ headings")
+    expected = [f"{index:02d}" for index in range(1, int(ids[-1]) + 1)]
+    if ids != expected:
+        fail(
+            "research-question headings must be globally unique and contiguous; "
+            f"expected RQ-01 through RQ-{expected[-1]}, found: "
+            + ", ".join(f"RQ-{item}" for item in ids)
+        )
+
+
 def check_policy_markers() -> None:
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     required_phrases = [
@@ -548,6 +563,7 @@ def main() -> int:
         check_json_registries()
         check_market_opportunities()
         markdown_count, links_checked = check_markdown()
+        check_research_question_ids()
         check_policy_markers()
         check_source_hygiene()
     except ValueError as error:

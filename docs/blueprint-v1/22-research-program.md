@@ -284,11 +284,28 @@ What staffing, funding, infrastructure, and support capacity is required at each
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market differentiation research questions
 
-- **RQ-45:** Does a project-native Space reduce resumption time, identity mistakes, and lost organization across longitudinal workflows?
-- **RQ-46:** What snapshot, retention, encryption, and restoration model provides useful Time Machine recovery without unsafe replay or sensitive over-retention?
-- **RQ-47:** Can users understand and safely control semantic resource attribution and lifecycle decisions under 30-tab pressure?
-- **RQ-48:** Does isolated capability-scoped Agent Mode reduce harmful actions and improve trust without unusable confirmation burden?
-- **RQ-49:** What migration and open-export coverage materially reduces browser switching cost while protecting credentials and profile integrity?
-- **RQ-50:** Do the Research Canvas, causal diagnostics, privacy receipts, selective sync, and collaboration improve task accuracy and continuity enough to justify their complexity?
+## RQ-49 — Project-native Spaces
+
+Does a project-native Space reduce resumption time, identity mistakes, and lost organization across longitudinal workflows?
+
+## RQ-50 — Workspace Time Machine
+
+What snapshot, retention, encryption, and restoration model provides useful recovery without unsafe replay or sensitive over-retention?
+
+## RQ-51 — Resource Truth Center
+
+Can users understand and safely control semantic resource attribution and lifecycle decisions under 30-tab pressure?
+
+## RQ-52 — Trustworthy Agent Mode
+
+Does isolated capability-scoped Agent Mode reduce harmful actions and improve trust without unusable confirmation burden?
+
+## RQ-53 — Migration and open export
+
+What migration and open-export coverage materially reduces browser switching cost while protecting credentials and profile integrity?
+
+## RQ-54 — Research, causality, receipts, sync, and collaboration
+
+Do the Research Canvas, causal diagnostics, privacy receipts, selective sync, and collaboration improve task accuracy and continuity enough to justify their complexity?
 
 Each study records cohort, task, comparator version, configuration, raw outcomes, accessibility, failures, confidence, and evidence that would reject the hypothesis.

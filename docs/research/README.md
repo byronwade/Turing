@@ -90,3 +90,8 @@ The next evidence reports should cover:
 - [Browser market gap and differentiation research — July 2026](browser-market-gap-2026-07.md)
 
 This study defines `OP-001` through `OP-014` as research opportunities. It must be refreshed when competitor capabilities, market share, major user-demand evidence, or Turing's product assumptions materially change.
+
+<!-- MARKET-RQ-ID-CORRECTION-2026-07 -->
+## Market research question range
+
+The browser market and differentiation program uses `RQ-49` through `RQ-54`; earlier identifiers remain owned by their existing architecture and professional-buildout studies.
