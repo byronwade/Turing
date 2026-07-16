@@ -371,3 +371,7 @@ For every structural change:
 - `docs/templates/`: engineering artifact structures.
 - `docs/blueprint-v1/machine/professional-*.json`: ownership, traceability, phase, review, and exception companions.
 - `.github/CODEOWNERS`: provisional research-phase review routing.
+
+## Generated build-output hygiene
+
+- `.gitignore` owns generated build-output exclusion for Rust `target/`, Python `__pycache__/` and bytecode, local editor state, coverage, traces, and temporary artifacts. Validation rejects tracked build output; CI uses an external `CARGO_TARGET_DIR`.
