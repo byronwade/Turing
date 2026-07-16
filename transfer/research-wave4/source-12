@@ -1,0 +1,160 @@
+            "## Plug-in and SDK release surface",
+            """## Plug-in and SDK release surface
+
+Plug-in packages, store metadata, revocation, first-party updates, stable ABI libraries, and language SDK packages share build identity, signing, provenance, SBOM, rollout, rollback, supported-version, and incident-response evidence with the browser release.
+""",
+        ),
+    ]
+    for path, marker, section in crosslinks:
+        append_once(path, marker, section)
+
+
+def update_research_log() -> None:
+    target = ROOT / "docs/research-log.md"
+    text = target.read_text(encoding="utf-8")
+    marker = "## 2026-07-16 — Technology stack, Plug-in, and embedding research"
+    if marker in text:
+        return
+    entry = clean("""## 2026-07-16 — Technology stack, Plug-in, and embedding research
+
+Question:
+
+Which top-tier languages, frameworks, libraries, APIs, Plug-in architecture, first-party Plug-ins, Servo lessons, embedding ABI, and language SDKs should Turing research?
+
+Sources and versions:
+
+- official Servo project, repository, and documentation retrieved 2026-07-16;
+- official Rust, UniFFI, cbindgen, PyO3, napi-rs, JNI, WebAssembly Component Model, WASI, Wasmtime, Cranelift, graphics, TLS, text, database, and supply-chain sources;
+- Chrome Manifest V3, manifest, service-worker, store-policy, and W3C WebExtensions sources;
+- twenty public Chrome Web Store item pages captured 2026-07-16;
+- extension security and performance research used as risk input.
+
+Method and environment:
+
+Primary-source architecture and ecosystem study plus repository documentation design. Public store counts are rounded and dynamic. No Turing implementation, fixed-hardware benchmark, user study, or independent security review was performed.
+
+Observations:
+
+- Rust remains the strongest default for the owned engine and broker surface, but a browser requires audited specialist foundations and disciplined native/platform boundaries.
+- A stable C ABI plus generated idiomatic SDKs is the broadest practical embedding foundation.
+- Servo is the primary Rust-first embeddable-engine reference, but current Turing policy does not permit silently embedding it as the release engine.
+- Extension demand clusters strongly around blocking, writing/AI, language, capture, credentials, customization, appearance, DevTools, research, media, focus, clipping, and tasks.
+- A safe platform needs event-driven Web-compatible Plug-ins, WIT components, and rare out-of-process native connectors rather than legacy in-process modules.
+- First-party packages must use public capability machinery and cannot bypass brokers.
+
+Decision:
+
+- add the technology-stack, Plug-in, and embedding engineering books;
+- add dated Servo/embedding and Chrome demand studies;
+- define a proposed first-party maintained portfolio;
+- add RQ-41 through RQ-44;
+- keep all frameworks, dependencies, Plug-ins, SDKs, Servo reuse, and portfolio items exploratory until evidence and ADR gates pass.
+
+Security/privacy impact:
+
+The work defines least-authority Plug-in tiers, package/update policy, no remote code, out-of-process native connectors, stable ABI lifetime rules, first-party parity, credential and AI data boundaries, and store revocation.
+
+Compatibility/accessibility impact:
+
+The work defines a WebExtensions compatibility adapter, complete unsupported maps, generated SDKs, Plug-in UI accessibility, language/input tools, DevTools adapters, and cross-language integration tests.
+
+Performance/memory/energy impact:
+
+The work requires dependency, ABI, SDK, Plug-in idle/active, package, startup, 30-tab, binary, build, wakeup, and energy measurement. Popularity is not performance evidence.
+
+Licensing/operational impact:
+
+No external code was copied. Servo or extension source reuse requires separate provenance and license review. The proposed portfolio and multi-language package matrix create substantial long-term ownership and signing obligations.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+No machine-readable status changed. The new books, research reports, Blueprint cross-links, research program, bibliography, definition of done, repository map, indexes, AGENTS policy, and validator change together.
+
+Next evidence required:
+
+Execute EXP-STACK-001, EXP-EMBED-001, EXP-ABI-001, EXP-SDK-001, EXP-COMPONENT-001, and EXP-PLUGIN-001 through EXP-PLUGIN-006.
+""")
+    first_heading = text.find("\n## ")
+    if first_heading < 0:
+        raise RuntimeError("docs/research-log.md has no entry heading")
+    text = text[: first_heading + 1] + entry + "\n" + text[first_heading + 1 :]
+    target.write_text(text, encoding="utf-8")
+
+
+def update_validator() -> None:
+    path = ROOT / "tools/validate_blueprint.py"
+    text = path.read_text(encoding="utf-8")
+    match = re.search(r"^DETAILED_BOOKS = (.+)$", text, flags=re.MULTILINE)
+    if not match:
+        raise RuntimeError("DETAILED_BOOKS assignment not found")
+    books = ast.literal_eval(match.group(1))
+    books.update(
+        {
+            "technology-stack": [item["filename"] for item in TECHNOLOGY_CHAPTERS] + ["README.md"],
+            "plugins": [item["filename"] for item in PLUGIN_CHAPTERS] + ["README.md"],
+            "embedding": [item["filename"] for item in EMBEDDING_CHAPTERS] + ["README.md"],
+        }
+    )
+    text = text[: match.start(1)] + repr(books) + text[match.end(1) :]
+
+    required_anchor = '    RESEARCH / "performance-security-developer-expansion-audit-2026-07.md",'
+    required_addition = (
+        required_anchor
+        + '\n    RESEARCH / "technology-stack-servo-and-embedding-study-2026-07.md",'
+        + '\n    RESEARCH / "chrome-extension-demand-and-first-party-plugin-study-2026-07.md",'
+    )
+    if "technology-stack-servo-and-embedding-study-2026-07.md" not in text:
+        if required_anchor not in text:
+            raise RuntimeError("validator research anchor not found")
+        text = text.replace(required_anchor, required_addition, 1)
+
+    text = text.replace("if len(markdown_files) < 204:", "if len(markdown_files) < 230:")
+    text = text.replace("expected at least 204 Markdown documents", "expected at least 230 Markdown documents")
+    text = text.replace('"19 detailed engineering books, 46 requirements, 40 risks, "', '"22 detailed engineering books, 46 requirements, 40 risks, "')
+    path.write_text(text, encoding="utf-8")
+
+
+def verify_generated_topology() -> None:
+    expected: list[Path] = []
+    for directory, chapters in (
+        ("technology-stack", TECHNOLOGY_CHAPTERS),
+        ("plugins", PLUGIN_CHAPTERS),
+        ("embedding", EMBEDDING_CHAPTERS),
+    ):
+        expected.append(ROOT / "docs" / directory / "README.md")
+        expected.extend(ROOT / "docs" / directory / item["filename"] for item in chapters)
+    expected.extend(
+        [
+            ROOT / "docs/research/technology-stack-servo-and-embedding-study-2026-07.md",
+            ROOT / "docs/research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md",
+        ]
+    )
+    missing = [str(path.relative_to(ROOT)) for path in expected if not path.is_file()]
+    if missing:
+        raise RuntimeError("generated files missing: " + ", ".join(missing))
+
+    for path in expected:
+        if path.suffix != ".md":
+            continue
+        value = path.read_text(encoding="utf-8")
+        if "\r" in value:
+            raise RuntimeError(f"CR line ending in {path}")
+        for line_number, line in enumerate(value.splitlines(), 1):
+            trailing = line[len(line.rstrip(" \t")) :]
+            if trailing and trailing != "  ":
+                raise RuntimeError(f"accidental trailing whitespace: {path}:{line_number}")
+
+
+def main() -> None:
+    render_books()
+    write_research_reports()
+    update_indexes_and_owners()
+    update_blueprint_and_related_books()
+    update_research_log()
+    update_validator()
+    verify_generated_topology()
+    print("generated technology stack, Plug-in, and embedding research")
+
+
+if __name__ == "__main__":
+    main()
