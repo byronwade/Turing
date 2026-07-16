@@ -37,11 +37,18 @@ jobs:
       - name: Reconstruct and verify documentation generator
         shell: bash
         run: |
-          cat transfer/research-wave4/source-00 > tools/research_wave4_generator.py
+          set -euo pipefail
+          : > tools/research_wave4_generator.py
+
+          # GitHub's contents API normalized source-00 by dropping its final
+          # apostrophe and newline. The remaining reviewed segments retain
+          # their original trailing newlines. Restore only those two bytes.
+          cat transfer/research-wave4/source-00 >> tools/research_wave4_generator.py
           printf "'\n" >> tools/research_wave4_generator.py
-          for part in transfer/research-wave4/source-0[1-9] transfer/research-wave4/source-1[0-2]; do
+          for part in transfer/research-wave4/source-{01..12}; do
             cat "$part" >> tools/research_wave4_generator.py
           done
+
           echo "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d  tools/research_wave4_generator.py" | sha256sum --check -
           python3 -m py_compile tools/research_wave4_generator.py
 
