@@ -47,7 +47,6 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Turing Plug-in Platform](plugins/README.md) | Native Plug-ins, capabilities, Wasm/WIT, WebExtensions adapter, first-party portfolio, store, SDK, accessibility, and resources |
 | [Embedding and Multi-language SDK](embedding/README.md) | Rust API, stable C ABI, generated SDKs, lifecycle, surfaces, host security, packaging, and conformance |
 | [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |
-
 | [Market Strategy and Differentiation](market-strategy/README.md) | Competitive evidence, project-native Spaces, Time Machine, resource truth, trustworthy agents, research canvas, migration, sync, collaboration, prioritization, and validation |
 
 ## Active research
@@ -56,9 +55,9 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 |---|---|
 | [Browser engine landscape and Turing excellence strategy — July 2026](research/browser-engine-landscape-2026-07.md) | Primary-source comparison of Chromium, WebKit, Gecko, Servo, and Ladybird; proposed performance, API, standards, open-source, and measurement strategy |
 | [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |
-
 | [Performance, security, developer, and missing-systems expansion audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Adds eleven books and advanced performance, security, and developer research; no implementation or support claim |
 | [Professional buildout gap audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, source strategy, technology, Plug-in, embedding, operations, legal, data, product, and sustainability controls |
+| [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | Market concentration, competitor workflows, user-demand signals, switching barriers, and OP-001 through OP-014 validation hypotheses |
 
 Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 
@@ -105,11 +104,3 @@ A new document must:
 A renamed or removed document must have every inbound link, command, registry reference, issue template, and workflow updated in the same change.
 
 See [the documentation policy](documentation-policy.md) for the mandatory impact matrix and CI rules.
-
-<!-- MARKET-STRATEGY-2026-07 -->
-## Market-gap evidence
-
-- [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md)
-- [Feature opportunity registry](market-strategy/machine/feature-opportunities.json)
-
-Market opportunities use `OP-*` identifiers and remain non-normative until promoted through the professional review and traceability process.
