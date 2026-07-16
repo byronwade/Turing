@@ -1,0 +1,65 @@
+name: Publish professional project buildout documentation
+
+on:
+  push:
+    branches:
+      - docs/professional-buildout-v2
+    paths:
+      - tools/professional_buildout_generator.py
+      - .github/workflows/professional-buildout-expand.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: professional-buildout-expand
+  cancel-in-progress: false
+
+jobs:
+  expand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out publication branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/professional-buildout-v2
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Validate and run generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/professional_buildout_generator.py
+          python3 tools/professional_buildout_generator.py
+
+      - name: Remove temporary publication material
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f tools/professional_buildout_generator.py
+          rm -f .github/workflows/professional-buildout-expand.yml
+          rm -f .github/workflows/research-wave4-main-finalize.yml
+          rm -rf transfer
+
+      - name: Validate repository and prototype
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+
+      - name: Commit clean documentation tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Document professional Turing project buildout"
+          git push origin HEAD:docs/professional-buildout-v2
