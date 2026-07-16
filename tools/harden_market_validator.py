@@ -63,7 +63,7 @@ def check_professional_controls() -> None:
             )
 
     docs_index = (DOCS / "README.md").read_text(encoding="utf-8")
-    if "\n\n| [Market Strategy and Differentiation]" in docs_index:
+    if "\\n\\n| [Market Strategy and Differentiation]" in docs_index:
         fail("docs/README.md separates market strategy from the books table")
     market_research_row = (
         "| [Browser market gap and differentiation research — July 2026]"
@@ -72,7 +72,7 @@ def check_professional_controls() -> None:
         fail("docs/README.md active research table is missing the market-gap report")
 
     blueprint_index = (BLUEPRINT / "README.md").read_text(encoding="utf-8")
-    if "\n\n- [Market Strategy and Differentiation]" in blueprint_index:
+    if "\\n\\n- [Market Strategy and Differentiation]" in blueprint_index:
         fail("Blueprint index separates market strategy from the engineering-book list")
     if "../research/browser-market-gap-2026-07.md" not in blueprint_index:
         fail("Blueprint current reports are missing the market-gap report")
