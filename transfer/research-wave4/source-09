@@ -1,0 +1,142 @@
+- napi-rs: https://napi.rs/
+- JNI: https://docs.oracle.com/en/java/javase/24/docs/specs/jni/
+- WebAssembly Component Model: https://component-model.bytecodealliance.org/
+- WASI: https://wasi.dev/
+- Wasmtime: https://wasmtime.dev/
+- Cranelift: https://cranelift.dev/
+
+## Decision status
+
+This report creates research and prototype work only. It does not approve a dependency, change the independent-engine policy, promise a language SDK, or claim performance leadership.
+""",
+    )
+
+    rows = [
+        "| Extension | Public users | Primary category |",
+        "|---|---:|---|",
+    ]
+    for name, users, category, _lesson, url in COHORT:
+        rows.append(f"| [{name}]({url}) | {users} | {category} |")
+    cohort_table = "\n".join(rows)
+    write(
+        "docs/research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md",
+        f"""# Chrome Extension Demand and First-Party Plug-in Study — July 2026
+
+Status: dated product and ecosystem research; no source-copying or implementation claim  
+Date: 2026-07-16  
+Owner: plug-in platform, product research, security, and developer experience  
+Confidence: high for the cited public store snapshot; medium for portfolio priority until user research and cost/security analysis are complete
+
+## Question
+
+Which popular Chrome extension categories should inform Turing's first-party maintained Plug-ins, and what architecture avoids inheriting the extension ecosystem's security, privacy, performance, and maintenance failures?
+
+## Method and limits
+
+The study recorded a twenty-item reference cohort from public Chrome Web Store pages on 2026-07-16. Selection used rounded store user counts plus category coverage. It is not claimed as an exact global top-20 ranking, because store counts are dynamic and popularity is not equivalent to quality, safety, retention, or performance.
+
+The store contains products from Google and third parties. “Google plug-ins” in casual usage is interpreted as Chrome Web Store extensions, not only Google-published extensions.
+
+## Reference cohort
+
+{cohort_table}
+
+## Observations
+
+- Blocking/privacy, writing/AI, language, capture, credentials, userscripts, appearance, DevTools, research, media, focus, clipping, and task workflows have strong adoption signals.
+- Declarative browser-owned capabilities can materially reduce persistent background work; uBlock Origin Lite explicitly describes browser-performed filtering without a permanent extension process.
+- Small, focused local tools such as JSON Formatter, Video Speed Controller, Google Dictionary, and Scholar demonstrate that high-value plug-ins do not need large packages or broad services.
+- AI writing and clipping products show that page content and personal communications can cross provider boundaries; Turing must make provider data flow, retention configuration, and redaction visible.
+- Credential and web3 products demonstrate severe confused-deputy, signing, spoofing, and secret-handling risk.
+- Framework DevTools demonstrate demand for a public plug-in protocol that can inspect framework semantics without private engine bridges.
+
+## Proposed first-party portfolio
+
+The proposed initial portfolio is Turing Shield, Capture, Write, Translate & Define, Vault, Clip, Focus, Tasks, Research, Media Controls, Scripts, Framework Inspector, JSON & Data Inspector, Color & Layout Tools, and AI Agent. Web3 Bridge is optional, separately audited, disabled by default, and not a baseline capability.
+
+The first implementation set should be smaller: Capture, Shield rule/UI package, Framework Inspector, JSON & Data Inspector, and AI Agent. Together they exercise capture, declarative network policy, DevTools, structured viewers, component/web plug-ins, permissions, store updates, resource accounting, accessibility, and agent policy.
+
+## Architecture recommendation
+
+Use three plug-in tiers:
+
+1. Web-compatible plug-ins with an explicit supported WebExtensions subset.
+2. Turing Component plug-ins using WIT and a resource-limited WebAssembly component runtime.
+3. Separately installed, signed, out-of-process native connectors for exceptional enterprise/developer integrations.
+
+First-party plug-ins use the same manifest, capability, lifecycle, audit, update, and resource machinery. Browser-owned security services retain network filtering, credential filling, capture permission, downloads, trusted UI, and agent authorization.
+
+## Security and performance implications
+
+Recent research continues to find malicious extension campaigns, generative-AI-themed malicious extensions, ordering/interference attacks, and measurable page-load or energy costs. Turing should therefore require package immutability, no remote code, minimum permissions, event-driven execution, per-plug-in process/resource attribution, review and revocation, and adversarial evaluation.
+
+## Falsifiable experiments
+
+- `EXP-PLUGIN-001`: Manifest V3 compatibility adapter across twenty representative API patterns.
+- `EXP-PLUGIN-002`: web worker versus Wasm component versus native connector isolation and resource comparison.
+- `EXP-PLUGIN-003`: first-party Capture, Shield, Framework Inspector, JSON, and AI reference implementations.
+- `EXP-PLUGIN-004`: malicious package and update corpus.
+- `EXP-PLUGIN-005`: install/permission/revocation usability with keyboard and screen-reader users.
+- `EXP-PLUGIN-006`: disabled, idle, active, 30-tab, update, crash, and recovery resource budgets.
+
+## Platform sources
+
+- Chrome Manifest V3: https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3
+- Chrome manifest: https://developer.chrome.com/docs/extensions/reference/manifest
+- Chrome service workers: https://developer.chrome.com/docs/extensions/develop/concepts/service-workers
+- Chrome Web Store policies: https://developer.chrome.com/docs/webstore/program-policies/
+- W3C WebExtensions Community Group: https://github.com/w3c/webextensions
+- WebAssembly Component Model: https://component-model.bytecodealliance.org/
+
+## Decision status
+
+This report does not copy or adopt any extension implementation, brand, hosted service, or permission model. Portfolio items remain proposals until product value, maintenance capacity, security, privacy, accessibility, licensing, and performance gates pass.
+""",
+    )
+
+
+def update_indexes_and_owners() -> None:
+    replace_once("README.md", "nineteen detailed engineering books", "twenty-two detailed engineering books")
+    insert_before(
+        "README.md",
+        "- [Active research](docs/research/README.md)",
+        "docs/plugins/README.md",
+        """- [Technology stack](docs/technology-stack/README.md)
+- [Turing Plug-ins](docs/plugins/README.md)
+- [Engine embedding and SDKs](docs/embedding/README.md)""",
+    )
+
+    book_rows = """| [Technology stack, languages, frameworks, and tooling](technology-stack/README.md) | Rust-first component map, foundational libraries, build/test/security tooling, graphics/network/storage/runtime choices, platform adapters, dependency governance, and replacement |
+| [Turing Plug-in platform](plugins/README.md) | Product terminology, manifests, capabilities, runtime tiers, WebExtensions compatibility, first-party portfolio, Chrome reference cohort, store, SDK, performance, accessibility, and DevTools |
+| [Engine embedding and multi-language SDKs](embedding/README.md) | Servo baseline, Rust API, stable C ABI, Rust/C/C++/Python/Node/Swift/Kotlin/C#/Go packages, WIT components, UI/headless modes, concise examples, versioning, and support |"""
+    insert_before("docs/README.md", "## Active research", "technology-stack/README.md", book_rows)
+    research_rows = """| [Technology stack, Servo, and embedding study — July 2026](research/technology-stack-servo-and-embedding-study-2026-07.md) | Primary-source language/framework/binding study and Servo-based embedding baseline; no dependency approval |
+| [Chrome extension demand and first-party Plug-in study — July 2026](research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md) | Twenty-extension public store cohort, category lessons, Plug-in architecture, and proposed first-party portfolio |"""
+    insert_before(
+        "docs/README.md",
+        "Research reports are evidence artifacts",
+        "chrome-extension-demand-and-first-party-plugin-study-2026-07.md",
+        research_rows,
+    )
+
+    replace_once("docs/start-here.md", "nineteen detailed engineering books", "twenty-two detailed engineering books")
+    append_once(
+        "docs/start-here.md",
+        "## Technology, Plug-ins, and embedding",
+        """## Technology, Plug-ins, and embedding
+
+- [Technology stack](technology-stack/README.md) records languages, frameworks, libraries, tools, dependency boundaries, and replacement rules.
+- [Turing Plug-ins](plugins/README.md) defines the user-facing plug-in platform, compatibility adapter, first-party portfolio, store, security, and SDK.
+- [Engine embedding](embedding/README.md) defines Servo comparison, the Rust API, stable C ABI, generated language SDKs, WIT components, and concise integration targets.
+
+These are detailed research baselines. No dependency, plug-in, SDK, or Servo source reuse is approved merely because it is documented.
+""",
+    )
+
+    insert_before(
+        "docs/research/README.md",
+        "## Research operating rules",
+        "technology-stack-servo-and-embedding-study-2026-07.md",
+        """| [Technology stack, Servo, and embedding study — July 2026](technology-stack-servo-and-embedding-study-2026-07.md) | Which languages, frameworks, binding tools, component technologies, and Servo lessons should shape a trustworthy, easy-to-embed engine? | Research baseline; prototypes required |
+| [Chrome extension demand and first-party Plug-in study — July 2026](chrome-extension-demand-and-first-party-plugin-study-2026-07.md) | Which high-adoption extension categories should inform Turing's maintained Plug-ins, and what architecture avoids ecosystem failures? | Dated store snapshot and portfolio proposal |""",
+    )
