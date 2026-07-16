@@ -1,0 +1,35 @@
+name: Clean final verification branch
+
+on:
+  push:
+    branches:
+      - ops/cleanup-main-verification
+    paths:
+      - .github/workflows/cleanup-main-verification.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ops/cleanup-main-verification
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Delete verification branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin refs/heads/ops/verify-market-main >/dev/null 2>&1; then
+            git push origin --delete ops/verify-market-main
+          fi
+
+      - name: Delete this one-shot branch
+        shell: bash
+        run: git push origin --delete ops/cleanup-main-verification
