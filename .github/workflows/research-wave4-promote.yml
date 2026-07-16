@@ -1,0 +1,66 @@
+name: Promote clean technology Plug-in and embedding research
+
+on:
+  push:
+    branches:
+      - docs/technology-plugins-embedding
+    paths:
+      - .github/workflows/research-wave4-promote.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-wave4-promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out publication branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/technology-plugins-embedding
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Require the clean generated documentation tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/technology-stack/README.md
+          test -f docs/plugins/README.md
+          test -f docs/embedding/README.md
+          test -f docs/research/chrome-extension-demand-reference-2026-07.md
+          test -f docs/research/technology-plugins-embedding-audit-2026-07.md
+          test ! -e transfer/research-wave4
+          test ! -e .github/workflows/research-wave4-expand.yml
+          test ! -e tools/research_wave4_generator.py
+          grep -q '22 detailed engineering books' tools/validate_blueprint.py
+
+      - name: Remove this one-shot promotion workflow
+        run: rm -f .github/workflows/research-wave4-promote.yml
+
+      - name: Validate repository and prototype
+        run: |
+          python3 tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+
+      - name: Commit the clean tree and fast-forward main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove one-shot technology research promotion workflow"
+          fi
+          git fetch origin main
+          git merge-base --is-ancestor origin/main HEAD
+          git push origin HEAD:docs/technology-plugins-embedding
+          git push origin HEAD:main
