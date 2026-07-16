@@ -225,3 +225,8 @@ Status: proposed. Prefer WIT/WebAssembly components, isolate WebExtensions, and 
 ### ADR-0012 — Machine-readable professional control plane
 
 Status: proposed. Ownership, traceability, phase, review, and exception records become canonical Blueprint companions after a usability pilot.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Decision candidates from market strategy
+
+The market book does not accept new ADRs. Likely future decisions include the Space/profile/identity model, open workspace interchange format, snapshot retention/encryption, sync trust and self-hosting, privacy-receipt semantics, and agent task isolation. Each decision must preserve the accepted security and independence baseline or explicitly supersede it.

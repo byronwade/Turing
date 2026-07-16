@@ -54,3 +54,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-opportunity validation
+
+Product opportunities require longitudinal usability, migration, recovery, resource-comprehension, accessibility, and agent-safety studies in addition to automated correctness tests. Negative findings and rejected opportunities remain public evidence.

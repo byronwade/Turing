@@ -61,3 +61,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Identity routing and privacy receipts
+
+`OP-006` and `OP-012` require kernel-owned routing context, clear proxy/DNS/certificate policy, destination attribution, and bounded receipt data. Pages cannot select trusted identity or falsify browser-owned receipts.

@@ -149,6 +149,13 @@
       "primary": "@byronwade",
       "backup": null,
       "next_review": "2026-10-16"
+    },
+    {
+      "scope": "market-strategy",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
     }
   ]
 }

@@ -271,3 +271,8 @@ Next evidence required:
 ## 2026-07-16 — Professional buildout gap audit
 
 A repository-wide review found that the remaining gap was the project control plane rather than another disconnected subsystem survey. The change adds professional phase, ownership, decision, traceability, repository, build, coding, API/configuration, cross-cutting review, release, legal, data, product, documentation, sustainability, Servo, Plug-in, and embedding baselines. It changes no implementation, requirement, risk, or support status.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## 2026-07-16 — Project-browser market gap
+
+Added the Market Strategy and Differentiation book, dated browser-market study, `OP-001` through `OP-014` registry, opportunity-promotion template, cross-document product hypotheses, and validator coverage. No opportunity became an accepted requirement, implementation claim, risk status, or support promise.

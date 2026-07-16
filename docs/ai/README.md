@@ -39,3 +39,8 @@ Semantic observations should be the default because they are more accessible, co
 - [API design book](../api-design/README.md)
 - [Developer experience book](../developer-experience/README.md)
 - [Performance engineering book](../performance/README.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Trustworthy Agent Mode
+
+`OP-004` is the product packaging of capability-scoped agent architecture. It adds an isolated task session, observation manifest, provider/cost disclosure, dry run, execution-time confirmation, postconditions, audit, stop, and revocation. It is not implemented.

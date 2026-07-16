@@ -265,3 +265,8 @@ A higher task-success score cannot compensate for unauthorized actions.
 - **AI-GATE-6:** stop/revoke interrupts planning, provider calls, and queued actions within a published bound.
 - **AI-GATE-7:** adversarial prompt-injection suite passes before agent mode is enabled outside isolated test profiles.
 - **AI-GATE-8:** local/remote provider data flow is visible, configurable, and logged.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Trustworthy Agent Mode research
+
+`OP-004` packages the existing capability model into an isolated, visible task session with observation manifest, provider disclosure, budgets, dry run, execution-time confirmation, postconditions, audit, stop, and revocation. Read-only assistance and consequential action have separate maturity gates.

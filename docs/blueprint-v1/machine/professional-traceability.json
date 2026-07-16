@@ -646,5 +646,7 @@
       "evidence": [],
       "note": "Populate without hiding absence as implementation begins."
     }
-  ]
+  ],
+  "market_opportunity_registry": "docs/market-strategy/machine/feature-opportunities.json",
+  "market_opportunity_status": "research proposals; not accepted requirements or implementation"
 }

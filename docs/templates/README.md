@@ -36,3 +36,8 @@ Each records exact versions/builds, owner, preconditions, method, failure/recove
 ## Plug-in proposal
 
 User job; publisher; execution tier; manifest/capabilities/origins/data; lifecycle/resource budgets; UI/accessibility; threat model; signing/update/revocation; store; conformance/support.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Product and market strategy
+
+- [Market opportunity proposal](market-opportunity.md) — target segment, job, evidence, alternatives, risks, validation, promotion, expiry, and removal.

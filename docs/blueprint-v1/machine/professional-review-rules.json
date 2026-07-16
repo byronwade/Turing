@@ -72,6 +72,26 @@
         "architecture"
       ],
       "minimum_approvals": 3
+    },
+    {
+      "id": "REV-MARKET",
+      "match": "market opportunity, product positioning, competitor comparison, migration, workspace, sync, collaboration, resource UX, or product-level AI proposal",
+      "artifacts": [
+        "market opportunity",
+        "source and method",
+        "contrary evidence",
+        "validation plan",
+        "cross-cutting review",
+        "expiry"
+      ],
+      "reviewers": [
+        "owner",
+        "market-strategy",
+        "product",
+        "security",
+        "accessibility"
+      ],
+      "minimum_approvals": 2
     }
   ]
 }

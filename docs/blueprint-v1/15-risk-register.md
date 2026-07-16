@@ -293,3 +293,17 @@ Risk owners are roles until named maintainers exist. Acceptance of a critical or
 - Any triggered risk creates or updates a GitHub issue with owner, evidence, mitigation, target gate, and residual risk.
 
 Risk counts are not a quality metric. Closing a risk requires evidence that the condition no longer applies; moving it to “accepted” requires explicit residual-impact disclosure.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-strategy risk candidates
+
+These are candidates in the `OP-*` registry and do not renumber or silently alter `R-001` through `R-040`:
+
+- **MR-CAND-001 — Space identity leakage:** project convenience could mix credentials, history, storage, or permissions.
+- **MR-CAND-002 — Snapshot over-retention:** Time Machine could retain secrets or sensitive page state.
+- **MR-CAND-003 — Migration compromise:** importers process high-value, malformed, and secret-bearing data.
+- **MR-CAND-004 — Sync/collaboration failure:** metadata leakage, key loss, revocation failure, conflict corruption, or accidental sharing.
+- **MR-CAND-005 — False assurance:** privacy receipts or provenance indicators could be incomplete or misunderstood.
+- **MR-CAND-006 — Feature sprawl:** differentiation work could outrun engine, security, accessibility, and maintenance capacity.
+
+Promotion requires deciding whether each candidate becomes a stable `R-*` entry.

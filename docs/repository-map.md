@@ -375,3 +375,28 @@ For every structural change:
 ## Generated build-output hygiene
 
 - `.gitignore` owns generated build-output exclusion for Rust `target/`, Python `__pycache__/` and bytecode, local editor state, coverage, traces, and temporary artifacts. Validation rejects tracked build output; CI uses an external `CARGO_TARGET_DIR`.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market strategy expansion — July 2026
+
+```text
+docs/market-strategy/
+├── README.md
+├── 01-market-method-and-segments.md
+├── 02-competitive-feature-matrix.md
+├── 03-user-demand-and-switching-barriers.md
+├── 04-project-native-workspaces.md
+├── 05-time-machine-and-continuity.md
+├── 06-resource-truth-and-lifecycle-control.md
+├── 07-trustworthy-ai-and-agent-differentiation.md
+├── 08-research-canvas-and-developer-mode.md
+├── 09-migration-portability-collaboration-and-sync.md
+├── 10-feature-prioritization-and-validation.md
+└── machine/
+    └── feature-opportunities.json
+
+docs/research/browser-market-gap-2026-07.md
+docs/templates/market-opportunity.md
+```
+
+The book owns product-opportunity research. Accepted product behavior remains owned by the Blueprint, requirements, ADRs, risks, and work packages.

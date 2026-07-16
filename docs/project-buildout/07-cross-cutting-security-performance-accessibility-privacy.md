@@ -60,3 +60,8 @@ Prevent teams from optimizing one dimension by externalizing risk to another thr
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market differentiation review
+
+Every opportunity receives a cross-cutting review before user testing with sensitive data and again before promotion. Resource savings, AI capability, collaboration, or migration benefits cannot be accepted by hiding data loss, authority, accessibility, or operational cost.

@@ -48,3 +48,8 @@ Turing should claim performance leadership only from an evidence package showing
 - [JavaScript runtime book](../javascript/README.md)
 - [Developer experience book](../developer-experience/README.md)
 - [Fixed-hardware research issue](../research/browser-engine-landscape-2026-07.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Resource Truth Center
+
+`OP-003` researches a user-facing layer over semantic resource accounting: per-Space ownership, transition reasons, predicted savings, state-loss risk, and revival quality. Measurements remain equivalent-security and complete-denominator.

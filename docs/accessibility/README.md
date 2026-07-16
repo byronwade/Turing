@@ -56,3 +56,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Differentiated accessibility
+
+Spaces, split panes, Time Machine, resource controls, research citations, privacy receipts, and agent confirmation require complete keyboard, screen-reader, magnification, voice, switch, contrast, and cognitive-load design. Accessibility is a market opportunity only when it remains an architecture invariant.

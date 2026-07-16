@@ -30,3 +30,8 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 ## Non-negotiable rule
 
 A phase or release is incomplete while an applicable control lacks linked evidence, a time-bounded approved exception, or an explicit declaration that it is outside supported scope.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market opportunity control
+
+The [market strategy book](../market-strategy/README.md) feeds this handbook through `OP-*` proposals. An opportunity cannot enter accepted scope until ownership, review class, requirements, risks, work packages, traceability, evidence, and phase gates agree.

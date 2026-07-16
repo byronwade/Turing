@@ -115,3 +115,8 @@ Every public build carries one label:
 - **Stable:** published support policy, rapid security updates, broad compatibility evidence, accessibility validation, and independent security review.
 
 The label is determined by gates, not schedule or visual completeness.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-positioning constraint
+
+Turing researches a project-native browser centered on durable Spaces, explainable resource behavior, open portability, and capability-scoped agents. This is a product hypothesis. The charter still requires an independent, evidence-driven engine and prohibits unsupported superiority claims.

@@ -46,3 +46,8 @@ Portable automation belongs in WebDriver BiDi. Turing-specific introspection bel
 - [Browser engine book](../engine/README.md)
 - [JavaScript runtime book](../javascript/README.md)
 - [Security engineering book](../security-engine/README.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Research Canvas and Causal Mode
+
+`OP-005` and `OP-009` connect multi-pane research, provenance, deterministic replay, trace diff, causal explanation, and reduced-test generation. Developer claims require measured task completion against current reference tools.

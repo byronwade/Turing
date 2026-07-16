@@ -22,3 +22,8 @@ The GitHub issues created with Blueprint v1 are the executable front door for th
 18. Fixed-hardware compatibility/performance/memory/energy lab.
 
 Each issue must reference stable requirement/risk/ADR IDs, define negative and failure tests, and state what the completion does **not** support. Work should not leapfrog a missing security boundary merely to produce a more impressive demo.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-opportunity research queue
+
+`OP-001` through `OP-014` remain outside the accepted `WP-001` through `WP-018` executable backlog. The first candidate additions are a market-validation harness, Space data-model prototype, migration/export corpus, Time Machine journal experiment, and Resource Truth usability study. New `WP-*` entries require reviewed promotion and dependency mapping.

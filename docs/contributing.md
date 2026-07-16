@@ -112,3 +112,8 @@ Before work in networking, storage, media/documents, platform integration, acces
 ## Professional change workflow
 
 Significant work identifies owner and backup status, requirement/traceability impact, RFC/ADR class, required cross-cutting reviewers, configuration, Plug-in/embedding, dependency/provenance, migration, evidence, rollback, release/support, and any expiring exception.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market and product proposals
+
+Use the [market opportunity template](templates/market-opportunity.md). A competitor feature or community request is not sufficient evidence. Proposals must identify target segment, job, contrary evidence, security/privacy/accessibility/performance impact, maintenance cost, validation plan, and expiry. Copying third-party branding, assets, descriptions, or source is prohibited.

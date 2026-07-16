@@ -206,3 +206,8 @@ A profile directory uses explicit sub-stores and version files. Secrets are stor
 - **ARCH-008:** Secret material is never intentionally included in agent observations, logs, crash reports, or general telemetry.
 - **ARCH-009:** Resource reclamation cannot silently change security policy.
 - **ARCH-010:** Headless, automation, and agent modes use the same navigation, origin, storage, permission, and sandbox machinery as interactive mode.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Proposed Space principal
+
+`OP-001` researches whether a Space should become a first-class product, identity, resource, Plug-in, recovery, and agent-policy principal. No kernel or process identity changes until an RFC/ADR defines ownership, profile relationship, lifetime, IPC identity, cross-Space sharing, and compatibility behavior.

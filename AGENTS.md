@@ -199,3 +199,8 @@ Do not bypass, weaken, or delete a failing validation rule without updating the 
 ## Professional project-control requirements
 
 Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-strategy impact
+
+Changes to product positioning, workspaces, migration, synchronization, resource UX, agent UX, comparison/research workflows, privacy receipts, or collaboration must inspect `docs/market-strategy/`, the dated market report, the `OP-*` registry, relevant Blueprint chapters, product/security/performance/accessibility/AI/Plug-in/embedding books, ownership, traceability, risks, and roadmap. Market demand never bypasses evidence or safety gates.

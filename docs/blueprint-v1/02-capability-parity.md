@@ -120,3 +120,8 @@ Turing documents these as external dependencies. It does not fake support, bypas
 ## 11. Parity gate
 
 The phrase **Chrome-class general-purpose browser** may be used only after all release-critical rows have owners, tests, support statements, security coverage, and update procedures. The phrase **Chrome-equivalent** is reserved for a versioned comparison report showing the exact tested Chrome version, platform, test corpus, pass rates, unsupported proprietary services, and security caveats.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Parity versus differentiation
+
+Vertical tabs, workspaces, split views, sidebars, synchronized groups, browser AI, and extension support are increasingly table stakes. The `OP-*` portfolio defines proposed differentiators but does not replace parity requirements. Failed or unsupported sites remain in compatibility denominators even when a differentiated workflow is strong.

@@ -64,3 +64,8 @@ Security leadership means measurable containment and response, not absence of pu
 - [AI engineering book](../ai/README.md)
 - [Build and release operations](../blueprint-v1/13-build-release-operations.md)
 - [Security policy](../security.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-driven trust boundaries
+
+Spaces, identity routing, migration, Time Machine, privacy receipts, sync, collaboration, Plug-ins, and agent mode each create security boundaries. Market demand cannot widen ambient authority or bypass trusted UI, data minimization, isolation, review, or incident obligations.

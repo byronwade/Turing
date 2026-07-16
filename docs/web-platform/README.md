@@ -54,3 +54,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Product differentiation and the open web
+
+Spaces, research tools, privacy receipts, and agents must not alter page semantics through hidden site-specific behavior. Product features use explicit browser APIs and compatibility adapters without fragmenting standards or user-agent behavior.

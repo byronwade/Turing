@@ -187,3 +187,8 @@ Automation profiles are isolated and ephemeral by default. Disabling confirmatio
 - **UI-GATE-4:** command palette cannot confuse navigation, search, page content, and privileged commands.
 - **UI-GATE-5:** resource manager reports process, lifecycle, isolation, and memory attribution consistently with traces.
 - **UI-GATE-6:** DevTools protocol is versioned, bounded, authenticated for remote use, and does not expose ambient kernel methods.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Proposed product differentiation
+
+Research targets project-native Spaces, Workspace Time Machine, Research Canvas, identity routing, open migration, privacy receipts, Web App Fabric, and Developer Causal Mode. Familiar browsing remains the default. Advanced project capability is progressively disclosed and fully keyboard/screen-reader operable.
