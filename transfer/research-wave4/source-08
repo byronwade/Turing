@@ -1,0 +1,176 @@
+                "The product term is Turing Plug-in; schema and code identifiers use `plugin`.",
+                "Plug-ins are not NPAPI/PPAPI-style in-process native modules.",
+                "All plug-ins are deny-by-default principals with explicit profile, origin, resource, time, and action scope.",
+                "First-party plug-ins use public capabilities and do not receive hidden browser-kernel shortcuts.",
+                "Idle plug-ins avoid periodic CPU and unnecessary wakeups; all resource use is attributed.",
+                "Remote executable code and silent permission expansion are prohibited.",
+            ],
+            [
+                ("Capability parity", "../blueprint-v1/02-capability-parity.md"),
+                ("Security model", "../blueprint-v1/08-security-and-sandbox.md"),
+                ("Extensions, enterprise, accounts, and sync", "../extensions-enterprise/README.md"),
+                ("Developer experience", "../developer-experience/README.md"),
+                ("AI engineering", "../ai/README.md"),
+            ],
+        ),
+    )
+    for item in PLUGIN_CHAPTERS:
+        write(
+            f"docs/plugins/{item['filename']}",
+            chapter(
+                "plugins",
+                item,
+                plugin_overview,
+                [
+                    ("Plug-in platform index", "README.md"),
+                    ("Security engineering", "../security-engine/README.md"),
+                    ("API design", "../api-design/README.md"),
+                    ("Chrome extension demand study", "../research/chrome-extension-demand-and-first-party-plugin-study-2026-07.md"),
+                ],
+            ),
+        )
+
+    cohort_path = ROOT / "docs/plugins/06-high-adoption-chrome-extension-reference-cohort.md"
+    text = cohort_path.read_text(encoding="utf-8")
+    rows = [
+        "| Extension | Store users | Category | Turing research lesson |",
+        "|---|---:|---|---|",
+    ]
+    for name, users, category, lesson, url in COHORT:
+        rows.append(f"| [{name}]({url}) | {users} | {category} | {lesson} |")
+    cohort_section = """
+## Public Chrome Web Store snapshot
+
+Snapshot date: 2026-07-16. User counts are the rounded public values shown by the store and can change without notice.
+
+""" + "\n".join(rows) + """
+
+## Portfolio implications
+
+The cohort supports a focused first-party starting portfolio around content filtering, writing and AI, language tools, capture, credential-broker UI, clipping, focus, tasks, research, media controls, userscripts, framework inspection, JSON/data inspection, and color/layout tools. Web3 is high-adoption but high-risk and remains optional, separately audited, and disabled by default.
+
+The cohort does **not** authorize copying product code, designs, trademarks, hosted services, or proprietary behavior. Requirements must be independently specified and implemented or use separately reviewed open-source components under their licenses.
+"""
+    if "## Public Chrome Web Store snapshot" not in text:
+        text = text.rstrip() + "\n\n" + clean(cohort_section)
+        cohort_path.write_text(text, encoding="utf-8")
+
+    write(
+        "docs/embedding/README.md",
+        book_index(
+            "Engine Embedding and Multi-Language SDK Engineering",
+            "embedding",
+            "This book defines how Turing becomes a trustworthy embeddable engine with a canonical Rust API, stable C ABI, generated language SDKs, WIT components, and concise safe-default integration.",
+            EMBEDDING_CHAPTERS,
+            [
+                "The same engine semantics and security model serve interactive, headless, test, and local service modes.",
+                "No public ABI exposes Rust layout or raw engine pointers.",
+                "Embedders receive capabilities and scoped handles, not ambient files, sockets, credentials, or browser internals.",
+                "Language SDKs derive from one canonical API and compatibility suite.",
+                "Two-line examples are a usability target, not permission to hide unsafe defaults.",
+                "Servo is a reference and collaboration opportunity; source reuse requires explicit policy, provenance, license, and maintenance decisions.",
+            ],
+            [
+                ("Servo competitive study", "../competitive/04-servo.md"),
+                ("API design", "../api-design/README.md"),
+                ("Developer experience", "../developer-experience/README.md"),
+                ("Technology stack", "../technology-stack/README.md"),
+                ("Platform integration", "../platform/README.md"),
+            ],
+        ),
+    )
+    for item in EMBEDDING_CHAPTERS:
+        write(
+            f"docs/embedding/{item['filename']}",
+            chapter(
+                "embedding",
+                item,
+                embedding_overview,
+                [
+                    ("Embedding index", "README.md"),
+                    ("System architecture", "../blueprint-v1/04-system-architecture.md"),
+                    ("API design", "../api-design/README.md"),
+                    ("Servo and embedding research", "../research/technology-stack-servo-and-embedding-study-2026-07.md"),
+                ],
+            ),
+        )
+
+
+def write_research_reports() -> None:
+    write(
+        "docs/research/technology-stack-servo-and-embedding-study-2026-07.md",
+        """# Technology Stack, Servo, and Embedding Study — July 2026
+
+Status: primary-source research baseline; no implementation or dependency approval  
+Date: 2026-07-16  
+Owner: architecture, embedding, security, and developer experience  
+Confidence: high for documented project/tool capabilities; medium for Turing suitability until prototypes and fixed-hardware measurements exist
+
+## Question
+
+Which languages, frameworks, foundational libraries, binding tools, component technologies, and API layers should Turing evaluate to build a top-tier independent engine that is easy to embed from many languages?
+
+## Scope and method
+
+The study reviewed official Rust, Servo, UniFFI, cbindgen, PyO3, napi-rs, JNI, WebAssembly Component Model, WASI, Wasmtime, Cranelift, graphics, text, TLS, database, standards, and Turing architecture sources retrieved on 2026-07-16. No comparative Turing implementation or fixed-hardware benchmark was performed.
+
+## Servo observations
+
+Servo publicly describes itself as a lightweight, high-performance, embeddable web engine written in Rust and identifies stable embedding APIs as a current focus. Its repository and documentation expose modular engine components, a shell, C API/FFI work, Python integration, and Web Platform Test infrastructure.
+
+Servo is therefore the strongest current Rust-first embedding reference for Turing. It is not evidence that every Servo architecture or component meets Turing's product, security, compatibility, support, or performance requirements.
+
+## Current policy consequence
+
+Turing's accepted policy is an independent Turing-owned release rendering path. Embedding or forking Servo as the engine would change that policy and requires an ADR, provenance and MPL-2.0 review, threat model, compatibility and benchmark evidence, maintenance ownership, and an upstream collaboration strategy.
+
+The recommended near-term interpretation of “baseline from Servo” is:
+
+1. use Servo as a capability, API, architecture, conformance, and benchmark reference;
+2. study or collaborate on reusable standards and Rust ecosystem work;
+3. evaluate individual components only through reviewed, replaceable boundaries;
+4. retain original Turing policy, process, resource, plug-in, SDK, and observability architecture unless evidence changes the decision.
+
+## Technology-stack recommendation
+
+- Rust stable for the engine, runtime, brokers, policy, plug-in host, resource accounting, and canonical SDK.
+- Stable C ABI for universal binary compatibility.
+- Swift/Objective-C, Windows native adapters, and Kotlin/Java only for platform shells and idiomatic SDKs.
+- TypeScript for DevTools UI, plug-in web UI, and generated clients; not privileged policy.
+- Python for testing, analysis, automation, corpus generation, and SDK use; not the browser runtime.
+- WebAssembly Component Model and WIT for sandboxed portable plug-ins and selected service adapters.
+- Audited specialist foundations for TLS, cryptography, Unicode, shaping, codecs, compression, databases, GPU interfaces, and compiler backends.
+- Generated SDK layers using cbindgen, UniFFI-like generation, PyO3, napi-rs, JNI, .NET interop, and WIT as appropriate.
+
+## Turing differentiation target
+
+Turing should attempt to exceed existing embedding experiences through:
+
+- capability-scoped, multi-profile engine instances;
+- stable ABI epochs and capability negotiation;
+- two-to-five-line safe-default APIs;
+- generated Rust, C/C++, Python, TypeScript/Node, Swift, Kotlin/Java, C#, Go, and component SDKs;
+- identical security policy across UI and headless modes;
+- deterministic traces, resource attribution, cancellation, and recovery;
+- signed/verifiable packages and support windows;
+- an integrated, sandboxed plug-in platform;
+- public compatibility and performance evidence.
+
+## Falsifiable experiments
+
+- `EXP-STACK-001`: candidate dependency scorecard with build, binary, startup, memory, latency, energy, fuzz, license, maintenance, and replacement evidence.
+- `EXP-EMBED-001`: equivalent minimal Servo and Turing embedding prototypes.
+- `EXP-ABI-001`: stable C ABI misuse fuzzing and cross-version matrix.
+- `EXP-SDK-001`: one shared scenario through all target language SDKs.
+- `EXP-COMPONENT-001`: WIT plug-ins compared with web-worker and native connector tiers.
+
+## Primary sources
+
+- Servo: https://servo.org/
+- Servo about: https://servo.org/about/
+- Servo repository: https://github.com/servo/servo
+- Servo Book: https://book.servo.org/
+- Rust: https://www.rust-lang.org/
+- UniFFI: https://mozilla.github.io/uniffi-rs/
+- cbindgen: https://github.com/mozilla/cbindgen
+- PyO3: https://pyo3.rs/
