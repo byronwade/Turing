@@ -68,7 +68,7 @@
       "reviewers": [
         "owner",
         "security",
-        "release",
+        "release-operations",
         "architecture"
       ],
       "minimum_approvals": 3
