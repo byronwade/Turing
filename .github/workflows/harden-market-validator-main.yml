@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - .github/workflows/harden-market-validator-main.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/harden-market-validator-main.yml
 
 permissions:
   contents: write
@@ -73,10 +78,12 @@ jobs:
           git commit -m "Harden market strategy validation controls"
           git push origin HEAD:main
 
-      - name: Delete temporary hardening branch
+      - name: Delete temporary hardening and trigger branches
         shell: bash
         run: |
           set -euo pipefail
-          if git ls-remote --exit-code --heads origin refs/heads/docs/market-strategy-validator-hardening >/dev/null 2>&1; then
-            git push origin --delete docs/market-strategy-validator-hardening
-          fi
+          for branch in docs/market-strategy-validator-hardening ops/trigger-market-validator; do
+            if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
+              git push origin --delete "${branch}"
+            fi
+          done
