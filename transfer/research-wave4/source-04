@@ -1,0 +1,119 @@
+                   'measurement, maintenance capacity, and Turing differentiation decide the portfolio.'],
+  'risks': ['Popularity can reward incumbent distribution rather than product quality.',
+            'Public user counts can change or be manipulated.',
+            'Feature cloning can create legal, provenance, or brand confusion.'],
+  'experiments': ['Recheck the cohort quarterly and record deltas, removed items, violations, permission '
+                  'changes, package size, and update cadence.',
+                  'Interview developers and everyday users about category value rather than product names.',
+                  'Benchmark representative category workloads and permission models.'],
+  'sources': []},
+ {'filename': '07-store-signing-updates-review-and-governance.md',
+  'title': 'Store, Signing, Updates, Review, and Governance',
+  'owner': 'plug-in distribution, security, and release operations',
+  'purpose': 'Define a trustworthy plug-in distribution system that can support third parties and a '
+             'first-party portfolio.',
+  'decisions': ['Packages are content-addressed, signed, reproducibly built where possible, and tied to '
+                'publisher identity, manifest, permissions, source/provenance, SBOM, review state, and '
+                'update channel.',
+                'The store distinguishes first-party, verified publisher, community, enterprise, local '
+                'developer, and quarantined packages without implying that verification eliminates risk.',
+                'Remote executable code, hidden downloads, obfuscated privileged logic, permission '
+                'deception, and undisclosed data collection are prohibited.',
+                'Updates are staged, rollback-capable, revocation-aware, and unable to add authority '
+                'silently.',
+                'Critical plug-in security fixes have an emergency disable/revoke path with public '
+                'post-incident transparency when safe.'],
+  'architecture': ['Review combines automated schema, permission, static, dynamic, supply-chain, malware, '
+                   'privacy, accessibility, and performance checks with human review for high-risk classes.',
+                   'Enterprise catalogs may pin versions and publishers but cannot bypass browser security '
+                   'invariants.',
+                   'Developer mode is visible, profile-scoped, and cannot attach unpacked plug-ins to normal '
+                   'profiles unnoticed.',
+                   'Store metadata publishes data practices, package size, resource budgets, permissions, '
+                   'supported APIs, source availability, issue/security contacts, and update history.',
+                   'Appeals and policy changes have documented processes.'],
+  'risks': ['The store becomes a high-value supply-chain target.',
+            'Automated review can miss malicious delayed or server-directed behavior.',
+            'Revocation can break critical user or enterprise workflows.'],
+  'experiments': ['Run malicious-package evaluation corpora including delayed behavior, encoded payloads, '
+                  'dependency substitution, and permission laundering.',
+                  'Practice compromised signing key, malicious update, false positive, and emergency '
+                  'rollback scenarios.',
+                  'Measure review throughput and false positive/negative rates before broad intake.'],
+  'sources': [('Chrome Web Store program policies',
+               'https://developer.chrome.com/docs/webstore/program-policies/'),
+              ('The Update Framework', 'https://theupdateframework.io/'),
+              ('Sigstore', 'https://www.sigstore.dev/')]},
+ {'filename': '08-sdk-testing-performance-accessibility-and-devtools.md',
+  'title': 'SDK, Testing, Performance, Accessibility, and DevTools',
+  'owner': 'plug-in developer experience and quality',
+  'purpose': 'Make secure plug-ins straightforward to build, test, profile, debug, publish, and maintain.',
+  'decisions': ['The plug-in SDK includes schema-generated APIs, typed permissions, local test browser, '
+                'deterministic fixtures, virtual time, network replay, permission simulation, and package '
+                'validation.',
+                'DevTools expose plug-in processes, workers, content contexts, components, messages, '
+                'capabilities, storage, network rules, CPU, memory, wakeups, errors, and policy decisions.',
+                'Every plug-in UI must support keyboard, focus, screen readers, zoom, contrast, forced '
+                'colors, localization, and reduced motion.',
+                'Idle plug-ins should consume zero periodic CPU and no avoidable wakeups; memory, event, '
+                'storage, network, and log budgets are explicit.',
+                'First-party plug-ins serve as SDK conformance examples and are tested through public APIs '
+                'rather than private shortcuts.'],
+  'architecture': ['CLI: create, run, test, lint, permission-audit, package, sign, publish, profile, and '
+                   'compatibility-report commands.',
+                   'Test layers: manifest/schema unit tests, mocked broker tests, isolated browser '
+                   'integration, WebExtensions differential tests, fuzzing, sandbox negative tests, '
+                   'performance and accessibility.',
+                   'Diagnostic bundles are redacted and contain package hash, build/API versions, '
+                   'permissions, process/resource traces, errors, and reproduction steps.',
+                   'Compatibility adapters produce machine-readable unsupported and semantic-difference '
+                   'reports.',
+                   'API examples default to least authority and cancellation.'],
+  'risks': ['A convenient test mode can become a production bypass.',
+            'Developer diagnostics may expose page or profile secrets.',
+            'Poor tooling will encourage broad permissions and private APIs.'],
+  'experiments': ['Measure time-to-first-working plug-in and common debugging tasks with new developers.',
+                  'Set idle/active memory, CPU, wakeup, startup, and event-latency budgets for each plug-in '
+                  'tier.',
+                  'Run screen-reader and keyboard workflows for store, install, permission, options, '
+                  'toolbar, and DevTools surfaces.'],
+  'sources': [('Chrome extension testing', 'https://developer.chrome.com/docs/extensions/how-to/test'),
+              ('WebDriver BiDi', 'https://w3c.github.io/webdriver-bidi/'),
+              ('Web Content Accessibility Guidelines', 'https://www.w3.org/TR/WCAG22/')]}]
+EMBEDDING_CHAPTERS = [{'filename': '01-servo-baseline-and-turing-differentiation.md',
+  'title': 'Servo Baseline and Turing Differentiation',
+  'owner': 'engine architecture and embedding',
+  'purpose': 'Use Servo as a serious embeddable-engine reference and measurement baseline while preserving '
+             "Turing's current independent-engine and provenance policy.",
+  'decisions': ['Servo is studied for Rust-first engine architecture, embeddability, modular components, '
+                'concurrency research, C/Python integration surfaces, and open governance.',
+                'Under the current Turing policy, Servo is not silently embedded as the release rendering '
+                'engine. Reusing or forking Servo engine code would require an explicit ADR changing the '
+                'independent-engine boundary, plus provenance, MPL-2.0, security, benchmark, maintenance, '
+                'and upstream strategy.',
+                '“Baseline from Servo” means: match and measure its useful embedding capabilities, learn '
+                'from its architecture and tests, collaborate or upstream where appropriate, and selectively '
+                'evaluate compatible components through reviewed boundaries.',
+                'Turing aims to differentiate with capability-safe embedding, stable multi-language SDKs, '
+                'explicit resource accounting, plug-in isolation, reproducible benchmark evidence, support '
+                'windows, incident operations, and first-class developer causality.'],
+  'architecture': ['Servo reference surfaces include its C API/FFI work, servoshell, Python support, Web '
+                   'Platform Test integration, modular components, and embeddable-engine goal.',
+                   "Turing's engine facade must not expose internal DOM/layout pointers, global mutable "
+                   'state, unrestricted networking, or host-owned renderer memory.',
+                   'Embedders select profile/storage, network policy, GPU/software backend, plug-in policy, '
+                   'agent policy, telemetry/crash policy, and platform capabilities through typed builders.',
+                   'The same engine core supports interactive, headless, test, and local service-process '
+                   'modes with disclosed differences.'],
+  'risks': ['Treating Servo as a drop-in baseline can inherit unfinished behavior or architecture not '
+            'matched to Turing goals.',
+            'A fork can divide scarce maintainership and standards work.',
+            'Independent reimplementation can duplicate useful open-source work and slow compatibility.'],
+  'experiments': ['Build equivalent minimal embeddings against current Servo and Turing prototypes and '
+                  'compare API complexity, startup, memory, rendering, security boundaries, diagnostics, and '
+                  'packaging.',
+                  'Create an adopt/collaborate/reimplement/reject ledger for candidate Servo concepts or '
+                  'components.',
+                  'Review every source reuse proposal for license and clean provenance before code enters '
+                  'Turing.'],
+  'sources': [('Servo project', 'https://servo.org/'),
