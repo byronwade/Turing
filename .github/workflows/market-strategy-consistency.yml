@@ -1,0 +1,214 @@
+name: Correct market strategy documentation consistency
+
+on:
+  push:
+    branches:
+      - docs/market-strategy-consistency
+    paths:
+      - .github/workflows/market-strategy-consistency.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-strategy-consistency
+  cancel-in-progress: false
+
+jobs:
+  correct:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out consistency branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/market-strategy-consistency
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Correct indexes and professional controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+
+          def replace_required(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if new in text:
+                  return
+              if old not in text:
+                  raise RuntimeError(f"{path}: expected text not found")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          docs = Path("docs/README.md")
+          text = docs.read_text(encoding="utf-8")
+          text = text.replace(
+              "| [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |\n\n| [Market Strategy and Differentiation](market-strategy/README.md)",
+              "| [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |\n| [Market Strategy and Differentiation](market-strategy/README.md)",
+          )
+          text = text.replace(
+              "| [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |\n\n| [Performance, security, developer, and missing-systems expansion audit — July 2026]",
+              "| [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Repository-wide gap analysis that created the detailed engineering library and records the next documentation priorities |\n| [Performance, security, developer, and missing-systems expansion audit — July 2026]",
+          )
+          market_row = "| [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | Market concentration, competitor workflows, user-demand signals, switching barriers, and OP-001 through OP-014 validation hypotheses |"
+          professional_row = "| [Professional buildout gap audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, source strategy, technology, Plug-in, embedding, operations, legal, data, product, and sustainability controls |"
+          if market_row not in text:
+              text = text.replace(professional_row, professional_row + "\n" + market_row, 1)
+          duplicate = "\n\n<!-- MARKET-STRATEGY-2026-07 -->\n## Market-gap evidence\n\n- [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md)\n- [Feature opportunity registry](market-strategy/machine/feature-opportunities.json)\n\nMarket opportunities use `OP-*` identifiers and remain non-normative until promoted through the professional review and traceability process."
+          text = text.replace(duplicate, "")
+          docs.write_text(text.rstrip() + "\n", encoding="utf-8")
+
+          blueprint = Path("docs/blueprint-v1/README.md")
+          text = blueprint.read_text(encoding="utf-8")
+          text = text.replace(
+              "- [Professional Project Buildout and Operating Handbook](../project-buildout/README.md)\n\n- [Market Strategy and Differentiation](../market-strategy/README.md)",
+              "- [Professional Project Buildout and Operating Handbook](../project-buildout/README.md)\n- [Market Strategy and Differentiation](../market-strategy/README.md)",
+          )
+          market_report = "- [Browser market gap and differentiation research — July 2026](../research/browser-market-gap-2026-07.md)"
+          professional_report = "- [Professional buildout gap audit — July 2026](../research/professional-buildout-gap-audit-2026-07.md)"
+          if market_report not in text:
+              text = text.replace(professional_report, professional_report + "\n" + market_report, 1)
+          duplicate = "\n\n<!-- MARKET-STRATEGY-2026-07 -->\n## Market strategy integration\n\nThe [browser market-gap report](../research/browser-market-gap-2026-07.md) and [market strategy book](../market-strategy/README.md) provide non-normative product hypotheses. They do not change accepted requirements, risks, ADRs, work packages, or support claims until those owning records are updated through reviewed evidence."
+          text = text.replace(duplicate, "")
+          blueprint.write_text(text.rstrip() + "\n", encoding="utf-8")
+
+          owners_path = Path("docs/blueprint-v1/machine/professional-owners.json")
+          owners = json.loads(owners_path.read_text(encoding="utf-8"))
+          if not any(item.get("scope") == "product" for item in owners["owners"]):
+              owners["owners"].append({
+                  "scope": "product",
+                  "status": "provisional",
+                  "primary": "@byronwade",
+                  "backup": None,
+                  "next_review": "2026-10-16",
+              })
+          owners_path.write_text(json.dumps(owners, indent=2) + "\n", encoding="utf-8")
+
+          rules_path = Path("docs/blueprint-v1/machine/professional-review-rules.json")
+          rules = json.loads(rules_path.read_text(encoding="utf-8"))
+          for rule in rules["rules"]:
+              rule["reviewers"] = [
+                  "release-operations" if reviewer == "release" else reviewer
+                  for reviewer in rule.get("reviewers", [])
+              ]
+          rules_path.write_text(json.dumps(rules, indent=2) + "\n", encoding="utf-8")
+
+          governance = Path("docs/blueprint-v1/16-governance-contributing.md")
+          text = governance.read_text(encoding="utf-8")
+          product_roles = "- **Product owner:** user needs, workflow coherence, product requirements, usability evidence, migration, and support scope.\n- **Market strategy owner:** competitive method, opportunity evidence, positioning, contrary evidence, and promotion or rejection of `OP-*` proposals."
+          if product_roles not in text:
+              text = text.replace(
+                  "- **Program lead:** scope, milestones, release label, staffing, public claims.",
+                  "- **Program lead:** scope, milestones, release label, staffing, public claims.\n" + product_roles,
+                  1,
+              )
+          governance.write_text(text, encoding="utf-8")
+
+          ownership = Path("docs/project-buildout/02-ownership-codeowners-and-maintainer-ladder.md")
+          text = ownership.read_text(encoding="utf-8")
+          marker = "<!-- MARKET-STRATEGY-OWNERSHIP-2026-07 -->"
+          if marker not in text:
+              text = text.rstrip() + "\n\n" + marker + "\n## Product and market-strategy ownership\n\nThe product owner governs coherent user workflows, requirements, usability, migration, and support scope. The market-strategy owner governs competitive evidence, research freshness, `OP-*` status, contrary evidence, and promotion or rejection. One person may provisionally hold both roles, but the responsibilities and review records remain distinct.\n"
+          ownership.write_text(text, encoding="utf-8")
+
+          research_log = Path("docs/research-log.md")
+          text = research_log.read_text(encoding="utf-8")
+          marker = "## 2026-07-16 — Market strategy consistency audit"
+          if marker not in text:
+              text = text.rstrip() + "\n\n" + marker + "\n\nIntegrated the market book and report into their owning index tables, added the product ownership scope required by `REV-MARKET`, normalized release review ownership, and strengthened validation so opportunity IDs, reviewer scopes, and index placement cannot drift. No opportunity status or implementation claim changed.\n"
+          research_log.write_text(text, encoding="utf-8")
+
+          validator = Path("tools/validate_blueprint.py")
+          text = validator.read_text(encoding="utf-8")
+          text = text.replace(
+              'r"\\b(?:REQ-[A-Z0-9-]+|R-\\d{3}|ADR-\\d{4}|WP-\\d{3}|RQ-\\d{2}|"',
+              'r"\\b(?:REQ-[A-Z0-9-]+|R-\\d{3}|ADR-\\d{4}|WP-\\d{3}|RQ-\\d{2}|OP-\\d{3}|"',
+              1,
+          )
+          if "def check_professional_controls()" not in text:
+              anchor = "\n\ndef check_market_opportunities() -> None:"
+              function = '''
+
+def check_professional_controls() -> None:
+    owners_path = MACHINE / "professional-owners.json"
+    rules_path = MACHINE / "professional-review-rules.json"
+    owners = load_json(owners_path)
+    rules = load_json(rules_path)
+    if not isinstance(owners, dict) or not isinstance(owners.get("owners"), list):
+        fail("professional-owners.json must contain an owners array")
+    if not isinstance(rules, dict) or not isinstance(rules.get("rules"), list):
+        fail("professional-review-rules.json must contain a rules array")
+    scopes = {item.get("scope") for item in owners["owners"]}
+    required_scopes = {"product", "market-strategy"}
+    missing_scopes = required_scopes - scopes
+    if missing_scopes:
+        fail("missing professional owner scopes: " + ", ".join(sorted(missing_scopes)))
+    allowed_reviewers = scopes | {"owner"}
+    for rule in rules["rules"]:
+        unknown = set(rule.get("reviewers", [])) - allowed_reviewers
+        if unknown:
+            fail(
+                f"{rule.get('id')}: unknown reviewer scopes: "
+                + ", ".join(sorted(unknown))
+            )
+
+    docs_index = (DOCS / "README.md").read_text(encoding="utf-8")
+    if "\n\n| [Market Strategy and Differentiation]" in docs_index:
+        fail("docs/README.md separates the market-strategy row from the books table")
+    market_report = "| [Browser market gap and differentiation research — July 2026]"
+    if market_report not in docs_index:
+        fail("docs/README.md active research table is missing the market-gap report")
+
+    blueprint_index = (BLUEPRINT / "README.md").read_text(encoding="utf-8")
+    if "\n\n- [Market Strategy and Differentiation]" in blueprint_index:
+        fail("Blueprint index separates market strategy from the engineering-book list")
+    if "../research/browser-market-gap-2026-07.md" not in blueprint_index:
+        fail("Blueprint current reports are missing the market-gap report")
+'''
+              if anchor not in text:
+                  raise RuntimeError("validator insertion anchor missing")
+              text = text.replace(anchor, function + anchor, 1)
+          if "        check_professional_controls()\n" not in text:
+              text = text.replace(
+                  "        check_json_registries()\n",
+                  "        check_json_registries()\n        check_professional_controls()\n",
+                  1,
+              )
+          validator.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Remove one-shot workflow
+        shell: bash
+        run: rm -f .github/workflows/market-strategy-consistency.yml
+
+      - name: Validate clean repository and prototype
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          CARGO_TARGET_DIR: /tmp/turing-market-consistency-target
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+          test ! -e .github/workflows/market-strategy-consistency.yml
+          test ! -d prototype/target
+          test ! -d tools/__pycache__
+
+      - name: Commit consistency corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Harden market strategy documentation consistency"
+          git push origin HEAD:docs/market-strategy-consistency
