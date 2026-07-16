@@ -28,6 +28,9 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   ├── research-log.md
 │   ├── security.md
 │   ├── start-here.md
+│   ├── research/
+│   │   ├── README.md
+│   │   └── browser-engine-landscape-2026-07.md
 │   └── blueprint-v1/
 │       ├── README.md
 │       ├── 01-charter-and-principles.md
@@ -106,6 +109,7 @@ This is the canonical documentation root.
 - `contributing.md` and `security.md` are canonical operating policies.
 - `prototype.md` describes the executable model in `prototype/`.
 - `research-log.md` records material research and governance changes.
+- `research/` contains dated evidence reports and an index. Research recommendations remain exploratory until accepted through the owning Blueprint records.
 - `blueprint-v1/` contains the complete architecture and execution baseline.
 - `blueprint-v1/machine/` contains machine-readable evidence paired with the prose.
 
@@ -124,7 +128,8 @@ Repository-local validation scripts with no third-party Python dependency:
 
 ## Placement rules
 
-- New prose: `docs/<topic>.md` or the relevant indexed subdirectory.
+- New canonical policy or architecture prose: `docs/<topic>.md` or the relevant indexed subdirectory.
+- New dated research evidence: `docs/research/<topic>-<date>.md`, linked from `docs/research/README.md` and recorded in `docs/research-log.md`.
 - New machine-readable documentation support: the owning document’s `machine/` directory.
 - New source: a clearly owned subsystem directory, documented before or with creation.
 - New tests: colocated with the subsystem or under a documented shared test hierarchy.
@@ -140,7 +145,7 @@ For every structural change:
 2. update the ownership and purpose section;
 3. update `docs/README.md` when documentation topology changes;
 4. update root navigation when entry points change;
-5. update validation required paths and legacy-path checks;
+5. update validation required paths and legacy-path checks when integrity requirements change;
 6. update build, workflow, packaging, and ownership configuration;
 7. remove obsolete references;
 8. run repository validation.

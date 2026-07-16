@@ -48,6 +48,16 @@ This blueprint separates four layers that are often confused:
 
 The `machine/` directory contains requirements, risks, work packages, process capabilities, benchmark-manifest schemas, and agent-action schemas. These files are not secondary exports: they must remain consistent with the prose in the same change.
 
+## Supporting research
+
+Dated evidence reports live in the [research index](../research/README.md). They inform and challenge this Blueprint but do not silently change accepted requirements or decisions.
+
+Current report:
+
+- [Browser engine landscape and Turing excellence strategy — July 2026](../research/browser-engine-landscape-2026-07.md)
+
+Recommendations from a report become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
+
 ## Executable bootstrap
 
 The code under `prototype/` is not a rendering engine yet. Its canonical description is [`docs/prototype.md`](../prototype.md). It is a small, buildable Rust model of core invariants:

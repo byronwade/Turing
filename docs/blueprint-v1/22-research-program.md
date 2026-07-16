@@ -92,6 +92,22 @@ Analyze WPT/Test262 taxonomy and a controlled application corpus to identify dep
 
 Decision output: milestone feature ordering and explicit unsupported map.
 
+## RQ-16 — Which competitive engine patterns survive equivalent measurement?
+
+Use the [July 2026 engine landscape study](../research/browser-engine-landscape-2026-07.md) as the hypothesis source, then compare current stable Chromium, WebKit/Safari where available, Firefox/Gecko, and runnable Servo/Ladybird builds on fixed hardware and equivalent local corpora.
+
+Measure startup, input-to-present latency, frame pacing, page stages, JavaScript warm-up, process topology, isolation state, memory categories, energy, recovery, compatibility, accessibility, and unsupported behavior. Distinguish observed architecture from inferred cause. Never attribute a benchmark difference to a design feature without a controlled experiment.
+
+Decision output: an evidence-ranked list of architecture patterns to adopt, reject, or prototype, with confidence and revisit triggers.
+
+## RQ-17 — What public developer protocol can lead on stability and observability?
+
+Prototype WebDriver BiDi integration plus a schema-generated Turing engine-instrumentation protocol. Compare capability negotiation, versioning, generated clients, command/event latency, streaming, backpressure, cancellation, authentication, redaction, replay, malformed input, and support-window cost.
+
+Evaluate common developer workflows across Chromium CDP, Firefox remote protocols, WebKit Inspector Protocol, and Turing’s proposal without making another engine’s protocol the internal source of truth.
+
+Decision output: protocol layering, version policy, stable and experimental domains, client-generation plan, security boundary, and compatibility-adapter policy.
+
 ## Research protocol
 
 Every study publishes:

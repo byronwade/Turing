@@ -15,7 +15,16 @@ Documentation changes are part of the implementation. Every addition, modificati
 | [Security policy](security.md) | Current security status, private reporting, scope priorities, and disclosure |
 | [Architecture prototype](prototype.md) | Exact purpose, commands, invariants, and limitations of `prototype/` |
 | [Research log](research-log.md) | Chronological record of material research and documentation-governance decisions |
+| [Research index](research/README.md) | Dated evidence reports, competitive studies, hypotheses, and experiment queues |
 | [Blueprint v1](blueprint-v1/README.md) | Complete product, engine, runtime, platform, security, performance, AI, UI, testing, release, roadmap, risk, requirements, and research baseline |
+
+## Active research
+
+| Study | Status and purpose |
+|---|---|
+| [Browser engine landscape and Turing excellence strategy — July 2026](research/browser-engine-landscape-2026-07.md) | Primary-source comparison of Chromium, WebKit, Gecko, Servo, and Ladybird; proposed performance, API, standards, open-source, and measurement strategy |
+
+Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 
 ## Blueprint v1
 
