@@ -1,4 +1,4 @@
-name: Verify market strategy main state
+name: Clean final verification branches
 
 on:
   push:
@@ -11,60 +11,25 @@ permissions:
   contents: write
 
 jobs:
-  verify:
+  cleanup:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
-      - name: Check out verification branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: ops/verify-market-main
           fetch-depth: 0
           show-progress: false
 
-      - name: Validate exact main tree in an isolated worktree
+      - name: Delete auxiliary cleanup branch
         shell: bash
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-          CARGO_TARGET_DIR: /tmp/turing-main-verification-target
         run: |
           set -euo pipefail
-          git fetch origin main
-          git worktree add --detach /tmp/turing-main-verification origin/main
-          cd /tmp/turing-main-verification
-          main_sha="$(git rev-parse HEAD)"
-          python3 -B tools/validate_blueprint.py | tee /tmp/validate.log
-          cargo fmt --manifest-path prototype/Cargo.toml -- --check
-          cargo test --manifest-path prototype/Cargo.toml --all-targets | tee /tmp/test.log
-          cargo run --manifest-path prototype/Cargo.toml --quiet | tee /tmp/run.log
-          test -f docs/market-strategy/README.md
-          test -f docs/market-strategy/machine/feature-opportunities.json
-          test -f docs/research/browser-market-gap-2026-07.md
-          test ! -e transfer/market-strategy
-          test ! -e .github/workflows/market-strategy-expand.yml
-          test ! -e .github/workflows/market-strategy-consistency.yml
-          test ! -d prototype/target
-          test ! -d tools/__pycache__
-          grep -q '24 detailed engineering books' /tmp/validate.log
-          grep -q '12 machine-readable registries' /tmp/validate.log
-          grep -q 'test result: ok' /tmp/test.log
-          {
-            echo "main_sha=${main_sha}"
-            echo "repository_validation=passed"
-            echo "rust_format=passed"
-            echo "prototype_tests=passed"
-            echo "prototype_smoke=passed"
-            echo "market_strategy_files=present"
-            echo "temporary_artifacts=absent"
-          } > "${GITHUB_WORKSPACE}/market-main-verification.txt"
+          if git ls-remote --exit-code --heads origin refs/heads/ops/cleanup-main-verification >/dev/null 2>&1; then
+            git push origin --delete ops/cleanup-main-verification
+          fi
 
-      - name: Commit verification result to the isolated branch
+      - name: Delete this verification branch
         shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "turing-verification[bot]"
-          git config user.email "turing-verification[bot]@users.noreply.github.com"
-          git add market-main-verification.txt
-          git commit -m "Record market strategy main verification"
-          git push origin HEAD:ops/verify-market-main
+        run: git push origin --delete ops/verify-market-main
