@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Generate Turing technology stack, plug-in platform, and embedding research docs."""
+
+from __future__ import annotations
+
+import ast
+import re
+from pathlib import Path
+from textwrap import dedent
+
+ROOT = Path(__file__).resolve().parents[1]
+
+TECHNOLOGY_CHAPTERS = [{'filename': '01-language-and-component-map.md',
+  'title': 'Language and Component Map',
+  'owner': 'architecture and language strategy',
+  'purpose': 'Define which programming language owns each browser, engine, SDK, tooling, and platform layer, '
+             'and prevent convenience choices from widening trusted code or runtime cost.',
+  'decisions': ['Stable Rust is the default for the browser kernel, process broker, IPC, '
+                'HTML/DOM/CSS/layout/paint, JavaScript frontend and runtime, networking policy, storage '
+                'policy, plug-in broker, DevTools protocol, resource accounting, and agent authorization.',
+                'C is the stable universal ABI boundary, not an implementation language for Turing-owned '
+                'hostile-input parsers.',
+                'C++ is permitted only for narrowly reviewed platform, GPU, codec, compiler, or '
+                'upstream-library boundaries where a safer alternative is not viable.',
+                'Swift or Objective-C, C++/WinRT, and Kotlin/Java are thin platform-shell and SDK languages '
+                'for Apple, Windows, and Android integration.',
+                'TypeScript is appropriate for generated clients, DevTools UI, plug-in web UI, and '
+                'documentation tooling; it does not own privileged policy.',
+                'Python is used for tests, corpus generation, benchmarking, analysis, release tooling, and '
+                'an ergonomic SDK; it is not shipped as the browser runtime.',
+                'WebAssembly components and WIT are the portable, sandboxed multi-language plug-in boundary.',
+                'Go, C#, Ruby, and other languages are supported through generated SDKs over the stable ABI '
+                'rather than duplicated engine implementations.'],
+  'architecture': ['Every component has an owner, privilege level, inputs, outputs, memory budget, '
+                   'cancellation behavior, crash boundary, unsafe/native surface, and supported platforms.',
+                   'Language boundaries are coarse enough to audit and benchmark. Fine-grained FFI calls on '
+                   'rendering or input critical paths require measurement.',
+                   'Rust types are never exposed as a public binary ABI. Public handles are opaque, '
+                   'versioned, and reference explicit engine-owned objects.',
+                   'A language runtime may not become a hidden browser-wide dependency because one tool or '
+                   'panel prefers it.',
+                   'Source generators emit deterministic bindings and conformance tests from one canonical '
+                   'schema.'],
+  'risks': ['FFI ownership or thread-affinity defects can defeat Rust safety.',
+            'Platform-language divergence can fragment behavior.',
+            'Excessive monomorphization or dependency growth can damage build time, binary size, and '
+            'startup.',
+            'A nominally thin adapter can become a second policy implementation.'],
+  'experiments': ['Measure equivalent DOM, IPC, plug-in, and view-lifecycle calls through Rust, C, Python, '
+                  'Node, Swift, Kotlin, C#, and Go SDKs.',
+                  'Compare callback, future, stream, and poll-based async adapters for cancellation, '
+                  'allocation, latency, and error fidelity.',
+                  'Audit generated bindings for lifetime, thread, exception, and ownership correctness under '
+                  'fuzzed misuse.'],
+  'sources': [('Rust language', 'https://www.rust-lang.org/'),
+              ('Rust FFI guidance', 'https://doc.rust-lang.org/nomicon/ffi.html'),
+              ('WebAssembly Component Model', 'https://component-model.bytecodealliance.org/'),
+              ('JNI specification', 'https://docs.oracle.com/en/java/javase/24/docs/specs/jni/')]},
+ {'filename': '02-foundational-frameworks-and-libraries.md',
+  'title': 'Foundational Frameworks and Libraries',
+  'owner': 'architecture, dependencies, and subsystem owners',
+  'purpose': 'Document the top-tier framework and library candidates that may accelerate Turing without '
+             'embedding an existing browser engine or outsourcing Turing policy.',
+  'decisions': ['Cryptography, TLS, Unicode data, text shaping, image/media codecs, compression, databases, '
+                'compiler backends, and OS sandbox primitives should use audited specialist foundations when '
+                'review shows reuse is safer than reinvention.',
+                'Candidate use is not approval. Each dependency requires a versioned decision record, '
+                'privilege and input-exposure analysis, license review, fuzz plan, update owner, replacement '
+                'boundary, and measured cost.',
+                'Foundational libraries sit behind Turing-owned policy adapters so an upstream API cannot '
+                'define browser identity, permissions, partitioning, lifecycle, or user-visible behavior.',
+                'Convenience frameworks are rejected when their transitive graph, runtime, code generation, '
+                'startup work, or ambient authority exceeds the local implementation cost.'],
+  'architecture': ['Text: HarfBuzz, FreeType, CoreText, DirectWrite, Unicode and CLDR data behind Turing '
+                   'font matching, privacy, fallback, cache, and layout adapters.',
+                   'Graphics: evaluate wgpu as a pinned cross-platform abstraction against direct Metal, '
+                   'D3D12, and Vulkan adapters; retain a software reference renderer.',
+                   'TLS and HTTP foundations: rustls/webpki and narrowly selected protocol crates may '
+                   'provide primitives while Turing owns Fetch, credentials, CORS, cache, cookies, '
+                   'certificate UI, partitioning, limits, and observability.',
+                   'Storage: SQLite is the primary candidate for transactional browser stores, wrapped by '
+                   'store-specific schemas, migrations, quotas, corruption handling, and encryption '
+                   'boundaries rather than a general ORM.',
+                   'Code generation: Cranelift is evaluated as a machine-code backend for Turing-owned '
+                   'JavaScript and WebAssembly IR; it does not own language semantics, GC, deoptimization, '
+                   'or browser policy.',
+                   'Portable components: Wasmtime is evaluated for WIT-defined plug-in components, resource '
+                   'limits, fuel/epoch interruption, and WASI capability control; it is not the page '
+                   'JavaScript engine.',
+                   'Bindings: cbindgen, UniFFI, PyO3, napi-rs, JNI, .NET P/Invoke/source generation, and WIT '
+                   'generators are evaluated by target and support cost.',
+                   'Testing: libFuzzer/cargo-fuzz, proptest, Loom, Miri, sanitizers, WPT, Test262, Criterion '
+                   'or iai-callgrind-like tools, and fixed-hardware end-to-end laboratories.'],
+  'risks': ['A library may be technically strong but operationally unsustainable or license-incompatible.',
+            'Generic serialization or async frameworks can allocate unpredictably or hide unbounded queues.',
+            'A cross-platform abstraction may block platform hardening or diagnostics.',
+            'Native libraries remain memory-corruption attack surfaces even behind Rust APIs.'],
+  'experiments': ['Produce an adopt/evaluate/reject table with measured startup, binary, memory, throughput, '
+                  'tail latency, build, security, and maintenance costs.',
+                  'Run malformed-input and OOM/cancellation fuzzing at every native boundary.',
+                  'Prototype replacement adapters so a foundational dependency can be swapped without '
+                  'rewriting policy.'],
+  'sources': [('HarfBuzz', 'https://harfbuzz.github.io/'),
+              ('FreeType', 'https://freetype.org/'),
+              ('wgpu', 'https://github.com/gfx-rs/wgpu'),
+              ('rustls', 'https://github.com/rustls/rustls'),
+              ('SQLite', 'https://sqlite.org/'),
+              ('Cranelift', 'https://cranelift.dev/'),
+              ('Wasmtime', 'https://wasmtime.dev/')]},
+ {'filename': '03-build-test-analysis-and-supply-chain-tooling.md',
+  'title': 'Build, Test, Analysis, and Supply-Chain Tooling',
+  'owner': 'build, quality, security, and release engineering',
+  'purpose': 'Define the toolchain required to build a browser that is reproducible, fuzzable, profileable, '
+             'reviewable, and rapidly patchable.',
+  'decisions': ['Pin Rust, C/C++, SDK, linker, code-generator, test-suite, and packaging tool versions in '
+                'release manifests.',
+                'Cargo workspaces and feature sets remain explicit; release artifacts do not depend on '
+                'network-time dependency resolution.',
+                'rustfmt and Clippy enforce mechanical consistency; Miri, sanitizers, fuzzers, model tests, '
+                'and platform hardening validate unsafe and hostile-input paths.',
+                'cargo-deny-like license/advisory/source policy and SBOM/provenance generation are release '
+                'gates, not optional reports.',
+                'Benchmark definitions, corpora, raw samples, and analysis scripts are versioned like APIs.',
+                'PGO/LTO and binary-layout tools are permitted only with reproducible profiles and '
+                'before/after startup, memory, security, and debugging evidence.'],
+  'architecture': ['Pull requests: formatting, linting, unit/component tests, docs/links/schemas, dependency 
