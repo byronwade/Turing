@@ -1,0 +1,82 @@
+name: Finalize market strategy validator hardening
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/harden-market-validator-main.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: harden-market-validator-main
+  cancel-in-progress: false
+
+jobs:
+  harden:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Import and apply reviewed hardening patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin docs/market-strategy-validator-hardening
+          git show origin/docs/market-strategy-validator-hardening:tools/harden_market_validator.py > /tmp/harden_market_validator.py
+          python3 -B - <<'PY'
+          from pathlib import Path
+          source = Path('/tmp/harden_market_validator.py').read_text(encoding='utf-8')
+          compile(source, '/tmp/harden_market_validator.py', 'exec')
+          PY
+          python3 -B /tmp/harden_market_validator.py
+
+      - name: Remove one-shot workflow and generated output
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/harden-market-validator-main.yml
+          rm -rf prototype/target tools/__pycache__ target coverage artifacts
+
+      - name: Validate clean repository and prototype
+        shell: bash
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          CARGO_TARGET_DIR: /tmp/turing-market-validator-main-target
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+          test ! -e .github/workflows/harden-market-validator-main.yml
+          test ! -d prototype/target
+          test ! -d tools/__pycache__
+
+      - name: Commit clean hardening result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Harden market strategy validation controls"
+          git push origin HEAD:main
+
+      - name: Delete temporary hardening branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin refs/heads/docs/market-strategy-validator-hardening >/dev/null 2>&1; then
+            git push origin --delete docs/market-strategy-validator-hardening
+          fi
