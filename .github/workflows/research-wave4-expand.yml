@@ -1,0 +1,64 @@
+name: Publish technology Plug-in and embedding research
+
+on:
+  push:
+    branches:
+      - docs/technology-plugins-embedding
+    paths:
+      - transfer/research-wave4/**
+      - .github/workflows/research-wave4-expand.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-wave4-expand
+  cancel-in-progress: false
+
+jobs:
+  expand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out publication branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs/technology-plugins-embedding
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Reconstruct and verify documentation generator
+        shell: bash
+        run: |
+          cat transfer/research-wave4/source-* > tools/research_wave4_generator.py
+          echo "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d  tools/research_wave4_generator.py" | sha256sum --check -
+          python3 -m py_compile tools/research_wave4_generator.py
+
+      - name: Generate technology Plug-in and embedding documentation
+        run: python3 tools/research_wave4_generator.py
+
+      - name: Remove one-shot publication machinery
+        shell: bash
+        run: |
+          rm -f tools/research_wave4_generator.py
+          rm -rf transfer/research-wave4
+          rmdir transfer 2>/dev/null || true
+          rm -f .github/workflows/research-wave4-expand.yml
+
+      - name: Validate repository and prototype
+        run: |
+          python3 tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+
+      - name: Commit clean generated documentation
+        shell: bash
+        run: |
+          git config user.name "turing-research[bot]"
+          git config user.email "turing-research[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m "Document technology stack Plug-ins and embedding SDKs"
+          git push origin HEAD:docs/technology-plugins-embedding
