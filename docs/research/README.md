@@ -83,3 +83,10 @@ The next evidence reports should cover:
 - [Turing Plug-ins](../plugins/README.md)
 - [Embedding SDK](../embedding/README.md)
 - [Professional Project Buildout](../project-buildout/README.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Browser market and differentiation
+
+- [Browser market gap and differentiation research — July 2026](browser-market-gap-2026-07.md)
+
+This study defines `OP-001` through `OP-014` as research opportunities. It must be refreshed when competitor capabilities, market share, major user-demand evidence, or Turing's product assumptions materially change.

@@ -57,3 +57,8 @@ Define an evidence-gated path from research through prototype, preview, beta, st
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Opportunity promotion gate
+
+Research opportunities remain outside phase completion claims until explicitly promoted. M0 requires a product-positioning hypothesis and initial validation plan, not proof that every proposed differentiator will ship.

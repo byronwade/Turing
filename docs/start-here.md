@@ -67,3 +67,8 @@ All canonical project documentation lives under `docs/`. Every feature, code, co
 ## Professional implementation controls
 
 Read the [project-buildout handbook](project-buildout/README.md), [technology stack](technology-stack/README.md), [Plug-in platform](plugins/README.md), [embedding SDK](embedding/README.md), and [templates](templates/README.md) before implementation work.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Product differentiation research
+
+After reading the professional buildout controls, use the [Market Strategy and Differentiation book](market-strategy/README.md) to understand proposed product opportunities and their validation requirements. Treat `OP-*` records as hypotheses, not roadmap commitments.

@@ -316,3 +316,14 @@ The long-term vision is fixed; implementation choices remain empirical.
 ## Professional buildout prerequisite
 
 Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. This refines M0 without changing WP-001 through WP-018 status.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-opportunity sequencing
+
+- M0: validate target segments, jobs, open export, and Space data model; keep `OP-*` non-normative.
+- M1: prototype shell-level Spaces, identity indicators, journal, migration report, and resource attribution.
+- M2–M5: add split/Research Canvas foundations, Time Machine restoration, identity routing, privacy receipts, and Developer Causal Mode alongside engine maturity.
+- M5–M6: first-party Plug-ins and read-only selected-source AI.
+- M7+: optional encrypted sync, low-risk isolated agent actions, collaboration, and wider Plug-in ecosystem after security and operations gates.
+
+An opportunity enters the executable backlog only after promotion through evidence and ownership.

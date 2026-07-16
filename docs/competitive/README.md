@@ -41,3 +41,8 @@ Turing's target is the Pareto frontier across open-web compatibility, interactio
 - [Browser engine book](../engine/README.md)
 - [Developer experience book](../developer-experience/README.md)
 - [Performance engineering book](../performance/README.md)
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-gap companion
+
+The [browser market-gap report](../research/browser-market-gap-2026-07.md) compares product workflows and user-demand signals. Competitive studies remain separate from engine conformance and do not authorize copying proprietary implementation or branding.

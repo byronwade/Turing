@@ -185,3 +185,8 @@ Platform capability differences are documented. A weaker sandbox on one platform
 Local diagnostics are rich. Remote telemetry is minimal, off by default in research/developer phases, schema-documented, and separated from page content. Collection categories have retention, purpose, sampling, and deletion rules. URLs, titles, search terms, page text, cookies, headers, credentials, file paths, form values, prompt content, and model outputs are excluded unless a separate explicit diagnostic flow states exactly what will be sent.
 
 No advertising identifier, cross-product tracking SDK, or hidden analytics dependency is accepted.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-driven service research
+
+Identity routing, open migration/export, Time Machine, selective sync, collaboration, and privacy receipts create new network/storage obligations. Research must cover partitioning, credentials, journals, encryption, metadata leakage, conflict resolution, clearing, downgrade, and recovery before product acceptance.

@@ -181,3 +181,8 @@ A dated research report remains evidence, not an accepted decision. Book topolog
 ## Professional control-plane records
 
 Changes must inspect the professional ownership, traceability, phase, review, and exception registries under `blueprint-v1/machine/`, the project-buildout handbook, and the relevant technology, Plug-in, embedding, and template records. Research recommendations never silently change accepted implementation or support status.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market opportunity changes
+
+A new or changed `OP-*` record requires synchronized updates to the market-strategy book, dated evidence report or source notes, feature-opportunity registry, research log, ownership, relevant product/security/performance/accessibility/AI/Plug-in/embedding documents, and validation. Promotion to accepted scope additionally requires requirements, risks, ADRs where needed, work packages, traceability, and support statements.

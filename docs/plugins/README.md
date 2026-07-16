@@ -63,3 +63,8 @@ The store links listing to signed package, performs automated and risk-based man
 - Google favorite extensions of 2025 — https://blog.google/products-and-platforms/products/chrome/our-favorite-chrome-extensions-of-2025/
 - MDN WebExtensions — https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
 - WebAssembly Component Model — https://component-model.bytecodealliance.org/
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Space and market-strategy integration
+
+Plug-ins may be installed per Space, receive session-only grants, and appear in resource/privacy receipts. First-party candidates should validate the market portfolio through the same bounded platform. Market popularity never grants privileged APIs.

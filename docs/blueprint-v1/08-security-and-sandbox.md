@@ -213,3 +213,8 @@ No stable release occurs without capacity to ship emergency fixes across all sup
 ## 18. Residual risks disclosed in every early release
 
 Early versions may contain exploitable parser, layout, GC, JIT, graphics, codec, and IPC defects; incomplete sandboxing; missing anti-phishing and reputation systems; incompatible security-header behavior; and slow patch cadence. Research and engine-preview builds must be labeled not safe for sensitive browsing or untrusted daily use until the corresponding gates pass.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Differentiation security gates
+
+Spaces, identity routing, Plug-ins, privacy receipts, collaborative sync, and agent mode are security boundaries—not cosmetic features. Page content cannot influence trusted routing or agent authority. Snapshots and migration cannot expose secrets. Collaboration and sync require cryptographic and metadata review. No market demand waives sandbox, site isolation, or confirmation policy.

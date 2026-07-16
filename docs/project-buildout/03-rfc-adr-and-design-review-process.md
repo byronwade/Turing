@@ -57,3 +57,8 @@ Create one discoverable decision pipeline for architecture, public APIs, data fo
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market proposal review
+
+Use `docs/templates/market-opportunity.md`. Workspace identity, sync trust, snapshot retention, agent authority, public interchange, or collaboration cryptography normally requires an RFC and may require an ADR after prototype evidence.

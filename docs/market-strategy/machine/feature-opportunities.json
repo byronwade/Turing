@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "program": "Turing Browser",
+  "research_date": "2026-07-16",
+  "status": "proposed-market-opportunities",
+  "opportunities": [
+    {
+      "id": "OP-001",
+      "name": "Turing Spaces",
+      "priority": "P0",
+      "status": "proposed",
+      "market_gap": "Workspaces, profiles, containers, layouts, tools, and policies are fragmented across current browsers.",
+      "primary_segments": [
+        "everyday",
+        "power-user",
+        "developer",
+        "researcher",
+        "team"
+      ],
+      "dependencies": [
+        "shell",
+        "profile-identity",
+        "session-journal",
+        "storage",
+        "sync"
+      ],
+      "risk": [
+        "cross-context data leakage",
+        "state complexity",
+        "sync conflicts"
+      ],
+      "evidence_required": [
+        "usability study",
+        "crash-recovery test",
+        "identity-isolation test",
+        "cross-device prototype"
+      ]
+    },
+    {
+      "id": "OP-002",
+      "name": "Workspace Time Machine",
+      "priority": "P0",
+      "status": "proposed",
+      "market_gap": "Session recovery and synchronized tab state are brittle, incomplete, and weakly inspectable.",
+      "primary_segments": [
+        "all"
+      ],
+      "dependencies": [
+        "session-journal",
+        "storage",
+        "space-model",
+        "redaction"
+      ],
+      "risk": [
+        "sensitive-data retention",
+        "storage growth",
+        "unsafe replay"
+      ],
+      "evidence_required": [
+        "power-loss tests",
+        "corruption tests",
+        "selective restore study",
+        "retention review"
+      ]
+    },
+    {
+      "id": "OP-003",
+      "name": "Resource Truth Center",
+      "priority": "P0",
+      "status": "proposed",
+      "market_gap": "Browsers reclaim resources but rarely provide semantic ownership, state-loss guarantees, or explainable decisions.",
+      "primary_segments": [
+        "everyday",
+        "power-user",
+        "developer",
+        "enterprise"
+      ],
+      "dependencies": [
+        "resource-accounting",
+        "lifecycle",
+        "trace-system"
+      ],
+      "risk": [
+        "misleading attribution",
+        "measurement overhead",
+        "unsafe reclamation"
+      ],
+      "evidence_required": [
+        "fixed-hardware benchmark",
+        "attribution reconciliation",
+        "data-loss tests",
+        "comprehension study"
+      ]
+    },
+    {
+      "id": "OP-004",
+      "name": "Trustworthy Agent Mode",
+      "priority": "P0-read-only/P2-action",
+      "status": "proposed",
+      "market_gap": "Agentic browsers expose authenticated sessions to prompt injection and unintended actions.",
+      "primary_segments": [
+        "everyday",
+        "developer",
+        "enterprise",
+        "researcher"
+      ],
+      "dependencies": [
+        "capabilities",
+        "isolated-profile",
+        "agent-policy",
+        "audit",
+        "confirmation"
+      ],
+      "risk": [
+        "prompt injection",
+        "credential exposure",
+        "confused deputy",
+        "confirmation fatigue"
+      ],
+      "evidence_required": [
+        "WASP-style evaluation",
+        "isolated-profile proof",
+        "red-team campaign",
+        "user trust study"
+      ]
+    },
+    {
+      "id": "OP-005",
+      "name": "Research and Comparison Canvas",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Split views exist, but linked comparison, citation provenance, and reproducible research remain fragmented.",
+      "primary_segments": [
+        "researcher",
+        "student",
+        "shopper",
+        "developer",
+        "analyst"
+      ],
+      "dependencies": [
+        "split-layout",
+        "snapshot",
+        "notes",
+        "citation-model",
+        "export"
+      ],
+      "risk": [
+        "copyright retention",
+        "stale sources",
+        "AI grounding errors"
+      ],
+      "evidence_required": [
+        "workflow study",
+        "citation audit",
+        "accessibility test",
+        "export round-trip"
+      ]
+    },
+    {
+      "id": "OP-006",
+      "name": "Identity Routing and Context Firewall",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Profiles, containers, and workspaces are separate concepts with weak link-routing and identity feedback.",
+      "primary_segments": [
+        "multi-account",
+        "enterprise",
+        "privacy",
+        "developer"
+      ],
+      "dependencies": [
+        "profile",
+        "container",
+        "navigation",
+        "permission-broker"
+      ],
+      "risk": [
+        "identity confusion",
+        "credential crossover",
+        "spoofing"
+      ],
+      "evidence_required": [
+        "cross-profile negative tests",
+        "routing usability study",
+        "trusted-UI review"
+      ]
+    },
+    {
+      "id": "OP-007",
+      "name": "Migration and Portability",
+      "priority": "P0",
+      "status": "proposed",
+      "market_gap": "Browser switching loses project structure, profile relationships, and advanced state.",
+      "primary_segments": [
+        "all-switchers"
+      ],
+      "dependencies": [
+        "importers",
+        "open-export-format",
+        "credential-platform-apis"
+      ],
+      "risk": [
+        "secret exposure",
+        "corrupt import",
+        "license restrictions"
+      ],
+      "evidence_required": [
+        "browser migration corpus",
+        "round-trip export",
+        "failure report",
+        "security review"
+      ]
+    },
+    {
+      "id": "OP-008",
+      "name": "Plug-in Trust Platform",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Current extension systems offer broad power with weak resource governance and uneven portability.",
+      "primary_segments": [
+        "everyday",
+        "developer",
+        "enterprise"
+      ],
+      "dependencies": [
+        "plugin-broker",
+        "WIT",
+        "WebExtensions-adapter",
+        "store",
+        "signing"
+      ],
+      "risk": [
+        "supply-chain compromise",
+        "permission abuse",
+        "compatibility pressure"
+      ],
+      "evidence_required": [
+        "capability tests",
+        "resource-budget tests",
+        "package reproducibility",
+        "store review simulation"
+      ]
+    },
+    {
+      "id": "OP-009",
+      "name": "Developer Causal Mode",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Developer tools show state but often do not explain complete cross-subsystem causality.",
+      "primary_segments": [
+        "web-developer",
+        "browser-developer",
+        "agent-developer"
+      ],
+      "dependencies": [
+        "trace-schema",
+        "protocol",
+        "replay",
+        "reduction"
+      ],
+      "risk": [
+        "secret leakage",
+        "trace overhead",
+        "false causal inference"
+      ],
+      "evidence_required": [
+        "developer task benchmark",
+        "redaction review",
+        "trace fidelity tests"
+      ]
+    },
+    {
+      "id": "OP-010",
+      "name": "Encrypted Collaborative Spaces",
+      "priority": "P2",
+      "status": "proposed",
+      "market_gap": "Existing sharing is often static, account-bound, or too broad for sensitive project work.",
+      "primary_segments": [
+        "teams",
+        "families",
+        "classrooms",
+        "researchers"
+      ],
+      "dependencies": [
+        "space-model",
+        "E2EE-sync",
+        "roles",
+        "conflict-resolution"
+      ],
+      "risk": [
+        "accidental sharing",
+        "metadata leakage",
+        "revocation failure"
+      ],
+      "evidence_required": [
+        "cryptographic design review",
+        "sharing usability study",
+        "revocation tests"
+      ]
+    },
+    {
+      "id": "OP-011",
+      "name": "Web App Fabric",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "PWAs, side panels, notifications, and workspace organization are not consistently one model.",
+      "primary_segments": [
+        "productivity",
+        "developer",
+        "enterprise"
+      ],
+      "dependencies": [
+        "PWA",
+        "panels",
+        "permissions",
+        "offline",
+        "packaging"
+      ],
+      "risk": [
+        "trusted-UI confusion",
+        "notification abuse",
+        "background resource use"
+      ],
+      "evidence_required": [
+        "app lifecycle tests",
+        "offline tests",
+        "permission review",
+        "resource benchmarks"
+      ]
+    },
+    {
+      "id": "OP-012",
+      "name": "Privacy Receipts and Content Authenticity",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Users lack one readable record of site, Plug-in, AI, and provenance behavior.",
+      "primary_segments": [
+        "all",
+        "journalist",
+        "enterprise",
+        "researcher"
+      ],
+      "dependencies": [
+        "network-observability",
+        "storage-observability",
+        "plugin-audit",
+        "agent-audit",
+        "C2PA"
+      ],
+      "risk": [
+        "false assurance",
+        "fingerprinting",
+        "metadata sensitivity"
+      ],
+      "evidence_required": [
+        "accuracy audit",
+        "comprehension study",
+        "privacy review"
+      ]
+    },
+    {
+      "id": "OP-013",
+      "name": "Accessibility and Focus Differentiation",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Browser productivity features frequently under-specify keyboard, assistive technology, and cognitive-load behavior.",
+      "primary_segments": [
+        "disabled",
+        "keyboard",
+        "focus",
+        "all"
+      ],
+      "dependencies": [
+        "native-accessibility",
+        "commands",
+        "workspace-semantics",
+        "design-system"
+      ],
+      "risk": [
+        "feature segregation",
+        "inaccessible complexity"
+      ],
+      "evidence_required": [
+        "AT matrix",
+        "keyboard completion",
+        "cognitive walkthrough",
+        "disabled-user study"
+      ]
+    },
+    {
+      "id": "OP-014",
+      "name": "Cross-Device Continuity Without Lock-In",
+      "priority": "P1",
+      "status": "proposed",
+      "market_gap": "Sync is commonly account-bound and incomplete for full project state.",
+      "primary_segments": [
+        "multi-device",
+        "team"
+      ],
+      "dependencies": [
+        "E2EE-sync",
+        "recovery-key",
+        "conflict-resolution",
+        "export"
+      ],
+      "risk": [
+        "data loss",
+        "key loss",
+        "metadata leakage",
+        "conflict corruption"
+      ],
+      "evidence_required": [
+        "multi-device fault testing",
+        "key recovery study",
+        "self-host prototype",
+        "export/import tests"
+      ]
+    }
+  ],
+  "canonical_report": "../research/browser-market-gap-2026-07.md",
+  "canonical_book": "../README.md",
+  "decision_state": "research-proposal",
+  "promotion_rule": "An opportunity becomes a normative requirement or work package only through reviewed evidence, owning Blueprint updates, risk review, and machine-registry synchronization."
+}

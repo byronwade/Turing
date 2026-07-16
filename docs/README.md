@@ -48,6 +48,8 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Embedding and Multi-language SDK](embedding/README.md) | Rust API, stable C ABI, generated SDKs, lifecycle, surfaces, host security, packaging, and conformance |
 | [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |
 
+| [Market Strategy and Differentiation](market-strategy/README.md) | Competitive evidence, project-native Spaces, Time Machine, resource truth, trustworthy agents, research canvas, migration, sync, collaboration, prioritization, and validation |
+
 ## Active research
 
 | Study | Status and purpose |
@@ -103,3 +105,11 @@ A new document must:
 A renamed or removed document must have every inbound link, command, registry reference, issue template, and workflow updated in the same change.
 
 See [the documentation policy](documentation-policy.md) for the mandatory impact matrix and CI rules.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-gap evidence
+
+- [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md)
+- [Feature opportunity registry](market-strategy/machine/feature-opportunities.json)
+
+Market opportunities use `OP-*` identifiers and remain non-normative until promoted through the professional review and traceability process.

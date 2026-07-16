@@ -155,3 +155,15 @@ Manifest/API, authority, identity, lifecycle, cancellation, resource, data, acce
 ## Professional control-plane change
 
 Ownership, traceability, phase, decision class, review, evidence, exception, documentation, release, and capacity records agree.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market opportunity or differentiation feature
+
+- stable `OP-*` record, target segment, job, alternatives, and contrary evidence;
+- observed evidence separated from inference and product proposal;
+- security, privacy, accessibility, compatibility, performance, energy, recovery, migration, localization, legal, and maintenance review;
+- prototype and controlled task study with raw evidence;
+- simpler core, Plug-in, compatibility adapter, and rejection alternatives considered;
+- accepted requirements, risks, ADRs, work packages, ownership, and traceability updated only after promotion;
+- experimental expiry, removal, rollback, and support language defined;
+- no competitor code, branding, assets, or misleading equivalence claim.

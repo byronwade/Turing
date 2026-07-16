@@ -58,3 +58,8 @@ Define the design system, trusted content, localization, documentation freshness
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Portfolio sustainability
+
+The `OP-*` portfolio is capacity-constrained. Each promoted differentiator identifies what it replaces, maintenance staffing, localization and support cost, telemetry/data obligations, deprecation path, and conditions for removal. Feature count is not a success metric.

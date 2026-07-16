@@ -217,7 +217,18 @@ DETAILED_BOOKS = {'engine': ['01-pipeline-and-artifacts.md',
                       '08-release-incident-legal-data-and-support.md',
                       '09-servo-adoption-decision-framework.md',
                       '10-product-localization-documentation-and-sustainability.md',
-                      'README.md']}
+                      'README.md'],
+ 'market-strategy': ['01-market-method-and-segments.md',
+                     '02-competitive-feature-matrix.md',
+                     '03-user-demand-and-switching-barriers.md',
+                     '04-project-native-workspaces.md',
+                     '05-time-machine-and-continuity.md',
+                     '06-resource-truth-and-lifecycle-control.md',
+                     '07-trustworthy-ai-and-agent-differentiation.md',
+                     '08-research-canvas-and-developer-mode.md',
+                     '09-migration-portability-collaboration-and-sync.md',
+                     '10-feature-prioritization-and-validation.md',
+                     'README.md']}
 
 REQUIRED_DOCS = [
     ROOT / "README.md",
@@ -236,6 +247,7 @@ REQUIRED_DOCS = [
     RESEARCH / "browser-engine-landscape-2026-07.md",
     RESEARCH / "documentation-expansion-audit-2026-07.md",
     RESEARCH / "performance-security-developer-expansion-audit-2026-07.md",
+    RESEARCH / "browser-market-gap-2026-07.md",
     BLUEPRINT / "README.md",
     *[BLUEPRINT / f"{number:02d}-{slug}.md" for number, slug in CHAPTERS],
     *[
@@ -261,6 +273,7 @@ REQUIRED_MACHINE_FILES = [
     MACHINE / "professional-phase-gates.json",
     MACHINE / "professional-review-rules.json",
     MACHINE / "professional-exceptions.json",
+    DOCS / "market-strategy" / "machine" / "feature-opportunities.json",
 ]
 
 ALLOWED_MARKDOWN_OUTSIDE_DOCS = {
@@ -338,7 +351,7 @@ def check_document_locations() -> None:
     for path in DOCS.rglob("*"):
         if not path.is_file() or path.suffix == ".md":
             continue
-        if path.is_relative_to(MACHINE) and path.suffix == ".json":
+        if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine")):
             continue
         fail(f"unsupported documentation file type: {relative(path)}")
 
@@ -412,6 +425,28 @@ def check_json_registries() -> None:
                 f"{item.get('id')}: unknown requirements: "
                 + ", ".join(sorted(unknown_requirements))
             )
+
+
+def check_market_opportunities() -> None:
+    path = DOCS / "market-strategy" / "machine" / "feature-opportunities.json"
+    payload = load_json(path)
+    if not isinstance(payload, dict) or not isinstance(payload.get("opportunities"), list):
+        fail("feature-opportunities.json must contain an opportunities array")
+    opportunities = payload["opportunities"]
+    ids = [item.get("id") for item in opportunities]
+    expected = [f"OP-{index:03d}" for index in range(1, 15)]
+    if ids != expected:
+        fail(f"market opportunity IDs must be contiguous OP-001 through OP-014; found {ids}")
+    required = {"id", "name", "priority", "status", "market_gap", "primary_segments", "dependencies", "risk", "evidence_required"}
+    for item in opportunities:
+        missing = required - set(item)
+        if missing:
+            fail(f"{item.get('id')}: missing opportunity fields: {', '.join(sorted(missing))}")
+        if item.get("status") != "proposed":
+            fail(f"{item.get('id')}: market opportunities remain proposed until reviewed promotion")
+        for field in ("primary_segments", "dependencies", "risk", "evidence_required"):
+            if not isinstance(item.get(field), list) or not item[field]:
+                fail(f"{item.get('id')}: {field} must be a non-empty array")
 
 
 def local_target(source: Path, raw_target: str) -> Path | None:
@@ -511,6 +546,7 @@ def main() -> int:
         check_document_locations()
         check_book_topology()
         check_json_registries()
+        check_market_opportunities()
         markdown_count, links_checked = check_markdown()
         check_policy_markers()
         check_source_hygiene()
@@ -520,8 +556,8 @@ def main() -> int:
     print(
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
-        "23 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 11 machine-readable registries"
+        "24 detailed engineering books, 46 requirements, 40 risks, "
+        "18 work packages, 12 machine-readable registries"
     )
     return 0
 

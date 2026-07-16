@@ -260,3 +260,8 @@ Dropping an OS or architecture requires advance notice and cannot leave users on
 - **REL-GATE-4:** platform packages are signed, sandboxed, uninstallable, and tested on supported clean systems.
 - **REL-GATE-5:** security, compatibility, performance, accessibility, and known-risk reports are published.
 - **REL-GATE-6:** emergency patch and communication path is staffed before beta/stable.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Product-state portability and support
+
+Migration, export, snapshots, synchronization, and collaboration introduce versioned interchange formats, schema migrations, compatibility windows, backup/recovery, support, and incident obligations. No cloud or account service may become required for local export or normal browsing without an explicit decision.

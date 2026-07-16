@@ -55,3 +55,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Product workflow laboratory
+
+Add controlled Space switching, recovery, migration, 30-tab resource comprehension, Research Canvas, agent trust, cross-device conflict, and Developer Causal Mode tasks. Report completion, errors, loss, accessibility, latency, resource use, and user confidence together.

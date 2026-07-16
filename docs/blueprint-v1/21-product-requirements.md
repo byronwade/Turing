@@ -195,3 +195,10 @@ The shell must remain interactive when the test renderer hangs or crashes.
 - unbounded agent or extension authority;
 - unsupported proprietary behavior presented as parity;
 - team cannot maintain supported releases.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Proposed market opportunities — non-normative
+
+The following remain research proposals, not accepted `REQ-*` entries: `OP-001` Spaces, `OP-002` Time Machine, `OP-003` Resource Truth Center, `OP-004` Trustworthy Agent Mode, `OP-005` Research Canvas, `OP-006` Identity Routing, `OP-007` Migration/Portability, `OP-008` Plug-in Trust Platform, `OP-009` Developer Causal Mode, `OP-010` Collaborative Spaces, `OP-011` Web App Fabric, `OP-012` Privacy Receipts/Authenticity, `OP-013` Accessibility/Focus differentiation, and `OP-014` lock-in-free continuity.
+
+Promotion requires validated user value, architecture and threat review, measurable acceptance criteria, owner, milestone, risk mapping, and synchronized machine requirements.

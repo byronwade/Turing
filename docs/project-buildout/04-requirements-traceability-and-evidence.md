@@ -58,3 +58,8 @@ Define the authoritative chain from user need to requirement, design, source, te
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Opportunity-to-requirement boundary
+
+`OP-*` records are not requirements. Promotion creates or updates `REQ-*`, `R-*`, `WP-*`, ADR, owner, tests, evidence, and support records in one reviewed change. Rejected and deferred opportunities retain rationale and evidence.

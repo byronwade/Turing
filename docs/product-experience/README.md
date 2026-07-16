@@ -53,3 +53,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market-strategy integration
+
+The proposed product center is a durable Space with folders, layouts, identity, recovery, resource policy, migration, and optional agent/Plug-in context. The [market strategy book](../market-strategy/README.md) owns hypotheses and validation; this book continues to own accepted everyday workflows.

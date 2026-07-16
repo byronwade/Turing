@@ -327,3 +327,18 @@ The implementation's behavior notes should quote minimally and describe algorith
 - Servo — https://servo.org/
 - WebAssembly Component Model — https://component-model.bytecodealliance.org/
 - Chrome Extensions — https://developer.chrome.com/docs/extensions/
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market and product evidence — retrieved 2026-07-16
+
+- StatCounter desktop browser share: https://gs.statcounter.com/browser-market-share/desktop
+- Chrome tab groups and AI: https://support.google.com/chrome/answer/2391819 and https://blog.google/products-and-platforms/products/chrome/chrome-reimagined-with-ai/
+- Edge Workspaces and performance: https://support.microsoft.com/en-us/edge/getting-started-with-microsoft-edge-workspaces and https://support.microsoft.com/en-us/edge/learn-about-performance-features-in-microsoft-edge
+- Firefox sidebar, split view, and containers: https://support.mozilla.org/en-US/kb/use-sidebar-access-tools-and-vertical-tabs , https://support.mozilla.org/en-US/kb/split-view-firefox , https://support.mozilla.org/en-US/kb/containers
+- Vivaldi Workspaces and Sync: https://vivaldi.com/features/workspaces/ and https://help.vivaldi.com/desktop/tools/sync/
+- Opera One R3: https://blogs.opera.com/news/2026/01/opera-one-r3-new-browser-update/
+- Brave Leo and agentic safety: https://brave.com/leo/ and https://brave.com/blog/ai-browsing/
+- Safari iCloud continuity and Profiles: https://support.apple.com/guide/icloud/what-you-can-do-with-icloud-and-safari-mm9b8da4f328/icloud and https://support.apple.com/en-euro/105100
+- Arc Profiles, Split View, and sharing: https://resources.arc.net/hc/en-us/articles/19227964556183-Profiles-Separate-Work-Personal-Browsing , https://resources.arc.net/hc/en-us/articles/19335393146775-Split-View-View-Multiple-Tabs-at-Once , https://resources.arc.net/hc/en-us/articles/19228534606743-Share-Spaces-Folders-Splits-with-Anyone
+- Mozilla Connect and Zen demand signals are listed in the dated market report.
+- Agent security research: WASP https://arxiv.org/abs/2504.18575 , ceLLMate https://arxiv.org/abs/2512.12594 , context manipulation https://arxiv.org/abs/2506.17318 , MUZZLE https://arxiv.org/abs/2602.09222 .

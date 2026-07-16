@@ -57,3 +57,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Time Machine and continuity research
+
+`OP-002`, `OP-010`, and `OP-014` add journal, snapshot, encryption, conflict, retention, deletion, and recovery questions. No snapshot or sync design may retain private or credential state by accident or replay consequential effects.

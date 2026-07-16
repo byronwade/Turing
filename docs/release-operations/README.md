@@ -58,3 +58,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Migration, export, sync, and support
+
+Market differentiation creates long-lived formats and services. Release evidence must cover importer safety, export compatibility, snapshot restoration, sync conflicts, key recovery, collaboration revocation, support, and end-of-life.

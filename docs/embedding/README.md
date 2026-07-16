@@ -44,3 +44,8 @@ This is a design target, not an existing API.
 - WebAssembly Component Model/WIT — https://component-model.bytecodealliance.org/
 - Servo embedding work — https://servo.org/
 - Semantic Versioning — https://semver.org/
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Portability and project-state integration
+
+Embedding research must expose versioned import/export and Space/session concepts without leaking internal engine layouts. Hosts disclose which migration, sync, Plug-in, agent, and recovery responsibilities they implement. Open export remains available without a hosted account.

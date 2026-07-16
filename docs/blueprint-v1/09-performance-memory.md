@@ -256,3 +256,8 @@ Local models are loaded on demand and unloadable. A dormant agent feature must n
 - **PERF-GATE-4:** idle background CPU/wakeups remain below published thresholds on Tier L/M.
 - **PERF-GATE-5:** memory regressions are attributed to semantic owners before merge or explicitly waived with an issue.
 - **PERF-GATE-6:** no optimization disables a security mitigation, accessibility path, correctness test, or active page behavior without labeling the result experimental.
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Resource Truth Center research
+
+`OP-003` proposes per-Space and per-principal attribution, lifecycle reasons, predicted savings, state-loss risk, and revival quality. This extends honest 30-tab reporting but is not yet a supported product contract. Instrumentation overhead and attribution uncertainty remain visible.

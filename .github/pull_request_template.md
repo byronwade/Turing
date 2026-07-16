@@ -70,3 +70,12 @@ State the maturity label and release gates affected. A visual demo, detailed des
 - Traceability/phase impact:
 - Required cross-cutting reviews:
 - Configuration, Plug-in, embedding, dependency, migration, release, support, and expiring exception impact:
+
+<!-- MARKET-STRATEGY-2026-07 -->
+## Market strategy and opportunity impact
+
+- Affected `OP-*` records:
+- Target user/job and evidence:
+- Promotion state: research only / requirement proposal / accepted scope:
+- Switching, migration, recovery, resource, AI-authority, accessibility, and lock-in effects:
+- Competing behavior and non-copying/provenance review:
