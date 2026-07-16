@@ -102,3 +102,5 @@ jobs:
             cat /tmp/turing-remaining-branches >&2
             exit 1
           fi
+
+# Manual retrigger: 2026-07-16
