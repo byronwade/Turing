@@ -37,13 +37,10 @@ jobs:
       - name: Reconstruct and verify documentation generator
         shell: bash
         run: |
-          : > tools/research_wave4_generator.py
-          for part in transfer/research-wave4/source-*; do
+          cat transfer/research-wave4/source-00 > tools/research_wave4_generator.py
+          printf "'\n" >> tools/research_wave4_generator.py
+          for part in transfer/research-wave4/source-0[1-9] transfer/research-wave4/source-1[0-2]; do
             cat "$part" >> tools/research_wave4_generator.py
-            if [ "$(basename "$part")" = "source-00" ]; then
-              printf "'" >> tools/research_wave4_generator.py
-            fi
-            printf '\n' >> tools/research_wave4_generator.py
           done
           echo "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d  tools/research_wave4_generator.py" | sha256sum --check -
           python3 -m py_compile tools/research_wave4_generator.py
