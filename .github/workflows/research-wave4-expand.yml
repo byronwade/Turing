@@ -44,12 +44,16 @@ jobs:
           done
           actual="$(sha256sum tools/research_wave4_generator.py | cut -d' ' -f1)"
           printf '%s\n' "$actual" > transfer/research-wave4/actual-sha.txt
-          python3 -m py_compile tools/research_wave4_generator.py
-          if [ "$actual" != "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d" ]; then
+          set +e
+          python3 -m py_compile tools/research_wave4_generator.py > transfer/research-wave4/compile.log 2>&1
+          compile_status=$?
+          set -e
+          if [ "$compile_status" -ne 0 ] || [ "$actual" != "3e9c10f87dbda366d0d54825bc9e0e3aa2b7835b9840e7f29e50eb16edcd2b4d" ]; then
+            printf 'compile_status=%s\n' "$compile_status" > transfer/research-wave4/diagnostic-status.txt
             git config user.name "turing-research[bot]"
             git config user.email "turing-research[bot]@users.noreply.github.com"
-            git add transfer/research-wave4/actual-sha.txt
-            git commit -m "Record research wave 4 generator digest"
+            git add transfer/research-wave4/actual-sha.txt transfer/research-wave4/compile.log transfer/research-wave4/diagnostic-status.txt
+            git commit -m "Record research wave 4 generator diagnostics"
             git push origin HEAD:docs/technology-plugins-embedding
             exit 1
           fi
