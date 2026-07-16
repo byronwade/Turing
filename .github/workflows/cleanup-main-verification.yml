@@ -33,3 +33,5 @@ jobs:
       - name: Delete this one-shot branch
         shell: bash
         run: git push origin --delete ops/cleanup-main-verification
+
+# Manual retrigger: 2026-07-16T23:23:00Z
