@@ -1,0 +1,98 @@
+name: Fix WP-002 Clippy gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fix-wp002-clippy-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    if: github.event.pull_request.title == 'Implement WP-002 kernel identities and bounded IPC' && github.actor == github.repository_owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TARGET_DIR: /tmp/turing-wp002-clippy-target
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out the WP-002 branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Apply the focused Clippy correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'turing-research[bot]'
+          git config user.email 'turing-research[bot]@users.noreply.github.com'
+          git rev-parse HEAD > /tmp/wp002-source-sha
+          python3 -B - <<'PY'
+          from pathlib import Path
+
+          path = Path('crates/turing-kernel/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+          old = '''        if let Some(capability) = required_capability {
+              if !sender.allows(capability) {
+                  return Err(KernelError::MissingCapability {
+                      role: sender.role(),
+                      capability,
+                  });
+              }
+          }
+          '''
+          # Account for the exact four-space Rust indentation from rustfmt.
+          old = old.replace('              ', '            ').replace('                  ', '                ').replace('          }', '        }')
+          new = '''        if let Some(capability) = required_capability
+              && !sender.allows(capability)
+          {
+              return Err(KernelError::MissingCapability {
+                  role: sender.role(),
+                  capability,
+              });
+          }
+          '''
+          new = new.replace('              ', '            ').replace('          {', '        {').replace('          }', '        }')
+          if old not in text:
+              raise SystemExit('expected nested capability check not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          cargo fmt --all
+
+      - name: Run the complete validation matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          python3 -B tools/validate_build_foundation.py
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+          cargo test --workspace --all-targets --all-features --locked
+          cargo run --locked -p turing-shell -- --self-test
+          cargo run --locked -p turing-architecture-prototype --quiet
+          cargo run --locked -p xtask -- check
+          test ! -e target
+          test ! -e transfer
+
+      - name: Commit the focused correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha=$(cat /tmp/wp002-source-sha)
+          git checkout "$source_sha" -- .github/workflows/fix-wp002-clippy.yml
+          git add crates/turing-kernel/src/lib.rs
+          git diff --cached --quiet && {
+            echo 'Expected a kernel source correction.' >&2
+            exit 1
+          }
+          git commit -m 'Satisfy the WP-002 Clippy gate'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
