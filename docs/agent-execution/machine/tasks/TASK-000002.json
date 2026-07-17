@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000002",
+  "status": "specified",
+  "owner": "agent:gpt-5.6-pro",
+  "independent_reviewer": "human-owner-or-separately-controlled-security-reviewer",
+  "requirements": [
+    "REQ-SEC-001"
+  ],
+  "risks": [
+    "R-004",
+    "R-007",
+    "R-034"
+  ],
+  "adrs": [
+    "ADR-0003"
+  ],
+  "allowed_paths": [
+    "apps/turing-sandbox-probe/",
+    "crates/turing-sandbox-evidence/",
+    "crates/turing-sandbox-probe/",
+    "platform/linux/sandbox/",
+    "platform/macos/sandbox/",
+    "platform/windows/sandbox/",
+    "schemas/sandbox/",
+    "security/",
+    "tools/",
+    "docs/",
+    ".github/CODEOWNERS",
+    ".github/workflows/",
+    "Cargo.toml",
+    "Cargo.lock"
+  ],
+  "prohibited_paths": [
+    "production signing keys",
+    "production credentials",
+    "private vulnerability material",
+    "stable release metadata",
+    "unreviewed setuid helpers",
+    "unreviewed kernel modules",
+    "sandbox bypass or weakening flags"
+  ],
+  "preconditions": [
+    "TASK-000001 is independently accepted and WP-002 is merged",
+    "the probe evidence and operation catalog schemas are reviewed",
+    "each platform adapter has a dependency native-code unsafe-code and license review before implementation",
+    "the first platform run is labeled a research laboratory rather than a product support commitment"
+  ],
+  "acceptance_criteria": [
+    "one versioned probe catalog defines every attempted operation expected outcome and evidence class",
+    "an unsandboxed control run proves that the harness detects permitted operations rather than fabricating denials",
+    "sandboxed runs bind evidence to build platform policy process identity and probe version",
+    "all expected-deny operations fail through the operating-system boundary rather than application-level stubs",
+    "allowed operations are enumerated and limited to broker-provided handles or explicit platform grants",
+    "unsupported platform primitives are reported as unsupported and never counted as a pass",
+    "evidence contains no secrets user paths profile data page content or stable machine identifiers",
+    "CI detects unexplained capability increases and policy drift",
+    "Linux macOS and Windows results remain separate until each platform has complete native evidence",
+    "documentation states residual gaps and no production sandbox claim is made"
+  ],
+  "negative_tests": [
+    "arbitrary filesystem read",
+    "arbitrary filesystem write",
+    "outbound socket",
+    "listening socket",
+    "raw socket",
+    "process creation",
+    "debug or ptrace attachment",
+    "credential store access",
+    "global clipboard access",
+    "device access",
+    "registry or configuration mutation",
+    "ambient platform IPC",
+    "dynamic library loading from an untrusted path",
+    "inherited unexpected handle or file descriptor",
+    "secret-bearing environment variable",
+    "unsafe working directory",
+    "broker disconnect",
+    "unsupported sandbox primitive",
+    "tampered evidence record"
+  ],
+  "resource_budget": {
+    "wall_seconds": 28800,
+    "cpu_seconds": 21600,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 4294967296,
+    "network_bytes": 268435456,
+    "max_workers": 1,
+    "max_retries": 3
+  },
+  "rollback": {
+    "strategy": "close the stacked pull request or revert its reviewed commits; no sandbox result may remain promoted after rollback",
+    "evidence_required": [
+      "main remains green",
+      "probe binaries schemas platform adapters and claims are removed or restored to the prior reviewed state",
+      "REQ-SEC-001 and PB-012 remain unverified"
+    ]
+  },
+  "dependencies": [
+    "TASK-000001"
+  ],
+  "expires_at": "2026-09-17T00:00:00Z"
+}
