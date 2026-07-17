@@ -1,6 +1,18 @@
 # 20 — Definition of Done by Work Type
 
-This checklist prevents architecture work from becoming presentation-only.
+This checklist prevents architecture work from becoming presentation-only. The [Implementation Master Plan](../project-buildout/implementation-plan/README.md) adds dependency order, task lifecycle, evidence classes, interface freezes, handoffs, and milestone gates.
+
+## Task or agent work packet
+
+- reviewed `TASK-*` manifest is `ready` before implementation;
+- dependencies are accepted on `main`;
+- owner and independent reviewer are distinct where policy requires;
+- allowed/prohibited paths, tools, network, credentials, budget, retries, and expiry are explicit;
+- acceptance criteria, negative tests, evidence classes, rollback, and escalation are complete;
+- implementation stays within authority;
+- run manifest and evidence bundle are retained;
+- author does not self-approve or self-merge production-oriented work;
+- downstream handoff and status reconciliation are complete.
 
 ## Parser or decoder
 
@@ -30,6 +42,8 @@ This checklist prevents architecture work from becoming presentation-only.
 - privileged receiver recomputes sensitive policy;
 - malformed, stale, duplicate, reordered, oversized, and unauthorized requests tested;
 - queue/backpressure behavior defined;
+- channel close/reconnect/crash semantics defined;
+- transport peer identity binds to broker-created channel identity;
 - compromised-process harness and fuzz target updated.
 
 ## UI or product workflow
@@ -54,7 +68,7 @@ This checklist prevents architecture work from becoming presentation-only.
 
 - Test262 or specification cases added;
 - interpreter/reference semantics established;
-- detailed runtime contracts updated in the [JavaScript book](../javascript/README.md);
+- runtime contracts updated in the [JavaScript book](../javascript/README.md);
 - GC root/barrier/weak/finalization behavior stress-tested;
 - JIT tiers differentially equivalent and W^X enforced;
 - deoptimization, traps, exceptions, OOM, and cancellation covered;
@@ -75,6 +89,8 @@ This checklist prevents architecture work from becoming presentation-only.
 - threat model and protected assets updated;
 - [security engineering book](../security-engine/README.md) updated for affected boundaries and evidence;
 - negative capability tests added on each affected platform;
+- unsandboxed controls prove probes can observe success;
+- enforcement source distinguishes OS/broker policy from host ACL or application stub;
 - exploit chain and residual risk described;
 - mitigations enabled in release-equivalent configuration;
 - update and incident implications addressed;
@@ -128,7 +144,7 @@ This checklist prevents architecture work from becoming presentation-only.
 
 ## Networking, storage, media, platform, accessibility, and operations research
 
-- the owning detailed book and Blueprint chapter agree;
+- owning detailed book and Blueprint chapter agree;
 - identities, authority, lifetime, limits, failure, recovery, platform variance, and unsupported cases are explicit;
 - primary specifications and test-suite revisions are recorded;
 - threat, privacy, accessibility, compatibility, performance, memory, energy, licensing, and operational effects are reviewed;
@@ -156,7 +172,6 @@ Manifest/API, authority, identity, lifecycle, cancellation, resource, data, acce
 
 Ownership, traceability, phase, decision class, review, evidence, exception, documentation, release, and capacity records agree.
 
-<!-- MARKET-STRATEGY-2026-07 -->
 ## Market opportunity or differentiation feature
 
 - stable `OP-*` record, target segment, job, alternatives, and contrary evidence;
@@ -164,11 +179,10 @@ Ownership, traceability, phase, decision class, review, evidence, exception, doc
 - security, privacy, accessibility, compatibility, performance, energy, recovery, migration, localization, legal, and maintenance review;
 - prototype and controlled task study with raw evidence;
 - simpler core, Plug-in, compatibility adapter, and rejection alternatives considered;
-- accepted requirements, risks, ADRs, work packages, ownership, and traceability updated only after promotion;
+- accepted requirements, risks, ADRs, WPs, ownership, and traceability updated only after promotion;
 - experimental expiry, removal, rollback, and support language defined;
 - no competitor code, branding, assets, or misleading equivalence claim.
 
-<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI framework, shell component, or adapter
 
 - toolkit-neutral state, typed commands, identities, epochs, threading, cancellation, error, and recovery behavior documented;
@@ -176,14 +190,35 @@ Ownership, traceability, phase, decision class, review, evidence, exception, doc
 - keyboard, focus, accessibility, IME, clipboard, drag/drop, localization, themes, and failure states tested;
 - page-surface, damage, scale, occlusion, capture, renderer crash, and GPU loss covered where applicable;
 - binary, package, startup, memory, allocations, input, frame pacing, energy, and hidden-window evidence attached;
-- backend, renderer, feature flags, dependencies, unsafe/native surface, license, provenance, updates, and replacement plan reviewed;
+- backend, renderer, flags, dependencies, unsafe/native surface, license, provenance, updates, and replacement plan reviewed;
 - release build contains no prohibited webview, runtime React/JavaScript, Node, runtime UI interpreter, or unused backend;
 - owning Native UI Runtime, platform, product, security, performance, accessibility, repository, and readiness records agree.
 
-<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Work-package acceptance
+
+- all required task families are accepted or explicitly descoped;
+- dependencies and decision gates are satisfied;
+- requirements have linked implementation and verification evidence;
+- risk controls and residual risks are current;
+- interface freeze and downstream conformance/handoff package exist;
+- all applicable `EV-*` evidence classes are complete;
+- no blocking critical issue or expired exception remains;
+- prose and machine WP status agree;
+- unsupported behavior remains explicit.
+
+## Milestone exit
+
+- every required deliverable maps to an accepted WP or explicit non-scope decision;
+- required interface freezes are versioned;
+- integrated crash, hang, recovery, pressure, and migration tests pass;
+- security, privacy, performance, accessibility, compatibility, reliability, operations, legal, and documentation evidence meets the milestone gate;
+- user-visible maturity and warnings match reality;
+- ownership and support capacity permit the next phase;
+- review records proceed, proceed-with-exception, replan, or stop.
+
 ## Agent-executed production work
 
-- approved `TASK-*` manifest and scoped authority;
+- approved task manifest and scoped authority;
 - authoring and independent-review identities are distinct;
 - run manifest records model, instructions, source, environment, tools, commands, and credentials by identifier;
 - failed runs and limitations are preserved;
