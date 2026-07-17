@@ -2,13 +2,13 @@
 
 Turing is an independent, Rust-first browser and web-engine program focused on minimalism, speed, security, developer experience, accessibility, open integration, and capability-scoped AI.
 
-> **Current status:** M0 research and build-foundation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, and the first buildable production-workspace skeleton. It is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
+> **Current status:** M0 research and build-foundation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, the first buildable production-workspace skeleton, and a complete M0–M9 implementation game plan. It is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
 
 Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operating-system webview, or remote rendering.
 
 ## Build status
 
-The repository is now ready for **contained M0 implementation tasks**. The documentation library grew from twenty-five detailed engineering and product books to twenty-seven as native UI, agent-execution, and production-readiness controls were added.
+The repository is ready for **contained M0 implementation tasks**. Broad parallel construction remains gated by the machine-readable pre-build checklist, accepted dependencies, ADRs, and independent review.
 
 Implemented build foundation:
 
@@ -18,7 +18,7 @@ Implemented build foundation:
 - toolkit-neutral typed identity, IPC-envelope, kernel-capability, UI-model, and build-identity crates;
 - an M0 `turing-shell` laboratory binary with no native UI or web runtime;
 - repository `xtask`, bootstrap, doctor, and full-check commands;
-- machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, and provenance records;
+- machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, provenance, implementation-graph, milestone, interface-freeze, evidence, and task-sequence records;
 - CI for documentation, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
 
 Run:
@@ -40,13 +40,29 @@ cargo run --locked -p turing-shell -- --self-test
 
 The current shell is a command-line laboratory only. It does not create native windows, render pages, connect to the network, persist profiles, run Plug-ins, or execute AI models.
 
+## Implementation game plan
+
+The [Implementation Master Plan](docs/project-buildout/implementation-plan/README.md) is the canonical agent-facing build sequence. It defines:
+
+- the M0 through M9 critical path;
+- WP-001 through WP-018 dependencies and execution playbooks;
+- required ADR and dependency gates;
+- interface freeze points;
+- exact agent startup, stop, review, rollback, and handoff rules;
+- milestone entry, deliverable, exit-evidence, and prohibited-claim contracts;
+- security, privacy, performance, accessibility, compatibility, reliability, operational, and documentation evidence classes;
+- staffing and scope-reduction rules;
+- preview, beta, stable, and continuous-maintenance sequencing.
+
+The plan does not authorize one agent to build the entire browser as one task. An agent implements only a reviewed `TASK-*` manifest whose dependencies are accepted on `main`.
+
 ## M0 workspace
 
 | Package | Purpose | Current status |
 |---|---|---|
 | `turing-types` | Stable non-zero typed identities | Buildable M0 foundation |
 | `turing-build-info` | Build identity and maturity labels | Buildable M0 foundation |
-| `turing-ipc` | Typed bounded control envelopes | Buildable schema foundation; no wire encoding yet |
+| `turing-ipc` | Typed bounded control envelopes | Buildable schema foundation; no production wire transport yet |
 | `turing-kernel` | Process roles and deny-by-default capabilities | Buildable policy skeleton |
 | `turing-ui-model` | Toolkit-neutral shell snapshots and commands | Buildable UI contract skeleton |
 | `turing-shell` | M0 shell laboratory | No native UI yet |
@@ -78,7 +94,7 @@ Turing is designed around six differentiators:
 | **Proposed opportunity** | `OP-*` market hypothesis requiring evidence and promotion |
 | **Deferred or gated** | Postponed or dependent on licensing, platform, staffing, or commercial access |
 
-Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
+Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [work-package graph](docs/blueprint-v1/machine/backlog.json), [implementation execution graph](docs/blueprint-v1/machine/implementation-execution-graph.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
 
 ## Planned browser surface
 
@@ -141,15 +157,13 @@ The planned embedding surface uses an idiomatic Rust API, a minimal opaque C ABI
 
 Trusted chrome will not ship Electron, Tauri, a system webview, React, Node, a DOM, or a runtime browser CSS engine. Pure Rust owns state and commands; a replaceable native adapter owns presentation. Slint is the first candidate to prototype against Vizia and Floem or GPUI. No toolkit is selected.
 
-## What remains before M1
+## What remains before broad M1 expansion
 
-The M0 workspace does not resolve:
-
-- the Servo/source strategy;
+- accepted Servo/source strategy;
 - production UI toolkit and page-surface composition;
-- a product support platform matrix;
-- canonical generated IPC wire schemas;
-- packaged sandbox probes;
+- product support platform matrix;
+- canonical generated IPC wire transport and negative harness;
+- packaged sandbox evidence;
 - fixed-hardware benchmark infrastructure;
 - design tokens and component fixtures;
 - profile, Space, session, and migration formats;
@@ -157,10 +171,11 @@ The M0 workspace does not resolve:
 - qualified backup maintainers;
 - beta or stable release gates.
 
-Contained tasks can proceed; broad parallel implementation and production claims remain blocked.
+Contained tasks can proceed; broad parallel implementation and production claims remain blocked until their gates pass.
 
 ## Start here
 
+- [Implementation master plan](docs/project-buildout/implementation-plan/README.md)
 - [Documentation index](docs/README.md)
 - [Pre-build readiness](docs/project-buildout/11-pre-build-readiness-checklist.md)
 - [M0 build-foundation report](docs/research/m0-build-foundation-2026-07.md)
