@@ -60,7 +60,7 @@ impl<T> QueuePushError<T> {
 pub struct BoundedQueue<T> {
     class: QueueClass,
     queued_bytes: usize,
-    items: VecDeque<T>,
+    items: VecDeque<(usize, T)>,
 }
 
 impl<T> BoundedQueue<T> {
@@ -141,17 +141,17 @@ impl<T: EncodedSize> BoundedQueue<T> {
             });
         }
 
-        self.items.push_back(item);
+        self.items.push_back((incoming, item));
         self.queued_bytes = next_bytes;
         Ok(())
     }
 
     /// Removes the oldest item and releases its byte charge.
     pub fn pop_front(&mut self) -> Option<T> {
-        let item = self.items.pop_front()?;
+        let (charged_bytes, item) = self.items.pop_front()?;
         self.queued_bytes = self
             .queued_bytes
-            .checked_sub(item.encoded_len())
+            .checked_sub(charged_bytes)
             .expect("queued byte accounting is internally consistent");
         Some(item)
     }
@@ -159,6 +159,8 @@ impl<T: EncodedSize> BoundedQueue<T> {
 
 #[cfg(test)]
 mod tests {
+    use std::cell::Cell;
+
     use super::{BoundedQueue, QueueErrorKind};
     use crate::{EncodedSize, QueueClass};
 
@@ -197,6 +199,33 @@ mod tests {
         queue.try_push(SizedItem(32)).expect("item fits");
         assert_eq!(queue.queued_bytes(), 32);
         assert_eq!(queue.pop_front(), Some(SizedItem(32)));
+        assert_eq!(queue.queued_bytes(), 0);
+    }
+
+    #[derive(Debug)]
+    struct ChangingSize(Cell<usize>);
+
+    impl EncodedSize for ChangingSize {
+        fn encoded_len(&self) -> usize {
+            let current = self.0.get();
+            self.0.set(current + 1);
+            current
+        }
+    }
+
+    #[test]
+    fn dequeue_uses_the_charge_captured_at_admission() {
+        let mut queue = BoundedQueue::new(QueueClass::Control);
+        queue
+            .try_push(ChangingSize(Cell::new(32)))
+            .expect("item fits");
+        assert_eq!(queue.queued_bytes(), 32);
+        let item = queue.pop_front().expect("item remains available");
+        assert_eq!(
+            item.0.get(),
+            33,
+            "encoded size was queried only at admission"
+        );
         assert_eq!(queue.queued_bytes(), 0);
     }
 }

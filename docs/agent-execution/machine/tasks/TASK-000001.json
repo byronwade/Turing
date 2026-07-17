@@ -4,7 +4,10 @@
   "status": "review_pending",
   "owner": "agent:gpt-5.6-pro",
   "independent_reviewer": "human-owner-or-separately-controlled-reviewer",
-  "requirements": ["REQ-SEC-003", "REQ-PERF-004"],
+  "requirements": [
+    "REQ-SEC-003",
+    "REQ-PERF-004"
+  ],
   "risks": [],
   "adrs": [],
   "allowed_paths": [
@@ -41,7 +44,9 @@
     "messages queues processes and channels have explicit bounds",
     "sequence failures do not advance channel state",
     "generation drift formatting lint tests shell integration and documentation validation pass",
-    "limitations remain explicit and no production security claim is made"
+    "limitations remain explicit and no production security claim is made",
+    "only a process-broker principal can register a channel before messages use it",
+    "queue byte accounting uses the immutable charge captured at admission"
   ],
   "negative_tests": [
     "zero identity",
@@ -54,7 +59,11 @@
     "stale process epoch",
     "denied role route",
     "missing attenuated capability",
-    "channel endpoint reuse"
+    "channel endpoint reuse",
+    "unregistered channel",
+    "unauthorized channel registration",
+    "duplicate channel registration",
+    "mutable encoded-size accounting"
   ],
   "resource_budget": {
     "wall_seconds": 21600,

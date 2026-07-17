@@ -17,7 +17,7 @@ Implemented foundation:
 - an Ubuntu 24.04 / `x86_64-unknown-linux-gnu` M0 CI reference environment, which is not yet a product-support promise;
 - restart-safe typed process identities;
 - a canonical JSON control-plane schema generating process roles, capabilities, launch rights, message kinds, route allowlists, document-scope rules, size limits, and queue budgets;
-- bounded envelopes, exact channel sequence validation, explicit queue backpressure, and no silent eviction;
+- bounded envelopes, broker-registered channels, exact channel sequence validation, stable admission-time queue charging, explicit backpressure, and no silent eviction;
 - a deny-by-default kernel registry that rejects stale epochs, unauthorized launches, capability escalation, invalid routes, reused channel endpoints, and missing capabilities;
 - toolkit-neutral UI-model and build-identity crates;
 - an M0 `turing-shell` laboratory that exercises the kernel/IPC reference model without a native UI or web runtime;

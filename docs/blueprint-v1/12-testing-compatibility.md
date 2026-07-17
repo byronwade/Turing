@@ -247,6 +247,6 @@ Candidate adapters run one toolkit-neutral suite covering state sequences, comma
 <!-- WP-002-KERNEL-IPC-2026-07 -->
 ## Generated control-plane verification
 
-CI now checks that the canonical IPC schema is valid and that committed Rust and process-capability documentation regenerate byte-for-byte. Unit and integration tests cover identity epochs, message limits, document scope, sequence gaps and duplicates, queue backpressure, launch denial, capability escalation, stale identities, denied routes, attenuated capabilities, channel endpoint binding, and shell-level authorization.
+CI now checks that the canonical IPC schema is valid and that committed Rust and process-capability documentation regenerate byte-for-byte. Unit and integration tests cover identity epochs, message limits, document scope, sequence gaps and duplicates, queue backpressure, immutable admission-charge accounting, launch denial, capability escalation, stale identities, denied routes, attenuated capabilities, broker-only channel registration, unknown and duplicate channels, endpoint binding, and shell-level authorization.
 
 The next verification stage requires a fuzzable wire codec, malformed and unauthorized traffic corpus, peer-authentication tests, platform handle-transfer tests, compromised-process harness, transport crash/reconnect tests, and independent security review. Passing the M0 Rust tests does not imply sandbox or production IPC compatibility.

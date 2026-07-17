@@ -39,11 +39,13 @@ fn shell_self_test() -> Result<(), Box<dyn std::error::Error>> {
     let mut registry = ProcessRegistry::new(ProcessId::new(1)?);
     let kernel = registry.kernel();
     let renderer = registry.launch(kernel, ProcessId::new(2)?, ProcessRole::Renderer)?;
+    let channel = ChannelId::new(1)?;
+    registry.register_channel(kernel, channel, renderer, kernel)?;
     let message = ControlEnvelope::new(
         MessageKind::NavigationIntent,
         renderer,
         kernel,
-        ChannelId::new(1)?,
+        channel,
         SequenceNumber::new(1)?,
         OperationId::new(1)?,
         Some(DocumentEpoch::new(1)?),

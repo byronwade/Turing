@@ -270,6 +270,6 @@ UI measurements include binary/package contribution, startup, idle memory, updat
 <!-- WP-002-KERNEL-IPC-2026-07 -->
 ## M0 queue and IPC budget reference
 
-The generated control-plane schema now defines queue classes with both item-count and encoded-byte ceilings. `turing-ipc::BoundedQueue` applies explicit non-blocking backpressure, never silently evicts or drops work, returns rejected items to the caller, and reconciles byte charge on dequeue. Message kinds also carry generated encoded-size ceilings.
+The generated control-plane schema now defines queue classes with both item-count and encoded-byte ceilings. `turing-ipc::BoundedQueue` applies explicit non-blocking backpressure, never silently evicts or drops work, returns rejected items to the caller, stores the admitted byte charge beside the item, and releases that exact charge on dequeue. Message kinds also carry generated encoded-size ceilings.
 
 The current values are M0 safety defaults rather than production performance targets. They may change only with fixed-hardware workloads, latency and memory evidence, overload behavior, correctness/security guardrails, and a rollback plan. `REQ-PERF-004` therefore has reference implementation evidence but is not verified for production traffic.

@@ -63,7 +63,7 @@ This is intentionally stricter than a reorder buffer. A future transport needing
 
 ### Explicit backpressure
 
-`BoundedQueue` applies both generated item-count and encoded-byte budgets. `try_push` never blocks, evicts, or drops silently. Rejected work and its reason are returned to the caller. Dequeue releases the exact byte charge.
+`BoundedQueue` applies both generated item-count and encoded-byte budgets. `try_push` never blocks, evicts, or drops silently. Rejected work and its reason are returned to the caller. The queue stores the byte charge at admission and releases that stored value on dequeue, so mutable or non-idempotent `EncodedSize` behavior cannot corrupt accounting or trigger an internal subtraction failure.
 
 The current queue values are M0 safety defaults, not production performance targets. Fixed-hardware and workload evidence must replace or confirm them before preview.
 
@@ -75,6 +75,8 @@ The current queue values are M0 safety defaults, not production performance targ
 - permits child launch only through the generated role matrix;
 - permits capability attenuation but rejects escalation above role defaults;
 - caps registered processes and channels;
+- permits channel creation only through an authenticated process-broker capability;
+- rejects envelopes using an unregistered channel rather than allowing a sender to claim an ID implicitly;
 - restarts children with a new process epoch;
 - removes channels bound to exited or restarted identities;
 - authenticates current sender and receiver identities;
@@ -95,13 +97,13 @@ Unit and integration tests cover:
 - monotonic sequence acceptance;
 - duplicate and gap rejection without state mutation;
 - byte-budget backpressure and item recovery;
-- byte-charge release on dequeue;
+- immutable admission-charge release on dequeue, including a mutable-size regression case;
 - renderer launch denial;
 - capability-escalation denial;
 - stale identity rejection after restart;
 - generated role-route denial;
 - missing-capability denial after attenuation;
-- channel sequence enforcement;
+- broker-only channel registration, unknown-channel rejection, duplicate registration denial, endpoint binding, and sequence enforcement;
 - shell-level launch, queue, and authorization integration.
 
 CI also checks deterministic regeneration, formatting, Clippy with warnings denied, all workspace tests, and the shell self-test.
@@ -114,7 +116,9 @@ CI also checks deterministic regeneration, formatting, Clippy with warnings deni
 - A message route must be explicitly generated.
 - The authenticated sender must possess the message's required capability.
 - A restarted process cannot reuse its predecessor's identity.
+- An envelope cannot create a channel; a process-broker principal must register its authenticated endpoints first.
 - A channel cannot silently switch endpoints.
+- Queue accounting uses the charge captured before admission rather than trusting later payload behavior.
 - Message, queue, process, and channel resources are bounded.
 - Sequence failures and policy denials are explicit results rather than ignored conditions.
 
@@ -123,7 +127,7 @@ CI also checks deterministic regeneration, formatting, Clippy with warnings deni
 The reference does not yet establish:
 
 - operating-system process launch or sandbox policy;
-- peer authentication on Unix sockets, Windows ALPC/named pipes, Mach IPC, or another transport;
+- peer authentication on Unix sockets, Windows ALPC/named pipes, Mach IPC, or another transport, including binding the authenticated transport to the broker-registered channel;
 - canonical binary encoding or decoding;
 - shared-memory and platform-handle transfer;
 - hostile decoder fuzzing of a wire codec;

@@ -332,3 +332,8 @@ Affected requirements, risks, ADRs, work packages, and documents:
 Next evidence required:
 
 Canonical fuzzable wire encoding, authenticated per-platform transports, handle/shared-memory leases, cancellation and close state machines, compromised-process negative traffic, sandbox integration, fixed-hardware measurements, and independent security review.
+
+<!-- WP-002-AUDIT-HARDENING-2026-07 -->
+## 2026-07-17 — WP-002 channel and queue audit hardening
+
+A final non-approving audit found that the first envelope could implicitly claim an unused channel ID and that generic queue accounting recomputed `EncodedSize` during dequeue. The reference now requires process-broker registration before a channel can carry messages, rejects unknown and duplicate channel use, and stores the byte charge captured at admission. Negative tests and all affected architecture, security, performance, testing, task, and evidence records were synchronized. The change remains an M0 reference and does not add an operating-system transport or production-security claim.

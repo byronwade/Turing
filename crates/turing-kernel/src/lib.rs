@@ -191,6 +191,16 @@ pub enum KernelError {
         /// Maximum channel records.
         maximum: usize,
     },
+    /// No broker-registered channel exists for the supplied ID.
+    UnknownChannel {
+        /// Unknown channel identity.
+        channel: ChannelId,
+    },
+    /// A channel ID is already registered.
+    DuplicateChannelId {
+        /// Duplicate channel identity.
+        channel: ChannelId,
+    },
     /// A channel ID was reused for different process endpoints.
     ChannelEndpointMismatch {
         /// Channel identity.
@@ -249,6 +259,12 @@ impl fmt::Display for KernelError {
             ),
             Self::ChannelTableFull { maximum } => {
                 write!(formatter, "channel table reached its limit of {maximum}")
+            }
+            Self::UnknownChannel { channel } => {
+                write!(formatter, "channel {channel} is not registered")
+            }
+            Self::DuplicateChannelId { channel } => {
+                write!(formatter, "channel {channel} is already registered")
             }
             Self::ChannelEndpointMismatch { channel } => {
                 write!(
@@ -437,6 +453,46 @@ impl ProcessRegistry {
         Ok(())
     }
 
+    /// Registers one channel through a process-broker capability.
+    ///
+    /// Channel identity is never established from an untrusted envelope. A future
+    /// operating-system transport must bind its authenticated endpoints to this
+    /// broker-created record before delivering control messages.
+    pub fn register_channel(
+        &mut self,
+        broker: ProcessIdentity,
+        channel: ChannelId,
+        sender: ProcessIdentity,
+        receiver: ProcessIdentity,
+    ) -> Result<(), KernelError> {
+        let broker_policy = self.policy(broker)?;
+        if !broker_policy.allows(Capability::ProcessBroker) {
+            return Err(KernelError::MissingCapability {
+                role: broker_policy.role(),
+                capability: Capability::ProcessBroker,
+            });
+        }
+        self.policy(sender)?;
+        self.policy(receiver)?;
+        if self.channels.contains_key(&channel) {
+            return Err(KernelError::DuplicateChannelId { channel });
+        }
+        if self.channels.len() >= MAX_REGISTERED_CHANNELS {
+            return Err(KernelError::ChannelTableFull {
+                maximum: MAX_REGISTERED_CHANNELS,
+            });
+        }
+        self.channels.insert(
+            channel,
+            ChannelState {
+                sender,
+                receiver,
+                sequence: SequenceTracker::new(),
+            },
+        );
+        Ok(())
+    }
+
     /// Authenticates endpoints, route, capability, channel binding, and sequence.
     pub fn authorize<T>(
         &mut self,
@@ -463,19 +519,11 @@ impl ProcessRegistry {
         }
 
         let channel_id = envelope.channel();
-        if !self.channels.contains_key(&channel_id)
-            && self.channels.len() >= MAX_REGISTERED_CHANNELS
-        {
-            return Err(KernelError::ChannelTableFull {
-                maximum: MAX_REGISTERED_CHANNELS,
+        let Some(channel) = self.channels.get_mut(&channel_id) else {
+            return Err(KernelError::UnknownChannel {
+                channel: channel_id,
             });
-        }
-
-        let channel = self.channels.entry(channel_id).or_insert(ChannelState {
-            sender: envelope.sender(),
-            receiver: envelope.receiver(),
-            sequence: SequenceTracker::new(),
-        });
+        };
         if channel.sender != envelope.sender() || channel.receiver != envelope.receiver() {
             return Err(KernelError::ChannelEndpointMismatch {
                 channel: channel_id,
@@ -640,33 +688,87 @@ mod tests {
     }
 
     #[test]
-    fn channel_sequence_and_endpoint_binding_are_enforced() {
+    fn unregistered_channel_is_rejected() {
         let mut registry = ProcessRegistry::new(ProcessId::new(1).expect("valid kernel id"));
+        let kernel = registry.kernel();
         let renderer = registry
             .launch(
-                registry.kernel(),
+                kernel,
                 ProcessId::new(2).expect("valid renderer id"),
                 ProcessRole::Renderer,
             )
             .expect("kernel launches renderer");
-        let first = envelope(
-            MessageKind::NavigationIntent,
-            renderer,
-            registry.kernel(),
-            1,
-            1,
+        let message = envelope(MessageKind::NavigationIntent, renderer, kernel, 1, 1);
+        assert_eq!(
+            registry.authorize(&message),
+            Err(KernelError::UnknownChannel {
+                channel: ChannelId::new(1).expect("valid channel"),
+            })
         );
+    }
+
+    #[test]
+    fn renderer_cannot_register_a_channel() {
+        let mut registry = ProcessRegistry::new(ProcessId::new(1).expect("valid kernel id"));
+        let kernel = registry.kernel();
+        let renderer = registry
+            .launch(
+                kernel,
+                ProcessId::new(2).expect("valid renderer id"),
+                ProcessRole::Renderer,
+            )
+            .expect("kernel launches renderer");
+        assert_eq!(
+            registry.register_channel(
+                renderer,
+                ChannelId::new(1).expect("valid channel"),
+                renderer,
+                kernel,
+            ),
+            Err(KernelError::MissingCapability {
+                role: ProcessRole::Renderer,
+                capability: Capability::ProcessBroker,
+            })
+        );
+    }
+
+    #[test]
+    fn channel_sequence_and_endpoint_binding_are_enforced() {
+        let mut registry = ProcessRegistry::new(ProcessId::new(1).expect("valid kernel id"));
+        let kernel = registry.kernel();
+        let renderer = registry
+            .launch(
+                kernel,
+                ProcessId::new(2).expect("valid renderer id"),
+                ProcessRole::Renderer,
+            )
+            .expect("kernel launches renderer");
+        let other_renderer = registry
+            .launch(
+                kernel,
+                ProcessId::new(3).expect("valid renderer id"),
+                ProcessRole::Renderer,
+            )
+            .expect("kernel launches second renderer");
+        let channel = ChannelId::new(1).expect("valid channel");
+        registry
+            .register_channel(kernel, channel, renderer, kernel)
+            .expect("kernel registers channel");
+        let first = envelope(MessageKind::NavigationIntent, renderer, kernel, 1, 1);
         registry.authorize(&first).expect("first message is valid");
-        let duplicate = envelope(
-            MessageKind::NavigationIntent,
-            renderer,
-            registry.kernel(),
-            1,
-            1,
-        );
+        let duplicate = envelope(MessageKind::NavigationIntent, renderer, kernel, 1, 1);
         assert!(matches!(
             registry.authorize(&duplicate),
             Err(KernelError::Sequence(_))
         ));
+        let mismatched = envelope(MessageKind::NavigationIntent, other_renderer, kernel, 1, 2);
+        assert_eq!(
+            registry.authorize(&mismatched),
+            Err(KernelError::ChannelEndpointMismatch { channel })
+        );
+        assert_eq!(
+            registry.register_channel(kernel, channel, renderer, kernel),
+            Err(KernelError::DuplicateChannelId { channel })
+        );
     }
 }
