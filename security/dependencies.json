@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "initial",
+  "policy": "Every external runtime, build, test, or generated-code dependency requires an exact source, version, owner, license, privilege, attack-surface, update, and replacement record before use.",
+  "external_runtime_dependencies": [],
+  "external_build_dependencies": [],
+  "toolchains": [
+    {
+      "name": "Rust",
+      "version": "1.97.1",
+      "source": "https://static.rust-lang.org",
+      "owner_scope": "release-operations",
+      "purpose": "M0 compiler, Cargo, rustfmt, Clippy, and standard library",
+      "license_review": "required_before_binary_distribution"
+    }
+  ]
+}
