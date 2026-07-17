@@ -9,10 +9,16 @@
 /clippy.toml @byronwade
 /apps/ @byronwade
 /crates/ @byronwade
+/schemas/ @byronwade
 /security/ @byronwade
 /tools/ @byronwade
 /prototype/ @byronwade
 /.github/ @byronwade
+
+# High-authority sandbox contracts and tasks
+/schemas/sandbox/ @byronwade
+/docs/agent-execution/machine/tasks/ @byronwade
+/docs/research/wp-003-sandbox-probe-plan-2026-07.md @byronwade
 
 # Canonical documentation
 /docs/ @byronwade
