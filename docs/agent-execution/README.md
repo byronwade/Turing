@@ -10,6 +10,8 @@ This book defines how software agents may contribute to Turing without becoming 
 
 > An agent may implement a bounded, approved task. It may not define its own scope, lower its own acceptance criteria, approve its own work, possess production signing authority, or declare the product safe or stable.
 
+An implementation agent cannot approve or merge its own production work. Independent review and the protected merge path remain mandatory even when an agent wrote the implementation, tests, documentation, and evidence bundle.
+
 ## Reading order
 
 1. [Agent trust model and authority](01-agent-trust-model-and-authority.md)
