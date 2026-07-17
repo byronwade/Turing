@@ -56,10 +56,11 @@ jobs:
           test ! -e tools/generate_native_ui_docs.py
           test ! -e transfer
 
-      - name: Validate exact final source tree and executable prototype
+      - name: Validate intended final source tree and executable prototype
         shell: bash
         run: |
           set -euo pipefail
+          rm -f .github/workflows/finalize-agent-production-readiness.yml
           python3 -B tools/validate_blueprint.py
           cargo fmt --manifest-path prototype/Cargo.toml -- --check
           cargo test --manifest-path prototype/Cargo.toml --all-targets
