@@ -77,7 +77,22 @@ jobs:
         run: python3 -B tools/check_documentation_change.py "$BASE_SHA" "$HEAD_SHA"
 
       - name: Format workspace
-        run: cargo fmt --all -- --check
+        shell: bash
+        run: |
+          set +e
+          cargo fmt --all -- --check > rustfmt.log 2>&1
+          status=$?
+          cat rustfmt.log
+          exit "$status"
+
+      - name: Upload formatting diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rustfmt-${{ github.run_id }}
+          path: rustfmt.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Lint workspace
         run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
