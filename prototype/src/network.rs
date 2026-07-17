@@ -11,7 +11,7 @@ impl ProfileId {
     pub fn new(value: impl Into<String>) -> Result<Self, ContextError> {
         let value = value.into();
         if value.is_empty() || value.len() > 128 {
-            return Err(ContextError::InvalidProfileId);
+            return Err(ContextError::ProfileId);
         }
         Ok(Self(value))
     }
@@ -28,7 +28,7 @@ pub struct DocumentEpoch(u64);
 impl DocumentEpoch {
     pub fn new(value: u64) -> Result<Self, ContextError> {
         if value == 0 {
-            return Err(ContextError::InvalidDocumentEpoch);
+            return Err(ContextError::DocumentEpoch);
         }
         Ok(Self(value))
     }
@@ -48,7 +48,7 @@ impl Origin {
         if value.len() > 4096
             || !(value.starts_with("https://") || value.starts_with("http://") || value == "opaque")
         {
-            return Err(ContextError::InvalidOrigin);
+            return Err(ContextError::Origin);
         }
         Ok(Self(value))
     }
@@ -66,7 +66,7 @@ impl TopLevelSite {
     pub fn parse_ascii(value: impl Into<String>) -> Result<Self, ContextError> {
         let value = value.into();
         if value.len() > 4096 || !(value.starts_with("https://") || value.starts_with("http://")) {
-            return Err(ContextError::InvalidTopLevelSite);
+            return Err(ContextError::TopLevelSite);
         }
         Ok(Self(value))
     }
@@ -77,6 +77,10 @@ impl TopLevelSite {
     }
 }
 
+#[expect(
+    dead_code,
+    reason = "the reference model preserves all Fetch credential modes beyond the smoke path"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CredentialMode {
     Omit,
@@ -109,12 +113,12 @@ impl RequestContext {
         if destination_url.len() > 8192
             || !(destination_url.starts_with("https://") || destination_url.starts_with("http://"))
         {
-            return Err(ContextError::InvalidDestination);
+            return Err(ContextError::Destination);
         }
 
         let network_partition = network_partition.into();
         if network_partition.is_empty() || network_partition.len() > 512 {
-            return Err(ContextError::InvalidPartition);
+            return Err(ContextError::Partition);
         }
 
         Ok(Self {
@@ -128,6 +132,10 @@ impl RequestContext {
         })
     }
 
+    #[expect(
+        dead_code,
+        reason = "the stale-epoch predicate is exercised by tests and future navigation experiments"
+    )]
     #[must_use]
     pub fn is_current_for(&self, epoch: DocumentEpoch) -> bool {
         self.document_epoch == epoch
@@ -136,23 +144,23 @@ impl RequestContext {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContextError {
-    InvalidProfileId,
-    InvalidDocumentEpoch,
-    InvalidOrigin,
-    InvalidTopLevelSite,
-    InvalidDestination,
-    InvalidPartition,
+    ProfileId,
+    DocumentEpoch,
+    Origin,
+    TopLevelSite,
+    Destination,
+    Partition,
 }
 
 impl fmt::Display for ContextError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let message = match self {
-            Self::InvalidProfileId => "invalid profile identifier",
-            Self::InvalidDocumentEpoch => "document epoch must be nonzero",
-            Self::InvalidOrigin => "invalid origin",
-            Self::InvalidTopLevelSite => "invalid top-level site",
-            Self::InvalidDestination => "invalid network destination",
-            Self::InvalidPartition => "invalid network partition",
+            Self::ProfileId => "invalid profile identifier",
+            Self::DocumentEpoch => "document epoch must be nonzero",
+            Self::Origin => "invalid origin",
+            Self::TopLevelSite => "invalid top-level site",
+            Self::Destination => "invalid network destination",
+            Self::Partition => "invalid network partition",
         };
         formatter.write_str(message)
     }
@@ -203,6 +211,6 @@ mod tests {
             CredentialMode::Omit,
             "default|https://example",
         );
-        assert_eq!(result, Err(ContextError::InvalidDestination));
+        assert_eq!(result, Err(ContextError::Destination));
     }
 }
