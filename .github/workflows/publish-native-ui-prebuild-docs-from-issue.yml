@@ -1,14 +1,12 @@
 name: Publish native UI and pre-build documentation
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/publish-native-ui-prebuild-docs-from-issue.yml
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: publish-native-ui-prebuild-docs
@@ -16,7 +14,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.title == 'Run final native UI documentation publication' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -114,8 +112,18 @@ jobs:
           git commit -m 'Document native UI architecture and pre-build readiness'
           git push origin HEAD:main
 
-      - name: Remove temporary publication branch
+      - name: Remove temporary branches
         shell: bash
         run: |
           set -euo pipefail
           git push origin --delete ops/native-ui-prebuild-docs
+          git push origin --delete ops/trigger-native-ui-docs || true
+
+      - name: Close trigger pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr close '${{ github.event.pull_request.number }}' \
+            --repo '${{ github.repository }}' \
+            --comment 'Native UI and pre-build documentation was generated, validated, committed to main, and temporary branches were deleted.'
