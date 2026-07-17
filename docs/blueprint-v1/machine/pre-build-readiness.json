@@ -13,6 +13,18 @@
     "tooling spikes"
   ],
   "gate": "PB-GATE-0",
+  "implementation_plan": {
+    "status": "ready_as_execution_documentation",
+    "index": "docs/project-buildout/implementation-plan/README.md",
+    "machine_records": [
+      "docs/blueprint-v1/machine/implementation-execution-graph.json",
+      "docs/blueprint-v1/machine/implementation-milestone-gates.json",
+      "docs/blueprint-v1/machine/implementation-interface-freezes.json",
+      "docs/blueprint-v1/machine/implementation-evidence-catalog.json",
+      "docs/blueprint-v1/machine/implementation-task-sequence.json"
+    ],
+    "authority_limit": "The plan does not authorize a task. Only a reviewed TASK manifest with status ready authorizes implementation."
+  },
   "items": [
     {
       "id": "PB-001",
@@ -21,7 +33,8 @@
       "owner_scope": "documentation-research",
       "evidence": [
         "docs/README.md",
-        "tools/validate_blueprint.py"
+        "tools/validate_blueprint.py",
+        "docs/project-buildout/implementation-plan/README.md"
       ]
     },
     {
@@ -29,96 +42,60 @@
       "name": "Engine source strategy and Servo relationship",
       "status": "blocked",
       "owner_scope": "architecture",
-      "evidence_required": [
-        "ADR-0009",
-        "source/provenance experiment"
-      ]
+      "evidence_required": ["ADR-0009","source/provenance experiment"]
     },
     {
       "id": "PB-003",
       "name": "Toolkit-neutral UI model and adapter contract",
       "status": "partial",
       "owner_scope": "ui-runtime",
-      "evidence": [
-        "crates/turing-ui-model",
-        "docs/ui-runtime/README.md"
-      ],
-      "evidence_required": [
-        "ADR-0013",
-        "native adapter prototype"
-      ]
+      "evidence": ["crates/turing-ui-model","docs/ui-runtime/README.md"],
+      "evidence_required": ["ADR-0013","native adapter prototype"]
     },
     {
       "id": "PB-004",
       "name": "Native UI framework selection",
       "status": "not_started",
       "owner_scope": "ui-runtime",
-      "evidence_required": [
-        "three-adapter reference shell",
-        "ADR-0014",
-        "license review"
-      ]
+      "evidence_required": ["three-adapter reference shell","ADR-0014","license review"]
     },
     {
       "id": "PB-005",
       "name": "Page-surface and compositor composition",
       "status": "not_started",
       "owner_scope": "ui-runtime",
-      "evidence_required": [
-        "UI-GATE-7 prototype",
-        "ADR-0016"
-      ]
+      "evidence_required": ["UI-GATE-7 prototype","ADR-0016"]
     },
     {
       "id": "PB-006",
       "name": "M0 reference desktop environment",
       "status": "ready",
       "owner_scope": "platform",
-      "evidence": [
-        "docs/blueprint-v1/machine/toolchains.json",
-        "docs/research/m0-build-foundation-2026-07.md"
-      ],
-      "evidence_required": [
-        "later product platform scorecard"
-      ]
+      "evidence": ["docs/blueprint-v1/machine/toolchains.json","docs/research/m0-build-foundation-2026-07.md"],
+      "evidence_required": ["later product platform scorecard"]
     },
     {
       "id": "PB-007",
       "name": "Cargo workspace and crate dependency graph",
       "status": "ready",
       "owner_scope": "architecture",
-      "evidence": [
-        "Cargo.toml",
-        "docs/blueprint-v1/machine/workspace-components.json",
-        "tools/validate_build_foundation.py"
-      ]
+      "evidence": ["Cargo.toml","docs/blueprint-v1/machine/workspace-components.json","tools/validate_build_foundation.py"]
     },
     {
       "id": "PB-008",
       "name": "Pinned compiler SDK linker and toolchain",
       "status": "ready",
       "owner_scope": "release-operations",
-      "evidence": [
-        "rust-toolchain.toml",
-        "docs/blueprint-v1/machine/toolchains.json"
-      ],
-      "evidence_required": [
-        "native platform toolchain manifests before native dependencies"
-      ]
+      "evidence": ["rust-toolchain.toml","docs/blueprint-v1/machine/toolchains.json"],
+      "evidence_required": ["native platform toolchain manifests before native dependencies"]
     },
     {
       "id": "PB-009",
       "name": "Bootstrap and read-only doctor commands",
       "status": "partial",
       "owner_scope": "release-operations",
-      "evidence": [
-        "tools/bootstrap.sh",
-        "tools/doctor.sh",
-        "tools/xtask"
-      ],
-      "evidence_required": [
-        "independent fresh-host reproduction"
-      ]
+      "evidence": ["tools/bootstrap.sh","tools/doctor.sh","tools/xtask"],
+      "evidence_required": ["independent fresh-host reproduction"]
     },
     {
       "id": "PB-010",
@@ -139,94 +116,64 @@
       "name": "Canonical IPC schema and process capability generation",
       "status": "partial",
       "owner_scope": "architecture",
-      "evidence": [
-        "crates/turing-ipc",
-        "crates/turing-kernel"
-      ],
-      "evidence_required": [
-        "schema generator",
-        "wire encoding decision",
-        "negative sender tests"
-      ]
+      "evidence": ["crates/turing-ipc","crates/turing-kernel"],
+      "evidence_required": ["schema generator","wire encoding decision","negative sender tests"]
     },
     {
       "id": "PB-012",
       "name": "Reference sandbox probe harness",
       "status": "not_started",
       "owner_scope": "security",
-      "evidence_required": [
-        "packaged negative capability tests"
-      ]
+      "evidence_required": ["packaged negative capability tests"]
     },
     {
       "id": "PB-013",
       "name": "Reference hardware corpus and benchmark runner",
       "status": "documented_no_runner",
       "owner_scope": "performance",
-      "evidence_required": [
-        "fixed hardware",
-        "offline corpus",
-        "raw result schema"
-      ]
+      "evidence_required": ["fixed hardware","offline corpus","raw result schema"]
     },
     {
       "id": "PB-014",
       "name": "Design tokens component inventory and fixtures",
       "status": "not_started",
       "owner_scope": "product",
-      "evidence_required": [
-        "component registry",
-        "tokens",
-        "accessibility fixtures"
-      ]
+      "evidence_required": ["component registry","tokens","accessibility fixtures"]
     },
     {
       "id": "PB-015",
       "name": "Window input IME accessibility and page-tree spike",
       "status": "not_started",
       "owner_scope": "accessibility",
-      "evidence_required": [
-        "reference-platform workflow matrix"
-      ]
+      "evidence_required": ["reference-platform workflow matrix"]
     },
     {
       "id": "PB-016",
       "name": "Profile Space session and migration formats",
       "status": "proposed",
       "owner_scope": "storage",
-      "evidence_required": [
-        "versioned schemas",
-        "crash/power-loss model"
-      ]
+      "evidence_required": ["versioned schemas","crash/power-loss model"]
     },
     {
       "id": "PB-017",
       "name": "Research package identity and updater laboratory",
       "status": "not_started",
       "owner_scope": "release-operations",
-      "evidence_required": [
-        "signed research package",
-        "rollback and migration tests"
-      ]
+      "evidence_required": ["signed research package","rollback and migration tests"]
     },
     {
       "id": "PB-018",
       "name": "Security incident and patch rehearsal",
       "status": "not_started",
       "owner_scope": "security",
-      "evidence_required": [
-        "tabletop exercise",
-        "private report workflow"
-      ]
+      "evidence_required": ["tabletop exercise","private report workflow"]
     },
     {
       "id": "PB-019",
       "name": "Backup ownership for build-critical scopes",
       "status": "blocked",
       "owner_scope": "program",
-      "evidence_required": [
-        "named qualified backups"
-      ]
+      "evidence_required": ["named qualified backups"]
     },
     {
       "id": "PB-020",
@@ -235,13 +182,17 @@
       "owner_scope": "program",
       "evidence": [
         "docs/project-buildout/11-pre-build-readiness-checklist.md",
+        "docs/project-buildout/implementation-plan/README.md",
+        "docs/blueprint-v1/machine/implementation-execution-graph.json",
+        "docs/blueprint-v1/machine/implementation-milestone-gates.json",
+        "docs/blueprint-v1/machine/implementation-interface-freezes.json",
+        "docs/blueprint-v1/machine/implementation-evidence-catalog.json",
+        "docs/blueprint-v1/machine/implementation-task-sequence.json",
         "docs/research/m0-build-foundation-2026-07.md"
       ],
-      "evidence_required": [
-        "remaining P0 items before M1 expansion"
-      ]
+      "evidence_required": ["remaining P0 items before M1 expansion"]
     }
   ],
-  "completion_rule": "PB-GATE-0 currently authorizes bounded M0 tasks that use the root workspace and agent-execution controls. M1, preview, beta, and stable claims remain separately gated.",
+  "completion_rule": "PB-GATE-0 authorizes only a named bounded task whose dependencies and decision gates are ready. M1 expansion, preview, beta, and stable remain separately gated.",
   "contained_m0_authorization": "ready"
 }
