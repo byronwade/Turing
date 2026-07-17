@@ -76,7 +76,7 @@
     {
       "id": "PB-007",
       "name": "Cargo workspace and crate dependency graph",
-      "status": "ready_for_contained_m0",
+      "status": "ready",
       "owner_scope": "architecture",
       "evidence": [
         "Cargo.toml",
@@ -87,18 +87,21 @@
     {
       "id": "PB-008",
       "name": "Pinned compiler SDK linker and toolchain",
-      "status": "partial_reference_toolchain",
+      "status": "partial",
       "owner_scope": "release-operations",
       "evidence": [
         "rust-toolchain.toml",
-        "docs/blueprint-v1/machine/toolchains.json",
-        "platform toolchain manifests"
+        "docs/blueprint-v1/machine/toolchains.json"
+      ],
+      "evidence_required": [
+        "platform compiler SDK and linker manifests",
+        "fresh-host reproduction beyond reference CI"
       ]
     },
     {
       "id": "PB-009",
       "name": "Bootstrap and read-only doctor commands",
-      "status": "ready_for_reference_ci",
+      "status": "ready",
       "owner_scope": "release-operations",
       "evidence": [
         "tools/bootstrap.sh",
@@ -109,7 +112,7 @@
     {
       "id": "PB-010",
       "name": "Dependency unsafe native and provenance ledgers",
-      "status": "ready_for_zero_dependency_m0",
+      "status": "ready",
       "owner_scope": "security",
       "evidence": [
         "security/dependencies.json",
@@ -122,7 +125,7 @@
     {
       "id": "PB-011",
       "name": "Canonical IPC schema and process capability generation",
-      "status": "m0_reference_implemented",
+      "status": "ready",
       "owner_scope": "architecture",
       "evidence": [
         "schemas/ipc/control-plane.json",
