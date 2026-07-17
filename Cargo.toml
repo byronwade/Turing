@@ -1,0 +1,56 @@
+[workspace]
+resolver = "3"
+members = [
+  "apps/turing-shell",
+  "crates/turing-build-info",
+  "crates/turing-ipc",
+  "crates/turing-kernel",
+  "crates/turing-types",
+  "crates/turing-ui-model",
+  "prototype",
+  "tools/xtask",
+]
+default-members = [
+  "apps/turing-shell",
+  "crates/turing-build-info",
+  "crates/turing-ipc",
+  "crates/turing-kernel",
+  "crates/turing-types",
+  "crates/turing-ui-model",
+  "tools/xtask",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "MPL-2.0"
+repository = "https://github.com/byronwade/Turing"
+homepage = "https://github.com/byronwade/Turing"
+authors = ["Turing contributors"]
+
+[workspace.dependencies]
+turing-build-info = { path = "crates/turing-build-info" }
+turing-ipc = { path = "crates/turing-ipc" }
+turing-kernel = { path = "crates/turing-kernel" }
+turing-types = { path = "crates/turing-types" }
+turing-ui-model = { path = "crates/turing-ui-model" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+unused_lifetimes = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[profile.dev]
+debug = 1
+overflow-checks = true
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = "debuginfo"
