@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "empty",
+  "policy": "Native libraries, FFI, build scripts, platform SDKs, and dynamically loaded code require explicit review and isolation before introduction.",
+  "entries": []
+}
