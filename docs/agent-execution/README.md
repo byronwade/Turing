@@ -35,6 +35,10 @@ An implementation agent cannot approve or merge its own production work. Indepen
 - [Escalation policy](machine/escalation-policy.json)
 - [Prohibited agent actions](machine/prohibited-agent-actions.json)
 
+## Active bounded task
+
+- [`TASK-000001`](machine/tasks/TASK-000001.json) implements the M0 reference portion of `WP-002`: restart-safe process identity, generated capabilities and routes, bounded envelopes and queues, sequence validation, and kernel authorization. Its status is `review_pending`; the implementation agent cannot approve or merge it.
+
 ## Normative baselines
 
 Turing maps these controls to NIST SSDF 1.1, NIST SP 800-218A for AI-related secure development, SLSA source/build provenance, repository rulesets, and Turing's stricter browser-specific threat model. External frameworks guide the control design; Turing's accepted requirements and evidence remain authoritative.

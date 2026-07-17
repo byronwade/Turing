@@ -200,3 +200,16 @@ Ownership, traceability, phase, decision class, review, evidence, exception, doc
 - qualified primary and backup owners active;
 - human production-readiness and release approval recorded;
 - exact artifact digest, signatures, update metadata, rollback, and supported-version statement published.
+
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## Generated process and IPC control plane
+
+- one canonical schema owns stable role, capability, message, route, scope, and budget identifiers;
+- schema validation rejects duplicate IDs, unknown references, invalid routes, and invalid bounds;
+- generated source and documentation are deterministic and CI checks drift;
+- process identity includes restart generation and stale identities fail closed;
+- child capabilities can be attenuated but never exceed role defaults;
+- every allowed route and required sender capability is explicit;
+- message, queue, process, channel, operation, and document identities are typed and bounded;
+- duplicate, old, skipped, oversized, unauthorized, and endpoint-reused traffic has negative tests;
+- operating-system transport, peer authentication, wire decoding, shared memory, handles, crash behavior, and sandbox evidence are documented separately and cannot be inferred from the policy reference.

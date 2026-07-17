@@ -12,6 +12,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS_PATH = ROOT / "docs/blueprint-v1/machine/workspace-components.json"
 TOOLCHAINS_PATH = ROOT / "docs/blueprint-v1/machine/toolchains.json"
+IPC_SCHEMA_PATH = ROOT / "schemas/ipc/control-plane.json"
+PROCESS_CAPABILITIES_PATH = ROOT / "docs/blueprint-v1/machine/process-capabilities.json"
+TASK_PATH = ROOT / "docs/agent-execution/machine/tasks/TASK-000001.json"
 
 REQUIRED_FILES = [
     ROOT / "Cargo.toml",
@@ -25,6 +28,10 @@ REQUIRED_FILES = [
     ROOT / "crates/turing-build-info/src/lib.rs",
     ROOT / "crates/turing-ipc/Cargo.toml",
     ROOT / "crates/turing-ipc/src/lib.rs",
+    ROOT / "crates/turing-ipc/src/envelope.rs",
+    ROOT / "crates/turing-ipc/src/generated.rs",
+    ROOT / "crates/turing-ipc/src/queue.rs",
+    ROOT / "crates/turing-ipc/src/sequence.rs",
     ROOT / "crates/turing-kernel/Cargo.toml",
     ROOT / "crates/turing-kernel/src/lib.rs",
     ROOT / "crates/turing-types/Cargo.toml",
@@ -36,6 +43,10 @@ REQUIRED_FILES = [
     ROOT / "tools/bootstrap.sh",
     ROOT / "tools/doctor.sh",
     ROOT / "tools/check.sh",
+    ROOT / "tools/generate_ipc.py",
+    IPC_SCHEMA_PATH,
+    PROCESS_CAPABILITIES_PATH,
+    TASK_PATH,
     COMPONENTS_PATH,
     TOOLCHAINS_PATH,
     ROOT / "security/dependencies.json",
@@ -49,7 +60,7 @@ FORBIDDEN_SOURCE_PATTERNS = [
     re.compile(r"\bunsafe\s*\{"),
     re.compile(r"\bunsafe\s+fn\b"),
     re.compile(r"\bunsafe\s+impl\b"),
-    re.compile(r"\bextern\s+\"[A-Za-z0-9_-]+\""),
+    re.compile(r'\bextern\s+"[A-Za-z0-9_-]+"'),
 ]
 
 
@@ -96,6 +107,14 @@ def check_toolchain() -> None:
         fail("toolchains.json must match rust-toolchain.toml")
 
 
+def manifest_internal_dependencies(path: Path, package_set: set[str]) -> set[str]:
+    manifest = load_toml(path)
+    dependencies = manifest.get("dependencies", {})
+    if not isinstance(dependencies, dict):
+        fail(f"{path.relative_to(ROOT)}: dependencies must be a table")
+    return set(dependencies) & package_set
+
+
 def check_workspace() -> None:
     workspace = load_toml(ROOT / "Cargo.toml")
     table = workspace.get("workspace")
@@ -121,7 +140,7 @@ def check_workspace() -> None:
             f"members={sorted(members)}, components={sorted(paths)}"
         )
 
-    package_set = set(packages)
+    package_set = {package for package in packages if isinstance(package, str)}
     graph: dict[str, list[str]] = {}
     for record in records:
         package = record.get("package")
@@ -129,13 +148,22 @@ def check_workspace() -> None:
         dependencies = record.get("dependencies")
         if not isinstance(package, str) or not isinstance(path, str):
             fail("component package and path must be strings")
-        if not isinstance(dependencies, list):
-            fail(f"{package}: dependencies must be an array")
+        if not isinstance(dependencies, list) or not all(
+            isinstance(dependency, str) for dependency in dependencies
+        ):
+            fail(f"{package}: dependencies must be a string array")
         unknown = set(dependencies) - package_set
         if unknown:
             fail(f"{package}: unknown internal dependencies: {sorted(unknown)}")
-        if not (ROOT / path / "Cargo.toml").is_file():
+        manifest_path = ROOT / path / "Cargo.toml"
+        if not manifest_path.is_file():
             fail(f"{package}: missing Cargo.toml at {path}")
+        actual = manifest_internal_dependencies(manifest_path, package_set)
+        if actual != set(dependencies):
+            fail(
+                f"{package}: manifest dependencies {sorted(actual)} differ from "
+                f"workspace-components {sorted(dependencies)}"
+            )
         graph[package] = dependencies
 
     visiting: set[str] = set()
@@ -154,6 +182,26 @@ def check_workspace() -> None:
 
     for package in graph:
         visit(package)
+
+
+def check_ipc_schema() -> None:
+    schema = load_json(IPC_SCHEMA_PATH)
+    registry = load_json(PROCESS_CAPABILITIES_PATH)
+    if not isinstance(schema, dict) or schema.get("schema_version") != 1:
+        fail("IPC control-plane schema must be schema version 1")
+    for field in ("capabilities", "roles", "queue_classes", "messages"):
+        if not isinstance(schema.get(field), list) or not schema[field]:
+            fail(f"IPC control-plane {field} must be a non-empty array")
+    if not isinstance(registry, dict) or registry.get("schema_version") != 2:
+        fail("generated process-capabilities registry must be schema version 2")
+    if registry.get("generated_from") != "schemas/ipc/control-plane.json":
+        fail("process-capabilities registry must identify its canonical schema")
+    if registry.get("protocol_version") != schema.get("protocol_version"):
+        fail("process-capabilities protocol version must match IPC schema")
+    schema_roles = {item.get("name") for item in schema["roles"] if isinstance(item, dict)}
+    registry_roles = registry.get("roles")
+    if not isinstance(registry_roles, dict) or set(registry_roles) != schema_roles:
+        fail("generated process-capabilities roles differ from IPC schema")
 
 
 def check_ledgers() -> None:
@@ -179,8 +227,38 @@ def check_ledgers() -> None:
         fail("M0 skeleton unsafe-code ledger must remain empty")
     if native.get("entries") != []:
         fail("M0 skeleton native-code ledger must remain empty")
-    if generated.get("entries") != []:
-        fail("M0 skeleton generated-code ledger must remain empty")
+
+    entries = generated.get("entries")
+    if not isinstance(entries, list) or len(entries) != 1:
+        fail("generated-code ledger must contain the single IPC generator entry")
+    entry = entries[0]
+    if not isinstance(entry, dict) or entry.get("id") != "GEN-IPC-001":
+        fail("generated-code ledger must identify GEN-IPC-001")
+    expected_outputs = {
+        "crates/turing-ipc/src/generated.rs",
+        "docs/blueprint-v1/machine/process-capabilities.json",
+    }
+    if set(entry.get("outputs", [])) != expected_outputs:
+        fail("GEN-IPC-001 output list is incomplete")
+
+
+
+def check_execution_task() -> None:
+    task = load_json(TASK_PATH)
+    if not isinstance(task, dict) or task.get("schema_version") != 1:
+        fail("TASK-000001 must be schema version 1")
+    if task.get("id") != "TASK-000001" or task.get("status") != "review_pending":
+        fail("TASK-000001 must remain review_pending until independent review")
+    if task.get("owner") == task.get("independent_reviewer"):
+        fail("TASK-000001 owner and independent reviewer must differ")
+    if task.get("requirements") != ["REQ-SEC-003", "REQ-PERF-004"]:
+        fail("TASK-000001 must map exactly to REQ-SEC-003 and REQ-PERF-004")
+    for field in ("allowed_paths", "preconditions", "acceptance_criteria", "negative_tests"):
+        if not isinstance(task.get(field), list) or not task[field]:
+            fail(f"TASK-000001 {field} must be a non-empty array")
+    rollback = task.get("rollback")
+    if not isinstance(rollback, dict) or not rollback.get("strategy"):
+        fail("TASK-000001 must define rollback")
 
 
 def check_source_policy() -> None:
@@ -200,7 +278,9 @@ def main() -> int:
         check_required_files()
         check_toolchain()
         check_workspace()
+        check_ipc_schema()
         check_ledgers()
+        check_execution_task()
         check_source_policy()
     except ValueError as error:
         print(f"build foundation validation failed: {error}", file=sys.stderr)
@@ -208,8 +288,8 @@ def main() -> int:
 
     print(
         "build foundation validation passed: "
-        "8 workspace members, Rust 1.97.1, 0 external runtime dependencies, "
-        "0 unsafe entries, 0 native-code entries"
+        "8 workspace members, Rust 1.97.1, generated IPC schema, "
+        "0 external runtime dependencies, 0 unsafe entries, 0 native-code entries"
     )
     return 0
 

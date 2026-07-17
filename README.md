@@ -2,24 +2,28 @@
 
 Turing is an independent, Rust-first browser and web-engine program focused on minimalism, speed, security, developer experience, accessibility, open integration, and capability-scoped AI.
 
-> **Current status:** M0 research and build-foundation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, and the first buildable production-workspace skeleton. It is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
+> **Current status:** M0 research and implementation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, a buildable workspace, and the first generated kernel/IPC policy reference. It is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
 
 Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operating-system webview, or remote rendering.
 
 ## Build status
 
-The repository is now ready for **contained M0 implementation tasks**. The documentation library grew from twenty-five detailed engineering and product books to twenty-seven as native UI, agent-execution, and production-readiness controls were added.
+The repository is ready for **contained M0 implementation tasks**. The documentation library contains twenty-seven detailed engineering and product books covering the engine, product, security, UI, agent execution, and production readiness.
 
-Implemented build foundation:
+Implemented foundation:
 
 - a root Cargo workspace using resolver 3;
 - Rust `1.97.1`, Rust 2024 for new crates, rustfmt, Clippy, and rust-src pinned by `rust-toolchain.toml`;
 - an Ubuntu 24.04 / `x86_64-unknown-linux-gnu` M0 CI reference environment, which is not yet a product-support promise;
-- toolkit-neutral typed identity, IPC-envelope, kernel-capability, UI-model, and build-identity crates;
-- an M0 `turing-shell` laboratory binary with no native UI or web runtime;
-- repository `xtask`, bootstrap, doctor, and full-check commands;
-- machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, and provenance records;
-- CI for documentation, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
+- restart-safe typed process identities;
+- a canonical JSON control-plane schema generating process roles, capabilities, launch rights, message kinds, route allowlists, document-scope rules, size limits, and queue budgets;
+- bounded envelopes, exact channel sequence validation, explicit queue backpressure, and no silent eviction;
+- a deny-by-default kernel registry that rejects stale epochs, unauthorized launches, capability escalation, invalid routes, reused channel endpoints, and missing capabilities;
+- toolkit-neutral UI-model and build-identity crates;
+- an M0 `turing-shell` laboratory that exercises the kernel/IPC reference model without a native UI or web runtime;
+- repository `xtask`, bootstrap, doctor, generation, and full-check commands;
+- machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, provenance, capability, and traceability records;
+- CI for documentation, deterministic generation, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
 
 Run:
 
@@ -29,9 +33,10 @@ sh tools/doctor.sh
 sh tools/check.sh
 ```
 
-Equivalent Cargo commands:
+Equivalent Cargo and generator commands:
 
 ```bash
+python3 -B tools/generate_ipc.py --check
 cargo run --locked -p xtask -- bootstrap
 cargo run --locked -p xtask -- doctor
 cargo run --locked -p xtask -- check
@@ -44,16 +49,16 @@ The current shell is a command-line laboratory only. It does not create native w
 
 | Package | Purpose | Current status |
 |---|---|---|
-| `turing-types` | Stable non-zero typed identities | Buildable M0 foundation |
+| `turing-types` | Stable non-zero IDs and restart-safe process identities | Buildable M0 reference |
 | `turing-build-info` | Build identity and maturity labels | Buildable M0 foundation |
-| `turing-ipc` | Typed bounded control envelopes | Buildable schema foundation; no wire encoding yet |
-| `turing-kernel` | Process roles and deny-by-default capabilities | Buildable policy skeleton |
+| `turing-ipc` | Generated roles/messages, bounded envelopes, queues, and sequence state | Buildable policy reference; no OS transport or wire codec yet |
+| `turing-kernel` | Process registry, launch policy, capability attenuation, and message authorization | Buildable deterministic policy oracle; no OS launcher yet |
 | `turing-ui-model` | Toolkit-neutral shell snapshots and commands | Buildable UI contract skeleton |
-| `turing-shell` | M0 shell laboratory | No native UI yet |
-| `xtask` | Bootstrap, doctor, and validation commands | Active repository tool |
+| `turing-shell` | M0 integration laboratory | No native UI yet |
+| `xtask` | Bootstrap, doctor, generation, and validation commands | Active repository tool |
 | `turing-architecture-prototype` | Earlier executable invariant model | Research-only prototype |
 
-The authoritative component and dependency map is [`workspace-components.json`](docs/blueprint-v1/machine/workspace-components.json).
+The authoritative component and dependency map is [`workspace-components.json`](docs/blueprint-v1/machine/workspace-components.json). The canonical generated control-plane source is [`schemas/ipc/control-plane.json`](schemas/ipc/control-plane.json).
 
 ## Why Turing
 
@@ -72,13 +77,13 @@ Turing is designed around six differentiators:
 
 | Status | Meaning |
 |---|---|
-| **Buildable foundation** | Source exists and passes the M0 workspace checks |
+| **Buildable reference** | Source exists and passes the M0 workspace checks, but platform integration and independent verification may remain |
 | **Prototype** | Represented only by a research or architecture prototype |
 | **Accepted direction** | Normative Blueprint or requirement; generally not implemented |
 | **Proposed opportunity** | `OP-*` market hypothesis requiring evidence and promotion |
 | **Deferred or gated** | Postponed or dependent on licensing, platform, staffing, or commercial access |
 
-Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
+Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [traceability](docs/blueprint-v1/machine/professional-traceability.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
 
 ## Planned browser surface
 
@@ -109,11 +114,11 @@ These remain proposals, not implemented or accepted requirements.
 
 ### Performance and reliability
 
-The program targets a responsive browser UI during renderer failures and 30-tab pressure, explicit Active/Background/Frozen/Discarded/Restoring lifecycle states, protected unsaved work, predictable revival, complete resource attribution, bounded queues and caches, fixed-hardware measurement, transactional storage, crash diagnostics, and signed rollback-capable updates.
+The program targets a responsive browser UI during renderer failures and 30-tab pressure, explicit Active/Background/Frozen/Discarded/Restoring lifecycle states, protected unsaved work, predictable revival, complete resource attribution, bounded queues and caches, fixed-hardware measurement, transactional storage, crash diagnostics, and signed rollback-capable updates. The M0 control plane now demonstrates count and byte budgets with explicit backpressure; production values still require workload measurement.
 
 ### Security and privacy
 
-The architecture requires deny-by-default processes, site isolation, typed bounded IPC, platform sandbox evidence, brokered files and devices, isolated profiles, secret-preserving credential brokers, web-security policy, hostile parser/codec/JIT/GPU containment, reproducible signed updates, anti-phishing and trusted UI, minimal telemetry, private vulnerability handling, and independent review.
+The architecture requires deny-by-default processes, site isolation, typed bounded IPC, platform sandbox evidence, brokered files and devices, isolated profiles, secret-preserving credential brokers, web-security policy, hostile parser/codec/JIT/GPU containment, reproducible signed updates, anti-phishing and trusted UI, minimal telemetry, private vulnerability handling, and independent review. The M0 kernel now provides a deterministic process/capability/route policy oracle, but it is not an operating-system sandbox or transport.
 
 ### Independent engine
 
@@ -143,14 +148,15 @@ Trusted chrome will not ship Electron, Tauri, a system webview, React, Node, a D
 
 ## What remains before M1
 
-The M0 workspace does not resolve:
+The M0 workspace still does not resolve:
 
 - the Servo/source strategy;
 - production UI toolkit and page-surface composition;
 - a product support platform matrix;
-- canonical generated IPC wire schemas;
-- packaged sandbox probes;
-- fixed-hardware benchmark infrastructure;
+- an operating-system IPC transport and canonical wire codec;
+- channel authentication and shared-memory handle transfer on each platform;
+- packaged sandbox probes and compromised-process tests;
+- fixed-hardware benchmark infrastructure and production queue budgets;
 - design tokens and component fixtures;
 - profile, Space, session, and migration formats;
 - updater and signed package laboratories;
@@ -164,6 +170,7 @@ Contained tasks can proceed; broad parallel implementation and production claims
 - [Documentation index](docs/README.md)
 - [Pre-build readiness](docs/project-buildout/11-pre-build-readiness-checklist.md)
 - [M0 build-foundation report](docs/research/m0-build-foundation-2026-07.md)
+- [WP-002 kernel and IPC report](docs/research/wp-002-kernel-ipc-2026-07.md)
 - [Blueprint v1](docs/blueprint-v1/README.md)
 - [Roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md)
 - [Agent execution](docs/agent-execution/README.md)

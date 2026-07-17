@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "items": [
-    {"id":"WP-001","title":"Repository validation and evidence foundation","milestone":"M0","depends_on":[],"requirements":["REQ-ENG-007","REQ-OPS-001"]},
-    {"id":"WP-002","title":"Kernel identities process roles capabilities and bounded IPC","milestone":"M1","depends_on":["WP-001"],"requirements":["REQ-SEC-003","REQ-PERF-004"]},
+    {"id":"WP-001","title":"Repository validation and evidence foundation","milestone":"M0","depends_on":[],"requirements":["REQ-ENG-007","REQ-OPS-001"],"status":"m0_foundation_implemented"},
+    {"id":"WP-002","title":"Kernel identities process roles capabilities and bounded IPC","milestone":"M1","depends_on":["WP-001"],"requirements":["REQ-SEC-003","REQ-PERF-004"],"status":"m0_reference_in_progress","evidence":["docs/research/wp-002-kernel-ipc-2026-07.md"],"remaining":["authenticated operating-system transport","canonical wire codec","shared-memory and handle-transfer contracts","compromised-process negative harness","independent security review"]},
     {"id":"WP-003","title":"Cross-platform renderer sandbox probes","milestone":"M1","depends_on":["WP-002"],"requirements":["REQ-SEC-001"]},
     {"id":"WP-004","title":"Native accessible browser shell spike","milestone":"M1","depends_on":["WP-002"],"requirements":["REQ-PROD-001","REQ-PROD-003","REQ-A11Y-001"]},
     {"id":"WP-005","title":"Tab lifecycle resource attribution and thirty-tab simulator","milestone":"M1","depends_on":["WP-002","WP-004"],"requirements":["REQ-PROD-005","REQ-PERF-001","REQ-PERF-002","REQ-PERF-003"]},

@@ -1,74 +1,60 @@
 # Pre-build Readiness Checklist
 
-Status: canonical operating checklist; contained M0 implementation authorized  
-Owner: program, architecture, security, UI runtime, release operations, quality, and subsystem owners  
+Status: canonical operating checklist  
+Owner: program, architecture, security, UI runtime, build, quality, and subsystem owners  
 Last audited: 2026-07-17
 
 ## Purpose
 
-Turn “ready to build” into a bounded, reviewable claim. The machine companion is [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json).
-
-## Current authorization
-
-Turing is now ready for **contained M0 implementation**, not broad parallel browser construction and not production use.
-
-The implemented foundation includes:
-
-- a buildable root Cargo workspace;
-- pinned Rust toolchain;
-- M0 reference CI environment;
-- typed identity, IPC, kernel, UI-model, build-info, shell-laboratory, and repository-tool crates;
-- bootstrap, doctor, and complete check commands;
-- dependency, unsafe-code, native-code, generated-code, and provenance ledgers;
-- machine-checked component and dependency records;
-- CI that compiles and tests the root workspace.
-
-Evidence is summarized in the [M0 build-foundation report](../research/m0-build-foundation-2026-07.md).
+Turn “ready to build” into a reviewable claim. The machine-readable companion is [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json).
 
 ## Readiness classes
 
-- **Ready:** required evidence exists for the named scope.
-- **Ready for contained M0:** sufficient for bounded foundational tasks, not preview or stable support.
+- **Ready:** required evidence exists and is linked.
+- **M0 reference implemented:** deterministic source and tests exist, but platform integration, adversarial evidence, or production measurement is incomplete.
 - **Partial or proposed:** design exists but source, tests, measurement, or decision evidence is incomplete.
 - **Not started:** no executable evidence.
-- **Blocked:** predecessor, staffing, legal, or external dependency prevents completion.
+- **Blocked:** an external decision, staffing, legal, or predecessor dependency prevents completion.
 
-## Work now allowed
+## Controlled work allowed before PB-GATE-0
 
-- source crates under the accepted M0 dependency direction;
-- typed identity and process-policy implementation;
-- bounded IPC and schema experiments;
-- toolkit-neutral UI state and command work;
-- native UI comparison prototypes isolated from production crates;
-- sandbox probes;
-- benchmark and corpus tooling;
-- profile, Space, session, and migration schema prototypes;
-- tests, fuzz targets, fixtures, and diagnostic tooling.
+Documentation, algorithms, bounded implementation references, throwaway comparison prototypes, benchmark harnesses, UI adapter spikes, sandbox probes, generated schemas, test corpora, and the dependency-free architecture model may continue. These artifacts must remain clearly labeled and must not freeze public compatibility or production trust boundaries accidentally.
 
-Every task must use the [Agent Execution](../agent-execution/README.md) controls and remain independently reviewable and revertible.
+## Current contained-M0 evidence
 
-## Still blocked before M1 expansion
+The following controls now have executable evidence:
 
-- Servo/source strategy;
-- UI toolkit and licensing;
-- page-surface and compositor ownership;
-- production platform support matrix;
-- accepted generated IPC wire schema;
-- packaged sandbox evidence;
-- fixed-hardware laboratory;
-- design token and component system;
-- profile/session persistence formats;
-- updater laboratory;
-- qualified backup ownership.
+- root Cargo workspace and machine-checked dependency graph;
+- pinned M0 Rust toolchain;
+- bootstrap, doctor, and complete repository check;
+- zero-dependency, unsafe, native, generated-code, and provenance ledgers;
+- canonical JSON control-plane schema and deterministic generated Rust/documentation;
+- restart-safe process identities;
+- generated roles, capabilities, launch rights, message routes, document-scope rules, message limits, and queue budgets;
+- bounded envelopes, exact sequences, explicit backpressure, capability attenuation, and kernel route authorization.
 
-## Commands
+The generated IPC work is an M0 policy reference. It does not satisfy real authenticated transport, sandbox, shared-memory, platform handle, wire-codec, compromised-process, or fixed-hardware requirements.
 
-```bash
-sh tools/bootstrap.sh
-sh tools/doctor.sh
-sh tools/check.sh
-```
+## P0 kickoff group still open
 
-## PB-GATE-0
+- engine source strategy and Servo relationship;
+- toolkit-neutral shell model acceptance and commands;
+- UI framework comparison and license review;
+- page-surface/compositor/accessibility integration;
+- reference platform;
+- production operating-system IPC transport and canonical wire codec;
+- platform peer authentication, handle transfer, and shared-memory leases;
+- sandbox probes and compromised-process harness;
+- benchmark hardware/corpus/runner and production queue budgets;
+- design system/component/fixture inventory;
+- profile/session/migration versioning.
 
-PB-GATE-0 passes only for a named contained task whose prerequisites are ready or covered by a reviewed expiring exception. It does not imply M1 completion, preview safety, beta support, or stable readiness.
+## Review
+
+The program lead reviews the registry at every implementation kickoff and milestone boundary. Exceptions must name the affected item, scope, owner, rationale, risk, compensating controls, expiry, and evidence required for closure. An exception cannot authorize misleading product, security, performance, or compatibility claims.
+
+`WP-002` may continue under contained M0 authorization. It remains in progress until authenticated platform transport, generated wire representation, handle-transfer rules, negative testing, and independent review exist.
+
+## Exit
+
+PB-GATE-0 passes for a selected contained milestone when all applicable P0 items are ready or covered by approved time-bounded exceptions. It does not imply beta or stable readiness.

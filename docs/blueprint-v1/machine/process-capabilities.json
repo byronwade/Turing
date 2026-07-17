@@ -1,60 +1,224 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "generated_from": "schemas/ipc/control-plane.json",
+  "protocol_version": 1,
   "default": "deny",
   "roles": {
     "browser_kernel": {
-      "may_launch": ["renderer","network","storage","gpu","media_utility","extension_host","devtools","agent_host","updater","crash_handler"],
-      "capabilities": ["profile_registry","process_broker","navigation_commit","permission_policy","agent_policy","session_journal","ui_commands"]
+      "role_id": 1,
+      "may_launch": [
+        "renderer",
+        "network",
+        "storage",
+        "gpu",
+        "media_utility",
+        "extension_host",
+        "devtools",
+        "agent_host",
+        "updater",
+        "crash_handler"
+      ],
+      "capabilities": [
+        "kernel_control_channel",
+        "profile_registry",
+        "process_broker",
+        "navigation_commit",
+        "permission_policy",
+        "agent_policy",
+        "session_journal",
+        "ui_commands",
+        "network_request_broker",
+        "storage_request_broker",
+        "decoder_route",
+        "emit_diagnostics"
+      ],
+      "forbidden": []
     },
     "renderer": {
+      "role_id": 2,
       "may_launch": [],
-      "capabilities": ["assigned_ipc","assigned_shared_memory","assigned_surface","read_only_font_handles"],
-      "forbidden": ["ambient_network","arbitrary_filesystem","credential_store","process_creation","debug_attach","raw_devices","global_clipboard","update_service","browser_internal_protocol"]
+      "capabilities": [
+        "kernel_control_channel",
+        "assigned_ipc",
+        "assigned_shared_memory",
+        "assigned_surface",
+        "read_only_font_handles",
+        "request_navigation",
+        "submit_gpu_work",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "ambient_network",
+        "arbitrary_filesystem",
+        "credential_store",
+        "process_creation",
+        "debug_attach",
+        "raw_devices",
+        "global_clipboard",
+        "update_service",
+        "browser_internal_protocol"
+      ]
     },
     "network": {
+      "role_id": 3,
       "may_launch": [],
-      "capabilities": ["network_sockets","proxy_resolution","certificate_verification_adapter","http_cache","cookie_attachment"],
-      "forbidden": ["password_vault","arbitrary_profile_files","browser_ui","agent_confirmation"]
+      "capabilities": [
+        "kernel_control_channel",
+        "network_sockets",
+        "proxy_resolution",
+        "certificate_verification_adapter",
+        "http_cache",
+        "cookie_attachment",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "password_vault",
+        "arbitrary_profile_files",
+        "browser_ui",
+        "agent_confirmation"
+      ]
     },
     "storage": {
+      "role_id": 4,
       "may_launch": [],
-      "capabilities": ["profile_storage_roots","quota_database","logical_origin_stores"],
-      "forbidden": ["network_sockets","credential_secret_export","browser_ui","process_creation"]
+      "capabilities": [
+        "kernel_control_channel",
+        "profile_storage_roots",
+        "quota_database",
+        "logical_origin_stores",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "network_sockets",
+        "credential_secret_export",
+        "browser_ui",
+        "process_creation"
+      ]
     },
     "gpu": {
+      "role_id": 5,
       "may_launch": [],
-      "capabilities": ["graphics_device","assigned_surfaces","validated_shared_memory"],
-      "forbidden": ["profile_storage","network_sockets","credential_store","arbitrary_filesystem"]
+      "capabilities": [
+        "kernel_control_channel",
+        "graphics_device",
+        "assigned_surfaces",
+        "validated_shared_memory",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "profile_storage",
+        "network_sockets",
+        "credential_store",
+        "arbitrary_filesystem"
+      ]
     },
     "media_utility": {
+      "role_id": 6,
       "may_launch": [],
-      "capabilities": ["task_scoped_input","bounded_output","optional_assigned_device_handle"],
-      "forbidden": ["ambient_network","arbitrary_filesystem","profile_storage","browser_ui","credential_store"]
+      "capabilities": [
+        "kernel_control_channel",
+        "task_scoped_input",
+        "bounded_output",
+        "optional_assigned_device_handle",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "ambient_network",
+        "arbitrary_filesystem",
+        "profile_storage",
+        "browser_ui",
+        "credential_store"
+      ]
     },
     "extension_host": {
+      "role_id": 7,
       "may_launch": [],
-      "capabilities": ["declared_extension_apis","granted_hosts","extension_storage"],
-      "forbidden": ["kernel_memory","ungranted_profiles","ambient_native_messaging","update_signing","agent_confirmation"]
+      "capabilities": [
+        "kernel_control_channel",
+        "declared_extension_apis",
+        "granted_hosts",
+        "extension_storage",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "kernel_memory",
+        "ungranted_profiles",
+        "ambient_native_messaging",
+        "update_signing",
+        "agent_confirmation"
+      ]
     },
     "devtools": {
+      "role_id": 8,
       "may_launch": [],
-      "capabilities": ["attached_target_protocol","local_frontend_resources"],
-      "forbidden": ["unattached_profiles","ambient_remote_listener","release_signing","agent_confirmation"]
+      "capabilities": [
+        "kernel_control_channel",
+        "attached_target_protocol",
+        "local_frontend_resources",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "unattached_profiles",
+        "ambient_remote_listener",
+        "release_signing",
+        "agent_confirmation"
+      ]
     },
     "agent_host": {
+      "role_id": 9,
       "may_launch": [],
-      "capabilities": ["granted_observations","model_adapter","proposed_actions","audit_append"],
-      "forbidden": ["raw_cookies","password_vault","direct_renderer_memory","direct_input_injection","confirmation_approval","ungranted_files","ungranted_origins"]
+      "capabilities": [
+        "kernel_control_channel",
+        "granted_observations",
+        "model_adapter",
+        "proposed_actions",
+        "audit_append",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "raw_cookies",
+        "password_vault",
+        "direct_renderer_memory",
+        "direct_input_injection",
+        "confirmation_approval",
+        "ungranted_files",
+        "ungranted_origins"
+      ]
     },
     "updater": {
+      "role_id": 10,
       "may_launch": [],
-      "capabilities": ["update_endpoint","signed_metadata","staging_directory","version_install_roots"],
-      "forbidden": ["web_profile_content","browser_history","agent_data","arbitrary_execution"]
+      "capabilities": [
+        "kernel_control_channel",
+        "update_endpoint",
+        "signed_metadata",
+        "staging_directory",
+        "version_install_roots",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "web_profile_content",
+        "browser_history",
+        "agent_data",
+        "arbitrary_execution"
+      ]
     },
     "crash_handler": {
+      "role_id": 11,
       "may_launch": [],
-      "capabilities": ["crash_channels","bounded_dump_directory","build_id_symbols"],
-      "forbidden": ["ambient_profile_read","network_without_consent","credential_store","browser_commands"]
+      "capabilities": [
+        "kernel_control_channel",
+        "crash_channels",
+        "bounded_dump_directory",
+        "build_id_symbols",
+        "emit_diagnostics"
+      ],
+      "forbidden": [
+        "ambient_profile_read",
+        "network_without_consent",
+        "credential_store",
+        "browser_commands"
+      ]
     }
   }
 }

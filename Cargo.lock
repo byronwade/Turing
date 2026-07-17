@@ -21,6 +21,7 @@ dependencies = [
 name = "turing-kernel"
 version = "0.1.0"
 dependencies = [
+ "turing-ipc",
  "turing-types",
 ]
 
@@ -29,6 +30,8 @@ name = "turing-shell"
 version = "0.1.0"
 dependencies = [
  "turing-build-info",
+ "turing-ipc",
+ "turing-kernel",
  "turing-types",
  "turing-ui-model",
 ]

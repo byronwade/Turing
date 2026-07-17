@@ -12,6 +12,8 @@ publish = false
 
 [dependencies]
 turing-build-info.workspace = true
+turing-ipc.workspace = true
+turing-kernel.workspace = true
 turing-types.workspace = true
 turing-ui-model.workspace = true
 

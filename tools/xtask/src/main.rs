@@ -81,8 +81,11 @@ fn doctor(require_exact_toolchain: bool) -> Result<(), String> {
         "Cargo.lock",
         "rust-toolchain.toml",
         "docs/README.md",
+        "schemas/ipc/control-plane.json",
+        "crates/turing-ipc/src/generated.rs",
         "security/dependencies.json",
         "security/unsafe-code.json",
+        "security/generated-code.json",
     ] {
         if !root.join(required).is_file() {
             return Err(format!("missing required repository file: {required}"));
@@ -105,6 +108,7 @@ fn bootstrap() -> Result<(), String> {
 fn check() -> Result<(), String> {
     let root = repository_root();
     command(&root, "python3", ["-B", "tools/validate_blueprint.py"])?;
+    command(&root, "python3", ["-B", "tools/generate_ipc.py", "--check"])?;
     command(
         &root,
         "python3",

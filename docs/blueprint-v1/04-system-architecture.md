@@ -216,3 +216,12 @@ A profile directory uses explicit sub-stores and version files. Secrets are stor
 ## Browser-shell UI boundary
 
 The product shell is split into toolkit-neutral Rust state/commands, a replaceable presentation adapter, platform services, and page-surface composition. The toolkit cannot own navigation, profile, permission, credential, agent, Plug-in, persistence, or update authority. Renderer and GPU surfaces use typed handles with document and device generations.
+
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## M0 generated control-plane reference
+
+`WP-002` now has a dependency-free M0 policy reference generated from [`schemas/ipc/control-plane.json`](../../schemas/ipc/control-plane.json). The schema owns stable role, capability, and message IDs; default capability sets; process-launch authority; message route allowlists; document-scope rules; encoded-size limits; and queue budgets. `tools/generate_ipc.py --check` rejects source/generated drift.
+
+`turing-types::ProcessIdentity` combines a stable process ID with a monotonic restart epoch. `turing-kernel::ProcessRegistry` is the deterministic authorization oracle for launch, capability attenuation, stale-process rejection, route validation, channel endpoint binding, and exact sequence state. `turing-ipc` supplies bounded envelopes and explicit count/byte backpressure.
+
+This reference is not an operating-system launcher or transport. It does not yet authenticate platform peers, encode hostile wire bytes, transfer handles or shared memory, compose site instances, or prove sandbox containment. Platform implementations must match this policy and add independent negative evidence before `REQ-SEC-003` or `WP-002` can be considered complete.

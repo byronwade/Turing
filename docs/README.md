@@ -64,6 +64,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Pre-build readiness audit — July 2026](research/pre-build-readiness-gap-audit-2026-07.md) | `PB-001` through `PB-020` |
 | [Agent execution and production-readiness audit — July 2026](research/agent-execution-production-readiness-audit-2026-07.md) | Agent authority and stable-release controls |
 | [M0 build foundation — July 2026](research/m0-build-foundation-2026-07.md) | First buildable workspace, toolchain, ledgers, commands, CI, and remaining limits |
+| [WP-002 kernel identity and IPC reference — July 2026](research/wp-002-kernel-ipc-2026-07.md) | Generated roles/routes/limits, restart-safe identities, bounded queues, sequence checks, kernel authorization, and remaining transport gaps |
 
 Research reports inform decisions but do not silently promote requirements or support claims.
 

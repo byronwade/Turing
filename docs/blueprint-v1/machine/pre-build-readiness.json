@@ -1,13 +1,11 @@
 {
   "schema_version": 1,
   "updated": "2026-07-17",
-  "status": "not_ready_for_broad_implementation",
+  "status": "contained_m0_implementation_authorized",
   "allowed_now": [
     "documentation",
     "research",
-    "contained M0 source tasks",
-    "typed kernel and IPC foundations",
-    "toolkit-neutral UI model work",
+    "contained M0 implementation tasks",
     "benchmark harnesses",
     "sandbox probes",
     "tooling spikes"
@@ -37,15 +35,11 @@
     {
       "id": "PB-003",
       "name": "Toolkit-neutral UI model and adapter contract",
-      "status": "partial",
+      "status": "proposed",
       "owner_scope": "ui-runtime",
-      "evidence": [
-        "crates/turing-ui-model",
-        "docs/ui-runtime/README.md"
-      ],
       "evidence_required": [
         "ADR-0013",
-        "native adapter prototype"
+        "contract prototype"
       ]
     },
     {
@@ -71,21 +65,18 @@
     },
     {
       "id": "PB-006",
-      "name": "M0 reference desktop environment",
-      "status": "ready",
+      "name": "M1 reference desktop platform",
+      "status": "not_selected",
       "owner_scope": "platform",
-      "evidence": [
-        "docs/blueprint-v1/machine/toolchains.json",
-        "docs/research/m0-build-foundation-2026-07.md"
-      ],
       "evidence_required": [
-        "later product platform scorecard"
+        "platform scorecard",
+        "support/CI availability"
       ]
     },
     {
       "id": "PB-007",
       "name": "Cargo workspace and crate dependency graph",
-      "status": "ready",
+      "status": "ready_for_contained_m0",
       "owner_scope": "architecture",
       "evidence": [
         "Cargo.toml",
@@ -96,57 +87,49 @@
     {
       "id": "PB-008",
       "name": "Pinned compiler SDK linker and toolchain",
-      "status": "ready",
+      "status": "partial_reference_toolchain",
       "owner_scope": "release-operations",
       "evidence": [
         "rust-toolchain.toml",
-        "docs/blueprint-v1/machine/toolchains.json"
-      ],
-      "evidence_required": [
-        "native platform toolchain manifests before native dependencies"
+        "docs/blueprint-v1/machine/toolchains.json",
+        "platform toolchain manifests"
       ]
     },
     {
       "id": "PB-009",
       "name": "Bootstrap and read-only doctor commands",
-      "status": "partial",
+      "status": "ready_for_reference_ci",
       "owner_scope": "release-operations",
       "evidence": [
         "tools/bootstrap.sh",
         "tools/doctor.sh",
-        "tools/xtask"
-      ],
-      "evidence_required": [
-        "independent fresh-host reproduction"
+        "tools/xtask/src/main.rs"
       ]
     },
     {
       "id": "PB-010",
       "name": "Dependency unsafe native and provenance ledgers",
-      "status": "ready",
+      "status": "ready_for_zero_dependency_m0",
       "owner_scope": "security",
       "evidence": [
         "security/dependencies.json",
         "security/unsafe-code.json",
         "security/native-code.json",
         "security/generated-code.json",
-        "security/provenance.json",
-        "tools/validate_build_foundation.py"
+        "security/provenance.json"
       ]
     },
     {
       "id": "PB-011",
       "name": "Canonical IPC schema and process capability generation",
-      "status": "partial",
+      "status": "m0_reference_implemented",
       "owner_scope": "architecture",
       "evidence": [
-        "crates/turing-ipc",
-        "crates/turing-kernel"
-      ],
-      "evidence_required": [
-        "schema generator",
-        "wire encoding decision",
-        "negative sender tests"
+        "schemas/ipc/control-plane.json",
+        "tools/generate_ipc.py",
+        "crates/turing-ipc/src/generated.rs",
+        "docs/blueprint-v1/machine/process-capabilities.json",
+        "crates/turing-kernel/src/lib.rs"
       ]
     },
     {
@@ -231,17 +214,12 @@
     {
       "id": "PB-020",
       "name": "Implementation kickoff review",
-      "status": "partial",
+      "status": "blocked",
       "owner_scope": "program",
-      "evidence": [
-        "docs/project-buildout/11-pre-build-readiness-checklist.md",
-        "docs/research/m0-build-foundation-2026-07.md"
-      ],
       "evidence_required": [
-        "remaining P0 items before M1 expansion"
+        "all P0 items ready or approved time-bounded exceptions"
       ]
     }
   ],
-  "completion_rule": "PB-GATE-0 currently authorizes bounded M0 tasks that use the root workspace and agent-execution controls. M1, preview, beta, and stable claims remain separately gated.",
-  "contained_m0_authorization": "ready"
+  "completion_rule": "PB-GATE-0 passes when every item required for the selected contained milestone is ready or has a reviewed, expiring exception. Stable-release prerequisites remain later gates."
 }
