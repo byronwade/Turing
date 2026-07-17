@@ -15,11 +15,12 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       CARGO_TARGET_DIR: /tmp/turing-repository-validation-target
+
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -27,13 +28,19 @@ jobs:
           fetch-depth: 0
           show-progress: false
 
-      - name: Show tool versions
+      - name: Show pinned environment
         run: |
-          python3 --version
           rustc --version
           cargo --version
+          rustfmt --version
+          cargo clippy --version
+          python3 --version
+          git --version
 
-      - name: Validate repository and documentation
+      - name: Run read-only doctor
+        run: cargo run --locked -p xtask -- doctor --ci
+
+      - name: Validate documentation and program records
         shell: bash
         run: |
           set +e
@@ -42,12 +49,23 @@ jobs:
           cat repository-validation.log
           exit "$status"
 
+      - name: Validate executable build foundation
+        shell: bash
+        run: |
+          set +e
+          python3 -B tools/validate_build_foundation.py > build-foundation-validation.log 2>&1
+          status=$?
+          cat build-foundation-validation.log
+          exit "$status"
+
       - name: Upload validation diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: repository-validation-${{ github.run_id }}
-          path: repository-validation.log
+          path: |
+            repository-validation.log
+            build-foundation-validation.log
           if-no-files-found: error
           retention-days: 7
 
@@ -58,17 +76,24 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: python3 -B tools/check_documentation_change.py "$BASE_SHA" "$HEAD_SHA"
 
-      - name: Format check
-        run: cargo fmt --manifest-path prototype/Cargo.toml -- --check
+      - name: Format workspace
+        run: cargo fmt --all -- --check
 
-      - name: Compile and test architecture prototype
-        run: cargo test --manifest-path prototype/Cargo.toml --all-targets
+      - name: Lint workspace
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+      - name: Test workspace
+        run: cargo test --workspace --all-targets --locked
+
+      - name: Run shell self-test
+        run: cargo run --locked -p turing-shell -- --self-test
 
       - name: Run architecture prototype
-        run: cargo run --manifest-path prototype/Cargo.toml --quiet
+        run: cargo run --locked -p turing-architecture-prototype --quiet
 
       - name: Enforce clean source tree
         run: |
+          test ! -e target
           test ! -e prototype/target
           test ! -e tools/__pycache__
           test ! -e transfer
