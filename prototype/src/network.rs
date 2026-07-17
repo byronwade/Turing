@@ -132,9 +132,12 @@ impl RequestContext {
         })
     }
 
-    #[expect(
-        dead_code,
-        reason = "the stale-epoch predicate is exercised by tests and future navigation experiments"
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "the stale-epoch predicate is exercised by tests and future navigation experiments"
+        )
     )]
     #[must_use]
     pub fn is_current_for(&self, epoch: DocumentEpoch) -> bool {
