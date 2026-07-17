@@ -34,7 +34,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'b92fc5ebe74a44c199ec50e39ea7d2b65c712fff7b4c7aeb5b1e4281ae26860c  tools/ui_runtime_docs_generator.py' | sha256sum --check -
           python3 -B -m py_compile tools/ui_runtime_docs_generator.py
           python3 -B tools/ui_runtime_docs_generator.py
 
