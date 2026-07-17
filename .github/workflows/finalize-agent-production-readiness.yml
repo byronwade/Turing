@@ -1,0 +1,97 @@
+name: Finalize agent production readiness verification and cleanup
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: turing-final-agent-production-readiness
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.event.issue.title == 'Run final Turing production readiness verification and cleanup' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TARGET_DIR: /tmp/turing-final-agent-production-readiness-target
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Require canonical documentation and clean publication state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/ui-runtime/README.md
+          test -f docs/agent-execution/README.md
+          test -f docs/production-readiness/README.md
+          test -f docs/agent-execution/machine/agent-capability-matrix.json
+          test -f docs/production-readiness/machine/release-gates.json
+          test -f docs/production-readiness/machine/product-slos.json
+          test -f docs/production-readiness/machine/update-trust-roles.json
+          test -f docs/production-readiness/machine/secure-development-controls.json
+          grep -q 'not_ready_for_production' docs/production-readiness/machine/release-gates.json
+          grep -q '27 detailed engineering books' tools/validate_blueprint.py
+          grep -q '30 machine-readable registries' tools/validate_blueprint.py
+          test ! -e .github/workflows/finalize-native-ui-runtime-docs.yml
+          test ! -e .github/workflows/publish-native-ui-prebuild-docs-from-issue.yml
+          test ! -e .github/workflows/publish-agent-production-readiness.yml
+          test ! -e tools/ui_runtime_docs_generator.py
+          test ! -e tools/generate_native_ui_docs.py
+          test ! -e transfer
+
+      - name: Validate exact final source tree and executable prototype
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          cargo fmt --manifest-path prototype/Cargo.toml -- --check
+          cargo test --manifest-path prototype/Cargo.toml --all-targets
+          cargo run --manifest-path prototype/Cargo.toml --quiet
+          test ! -e prototype/target
+          test ! -e tools/__pycache__
+          test ! -e transfer
+
+      - name: Delete every non-main branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+          mapfile -t branches < <(
+            git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+              | grep -vE '^(HEAD|main)$' \
+              | sort -u
+          )
+          for branch in "${branches[@]:-}"; do
+            test -n "$branch" || continue
+            git push origin --delete "$branch"
+          done
+          remaining=$(git ls-remote --heads origin | awk '{print $2}' | sed 's#refs/heads/##' | grep -v '^main$' || true)
+          if test -n "$remaining"; then
+            echo 'Non-main branches remain:' >&2
+            echo "$remaining" >&2
+            exit 1
+          fi
+
+      - name: Close operational records
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr close 34 --repo '${{ github.repository }}' \
+            --comment 'The validated canonical documentation is on main; this non-merge trigger branch was deleted.' || true
+          gh issue close 33 --repo '${{ github.repository }}' --reason completed \
+            --comment 'Agent execution and production readiness documentation is on main; validation passed and temporary branches were removed.' || true
+          gh issue close '${{ github.event.issue.number }}' --repo '${{ github.repository }}' --reason completed \
+            --comment 'Final repository/prototype validation passed and main is the only remote branch.'
