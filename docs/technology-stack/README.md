@@ -1,62 +1,81 @@
 # Technology Stack and Engineering Toolchain
 
-Status: candidate evaluation and operating baseline; no dependency approval  
-Owner: architecture, build, security, and subsystem owners  
-Last researched: 2026-07-16
+Status: M0 Rust baseline selected; subsystem dependencies remain candidates  
+Owner: architecture, release operations, security, and subsystem owners  
+Last reviewed: 2026-07-17
 
 ## Decision model
 
-“Best” means the lowest total cost across correctness, memory safety, latency, memory, energy, accessibility, interoperability, portability, licensing, build/release operations, maintainer health, and replacement—not popularity or one benchmark.
+“Best” means the lowest total cost across correctness, security, latency, memory, energy, accessibility, interoperability, portability, licensing, build operations, maintainer health, and replacement—not popularity or one benchmark.
+
+## M0 selected baseline
+
+The contained implementation foundation uses:
+
+- Rust `1.97.1`;
+- Rust 2024 for new production crates;
+- Cargo resolver 3;
+- rustfmt, Clippy, and rust-src;
+- a committed lockfile;
+- no external runtime or build dependencies;
+- unsafe Rust and native code forbidden by default;
+- Ubuntu 24.04 / `x86_64-unknown-linux-gnu` as the reproducible M0 CI reference.
+
+The exact machine-readable record is [`toolchains.json`](../blueprint-v1/machine/toolchains.json).
+
+This baseline selects the repository language and tooling, not the browser engine source strategy, UI toolkit, graphics backend, network stack, storage engine, compiler backend, media stack, or production platform matrix.
 
 ## Language map
 
 | Layer | Preferred language | Rule |
 |---|---|---|
-| Browser kernel, IPC, engine, JS semantics, network/storage policy, resource model, Plug-in broker, DevTools protocol, agent authorization | Stable Rust, Rust 2024 edition | Default for Turing-owned runtime and hostile-input code |
-| Universal public ABI | C | Opaque handles, explicit ownership, version negotiation; not the implementation default |
-| GPU/codec/compiler/OS boundaries | C/C++ only when unavoidable | Narrow, reviewed, isolated, fuzzed, replaceable |
-| Apple platform adapters | Swift/Objective-C | Thin adapter; no duplicate browser policy |
-| Windows adapters | C++/WinRT or Rust windows bindings | Thin adapter with Turing semantic core |
+| Kernel, IPC, engine, JS semantics, network/storage policy, resources, Plug-in broker, protocols, agent authorization | Stable Rust | Default for Turing-owned runtime and hostile-input code |
+| Universal public ABI | C | Opaque handles and explicit ownership; not implementation default |
+| GPU, codec, compiler, and unavoidable OS boundaries | C/C++ only when evidence requires it | Narrow, isolated, reviewed, fuzzed, replaceable |
+| Apple integration | Swift/Objective-C | Thin adapter; no duplicate browser policy |
+| Windows integration | Rust Windows bindings or C++/WinRT | Thin adapter |
 | Android/JVM embedding | Kotlin/Java/JNI | Generated wrapper over stable contract |
-| DevTools and constrained Plug-in UI | TypeScript | No privileged policy or ambient browser authority |
-| Tests, analysis, benchmarks, release tooling, ergonomic SDK | Python | Not bundled as browser runtime |
-| Portable multi-language Plug-ins | WebAssembly Components and WIT | Explicit imports, limits, interruption, no ambient WASI |
-| C#, Go, Ruby and other SDKs | Generated bindings | Do not reimplement engine semantics |
+| DevTools and development-only design tools | TypeScript | No ambient browser authority |
+| Tests, analysis, benchmarks, release tools | Python and Rust | Not part of browser runtime unless explicitly approved |
+| Portable Plug-ins | WebAssembly Components and WIT | Explicit imports, limits, cancellation, no ambient WASI |
+| Other SDKs | Generated bindings | Do not reimplement engine semantics |
 
-## Framework and library candidates
+## Candidate foundations
 
-- Text: Unicode/CLDR, HarfBuzz, FreeType, CoreText, DirectWrite behind Turing font/privacy/cache policy.
-- Graphics: evaluate wgpu against direct Metal, D3D12, and Vulkan; retain deterministic software rendering; evaluate Vello for vector paths.
-- Accessibility: evaluate AccessKit for custom chrome while validating VoiceOver, UI Automation, and AT-SPI directly.
-- TLS/network foundations: evaluate rustls, low-level HTTP/2/3 and QUIC crates, and DNS primitives; Turing owns Fetch, CORS, cookies, cache, proxy, certificate UI, and partitioning.
-- Storage: SQLite is the leading transactional-store candidate; use store-specific schemas and no general ORM in trusted stores.
-- Compiler: Turing-owned interpreter/IR/GC; evaluate Cranelift for lowering and Wasmtime only for Plug-in components, never page JavaScript semantics.
-- Async: do not standardize one ambient runtime across the browser. Use explicit schedulers; Tokio/Mio are candidates for isolated services and tooling.
-- Testing: rustfmt, Clippy, Miri, sanitizers, Loom, proptest, cargo-fuzz/libFuzzer, cargo-nextest, WPT, Test262, fixed-hardware labs.
-- Supply chain: lockfiles, cargo-deny, RustSec/cargo-audit, cargo-vet, SBOM, SLSA, in-toto/Sigstore, reproducible builds.
-- Build: Cargo workspace plus a small Rust repository tool; CMake/Ninja for required native dependencies; evaluate sccache and lld/mold with evidence.
+- Text: Unicode/CLDR, HarfBuzz, FreeType, CoreText, DirectWrite.
+- Graphics: wgpu versus direct Metal, D3D12, and Vulkan; deterministic software reference; Vello research.
+- Accessibility: AccessKit where appropriate, with direct platform verification.
+- TLS/network: rustls and low-level protocol primitives; Turing owns browser policy.
+- Storage: SQLite is the leading transactional-store candidate.
+- Compilation: Turing-owned JS semantics and IR; Cranelift may be evaluated for lowering.
+- Plug-ins: Wasmtime and the WebAssembly Component Model are candidates.
+- Async: no browser-wide ambient runtime by convenience.
+- UI: Slint first prototype; compare Vizia and Floem or GPUI.
+- Testing: Miri, sanitizers, Loom, property testing, fuzzing, WPT, Test262, fixed-hardware labs.
+- Supply chain: cargo-deny/audit/vet, SBOM, SLSA, in-toto/Sigstore, reproducible builds.
 
 ## Dependency gate
 
-Every candidate needs exact version/source, owner, privilege, hostile-input exposure, unsafe/native inventory, transitive graph, license/patent review, fuzzing, platform matrix, update response, performance/build cost, Turing-owned adapter, and replacement plan. Mention here is not adoption.
+Every external dependency requires exact source and version, owner, privilege, hostile-input exposure, unsafe/native/build-script inventory, transitive graph, license and patent review, fuzzing, platform matrix, update response, performance/build cost, Turing-owned adapter, and replacement plan.
+
+Mention in research is not approval.
+
+## Current source-policy records
+
+- [`security/dependencies.json`](../../security/dependencies.json)
+- [`security/unsafe-code.json`](../../security/unsafe-code.json)
+- [`security/native-code.json`](../../security/native-code.json)
+- [`security/generated-code.json`](../../security/generated-code.json)
+- [`security/provenance.json`](../../security/provenance.json)
 
 ## Primary sources
 
-- Rust — https://www.rust-lang.org/
-- Rust 2024 edition — https://doc.rust-lang.org/edition-guide/rust-2024/
+- Rust 1.97.1 — https://blog.rust-lang.org/2026/07/16/Rust-1.97.1/
+- Rust 2024 — https://doc.rust-lang.org/edition-guide/rust-2024/
+- Cargo workspaces — https://doc.rust-lang.org/cargo/reference/workspaces.html
 - Servo — https://servo.org/
 - WebAssembly Component Model — https://component-model.bytecodealliance.org/
-- Wasmtime — https://wasmtime.dev/
 - wgpu — https://wgpu.rs/
-- AccessKit — https://github.com/AccessKit/accesskit
-- HarfBuzz — https://harfbuzz.github.io/
 - rustls — https://rustls.dev/
 - SQLite — https://sqlite.org/
 - Cranelift — https://cranelift.dev/
-
-<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
-## Native UI framework strategy
-
-Trusted browser chrome uses no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser. The working hypothesis is a pure Rust state/command core with a replaceable native adapter. Evaluate Slint first against Vizia and Floem or GPUI; monitor Xilem, Makepad, and Freya; use egui for internal tools; defer a custom TSX compiler until measured evidence justifies its cost.
-
-Slint is not approved. Its license, selected backend/renderer, page-texture integration, accessibility, IME, binary/memory cost, native dependency graph, update policy, and replacement path require the [UI framework experiment](../ui-runtime/02-framework-landscape-and-selection-method.md).
