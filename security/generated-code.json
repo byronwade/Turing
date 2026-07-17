@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "empty",
+  "policy": "Generated source must identify its schema or generator, exact command, owner, review boundary, deterministic output check, and whether generated output is committed.",
+  "entries": []
+}

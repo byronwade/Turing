@@ -15,6 +15,10 @@ pub enum RiskClass {
     HighRisk = 4,
 }
 
+#[expect(
+    dead_code,
+    reason = "the reference-model action catalog intentionally exceeds the smoke path"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ActionKind {
     Observe,

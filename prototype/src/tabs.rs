@@ -5,6 +5,13 @@
 use std::collections::BTreeSet;
 use std::fmt;
 
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "the reference lifecycle catalog intentionally exceeds the smoke path"
+    )
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TabState {
     Active,
@@ -16,6 +23,10 @@ pub enum TabState {
     Crashed,
 }
 
+#[expect(
+    dead_code,
+    reason = "the reference protection catalog intentionally exceeds the smoke path"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ProtectionReason {
     AudibleMedia,
@@ -65,7 +76,10 @@ impl TabLifecycle {
         self.protections.remove(&reason);
     }
 
-    #[must_use]
+    #[expect(
+        dead_code,
+        reason = "the protection iterator is retained for diagnostics and future UI experiments"
+    )]
     pub fn protections(&self) -> impl Iterator<Item = ProtectionReason> + '_ {
         self.protections.iter().copied()
     }

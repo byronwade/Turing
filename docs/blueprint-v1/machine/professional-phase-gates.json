@@ -4,14 +4,21 @@
   "phases": [
     {
       "id": "M0",
-      "status": "in_progress",
+      "status": "active_implementation",
       "owner_scope": "program",
-      "evidence": [],
+      "evidence": [
+        "Cargo.toml",
+        "rust-toolchain.toml",
+        "docs/blueprint-v1/machine/workspace-components.json",
+        "docs/blueprint-v1/machine/toolchains.json",
+        "tools/validate_build_foundation.py",
+        "docs/research/m0-build-foundation-2026-07.md"
+      ],
       "blockers": [
-        "Professional controls and multi-person ownership incomplete.",
-        "Initial market-opportunity validation and promotion decisions remain incomplete.",
-        "UI framework, page-surface composition, reference platform, and PB-GATE-0 evidence incomplete.",
-        "Agent task/provenance controls, protected review, and implementation kickoff evidence incomplete."
+        "Professional multi-person ownership remains incomplete.",
+        "Engine source strategy remains unresolved.",
+        "UI framework and page-surface evidence remain incomplete.",
+        "Sandbox, benchmark, persistence, updater, and incident laboratories remain incomplete."
       ]
     },
     {
@@ -19,7 +26,9 @@
       "status": "not_started",
       "owner_scope": "program",
       "evidence": [],
-      "blockers": []
+      "blockers": [
+        "PB-GATE-0 evidence beyond the contained M0 foundation remains incomplete."
+      ]
     },
     {
       "id": "M2",
@@ -62,7 +71,7 @@
       "owner_scope": "program",
       "evidence": [],
       "blockers": [
-        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+        "Production readiness gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
       ]
     },
     {
@@ -71,7 +80,7 @@
       "owner_scope": "program",
       "evidence": [],
       "blockers": [
-        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+        "Production readiness gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
       ]
     },
     {
@@ -80,7 +89,7 @@
       "owner_scope": "program",
       "evidence": [],
       "blockers": [
-        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+        "Production readiness gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
       ]
     }
   ]

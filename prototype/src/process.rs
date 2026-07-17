@@ -5,6 +5,10 @@
 use std::collections::BTreeSet;
 use std::fmt;
 
+#[expect(
+    dead_code,
+    reason = "the reference model catalogs every planned process role beyond the smoke path"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ProcessRole {
     BrowserKernel,
@@ -68,6 +72,10 @@ impl CapabilitySet {
         Self { role, allowed }
     }
 
+    #[expect(
+        dead_code,
+        reason = "the role accessor is retained for later process-assignment experiments"
+    )]
     #[must_use]
     pub const fn role(&self) -> ProcessRole {
         self.role

@@ -1,0 +1,17 @@
+[package]
+name = "turing-kernel"
+description = "Capability and process-role policy skeleton for the Turing browser kernel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-types.workspace = true
+
+[lints]
+workspace = true
