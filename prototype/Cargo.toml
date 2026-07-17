@@ -2,7 +2,7 @@
 name = "turing-architecture-prototype"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.97"
 license = "MPL-2.0"
 publish = false
 description = "Dependency-free executable model of Turing Browser architecture invariants"
