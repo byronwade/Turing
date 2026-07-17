@@ -59,6 +59,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── check.sh
     ├── validate_blueprint.py
     ├── validate_build_foundation.py
+    ├── validate_sandbox_contracts.py
     ├── check_documentation_change.py
     └── xtask/
 ```
@@ -148,6 +149,7 @@ Repository-owned tools live here.
 - `xtask`: cross-platform Rust implementation of bootstrap, doctor, and check;
 - `validate_blueprint.py`: documentation and program-record validation;
 - `validate_build_foundation.py`: executable workspace, toolchain, ledger, and source-policy validation;
+- `validate_sandbox_contracts.py`: dependency-free validation of `TASK-000002`, the sandbox probe catalog, the evidence schema, and mandatory no-false-pass policy markers;
 - `check_documentation_change.py`: pull-request same-change documentation enforcement.
 
 Tools must fail visibly, avoid hidden network access, preserve source-tree cleanliness, and document any generated output.
