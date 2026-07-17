@@ -53,11 +53,19 @@ impl RenderPipeline {
         };
     }
 
+    #[expect(
+        dead_code,
+        reason = "the diagnostic accessor is retained for invalidation experiments"
+    )]
     #[must_use]
     pub const fn dirty_from(&self) -> Option<RenderStage> {
         self.dirty_from
     }
 
+    #[expect(
+        dead_code,
+        reason = "the epoch accessor is retained for future stale-artifact experiments"
+    )]
     #[must_use]
     pub const fn completed_epoch(&self) -> u64 {
         self.completed_epoch
