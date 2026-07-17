@@ -49,9 +49,7 @@ jobs:
                   });
               }
           }
-          '''
-          # Account for the exact four-space Rust indentation from rustfmt.
-          old = old.replace('              ', '            ').replace('                  ', '                ').replace('          }', '        }')
+          '''.replace('              ', '            ').replace('          }', '        }')
           new = '''        if let Some(capability) = required_capability
               && !sender.allows(capability)
           {
@@ -60,10 +58,11 @@ jobs:
                   capability,
               });
           }
-          '''
-          new = new.replace('              ', '            ').replace('          {', '        {').replace('          }', '        }')
+          '''.replace('              ', '            ').replace('          {', '        {').replace('          }', '        }')
           if old not in text:
-              raise SystemExit('expected nested capability check not found')
+              start = text.index('        let required_capability = kind.required_capability();')
+              end = text.index('\n\n        let channel_id', start)
+              raise SystemExit('expected nested capability check not found:\n' + text[start:end])
           path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
           cargo fmt --all
