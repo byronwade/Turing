@@ -2,9 +2,11 @@
 
 ## 1. Planning rule
 
-The destination is a Chrome-class general-purpose browser; the execution path is a sequence of independently testable systems. Dates are not promised before team capacity and measured throughput exist. Milestones are gate-based and may run in parallel only when interfaces and owners are clear.
+The destination is a Chrome-class general-purpose browser; the execution path is a sequence of independently testable systems. Dates are not promised before team capacity and measured throughput exist. Milestones are gate-based and may run in parallel only when interfaces, dependencies, owners, and reviewers are clear.
 
-A solo or small-team project should expect years, not months, to approach broad compatibility. Production safety requires sustained security response and review beyond implementation. The roadmap therefore creates useful artifacts early without labeling them a safe daily browser.
+A solo or small-team project should expect years, not months, to approach broad compatibility. Production safety requires sustained security response and review beyond implementation. The roadmap creates useful artifacts early without labeling them a safe daily browser.
+
+The detailed agent-facing sequence is the [Implementation Master Plan](../project-buildout/implementation-plan/README.md). The machine dependency source is [`backlog.json`](machine/backlog.json). If prose and machine records differ, implementation stops until they are synchronized.
 
 ## 2. Program tracks
 
@@ -19,7 +21,7 @@ A solo or small-team project should expect years, not months, to approach broad 
 - **I — AI/agents:** observations, policy, actions, provider adapters, audit, evaluations.
 - **J — Quality/operations:** WPT/Test262, fuzzing, benchmarks, CI, packaging, signing, updater, support.
 
-## 3. Milestone M0 — Repository and evidence foundation
+## 3. M0 — Repository and evidence foundation
 
 Purpose: make every later claim reviewable.
 
@@ -27,47 +29,51 @@ Deliverables:
 
 - charter, requirements, capability matrix, architecture decisions, threat model, risk register, source bibliography;
 - Rust workspace and code-quality policy;
-- schemas for requirements, risks, processes, IPC, DevTools, agent actions, benchmarks, and release evidence;
+- schemas for requirements, risks, processes, IPC, DevTools, agent actions, benchmarks, tasks, evidence, and release gates;
 - documentation/link/schema/ID validation;
-- initial CI and contribution/security policies;
-- reference hardware and generated offline corpus definitions;
-- dependency and unsafe-code ledgers.
+- CI and contribution/security policies;
+- reference-hardware and offline-corpus definitions;
+- dependency, unsafe, native, generated-code, and provenance ledgers;
+- implementation execution graph, milestone gates, interface freezes, evidence catalog, and task sequence.
 
 Exit gates:
 
 - all top-level requirements have stable IDs and owners or explicit unowned status;
-- architecture and security invariants have tests in the bootstrap model;
-- no production-safety claim;
-- repository can be built/validated from clean instructions.
+- architecture and security invariants have executable reference tests;
+- repository builds and validates from clean instructions;
+- contained tasks use reviewed `TASK-*` manifests;
+- no production-safety claim.
 
-## 4. Milestone M1 — Native shell and process laboratory
+## 4. M1 — Native shell and process laboratory
 
-Purpose: prove product responsiveness, platform adapters, process launch, IPC, lifecycle, and resource attribution without rendering the open web.
+Purpose: prove product responsiveness, platform adapters, process launch, IPC, lifecycle, sandboxing, and resource attribution without rendering the open web.
 
 Deliverables:
 
-- native windows, tab strip, address field, commands, profiles, session journal, accessibility semantics;
-- browser kernel, renderer test process, network/storage mock services, GPU surface process;
-- typed bounded IPC and handle broker;
-- platform sandbox prototypes and negative tests;
+- native windows, tabs, command field, profiles/Spaces placeholders, session journal, and accessibility semantics;
+- browser kernel, renderer test process, mock network/storage services, and GPU surface process;
+- typed bounded IPC, authenticated transport experiments, handle/shared-memory contracts;
+- cross-platform sandbox probes and negative tests;
 - process/resource manager and trace viewer;
-- 30 synthetic tab/process pressure simulator;
-- crash/hang/restart and update-package laboratory.
+- 30-tab synthetic pressure simulator;
+- crash/hang/restart, profile recovery, and signed research-package laboratory.
 
 Exit gates:
 
 - shell remains responsive under process hangs and pressure;
-- renderer test process has no prohibited ambient capabilities on each target platform;
-- lifecycle state and memory accounting are visible;
-- signed research packages may be produced, labeled non-browser prototype.
+- renderer test process has no prohibited ambient capabilities on every claimed platform;
+- lifecycle state and resource accounting are visible and reconciled;
+- keyboard, assistive technology, IME, and trusted-UI critical paths pass on the reference platform;
+- signed research packages install and roll back;
+- output remains labeled non-browser research prototype.
 
-## 5. Milestone M2 — Static document engine
+## 5. M2 — Static document engine
 
 Purpose: render a meaningful, script-free standards subset.
 
 Deliverables:
 
-- URL/encoding, HTML tokenizer/tree builder, DOM, CSS parser/cascade, basic selectors;
+- URL/encoding, HTML tokenizer/tree builder, DOM, CSS parser/cascade, selectors;
 - block/replaced layout, text shaping/line layout, fonts/images, basic SVG;
 - display lists, CPU reference raster, GPU compositor integration;
 - scrolling, hit testing, selection, links, forms without script, accessibility tree;
@@ -76,18 +82,19 @@ Deliverables:
 
 Exit gates:
 
+- ADR-0009 and required foundation decisions are accepted;
 - declared static subset passes its conformance threshold;
 - deterministic rendering on reference configurations;
 - malicious pages remain in sandbox and respect resource caps;
-- no JavaScript support is implied.
+- no JavaScript or general-browser support is implied.
 
-## 6. Milestone M3 — JavaScript interpreter and dynamic DOM
+## 6. M3 — JavaScript interpreter and dynamic DOM
 
-Purpose: execute modern language and page event behavior through the reference runtime.
+Purpose: execute a declared modern-language subset and page event behavior through a trustworthy reference runtime.
 
 Deliverables:
 
-- JS lexer/parser, bytecode, interpreter, object model, exceptions, functions, classes, modules subset;
+- JS lexer/parser, bytecode, verifier, interpreter, object model, exceptions, functions, classes, modules subset;
 - exact stop-the-world GC, rooted handles, DOM wrappers, Web IDL generator;
 - event loop, tasks/microtasks, timers, events, dynamic DOM/style/layout;
 - console and debugger foundations;
@@ -98,51 +105,52 @@ Exit gates:
 - published Test262 feature map;
 - no known wrapper identity/lifetime leaks across navigation loops;
 - dynamic DOM reduced tests and WPT subset pass;
-- arbitrary-web browsing still labeled unsafe/incompatible.
+- OOM, cancellation, crash, and teardown behavior is explicit;
+- arbitrary-web browsing remains unsafe/incompatible.
 
-## 7. Milestone M4 — Navigation, Fetch, storage, and multipage applications
+## 7. M4 — Navigation, Fetch, storage, and controlled applications
 
-Purpose: support controlled applications and realistic browsing flows.
+Purpose: support controlled multipage applications and realistic browsing flows.
 
 Deliverables:
 
-- network service HTTP/1.1/TLS, redirects, cache, cookies, Fetch/CORS/security policy subset;
+- network service HTTP/1.1/TLS, redirects, cache, cookies, Fetch/CORS/security-policy subset;
 - navigation transactions, frames, process swaps, history, BFCache subset;
 - local/session storage, IndexedDB subset, Cache Storage, service-worker foundation;
-- downloads, file chooser handles, permissions foundation;
+- downloads, brokered file handles, permissions foundation;
 - forms/editing/clipboard, workers/structured clone;
-- network/storage DevTools and hermetic protocol test servers.
+- network/storage DevTools and hermetic protocol servers.
 
 Exit gates:
 
 - cross-origin and cross-profile tests pass for implemented APIs;
 - storage crash/migration/quota tests pass;
-- compromised renderer cannot open arbitrary sockets/files;
-- supported-app corpus runs with documented gaps.
+- compromised renderer cannot open arbitrary sockets/files or forge request context;
+- controlled-application corpus runs with documented gaps.
 
-## 8. Milestone M5 — Layout breadth and product alpha
+## 8. M5 — Layout breadth and developer preview
 
-Purpose: cover mainstream layout and deliver a coherent developer preview.
+Purpose: cover mainstream layout and deliver a coherent, signed developer preview.
 
 Deliverables:
 
 - inline/bidi/writing modes, flexbox, grid, tables, floats, positioning, fragmentation foundations;
 - transitions/animations/transforms, advanced paint, retained display lists, compositor scrolling;
 - richer SVG/canvas, accessibility breadth, browser permissions/download/history/bookmark/settings UX;
-- HTTP/2, service workers/offline, improved storage;
+- HTTP/2 and service-worker/offline breadth when evidence permits;
 - Elements, Network, Sources, Performance, Accessibility, Storage DevTools;
 - headless and automation protocol alpha;
-- signed auto-updating developer channel.
+- signed auto-updating developer channel, rollback, crash symbols, SBOM/provenance.
 
 Exit gates:
 
 - sandbox/site-isolation subset and update gates pass;
 - compatibility report shows exact WPT/Test262 scope;
 - product UI accessibility baseline passes;
-- security team can ship emergency developer-channel fixes;
-- release remains “developer preview,” not safe replacement claim.
+- security owners can ship emergency developer-channel fixes;
+- release remains “developer preview,” not a safe replacement claim.
 
-## 9. Milestone M6 — Baseline JIT, media, extensions, and agent preview
+## 9. M6 — Baseline JIT, media, Plug-ins, and agent preview
 
 Purpose: improve application performance and introduce bounded ecosystem features.
 
@@ -151,75 +159,74 @@ Deliverables:
 - baseline JIT with W^X, inline caches, deoptimization, tier differential testing;
 - WebAssembly reference/compiler track;
 - audio/video pipeline and disclosed codec matrix; PDF/printing foundations;
-- WebExtensions-compatible restricted subset and isolated extension host;
-- agent semantic observations, action protocol, policy engine, local audit, one local and one remote provider adapter;
+- capability-based Turing Plug-ins and restricted WebExtensions adapter;
+- agent semantic observations, typed actions, policy engine, local audit, provider adapters;
 - prompt-injection and stale-action evaluation suite;
-- 30-tab lifecycle manager with frozen/serialized/discarded states.
+- real 30-tab lifecycle manager with frozen/serialized/discarded states.
 
 Exit gates:
 
 - JIT security and equivalence gates pass;
-- agent Class 3/4 actions cannot bypass confirmation;
+- agent consequential actions cannot bypass deterministic authorization and confirmation;
 - media/parser processes are sandboxed and fuzzed;
-- extension permissions and resource attribution work;
+- Plug-in permissions, revocation, update, and resource attribution work;
 - 30-tab results publish lifecycle and isolation truth.
 
-## 10. Milestone M7 — Compatibility and performance beta
+## 10. M7 — Compatibility and performance beta
 
-Purpose: move from architecture proof to serious daily-use candidate for non-sensitive volunteers.
+Purpose: move from architecture proof to a serious daily-use candidate for informed, non-sensitive volunteers.
 
 Deliverables:
 
-- broader CSS/HTML/JS/WebAssembly/network/storage/media/device coverage;
+- broader web-platform, runtime, network, storage, media, device, accessibility, and localization coverage;
 - optimizing JIT initial tier;
-- HTTP/3, stronger service-worker/background behavior;
-- robust crash recovery, profile migrations, sync design/implementation if funded;
-- mature DevTools, WebDriver BiDi, extension API breadth;
-- phishing/malware reputation strategy or explicit supported alternative;
+- HTTP/3 and stronger service-worker/background behavior;
+- robust crash recovery, profile migrations, optional sync if funded;
+- mature DevTools, WebDriver BiDi, and Plug-in API breadth;
+- phishing/malware reputation strategy or explicit alternative;
 - cross-platform installers, staged updates, rollback, symbols, SBOM/provenance;
-- fixed-hardware performance, energy, and compatibility laboratory.
+- continuous fixed-hardware compatibility/performance/energy laboratory.
 
 Exit gates:
 
 - independent security review and critical findings resolved;
-- sustained fuzzing with no unresolved release-critical crashes;
+- sustained fuzzing with no unresolved release-critical crash class;
 - broad published conformance thresholds chosen from actual results;
-- update/incident response staffed;
+- update/incident response staffed and rehearsed;
 - accessibility and platform matrices pass;
 - beta risk disclosure accepted by release owners.
 
-## 11. Milestone M8 — Stable general-purpose release candidate
+## 11. M8 — Stable general-purpose release candidate
 
-Purpose: support normal users within a documented compatibility and platform envelope.
+Purpose: support normal users within a finite documented compatibility and platform envelope.
 
 Deliverables:
 
-- security patch SLA, supported OS list, end-of-life policy;
-- strong compatibility on top-site and standards corpora with no hidden denominator;
-- credential/passkey, permissions, downloads, media, printing, PDF, accessibility, extension, DevTools, automation, and agent support statements;
+- accepted stable-v1 scope, supported OS/hardware list, security patch and EOL policy;
+- strong compatibility on declared standards and workflow corpora with no hidden denominator;
+- complete support statements for credentials, permissions, downloads, media, printing, PDF, accessibility, Plug-ins, DevTools, automation, and agents;
 - reliable signed update, rollback, profile recovery, and support tooling;
-- privacy and telemetry documentation;
+- privacy, telemetry, service, and offline documentation;
 - independent security/accessibility review and public release evidence.
 
 Exit gates:
 
-- zero open critical security/data-loss/update issues;
-- all stable security and release gates pass;
-- proprietary gaps such as DRM/vendor services are explicit;
+- all applicable `PRG-001` through `PRG-020` gates pass;
+- zero open critical security/data-loss/update/signing issues;
+- proprietary gaps are explicit;
 - staffing can maintain supported platforms and urgent fixes;
-- release board approves “stable” based on evidence.
+- release board and human authority approve stable based on evidence.
 
-## 12. Milestone M9 — Chrome-class parity campaign
+## 12. M9 — Chrome-class parity and continuous maintenance
 
-Purpose: close long-tail web, enterprise, media, extension, localization, accessibility, and performance gaps.
+Purpose: close long-tail web, enterprise, media, Plug-in, localization, accessibility, platform, and performance gaps while maintaining supported releases.
 
 Work includes:
 
 - current standards and continuous WPT/Test262 movement;
 - advanced graphics/WebGPU, media, devices, printing/PDF, internationalization;
-- enterprise policy and deployment;
-- extension compatibility and ecosystem tooling;
-- mobile architecture only after desktop foundation proves portable;
+- enterprise policy/deployment and ecosystem tooling;
+- mobile architecture only after desktop foundation proves portable and supportable;
 - sync/accounts/services under separate privacy and operations review;
 - proprietary licensing negotiations where desired;
 - ongoing compiler/GC/layout/network/GPU optimization;
@@ -227,77 +234,36 @@ Work includes:
 
 There is no honest fixed end date. The web platform evolves continuously.
 
-## 13. Initial work packages
+## 13. Canonical work packages
 
-### WP-001 — Repository validation
+The following list is synchronized with [`backlog.json`](machine/backlog.json):
 
-Create stable requirement/risk/ADR schemas, link checks, source policy, and CI.
+1. **WP-001 — Repository validation and evidence foundation.**
+2. **WP-002 — Kernel identities, process roles, capabilities, and bounded IPC.**
+3. **WP-003 — Cross-platform renderer sandbox probes.**
+4. **WP-004 — Native accessible browser-shell spike.**
+5. **WP-005 — Tab lifecycle, resource attribution, and 30-tab simulator.**
+6. **WP-006 — HTML tokenizer and tree builder.**
+7. **WP-007 — DOM arena, mutation epochs, and events.**
+8. **WP-008 — CSS parser, selectors, cascade, and computed values.**
+9. **WP-009 — Block/text layout, display list, and reference raster.**
+10. **WP-010 — JavaScript parser, bytecode, interpreter, and Test262 harness.**
+11. **WP-011 — Exact tracing GC and Web IDL bindings.**
+12. **WP-012 — Navigation transactions, site instances, and renderer swaps.**
+13. **WP-013 — Scoped HTTP/TLS, cache, cookies, and hermetic server.**
+14. **WP-014 — Storage broker, quota, migrations, and service-worker foundation.**
+15. **WP-015 — Versioned DevTools/automation protocol and trace viewer.**
+16. **WP-016 — Capability-safe agent reference implementation.**
+17. **WP-017 — Signed update, rollback, and profile-migration laboratory.**
+18. **WP-018 — Fixed-hardware compatibility, performance, memory, and energy laboratory.**
 
-### WP-002 — Rust kernel types
-
-Process roles, identities, origins/sites, profiles, document epochs, capabilities, bounded IPC, errors.
-
-### WP-003 — Tab lifecycle simulator
-
-State machine, protection reasons, memory pressure, accounting, trace export, 30-tab scenarios.
-
-### WP-004 — Sandbox probes
-
-Per-platform child process that attempts forbidden operations and reports effective restrictions.
-
-### WP-005 — Native shell spike
-
-Window, tab strip, command field, accessibility, compositor surface, event trace.
-
-### WP-006 — HTML tokenizer
-
-Spec-state implementation, streaming decoder interface, parser traces, WPT/reduced tests, fuzzer.
-
-### WP-007 — DOM arena
-
-Generational handles, tree mutation, attributes, text, traversal, epochs, wrapper hooks.
-
-### WP-008 — CSS parser/cascade
-
-Tokenizer, rules, declarations, selectors, specificity, cascade, computed-value skeleton.
-
-### WP-009 — Block/text layout reference
-
-Fragments, intrinsic sizing, line shaping, bidi adapter, paint geometry, semantic traces.
-
-### WP-010 — Display-list reference
-
-Paint properties, display items, CPU raster, screenshot and trace harness.
-
-### WP-011 — JS language kernel
-
-Parser, bytecode, interpreter, values, objects, functions, exceptions, Test262 runner.
-
-### WP-012 — Exact GC
-
-Heap, roots, handles, tracing, stress mode, weak processing plan, external-memory accounting.
-
-### WP-013 — Navigation/process assignment model
-
-Browsing contexts, sites, origins, commits, redirects, process swaps, history, BFCache eligibility.
-
-### WP-014 — Network request context
-
-URL/origin, HTTP/1.1/TLS adapter, request policy, cache/cookie skeleton, hermetic server.
-
-### WP-015 — Agent policy reference
-
-Principal/grant/action schema, risk classifier, epoch validation, confirmation simulator, adversarial tests.
-
-### WP-016 — Trace and resource model
-
-Stable event schema, process/tab attribution, local viewer, redaction, benchmark exporter.
+Detailed dependencies, task families, negative tests, evidence, handoffs, and non-goals are in the [work-package playbooks](../project-buildout/implementation-plan/16-work-package-playbooks.md) and [`implementation-execution-graph.json`](machine/implementation-execution-graph.json).
 
 ## 14. Staffing reality
 
 A credible stable browser needs dedicated ownership across engine/layout, JS/compiler/GC, networking/storage, GPU/media, security/sandbox, platform UI/accessibility, DevTools/automation, release/update, compatibility/testing, and incident response. One person can build meaningful prototypes and foundational subsystems, but cannot responsibly promise continuous Chrome-level compatibility and zero-day response alone.
 
-The project should recruit or develop maintainers by subsystem, document bus factor, and stop expanding supported platforms/features when security maintenance exceeds capacity.
+The project recruits or develops maintainers by subsystem, documents bus factor, and reduces supported platforms/features when security maintenance exceeds capacity.
 
 ## 15. Decision checkpoints
 
@@ -308,37 +274,16 @@ At the end of each milestone answer:
 - What is the current attack surface and sandbox evidence?
 - What resource targets were met under what lifecycle state?
 - What dependencies or licensing constraints changed?
-- Is the next milestone still the highest-value path?
-- Should a component be simplified, delayed, replaced behind its interface, or abandoned?
+- Are interface freezes and downstream handoffs complete?
+- Is owner/reviewer/support capacity sufficient?
+- Should a component be simplified, delayed, replaced, or abandoned?
 
 The long-term vision is fixed; implementation choices remain empirical.
 
-## Professional buildout prerequisite
+## 16. Market, UI, agent, and release sequencing
 
-Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. This refines M0 without changing WP-001 through WP-018 status.
-
-<!-- MARKET-STRATEGY-2026-07 -->
-## Market-opportunity sequencing
-
-- M0: validate target segments, jobs, open export, and Space data model; keep `OP-*` non-normative.
-- M1: prototype shell-level Spaces, identity indicators, journal, migration report, and resource attribution.
-- M2–M5: add split/Research Canvas foundations, Time Machine restoration, identity routing, privacy receipts, and Developer Causal Mode alongside engine maturity.
-- M5–M6: first-party Plug-ins and read-only selected-source AI.
-- M7+: optional encrypted sync, low-risk isolated agent actions, collaboration, and wider Plug-in ecosystem after security and operations gates.
-
-An opportunity enters the executable backlog only after promotion through evidence and ownership.
-
-<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
-## Native UI and pre-build sequencing
-
-Before M1 shell code expands, complete the toolkit-neutral UI contracts, select one reference desktop platform, build equivalent Slint/Vizia/Floem-or-GPUI shells, prove page-surface/accessibility/IME/crash integration, and review licensing. These are controlled M0/M1 experiments, not a reason to delay unrelated parser, schema, sandbox, or benchmark research.
-
-`PB-GATE-0` tracks the minimum applicable evidence for implementation kickoff; preview and stable operational gates remain later milestones.
-
-<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
-## Agent execution and production sequencing
-
-- M0: establish protected review, task/run/evidence schemas, agent authority, root workspace, and provenance.
-- M1–M4: permit contained component tasks with independent review; no production claim.
-- M5+: activate preview gates only after update, security, migration, accessibility, and incident evidence.
-- Beta and stable: require `PRG-001` through `PRG-020`, numeric SLOs, supported platform contracts, qualified backup ownership, and human release authority.
+- Market opportunities remain outside the executable backlog until promoted through evidence and ownership.
+- Native UI work completes toolkit-neutral contracts, equivalent framework prototypes, page-surface/accessibility/IME/crash evidence, licensing review, and ADRs before framework lock-in.
+- Agents execute only ready `TASK-*` records and cannot self-approve or self-merge production work.
+- Preview gates activate at M5 only after update, security, migration, accessibility, and incident evidence.
+- Beta and stable require numeric SLOs, supported-platform contracts, qualified backup ownership, independent review, and human release authority.
