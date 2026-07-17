@@ -18,6 +18,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Research index](research/README.md) | Dated evidence and experiment queue |
 | [Blueprint v1](blueprint-v1/README.md) | Normative product and architecture baseline |
 | [Pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md) | Current M0 build authorization and remaining blockers |
+| [Implementation master plan](project-buildout/implementation-plan/README.md) | M0–M9 execution order, critical path, agent protocol, WP playbooks, evidence, and handoffs |
 
 ## Detailed engineering books
 
@@ -45,7 +46,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Technology stack](technology-stack/README.md) | Languages, frameworks, libraries, build/test tools, and dependency lifecycle |
 | [Turing Plug-ins](plugins/README.md) | Capabilities, Wasm/WIT, WebExtensions adapter, first-party portfolio, store, and SDK |
 | [Embedding SDK](embedding/README.md) | Rust API, C ABI, generated SDKs, lifecycle, surfaces, packaging, and conformance |
-| [Professional buildout](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, operations, and sustainability |
+| [Professional buildout](project-buildout/README.md) | Phase gates, ownership, review, traceability, implementation game plan, coding, operations, and sustainability |
 | [Market strategy](market-strategy/README.md) | Competitive evidence, Spaces, Time Machine, resource truth, agents, migration, and validation |
 | [Native UI runtime](ui-runtime/README.md) | Framework selection, toolkit-neutral Rust contracts, page surfaces, design lab, and budgets |
 | [Agent execution](agent-execution/README.md) | Task authority, protected review, provenance, independent evidence, rollback, and escalation |
