@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "ready_for_contained_m0",
+  "rust": {
+    "channel": "1.97.1",
+    "edition": "2024",
+    "msrv": "1.97",
+    "components": [
+      "rustfmt",
+      "clippy",
+      "rust-src"
+    ],
+    "source": "https://blog.rust-lang.org/2026/07/16/Rust-1.97.1/"
+  },
+  "reference_environment": {
+    "purpose": "M0 build and CI reference; not a stable product support commitment",
+    "os": "Ubuntu 24.04 LTS",
+    "target": "x86_64-unknown-linux-gnu",
+    "ci_runner": "ubuntu-24.04",
+    "shell": "POSIX sh",
+    "python_minimum": "3.11",
+    "git_minimum": "2.40"
+  },
+  "native_toolchains": {
+    "c_cpp": "not_required_by_current_workspace",
+    "platform_sdks": "deferred_until_native_ui_or_platform_adapter",
+    "linker": "toolchain_default_for_reference_target"
+  },
+  "update_policy": "Toolchain updates require a reviewed dependency/toolchain change, clean CI, and rollback evidence."
+}
