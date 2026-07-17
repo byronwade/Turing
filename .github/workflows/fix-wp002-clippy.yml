@@ -40,30 +40,35 @@ jobs:
           from pathlib import Path
 
           path = Path('crates/turing-kernel/src/lib.rs')
-          text = path.read_text(encoding='utf-8')
-          old = '''        if let Some(capability) = required_capability {
-              if !sender.allows(capability) {
-                  return Err(KernelError::MissingCapability {
-                      role: sender.role(),
-                      capability,
-                  });
-              }
-          }
-          '''.replace('              ', '            ').replace('          }', '        }')
-          new = '''        if let Some(capability) = required_capability
-              && !sender.allows(capability)
-          {
-              return Err(KernelError::MissingCapability {
-                  role: sender.role(),
-                  capability,
-              });
-          }
-          '''.replace('              ', '            ').replace('          {', '        {').replace('          }', '        }')
-          if old not in text:
-              start = text.index('        let required_capability = kind.required_capability();')
-              end = text.index('\n\n        let channel_id', start)
-              raise SystemExit('expected nested capability check not found:\n' + text[start:end])
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          lines = path.read_text(encoding='utf-8').splitlines()
+          old = [
+              '        if let Some(capability) = required_capability {',
+              '            if !sender.allows(capability) {',
+              '                return Err(KernelError::MissingCapability {',
+              '                    role: sender.role(),',
+              '                    capability,',
+              '                });',
+              '            }',
+              '        }',
+          ]
+          new = [
+              '        if let Some(capability) = required_capability',
+              '            && !sender.allows(capability)',
+              '        {',
+              '            return Err(KernelError::MissingCapability {',
+              '                role: sender.role(),',
+              '                capability,',
+              '            });',
+              '        }',
+          ]
+          try:
+              start = lines.index(old[0])
+          except ValueError as error:
+              raise SystemExit('capability-check start line not found') from error
+          if lines[start:start + len(old)] != old:
+              raise SystemExit('capability-check block differs from expected source')
+          lines[start:start + len(old)] = new
+          path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
           cargo fmt --all
 
