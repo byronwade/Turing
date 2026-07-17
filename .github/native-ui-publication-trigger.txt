@@ -1,1 +1,2 @@
 Trigger the one-shot native UI and pre-build documentation publication workflow.
+Retry after enabling direct generator error reporting.
