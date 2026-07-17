@@ -1,0 +1,1 @@
+Retry the native UI and pre-build documentation publication after hardening the checksum-verified generator invocation.
