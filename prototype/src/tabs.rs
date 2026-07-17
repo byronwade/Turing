@@ -5,9 +5,12 @@
 use std::collections::BTreeSet;
 use std::fmt;
 
-#[expect(
-    dead_code,
-    reason = "the reference lifecycle catalog intentionally exceeds the smoke path"
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "the reference lifecycle catalog intentionally exceeds the smoke path"
+    )
 )]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TabState {
