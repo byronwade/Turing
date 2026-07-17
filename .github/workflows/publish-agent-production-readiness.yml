@@ -143,8 +143,10 @@ jobs:
             exit "$status"
           fi
 
-      - name: Commit clean canonical tree to main
+      - name: Publish validated candidate branch
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git add -A
@@ -153,40 +155,10 @@ jobs:
             exit 1
           }
           git commit -m 'Document agent execution and production readiness'
-          git push origin HEAD:main
-
-      - name: Remove known temporary branches and verify branch state
-        shell: bash
-        run: |
-          set -euo pipefail
-          branches=(
-            ops/agent-production-readiness-docs
-            ops/trigger-agent-production-readiness
-            ops/native-ui-prebuild-docs
-            ops/trigger-native-ui-docs
-            ops/remove-stale-ci-branch-reference
-          )
-          for branch in "${branches[@]}"; do
-            if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
-              git push origin --delete "${branch}"
-            fi
-          done
-          remaining=$(git ls-remote --heads origin | awk '{print $2}' | sed 's#refs/heads/##' | grep -v '^main$' || true)
-          if test -n "$remaining"; then
-            echo 'Unexpected non-main branches remain:' >&2
-            echo "$remaining" >&2
-            exit 1
-          fi
-
-      - name: Close operational triggers
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh issue close 33 --repo '${{ github.repository }}' --reason completed \
-            --comment 'Agent-execution, production-readiness, native-UI, README, Blueprint, governance, registry, and validation documentation was synchronized on main. Repository and Rust prototype checks passed, failed publication machinery was removed, and main is the only branch.' || true
+          git push --force origin HEAD:ops/agent-production-readiness-output
+          candidate=$(git rev-parse HEAD)
           if test '${{ github.event_name }}' = 'pull_request'; then
-            gh pr close '${{ github.event.pull_request.number }}' --repo '${{ github.repository }}' \
-              --comment 'The checksum-verified documentation publication completed directly on main. This operational trigger branch was deleted and was never intended to merge.' || true
+            gh pr comment '${{ github.event.pull_request.number }}' \
+              --repo '${{ github.repository }}' \
+              --body "Validated candidate commit published: \`${candidate}\` on \`ops/agent-production-readiness-output\`. Repository validation and Rust formatting/tests/smoke execution passed."
           fi
