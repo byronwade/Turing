@@ -53,9 +53,12 @@ impl RenderPipeline {
         };
     }
 
-    #[expect(
-        dead_code,
-        reason = "the diagnostic accessor is retained for invalidation experiments"
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "the diagnostic accessor is retained for invalidation experiments"
+        )
     )]
     #[must_use]
     pub const fn dirty_from(&self) -> Option<RenderStage> {
