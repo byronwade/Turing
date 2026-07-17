@@ -19,6 +19,7 @@ Research artifacts inform, challenge, or validate the Blueprint. They do not rep
 | [Pre-build readiness audit — July 2026](pre-build-readiness-gap-audit-2026-07.md) | Which controls remain before broad implementation? | `PB-001` through `PB-020` |
 | [Agent execution and production readiness — July 2026](agent-execution-production-readiness-audit-2026-07.md) | How may agents implement and how is stable defined? | Agent and release control baseline |
 | [M0 build foundation — July 2026](m0-build-foundation-2026-07.md) | What minimum executable repository foundation permits contained development? | Implemented workspace skeleton; broader gates remain |
+| [WP-003 renderer sandbox probe plan — July 2026](wp-003-sandbox-probe-plan-2026-07.md) | How will Turing prove effective renderer restrictions on Linux, Windows, and macOS without false passes? | Contract and task specified; implementation blocked on independent acceptance of WP-002 |
 
 ## Research operating rules
 
@@ -39,11 +40,11 @@ The [documentation index](../README.md#detailed-engineering-books) links all twe
 
 ## Current implementation-research priorities
 
-1. Resolve the Servo/source strategy.
-2. Run the native UI reference-shell comparison.
-3. Prove page-surface, input, IME, accessibility, crash, and GPU-loss composition.
-4. Expand the M0 workspace through bounded kernel and IPC tasks.
-5. Implement packaged sandbox probes.
+1. Complete independent review and merge of the WP-002 kernel/IPC reference.
+2. Execute the WP-003 Stage 0 sandbox probe contract and unsandboxed control after its dependency gate.
+3. Resolve the Servo/source strategy.
+4. Run the native UI reference-shell comparison.
+5. Prove page-surface, input, IME, accessibility, crash, and GPU-loss composition.
 6. Materialize the fixed-hardware benchmark laboratory.
 7. Define profile, Space, session, snapshot, and migration schemas.
 8. Establish independent ownership and review capacity.
