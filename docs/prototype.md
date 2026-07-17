@@ -1,6 +1,6 @@
 # Turing Architecture Prototype
 
-The `prototype/` directory contains a dependency-free Rust executable that models—not implements—the first browser invariants. It is intentionally small enough to audit in one focused review.
+The `prototype/` directory contains a dependency-free Rust executable that models—not implements—the first browser invariants. It remains a separate research reference inside the root Cargo workspace and is intentionally small enough to audit in one focused review.
 
 ## Demonstrated invariants
 
@@ -29,13 +29,25 @@ Its purpose is to turn architecture statements into testable types before large 
 
 ## Build and run
 
+The preferred complete repository check is:
+
 ```bash
-cargo fmt --manifest-path prototype/Cargo.toml -- --check
-cargo test --manifest-path prototype/Cargo.toml --all-targets
-cargo run --manifest-path prototype/Cargo.toml --quiet
+sh tools/check.sh
 ```
 
-The package uses only the Rust standard library. A stable Rust toolchain compatible with Edition 2021 is sufficient.
+The prototype may also be checked directly through the locked root workspace:
+
+```bash
+cargo fmt --all -- --check
+cargo test --locked -p turing-architecture-prototype --all-targets
+cargo run --locked -p turing-architecture-prototype --quiet
+```
+
+The package uses only the Rust standard library, retains Edition 2021 and a Rust 1.85 minimum, and is compiled in CI through the repository-pinned Rust 1.97.1 toolchain. It does not depend on the new production-oriented crates.
+
+## Relationship to the M0 workspace
+
+The root workspace now contains typed identity, IPC, kernel, UI-model, build-identity, shell-laboratory, and repository-tool packages. Those crates are the contained M0 implementation foundation. This prototype remains an independent oracle for earlier architectural invariants; it is not silently converted into the production browser.
 
 ## Change requirements
 
@@ -45,10 +57,10 @@ The prototype must remain honest about its scope. A passing executable is archit
 
 ## Next implementation steps
 
-1. Split the types into a workspace of kernel, IPC, lifecycle, network-context, trace, and agent-policy crates.
-2. Generate protocol types from bounded schemas.
+1. Expand the accepted `turing-types`, `turing-ipc`, and `turing-kernel` boundaries through bounded, independently reviewed tasks.
+2. Generate protocol types from bounded schemas after the wire-format decision.
 3. Add platform sandbox probe child processes.
 4. Add a deterministic 30-tab pressure simulator and benchmark-manifest output.
-5. Begin HTML tokenizer and DOM-arena work behind separate fuzzable crates.
+5. Begin HTML tokenizer and DOM-arena work behind separate fuzzable crates after source-strategy review.
 
 The roadmap and work-package dependencies remain canonical in [Blueprint v1](blueprint-v1/14-roadmap-work-breakdown.md) and the [initial backlog](blueprint-v1/19-initial-backlog.md).
