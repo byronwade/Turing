@@ -49,3 +49,13 @@ This is a design target, not an existing API.
 ## Portability and project-state integration
 
 Embedding research must expose versioned import/export and Space/session concepts without leaking internal engine layouts. Hosts disclose which migration, sync, Plug-in, agent, and recovery responsibilities they implement. Open export remains available without a hosted account.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI-runtime optionality
+
+The embeddable engine contract does not require hosts to ship Turing’s browser chrome toolkit. Full-browser distributions may use the selected adapter; embedders may provide their own trusted application UI while conforming to the same surface, input, accessibility, profile, security, lifecycle, and recovery contracts. Headless packages exclude desktop UI dependencies.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production embedding readiness
+
+Stable SDK and ABI support requires a finite platform/version matrix, host conformance, security responsibility, package provenance, update policy, compatibility window, migration, support term, and human release approval.

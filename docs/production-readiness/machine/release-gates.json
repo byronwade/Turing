@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "not_ready_for_production",
+  "gates": [
+    {
+      "id": "PRG-001",
+      "name": "finite stable scope accepted",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-002",
+      "name": "supported platform matrix accepted",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-003",
+      "name": "effective sandbox and site isolation",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-004",
+      "name": "signed update and rollback path",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-005",
+      "name": "reproducible build provenance and SBOM",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-006",
+      "name": "numeric SLOs and error budgets",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-007",
+      "name": "compatibility and conformance thresholds",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-008",
+      "name": "independent security review",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-009",
+      "name": "accessibility and usability review",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-010",
+      "name": "migration data-loss and recovery evidence",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-011",
+      "name": "vulnerability response staffing and rehearsal",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-012",
+      "name": "incident runbooks and on-call operation",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-013",
+      "name": "service dependency and offline behavior",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-014",
+      "name": "legal privacy licensing and distribution approval",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-015",
+      "name": "production signing key ceremony",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-016",
+      "name": "support term and end-of-life policy",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-017",
+      "name": "qualified primary and backup ownership",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-018",
+      "name": "protected main and independent review enforcement",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-019",
+      "name": "stable artifact installation update rollback rehearsal",
+      "state": "not_ready"
+    },
+    {
+      "id": "PRG-020",
+      "name": "human production readiness approval",
+      "state": "not_ready"
+    }
+  ]
+}

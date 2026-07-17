@@ -117,3 +117,13 @@ Significant work identifies owner and backup status, requirement/traceability im
 ## Market and product proposals
 
 Use the [market opportunity template](templates/market-opportunity.md). A competitor feature or community request is not sufficient evidence. Proposals must identify target segment, job, contrary evidence, security/privacy/accessibility/performance impact, maintenance cost, validation plan, and expiry. Copying third-party branding, assets, descriptions, or source is prohibited.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI contributions
+
+UI changes identify whether they affect toolkit-neutral state, commands, an adapter, platform behavior, page surfaces, assets, design tokens, accessibility, or performance. Pull requests include component fixtures, keyboard/focus/accessibility behavior, failure states, measurements for hot paths, and confirmation that no webview or runtime React/JavaScript dependency entered trusted chrome.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent-generated changes
+
+Agent-generated production changes require a task manifest, run provenance, independent reviewer, explicit tool/file/network authority, evidence bundle, rollback, and the same code-owner and release controls as human changes. Model output is not an approval or evidence source by itself.

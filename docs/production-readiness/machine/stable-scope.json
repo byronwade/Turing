@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "decision_state": "unapproved",
+  "version": "stable-v1",
+  "supported_capabilities": [],
+  "explicit_non_scope": [
+    "mobile",
+    "proprietary DRM without agreement",
+    "unrestricted third-party native Plug-ins",
+    "remote AI by default",
+    "consequential agent actions before dedicated gates"
+  ],
+  "promotion_requirements": [
+    "accepted requirements",
+    "platform matrix",
+    "release gates",
+    "numeric SLOs",
+    "support term",
+    "security and accessibility evidence",
+    "legal approval",
+    "human release authority"
+  ]
+}

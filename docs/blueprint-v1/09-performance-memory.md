@@ -261,3 +261,8 @@ Local models are loaded on demand and unloadable. A dormant agent feature must n
 ## Resource Truth Center research
 
 `OP-003` proposes per-Space and per-principal attribution, lifecycle reasons, predicted savings, state-loss risk, and revival quality. This extends honest 30-tab reporting but is not yet a supported product contract. Instrumentation overhead and attribution uncertainty remain visible.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Shell footprint and framework selection
+
+UI measurements include binary/package contribution, startup, idle memory, update allocations, input latency, frame pacing, GPU allocation, energy, hidden-window wakeups, 100-tab state, accessibility latency, page-surface composition, and recovery. One empty-window number cannot select a toolkit. Normal builds compile one selected backend/renderer.

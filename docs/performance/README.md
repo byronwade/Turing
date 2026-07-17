@@ -53,3 +53,8 @@ Turing should claim performance leadership only from an evidence package showing
 ## Resource Truth Center
 
 `OP-003` researches a user-facing layer over semantic resource accounting: per-Space ownership, transition reasons, predicted savings, state-loss risk, and revival quality. Measurements remain equivalent-security and complete-denominator.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native shell footprint
+
+The UI framework bake-off measures stripped and packaged size, startup faulting, idle memory, per-window/component memory, update allocations, input latency, frame pacing, GPU allocation, wakeups, hidden-window behavior, and page-surface composition. Release chrome ships no second browser runtime and normally compiles one backend and renderer.

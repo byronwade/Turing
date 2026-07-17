@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "framework_only",
+  "channels": [
+    {
+      "id": "CHANNEL-NIGHTLY",
+      "state": "not_started",
+      "support": "none",
+      "promotion_from": null
+    },
+    {
+      "id": "CHANNEL-RESEARCH",
+      "state": "not_started",
+      "support": "best_effort",
+      "promotion_from": "CHANNEL-NIGHTLY"
+    },
+    {
+      "id": "CHANNEL-DEVELOPER-PREVIEW",
+      "state": "not_started",
+      "support": "defined_before_activation",
+      "promotion_from": "CHANNEL-RESEARCH"
+    },
+    {
+      "id": "CHANNEL-BETA",
+      "state": "not_started",
+      "support": "defined_before_activation",
+      "promotion_from": "CHANNEL-DEVELOPER-PREVIEW"
+    },
+    {
+      "id": "CHANNEL-STABLE",
+      "state": "prohibited_until_gates",
+      "support": "required",
+      "promotion_from": "CHANNEL-BETA"
+    }
+  ]
+}

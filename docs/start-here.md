@@ -72,3 +72,13 @@ Read the [project-buildout handbook](project-buildout/README.md), [technology st
 ## Product differentiation research
 
 After reading the professional buildout controls, use the [Market Strategy and Differentiation book](market-strategy/README.md) to understand proposed product opportunities and their validation requirements. Treat `OP-*` records as hypotheses, not roadmap commitments.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI status
+
+The project has a documented native-shell working hypothesis but no selected toolkit. Slint, Vizia, and Floem or GPUI require equivalent prototypes. React is restricted to a non-shipping design lab. See the [Native UI Runtime book](ui-runtime/README.md) and [pre-build readiness audit](research/pre-build-readiness-gap-audit-2026-07.md).
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Implementation-agent and production status
+
+Turing permits contained, reviewed implementation tasks; it does not authorize a single agent to build and release the browser autonomously. Read the [Agent Execution book](agent-execution/README.md), [Production Readiness book](production-readiness/README.md), and machine release gates before implementation work.

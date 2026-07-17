@@ -230,3 +230,41 @@ Status: proposed. Ownership, traceability, phase, review, and exception records 
 ## Decision candidates from market strategy
 
 The market book does not accept new ADRs. Likely future decisions include the Space/profile/identity model, open workspace interchange format, snapshot retention/encryption, sync trust and self-hosting, privacy-receipt semantics, and agent task isolation. Each decision must preserve the accepted security and independence baseline or explicitly supersede it.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI decision candidates
+
+### ADR-0013 — Replaceable native UI adapter and pure Rust shell model
+
+Status: proposed. Durable browser state, commands, policy, recovery, traces, and resources remain toolkit-neutral Rust. Toolkit code is presentation-only and replaceable.
+
+### ADR-0014 — Initial browser-chrome UI toolkit
+
+Status: proposed. Select Slint, Vizia, Floem/GPUI, or another candidate only after equivalent reference-shell, page-surface, accessibility, license, security, footprint, platform, maintenance, and replacement evidence.
+
+### ADR-0015 — React design-lab boundary
+
+Status: proposed. React may consume generated tokens and fixtures in a separate development application but does not own browser logic and is absent from release chrome.
+
+### ADR-0016 — Page-surface and compositor ownership
+
+Status: proposed. Decide whether Turing or the selected toolkit owns the window swapchain and how page textures, damage, input, accessibility, scaling, capture, and device loss compose.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Proposed agent and production decisions
+
+### ADR-0017 — Task-scoped autonomous engineering
+
+Status: proposed. Agents use immutable tasks, deny-by-default tools, run provenance, independent verification, and no self-merge or stable-release authority.
+
+### ADR-0018 — Stable-v1 scope and support contract
+
+Status: proposed. Stable means a finite versioned capability/platform/support contract rather than an open-ended parity claim.
+
+### ADR-0019 — TUF-style update trust separation
+
+Status: proposed. Evaluate root, targets, snapshot, and timestamp roles, threshold signatures, offline roots, expiration, rollback/freeze resistance, delegation, and compromise recovery.
+
+### ADR-0020 — Human release and signing authority
+
+Status: proposed. Production signing, legal approval, vulnerability disclosure, support commitments, and stable promotion remain human-controlled and separated from implementation agents and ordinary CI.

@@ -1,0 +1,48 @@
+# React Design Lab, Tokens, and Authoring Workflow
+
+Status: development-tool proposal  
+Owner: product design, UI runtime, accessibility, localization, and developer experience
+
+## Boundary
+
+React may be used in a separate design and documentation application. React, React Compiler output, Node, a DOM, CSSOM, or a webview is not bundled into trusted browser chrome.
+
+React Compiler optimizes React applications through build-time memoization; it does not transform React components into native Rust widgets or eliminate the React runtime. TypeScript supports implementation-specific JSX transforms, but a complete TSX-to-native compiler would itself require a language, semantics, diagnostics, source maps, hot reload, accessibility, code generation, and compatibility program.
+
+## Shared source of truth
+
+Use versioned design data:
+
+```text
+design/
+├── tokens.json
+├── components.json
+├── commands.json
+├── icons/
+├── localization/
+└── fixtures/
+```
+
+Generate Rust constants, selected-toolkit declarations, optional React CSS variables, documentation tables, contrast checks, screenshots, and fixture data from this source.
+
+## Design lab capabilities
+
+- component gallery and state fixtures;
+- light, dark, high-contrast, forced-color, reduced-motion, density, and RTL previews;
+- token editing and change review;
+- keyboard and focus-path simulation;
+- accessible-name and relationship preview;
+- screenshot and visual-diff generation;
+- product-flow prototypes that emit no browser authority.
+
+## Anti-drift rules
+
+- No business or security logic exists only in React.
+- Native components and the design lab consume the same tokens and named states.
+- Visual similarity is not proof of native accessibility, input, timing, or platform correctness.
+- Every stable component fixture must run in the native test kit.
+- The design lab is separately packaged and never a release dependency.
+
+## Future TSX option
+
+A restricted TSX authoring layer may be reconsidered only after native component contracts stabilize. It would support typed props, composition, conditions, keyed lists, bindings, and symbolic commands—not React hooks, effects, arbitrary JavaScript, DOM APIs, npm components, or runtime reconciliation.

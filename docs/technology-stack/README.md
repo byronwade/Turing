@@ -53,3 +53,10 @@ Every candidate needs exact version/source, owner, privilege, hostile-input expo
 - rustls — https://rustls.dev/
 - SQLite — https://sqlite.org/
 - Cranelift — https://cranelift.dev/
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework strategy
+
+Trusted browser chrome uses no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser. The working hypothesis is a pure Rust state/command core with a replaceable native adapter. Evaluate Slint first against Vizia and Floem or GPUI; monitor Xilem, Makepad, and Freya; use egui for internal tools; defer a custom TSX compiler until measured evidence justifies its cost.
+
+Slint is not approved. Its license, selected backend/renderer, page-texture integration, accessibility, IME, binary/memory cost, native dependency graph, update policy, and replacement path require the [UI framework experiment](../ui-runtime/02-framework-landscape-and-selection-method.md).

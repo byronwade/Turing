@@ -46,3 +46,13 @@ Every interface declares its caller, callee, trust level, principal identities, 
 - [AI engineering book](../ai/README.md)
 - [Security engineering book](../security-engine/README.md)
 - [Web platform design principles](../research/browser-engine-landscape-2026-07.md)
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI command and adapter APIs
+
+UI-facing contracts use typed IDs, versioned snapshots, typed commands, deadlines, cancellation, bounded event streams, explicit thread affinity, and stale-epoch rejection. Public or durable APIs never expose toolkit objects or layouts, preserving replacement and embedding flexibility.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Stable API release contract
+
+A public API is not stable until its version, support window, compatibility tests, migration, deprecation, ownership, security responsibility, SLO impact, and release channel are accepted in Production Readiness records.

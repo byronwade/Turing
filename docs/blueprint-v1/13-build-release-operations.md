@@ -265,3 +265,8 @@ Dropping an OS or architecture requires advance notice and cannot leave users on
 ## Product-state portability and support
 
 Migration, export, snapshots, synchronization, and collaboration introduce versioned interchange formats, schema migrations, compatibility windows, backup/recovery, support, and incident obligations. No cloud or account service may become required for local export or normal browsing without an explicit decision.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production release control plane
+
+Stable release requires the machine `PRG-*` gates, numeric `SLO-*` objectives, accepted platform and scope records, source/build provenance, update trust roles, vulnerability operations, service/offline behavior, support commitments, legal approval, and human release authorization. An agent may assemble evidence but cannot approve or sign stable release.

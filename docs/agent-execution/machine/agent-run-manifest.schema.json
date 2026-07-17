@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.example/schemas/agent-run-manifest.schema.json",
+  "title": "Turing Agent Run Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "task_id",
+    "source_commit",
+    "agent",
+    "environment",
+    "authority",
+    "started_at",
+    "status",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^RUN-[0-9]{8}-[A-Z0-9-]+$"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^TASK-[0-9]{6}$"
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "agent": {
+      "type": "object",
+      "required": [
+        "model",
+        "provider",
+        "tool_version",
+        "instruction_digest"
+      ],
+      "additionalProperties": true
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "image_digest",
+        "toolchain_digest"
+      ],
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "capabilities",
+        "allowed_paths",
+        "network_allowlist",
+        "expires_at"
+      ],
+      "additionalProperties": true
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "running",
+        "failed",
+        "cancelled",
+        "evidence_pending",
+        "review_pending",
+        "accepted",
+        "rejected",
+        "rolled_back"
+      ]
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "sha256"
+        ]
+      }
+    },
+    "escalations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

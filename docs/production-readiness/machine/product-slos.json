@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "targets_unset",
+  "slos": [
+    {
+      "id": "SLO-001",
+      "name": "crash-free sessions",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-002",
+      "name": "browser process crash rate",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-003",
+      "name": "renderer crash rate",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-004",
+      "name": "cold startup to address-field readiness p95",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-005",
+      "name": "input-to-present p95 and p99",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-006",
+      "name": "frame pacing under reference workloads",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-007",
+      "name": "30-tab memory by hardware tier",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-008",
+      "name": "background wakeups and energy",
+      "target": null,
+      "blocking": false
+    },
+    {
+      "id": "SLO-009",
+      "name": "update success rate",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-010",
+      "name": "rollback success rate",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-011",
+      "name": "profile migration success rate",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-012",
+      "name": "session restoration success and state loss",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-013",
+      "name": "compatibility regression budget",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-014",
+      "name": "accessibility critical-flow success",
+      "target": null,
+      "blocking": true
+    },
+    {
+      "id": "SLO-015",
+      "name": "unauthorized agent action rate",
+      "target": 0,
+      "blocking": true
+    },
+    {
+      "id": "SLO-016",
+      "name": "confirmed user-data loss incidents",
+      "target": 0,
+      "blocking": true
+    }
+  ]
+}

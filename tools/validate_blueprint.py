@@ -217,6 +217,8 @@ DETAILED_BOOKS = {'engine': ['01-pipeline-and-artifacts.md',
                       '08-release-incident-legal-data-and-support.md',
                       '09-servo-adoption-decision-framework.md',
                       '10-product-localization-documentation-and-sustainability.md',
+                       '11-pre-build-readiness-checklist.md',
+                       '12-agent-execution-and-production-readiness.md',
                       'README.md'],
  'market-strategy': ['01-market-method-and-segments.md',
                      '02-competitive-feature-matrix.md',
@@ -228,7 +230,45 @@ DETAILED_BOOKS = {'engine': ['01-pipeline-and-artifacts.md',
                      '08-research-canvas-and-developer-mode.md',
                      '09-migration-portability-collaboration-and-sync.md',
                      '10-feature-prioritization-and-validation.md',
-                     'README.md']}
+                     'README.md'],
+ 'ui-runtime': ['01-goals-trust-boundary-and-working-hypothesis.md',
+                '02-framework-landscape-and-selection-method.md',
+                '03-rust-state-command-and-adapter-architecture.md',
+                '04-page-surface-compositor-and-process-integration.md',
+                '05-slint-adapter-component-model-and-exit-strategy.md',
+                '06-react-design-lab-tokens-and-authoring-workflow.md',
+                '07-windowing-input-ime-accessibility-and-platform.md',
+                '08-performance-memory-binary-and-energy-budgets.md',
+                '09-testing-observability-recovery-and-release-gates.md',
+                '10-prototype-plan-decision-record-and-migration.md',
+                'README.md'],
+ 'agent-execution': ['01-agent-trust-model-and-authority.md',
+                     '02-task-decomposition-and-execution-graph.md',
+                     '03-branch-pr-review-and-merge-policy.md',
+                     '04-tools-network-files-secrets-and-credentials.md',
+                     '05-specification-test-and-evidence-workflow.md',
+                     '06-model-prompt-environment-and-run-provenance.md',
+                     '07-checkpoints-recovery-retries-and-rollback.md',
+                     '08-independent-verification-and-adversarial-review.md',
+                     '09-security-embargo-release-and-incident-boundaries.md',
+                     '10-cost-resource-and-concurrency-budgets.md',
+                     '11-human-handoff-and-escalation.md',
+                     'README.md'],
+ 'production-readiness': ['01-stable-v1-scope-and-non-scope.md',
+                          '02-supported-platform-and-hardware-matrix.md',
+                          '03-release-channels-and-promotion-policy.md',
+                          '04-product-slos-and-error-budgets.md',
+                          '05-compatibility-and-conformance-gates.md',
+                          '06-security-and-vulnerability-response-gates.md',
+                          '07-accessibility-and-usability-conformance.md',
+                          '08-data-loss-migration-and-recovery-gates.md',
+                          '09-update-rollout-rollback-and-kill-switches.md',
+                          '10-service-dependencies-and-offline-behavior.md',
+                          '11-support-end-of-life-and-deprecation.md',
+                          '12-production-readiness-review.md',
+                          '13-secure-development-provenance-and-ai-assisted-coding.md',
+                          '14-legal-signing-and-human-release-authority.md',
+                          'README.md']}
 
 REQUIRED_DOCS = [
     ROOT / "README.md",
@@ -248,6 +288,15 @@ REQUIRED_DOCS = [
     RESEARCH / "documentation-expansion-audit-2026-07.md",
     RESEARCH / "performance-security-developer-expansion-audit-2026-07.md",
     RESEARCH / "browser-market-gap-2026-07.md",
+    RESEARCH / "native-ui-framework-evaluation-2026-07.md",
+    RESEARCH / "pre-build-readiness-gap-audit-2026-07.md",
+    RESEARCH / "agent-execution-production-readiness-audit-2026-07.md",
+    DOCS / "templates" / "agent-task.md",
+    DOCS / "templates" / "agent-run-review.md",
+    DOCS / "templates" / "production-readiness-review.md",
+    DOCS / "templates" / "release-exception.md",
+    DOCS / "templates" / "incident-exercise.md",
+    DOCS / "templates" / "ui-framework-experiment.md",
     BLUEPRINT / "README.md",
     *[BLUEPRINT / f"{number:02d}-{slug}.md" for number, slug in CHAPTERS],
     *[
@@ -274,6 +323,24 @@ REQUIRED_MACHINE_FILES = [
     MACHINE / "professional-review-rules.json",
     MACHINE / "professional-exceptions.json",
     DOCS / "market-strategy" / "machine" / "feature-opportunities.json",
+    DOCS / "ui-runtime" / "machine" / "framework-candidates.json",
+    DOCS / "ui-runtime" / "machine" / "ui-performance-budgets.json",
+    MACHINE / "pre-build-readiness.json",
+    DOCS / "agent-execution" / "machine" / "agent-capability-matrix.json",
+    DOCS / "agent-execution" / "machine" / "agent-run-manifest.schema.json",
+    DOCS / "agent-execution" / "machine" / "execution-task.schema.json",
+    DOCS / "agent-execution" / "machine" / "evidence-bundle.schema.json",
+    DOCS / "agent-execution" / "machine" / "escalation-policy.json",
+    DOCS / "agent-execution" / "machine" / "prohibited-agent-actions.json",
+    DOCS / "production-readiness" / "machine" / "stable-scope.json",
+    DOCS / "production-readiness" / "machine" / "supported-platforms.json",
+    DOCS / "production-readiness" / "machine" / "release-channels.json",
+    DOCS / "production-readiness" / "machine" / "product-slos.json",
+    DOCS / "production-readiness" / "machine" / "release-gates.json",
+    DOCS / "production-readiness" / "machine" / "service-dependencies.json",
+    DOCS / "production-readiness" / "machine" / "vulnerability-slas.json",
+    DOCS / "production-readiness" / "machine" / "update-trust-roles.json",
+    DOCS / "production-readiness" / "machine" / "secure-development-controls.json",
 ]
 
 ALLOWED_MARKDOWN_OUTSIDE_DOCS = {
@@ -303,7 +370,7 @@ FORBIDDEN_LEGACY_PATHS = [
 
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 STABLE_ID = re.compile(
-    r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|OP-\d{3}|"
+    r"\b(?:REQ-[A-Z0-9-]+|R-\d{3}|ADR-\d{4}|WP-\d{3}|RQ-\d{2}|OP-\d{3}|UIF-\d{3}|UIB-\d{3}|PB-\d{3}|AEX(?:-[A-Z]+)?-\d{3}|PRG-\d{3}|SLO-\d{3}|SRC-\d{3}|"
     r"EXP-[A-Z0-9-]+|ENGINE-P-\d{3}|[A-Z]+-GATE-\d+)\b"
 )
 
@@ -351,7 +418,7 @@ def check_document_locations() -> None:
     for path in DOCS.rglob("*"):
         if not path.is_file() or path.suffix == ".md":
             continue
-        if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine")):
+        if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine") or path.is_relative_to(DOCS / "ui-runtime" / "machine") or path.is_relative_to(DOCS / "agent-execution" / "machine") or path.is_relative_to(DOCS / "production-readiness" / "machine")):
             continue
         fail(f"unsupported documentation file type: {relative(path)}")
 
@@ -501,6 +568,185 @@ def check_market_opportunities() -> None:
                 fail(f"{item.get('id')}: {field} must be a non-empty array")
 
 
+
+def check_ui_runtime_controls() -> None:
+    candidates = load_json(DOCS / "ui-runtime" / "machine" / "framework-candidates.json")
+    budgets = load_json(DOCS / "ui-runtime" / "machine" / "ui-performance-budgets.json")
+    readiness = load_json(MACHINE / "pre-build-readiness.json")
+
+    candidate_items = candidates.get("candidates") if isinstance(candidates, dict) else None
+    if not isinstance(candidate_items, list):
+        fail("framework-candidates.json must contain a candidates array")
+    candidate_ids = [item.get("id") for item in candidate_items]
+    expected_candidates = [f"UIF-{index:03d}" for index in range(1, 10)]
+    if candidate_ids != expected_candidates:
+        fail(f"UI framework IDs must be UIF-001 through UIF-009; found {candidate_ids}")
+    if candidates.get("selection_status") != "not_selected":
+        fail("UI framework must remain not_selected until an accepted ADR changes it")
+
+    budget_items = budgets.get("budgets") if isinstance(budgets, dict) else None
+    if not isinstance(budget_items, list):
+        fail("ui-performance-budgets.json must contain a budgets array")
+    budget_ids = [item.get("id") for item in budget_items]
+    expected_budgets = [f"UIB-{index:03d}" for index in range(1, 13)]
+    if budget_ids != expected_budgets:
+        fail(f"UI budget IDs must be UIB-001 through UIB-012; found {budget_ids}")
+
+    required_candidate_fields = {"id", "name", "role", "runtime_model", "webview", "javascript_runtime", "maturity", "license", "blocking_evidence"}
+    for item in candidate_items:
+        missing = required_candidate_fields - set(item)
+        if missing:
+            fail(f"{item.get('id')}: missing UI candidate fields: {', '.join(sorted(missing))}")
+        if not isinstance(item.get("blocking_evidence"), list) or not item["blocking_evidence"]:
+            fail(f"{item.get('id')}: blocking_evidence must be a non-empty array")
+
+    required_budget_fields = {"id", "name", "type"}
+    for item in budget_items:
+        missing = required_budget_fields - set(item)
+        if missing:
+            fail(f"{item.get('id')}: missing UI budget fields: {', '.join(sorted(missing))}")
+        if item.get("type") not in {"hard", "measured"}:
+            fail(f"{item.get('id')}: unknown UI budget type")
+
+    readiness_items = readiness.get("items") if isinstance(readiness, dict) else None
+    if not isinstance(readiness_items, list):
+        fail("pre-build-readiness.json must contain an items array")
+    readiness_ids = [item.get("id") for item in readiness_items]
+    expected_readiness = [f"PB-{index:03d}" for index in range(1, 21)]
+    if readiness_ids != expected_readiness:
+        fail(f"pre-build readiness IDs must be PB-001 through PB-020; found {readiness_ids}")
+    if readiness.get("status") != "not_ready_for_broad_implementation":
+        fail("pre-build readiness remains not_ready_for_broad_implementation until reviewed promotion")
+    if readiness.get("gate") != "PB-GATE-0":
+        fail("pre-build readiness must identify PB-GATE-0")
+
+    owners = load_json(MACHINE / "professional-owners.json")
+    owner_scopes = {item.get("scope") for item in owners.get("owners", [])}
+    allowed_status = {"ready", "partial", "proposed", "not_started", "not_selected", "documented_no_source", "documented_no_runner", "blocked"}
+    for item in readiness_items:
+        if item.get("status") not in allowed_status:
+            fail(f"{item.get('id')}: unknown pre-build readiness status")
+        if item.get("owner_scope") not in owner_scopes:
+            fail(f"{item.get('id')}: unknown owner scope: {item.get('owner_scope')}")
+        if item.get("status") == "ready":
+            if not isinstance(item.get("evidence"), list) or not item["evidence"]:
+                fail(f"{item.get('id')}: ready item requires evidence")
+        elif not isinstance(item.get("evidence_required"), list) or not item["evidence_required"]:
+            fail(f"{item.get('id')}: non-ready item requires evidence_required")
+
+    docs_index = (DOCS / "README.md").read_text(encoding="utf-8")
+    blueprint_index = (BLUEPRINT / "README.md").read_text(encoding="utf-8")
+    root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    required_links = [
+        "ui-runtime/README.md",
+        "research/native-ui-framework-evaluation-2026-07.md",
+        "research/pre-build-readiness-gap-audit-2026-07.md",
+    ]
+    for link in required_links:
+        if link not in docs_index:
+            fail(f"docs/README.md is missing native UI link: {link}")
+    if "../ui-runtime/README.md" not in blueprint_index:
+        fail("Blueprint index is missing the Native UI Runtime book")
+    if "docs/ui-runtime/README.md" not in root_readme:
+        fail("root README is missing the Native UI Runtime book")
+    if "twenty-five detailed engineering and product books" not in root_readme:
+        fail("root README detailed-book count is stale")
+    templates_index = (DOCS / "templates" / "README.md").read_text(encoding="utf-8")
+    if "ui-framework-experiment.md" not in templates_index:
+        fail("templates index is missing the UI framework experiment")
+    issue_template = (ROOT / ".github" / "ISSUE_TEMPLATE" / "engineering.yml").read_text(encoding="utf-8")
+    for identifier in ("OP-...", "UIF-...", "UIB-...", "PB-..."):
+        if identifier not in issue_template:
+            fail(f"engineering issue template is missing identifier: {identifier}")
+    project_index = (DOCS / "project-buildout" / "README.md").read_text(encoding="utf-8")
+    if "11-pre-build-readiness-checklist.md" not in project_index:
+        fail("project-buildout index is missing pre-build readiness checklist")
+
+
+def check_agent_execution_controls() -> None:
+    base = DOCS / "agent-execution" / "machine"
+    matrix = load_json(base / "agent-capability-matrix.json")
+    run_schema = load_json(base / "agent-run-manifest.schema.json")
+    task_schema = load_json(base / "execution-task.schema.json")
+    evidence_schema = load_json(base / "evidence-bundle.schema.json")
+    escalation = load_json(base / "escalation-policy.json")
+    prohibited = load_json(base / "prohibited-agent-actions.json")
+
+    controls = matrix.get("controls") if isinstance(matrix, dict) else None
+    if not isinstance(controls, list):
+        fail("agent-capability-matrix.json must contain controls")
+    ids = [item.get("id") for item in controls]
+    expected = [f"AEX-{index:03d}" for index in range(1, 21)]
+    if ids != expected:
+        fail(f"agent capability controls must be AEX-001 through AEX-020; found {ids}")
+    if matrix.get("status") != "deny_by_default":
+        fail("agent capability matrix must remain deny_by_default")
+    for schema, name in ((run_schema, "agent run"), (task_schema, "execution task"), (evidence_schema, "evidence bundle")):
+        if not isinstance(schema, dict) or schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
+            fail(f"{name} schema must be JSON Schema 2020-12")
+    if not isinstance(escalation.get("triggers"), list) or not escalation["triggers"]:
+        fail("escalation policy must contain triggers")
+    if not isinstance(prohibited.get("actions"), list) or not prohibited["actions"]:
+        fail("prohibited agent actions must contain actions")
+
+    agents = (DOCS / "agent-execution" / "README.md").read_text(encoding="utf-8")
+    root_agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    if "cannot approve or merge its own" not in agents:
+        fail("agent execution book is missing no-self-approval rule")
+    if "Production implementation-agent controls" not in root_agents:
+        fail("AGENTS.md is missing production implementation-agent controls")
+
+
+def check_production_readiness_controls() -> None:
+    base = DOCS / "production-readiness" / "machine"
+    stable = load_json(base / "stable-scope.json")
+    platforms = load_json(base / "supported-platforms.json")
+    channels = load_json(base / "release-channels.json")
+    slos = load_json(base / "product-slos.json")
+    gates = load_json(base / "release-gates.json")
+    services = load_json(base / "service-dependencies.json")
+    vuln = load_json(base / "vulnerability-slas.json")
+    update = load_json(base / "update-trust-roles.json")
+    secure = load_json(base / "secure-development-controls.json")
+
+    if stable.get("decision_state") != "unapproved":
+        fail("stable scope must remain unapproved until reviewed promotion")
+    if platforms.get("status") != "none_selected":
+        fail("supported platform matrix must remain none_selected")
+    if channels.get("status") != "framework_only":
+        fail("release channels must remain framework_only")
+    slo_items = slos.get("slos") if isinstance(slos, dict) else None
+    if not isinstance(slo_items, list):
+        fail("product-slos.json must contain slos")
+    slo_ids = [item.get("id") for item in slo_items]
+    if slo_ids != [f"SLO-{index:03d}" for index in range(1, 17)]:
+        fail(f"SLO IDs must be SLO-001 through SLO-016; found {slo_ids}")
+    gate_items = gates.get("gates") if isinstance(gates, dict) else None
+    if not isinstance(gate_items, list):
+        fail("release-gates.json must contain gates")
+    gate_ids = [item.get("id") for item in gate_items]
+    if gate_ids != [f"PRG-{index:03d}" for index in range(1, 21)]:
+        fail(f"production gate IDs must be PRG-001 through PRG-020; found {gate_ids}")
+    if gates.get("status") != "not_ready_for_production" or any(item.get("state") != "not_ready" for item in gate_items):
+        fail("production release gates must remain not_ready")
+    if not isinstance(services.get("services"), list) or not services["services"]:
+        fail("service-dependencies.json must contain services")
+    if vuln.get("status") != "draft_no_commitment":
+        fail("vulnerability SLAs must remain draft_no_commitment")
+    role_ids = [item.get("id") for item in update.get("roles", [])]
+    if role_ids != ["UPDATE-ROOT", "UPDATE-TARGETS", "UPDATE-SNAPSHOT", "UPDATE-TIMESTAMP"]:
+        fail(f"update trust roles are incomplete: {role_ids}")
+    secure_ids = [item.get("id") for item in secure.get("controls", [])]
+    if secure_ids != [f"SRC-{index:03d}" for index in range(1, 16)]:
+        fail(f"secure development controls must be SRC-001 through SRC-015; found {secure_ids}")
+
+    production = (DOCS / "production-readiness" / "README.md").read_text(encoding="utf-8")
+    root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    if "not_ready_for_production" not in production:
+        fail("production readiness book is missing canonical not-ready state")
+    if "not ready for production or stable release" not in root_readme:
+        fail("root README is missing production readiness warning")
+
 def local_target(source: Path, raw_target: str) -> Path | None:
     target = raw_target.strip().split(maxsplit=1)[0].strip("<>")
     if not target or target.startswith(("#", "http://", "https://", "mailto:")):
@@ -548,8 +794,8 @@ def check_markdown() -> tuple[int, int]:
                 referenced_docs.add(resolved)
             links_checked += 1
 
-    if len(markdown_files) < 204:
-        fail(f"expected at least 204 Markdown documents, found {len(markdown_files)}")
+    if len(markdown_files) < 253:
+        fail(f"expected at least 253 Markdown documents, found {len(markdown_files)}")
     if len(identifiers) < 115:
         fail(f"expected at least 115 stable identifiers in prose, found {len(identifiers)}")
     canonical_docs = set(DOCS.rglob("*.md"))
@@ -615,6 +861,9 @@ def main() -> int:
         check_json_registries()
         check_professional_controls()
         check_market_opportunities()
+        check_ui_runtime_controls()
+        check_agent_execution_controls()
+        check_production_readiness_controls()
         markdown_count, links_checked = check_markdown()
         check_research_question_ids()
         check_policy_markers()
@@ -625,8 +874,8 @@ def main() -> int:
     print(
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
-        "24 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 12 machine-readable registries"
+        "27 detailed engineering books, 46 requirements, 40 risks, "
+        "18 work packages, 30 machine-readable registries"
     )
     return 0
 

@@ -309,3 +309,53 @@ What migration and open-export coverage materially reduces browser switching cos
 Do the Research Canvas, causal diagnostics, privacy receipts, selective sync, and collaboration improve task accuracy and continuity enough to justify their complexity?
 
 Each study records cohort, task, comparator version, configuration, raw outcomes, accessibility, failures, confidence, and evidence that would reject the hypothesis.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## RQ-55 — Native UI framework selection
+
+Which Slint, Vizia, Floem/GPUI, or alternative configuration gives the best complete browser-shell result across accessibility, page composition, startup, memory, binary, input latency, frame pacing, energy, development speed, licensing, maintenance, and replacement?
+
+## RQ-56 — Browser page-surface composition
+
+Should Turing own the window swapchain and compose toolkit chrome with page textures, use a stable toolkit custom-render hook, or use constrained platform child surfaces? Measure damage, scale, input, accessibility, capture, device loss, security, and portability.
+
+## RQ-57 — React design workflow without a shipped React runtime
+
+Can shared tokens, components, fixtures, and generated bindings provide React-speed design exploration while native components remain authoritative and drift is machine-detected? Compare against native live-preview workflows.
+
+## RQ-58 — Pre-build readiness control
+
+Does `PB-001` through `PB-020` prevent unresolved interfaces and operational claims from hardening prematurely without blocking useful contained prototypes?
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## RQ-59 — Agent task and authority model
+
+Which task decomposition, capability, provenance, and escalation design produces useful autonomous engineering without self-approval, scope drift, or hidden authority?
+
+## RQ-60 — Independent verification for agent-generated browser code
+
+Which combinations of separate agents, human review, conformance suites, fuzzing, formal/model tests, fixed-hardware measurement, and accessibility evaluation provide sufficiently independent evidence?
+
+## RQ-61 — Stable-v1 scope and platform contract
+
+What finite capability and support boundary provides meaningful daily use while remaining maintainable by the actual team?
+
+## RQ-62 — Product SLOs and error budgets
+
+Which numeric reliability, performance, energy, compatibility, accessibility, migration, update, and agent-safety targets predict a supportable stable browser?
+
+## RQ-63 — Update trust and compromise recovery
+
+Which TUF-style role, key, delegation, threshold, expiration, rollback, and emergency-recovery architecture best fits Turing channels and platforms?
+
+## RQ-64 — Secure-development and provenance level
+
+Which NIST SSDF, SP 800-218A, SLSA Source/Build, SBOM, review-attestation, and reproducibility controls are achievable and useful at each maturity?
+
+## RQ-65 — Service and offline architecture
+
+Which optional services materially improve safety or continuity, and how should the browser degrade, export, self-host, or shut down without lock-in?
+
+## RQ-66 — Human release, legal, and incident capacity
+
+What staffing, separation of duties, legal approval, signing ceremony, support term, on-call, and incident-rehearsal evidence is necessary before beta and stable?

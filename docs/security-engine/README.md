@@ -69,3 +69,13 @@ Security leadership means measurable containment and response, not absence of pu
 ## Market-driven trust boundaries
 
 Spaces, identity routing, migration, Time Machine, privacy receipts, sync, collaboration, Plug-ins, and agent mode each create security boundaries. Market demand cannot widen ambient authority or bypass trusted UI, data minimization, isolation, review, or incident obligations.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Trusted UI toolkit boundary
+
+The native UI toolkit is privileged presentation infrastructure, not a policy authority. Toolkit callbacks emit typed commands; browser services revalidate identity, epoch, profile, permission, credential, Plug-in, and agent policy. Dynamic UI source loading, runtime interpreters, arbitrary scripts, generic kernel bridges, and page-controlled trusted overlays are prohibited in normal release builds.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Coding-agent threat surface
+
+AI-assisted implementation is part of the supply-chain threat model. Repository content, build output, issues, tools, dependencies, and model responses are untrusted; task-scoped authority, provenance, independent review, no signing access, and security escalation are mandatory.

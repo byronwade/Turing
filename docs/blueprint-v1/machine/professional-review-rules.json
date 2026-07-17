@@ -92,6 +92,74 @@
         "accessibility"
       ],
       "minimum_approvals": 2
+    },
+    {
+      "id": "REV-UI-RUNTIME",
+      "match": "native UI framework, toolkit adapter, design tokens, shell components, page surfaces, input/IME, accessibility bridge, UI backend/renderer, React design lab, or UI footprint change",
+      "artifacts": [
+        "UI framework experiment or design note",
+        "adapter conformance",
+        "accessibility evidence",
+        "page-surface evidence when applicable",
+        "binary/memory/latency evidence for hot paths",
+        "license and dependency review",
+        "replacement plan"
+      ],
+      "reviewers": [
+        "owner",
+        "ui-runtime",
+        "architecture",
+        "security",
+        "performance",
+        "accessibility",
+        "platform",
+        "product"
+      ],
+      "minimum_approvals": 2
+    },
+    {
+      "id": "REV-AGENT-EXECUTION",
+      "match": "agent authority, task manifest, tool/network/credential scope, run provenance, independent verification, escalation, or agent-generated production change",
+      "artifacts": [
+        "task manifest",
+        "run manifest",
+        "evidence bundle",
+        "independent review",
+        "rollback",
+        "authority audit"
+      ],
+      "reviewers": [
+        "owner",
+        "agent-operations",
+        "security",
+        "quality",
+        "architecture"
+      ],
+      "minimum_approvals": 2
+    },
+    {
+      "id": "REV-PRODUCTION-READINESS",
+      "match": "stable scope, supported platform, release channel, SLO, update trust, vulnerability SLA, service dependency, support, signing, legal, or production promotion",
+      "artifacts": [
+        "production readiness review",
+        "release gates",
+        "SLO evidence",
+        "security and accessibility evidence",
+        "provenance",
+        "rollback",
+        "support and legal approval"
+      ],
+      "reviewers": [
+        "owner",
+        "release-operations",
+        "security",
+        "quality",
+        "accessibility",
+        "support",
+        "legal-community",
+        "human-release-authority"
+      ],
+      "minimum_approvals": 3
     }
   ]
 }

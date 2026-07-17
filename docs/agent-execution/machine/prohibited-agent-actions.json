@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "prohibited",
+  "actions": [
+    {
+      "id": "AEX-P-001",
+      "action": "approve_or_merge_own_production_change"
+    },
+    {
+      "id": "AEX-P-002",
+      "action": "weaken_or_delete_failing_gate_without_separate_review"
+    },
+    {
+      "id": "AEX-P-003",
+      "action": "access_offline_root_or_production_signing_key"
+    },
+    {
+      "id": "AEX-P-004",
+      "action": "promote_stable_release"
+    },
+    {
+      "id": "AEX-P-005",
+      "action": "publish_or_close_embargoed_security_finding"
+    },
+    {
+      "id": "AEX-P-006",
+      "action": "declare_security_performance_accessibility_or_compatibility_leadership"
+    },
+    {
+      "id": "AEX-P-007",
+      "action": "send_secret_or_user_data_to_unapproved_provider"
+    },
+    {
+      "id": "AEX-P-008",
+      "action": "silently_change_requirement_risk_adr_or_support_scope"
+    },
+    {
+      "id": "AEX-P-009",
+      "action": "fabricate_or_omit_failed_evidence"
+    },
+    {
+      "id": "AEX-P-010",
+      "action": "run_unreviewed_native_build_hook_in_privileged_ci"
+    },
+    {
+      "id": "AEX-P-011",
+      "action": "force_push_or_bypass_protected_main"
+    },
+    {
+      "id": "AEX-P-012",
+      "action": "contact_users_vendors_regulators_or_reporters_without_authority"
+    }
+  ]
+}

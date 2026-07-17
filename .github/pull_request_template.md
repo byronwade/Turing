@@ -79,3 +79,18 @@ State the maturity label and release gates affected. A visual demo, detailed des
 - Promotion state: research only / requirement proposal / accepted scope:
 - Switching, migration, recovery, resource, AI-authority, accessibility, and lock-in effects:
 - Competing behavior and non-copying/provenance review:
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI impact
+
+- [ ] No native UI impact.
+- [ ] Updated toolkit-neutral state/commands, adapter, platform, surface, component, token, accessibility, or UI budget documentation.
+- [ ] Confirmed no webview or runtime React/JavaScript dependency entered trusted chrome.
+- [ ] Attached relevant adapter conformance, accessibility, failure, binary, memory, latency, or page-surface evidence.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent and production controls
+
+- [ ] Agent-generated work links an approved task manifest, run provenance, independent review, evidence bundle, and rollback where applicable.
+- [ ] This change does not give an implementation agent self-approval, signing, disclosure, or stable-promotion authority.
+- [ ] Production scope, platform, SLO, release, update, service, support, legal, or signing changes update `docs/production-readiness/` and machine gates.

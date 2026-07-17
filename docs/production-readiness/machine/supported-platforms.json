@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "none_selected",
+  "platforms": [
+    {
+      "id": "PLAT-MACOS",
+      "state": "research",
+      "minimum_version": null,
+      "architectures": [],
+      "package_formats": [],
+      "assistive_technologies": [
+        "VoiceOver"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "PLAT-WINDOWS",
+      "state": "research",
+      "minimum_version": null,
+      "architectures": [],
+      "package_formats": [],
+      "assistive_technologies": [
+        "Narrator",
+        "NVDA"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "PLAT-LINUX",
+      "state": "research",
+      "minimum_version": null,
+      "architectures": [],
+      "package_formats": [],
+      "assistive_technologies": [
+        "Orca/AT-SPI"
+      ],
+      "evidence": []
+    }
+  ]
+}

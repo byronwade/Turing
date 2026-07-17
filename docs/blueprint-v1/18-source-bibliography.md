@@ -342,3 +342,34 @@ The implementation's behavior notes should quote minimally and describe algorith
 - Arc Profiles, Split View, and sharing: https://resources.arc.net/hc/en-us/articles/19227964556183-Profiles-Separate-Work-Personal-Browsing , https://resources.arc.net/hc/en-us/articles/19335393146775-Split-View-View-Multiple-Tabs-at-Once , https://resources.arc.net/hc/en-us/articles/19228534606743-Share-Spaces-Folders-Splits-with-Anyone
 - Mozilla Connect and Zen demand signals are listed in the dated market report.
 - Agent security research: WASP https://arxiv.org/abs/2504.18575 , ceLLMate https://arxiv.org/abs/2512.12594 , context manipulation https://arxiv.org/abs/2506.17318 , MUZZLE https://arxiv.org/abs/2602.09222 .
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework and authoring sources
+
+- Slint repository and architecture — https://github.com/slint-ui/slint
+- Slint Winit backend — https://docs.slint.dev/latest/docs/slint/guide/backends-and-renderers/backend_winit/
+- Slint platform abstraction — https://docs.slint.dev/latest/docs/rust/slint/platform/
+- Slint accessibility roles — https://docs.slint.dev/latest/docs/rust/slint/language/enum.AccessibleRole
+- Vizia — https://github.com/vizia/vizia
+- Floem — https://github.com/lapce/floem
+- GPUI — https://github.com/zed-industries/zed/tree/main/crates/gpui
+- Xilem — https://xilem.dev/
+- Makepad — https://github.com/makepad/makepad
+- Freya — https://freyaui.dev/
+- egui — https://github.com/emilk/egui
+- Tauri architecture — https://v2.tauri.app/concept/architecture/
+- React Compiler — https://react.dev/blog/2025/10/07/react-compiler-1
+- TypeScript JSX — https://www.typescriptlang.org/docs/handbook/jsx
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution, secure development, and production release
+
+- NIST SP 800-218 SSDF 1.1 — https://csrc.nist.gov/pubs/sp/800/218/final
+- NIST SP 800-218A — https://csrc.nist.gov/pubs/sp/800/218/a/final
+- NIST SSDF publications and 1.2 draft status — https://csrc.nist.gov/projects/ssdf/publications
+- SLSA 1.2 — https://slsa.dev/spec/v1.2/
+- The Update Framework — https://theupdateframework.github.io/specification/latest/
+- GitHub protected branches — https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+- GitHub CODEOWNERS — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+- W3C accessibility evaluation tools — https://www.w3.org/WAI/test-evaluate/tools/selecting/
+- WebDriver BiDi — https://www.w3.org/TR/webdriver-bidi/

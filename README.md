@@ -268,12 +268,33 @@ Later product stages include:
 
 See [Extensions, Enterprise Policy, Accounts, and Sync](docs/extensions-enterprise/README.md) and [Build, Release, Update, and Incident Operations](docs/release-operations/README.md).
 
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native shell and UI architecture plan
+
+The trusted browser shell is planned as a native Rust application with no Electron, Tauri, operating-system webview, React runtime, Node runtime, DOM, or runtime CSS engine in release packages.
+
+The current working hypothesis is:
+
+- pure Rust owns browser state, typed commands, policy, persistence, recovery, tracing, and resource accounting;
+- a replaceable native UI adapter owns presentation only;
+- Slint is the initial framework candidate because it compiles declarative UI ahead of time and provides a mature design workflow;
+- Vizia and Floem or GPUI provide equivalent comparison prototypes before selection;
+- React may be used only in a separate design lab that consumes shared tokens and fixtures and never ships in the browser;
+- the decisive experiment is composing renderer-produced page textures with trusted chrome while preserving input, IME, accessibility, scaling, damage, crash recovery, and GPU device loss;
+- normal builds compile one selected UI backend/renderer and lazy-load secondary product surfaces.
+
+No UI toolkit has been adopted yet. See [Native UI Runtime and Browser Chrome Engineering](docs/ui-runtime/README.md), the [framework evaluation](docs/research/native-ui-framework-evaluation-2026-07.md), and the [pre-build readiness audit](docs/research/pre-build-readiness-gap-audit-2026-07.md).
+
+## Pre-build readiness
+
+Turing is ready for contained architecture spikes, not broad parallel implementation. `PB-001` through `PB-020` track unresolved source strategy, UI, compositor, platform, workspace, toolchain, sandbox, benchmark, design-system, storage, release, incident, and ownership evidence. The canonical registry is [`pre-build-readiness.json`](docs/blueprint-v1/machine/pre-build-readiness.json).
+
 ## What exists today
 
 The repository currently contains:
 
 - the normative 22-chapter Blueprint;
-- twenty-four detailed engineering and product books;
+- twenty-seven detailed engineering and product books;
 - requirements, risks, work packages, process capabilities, benchmark, agent-action, ownership, traceability, review, phase, exception, and market-opportunity registries;
 - architecture, security, performance, compatibility, AI, product, market, Plug-in, embedding, and professional-buildout research;
 - repository validation and documentation-consistency controls;
@@ -332,3 +353,12 @@ cargo run --manifest-path prototype/Cargo.toml --quiet
 All durable prose documentation belongs under `docs/`. Every code, configuration, dependency, interface, feature, risk, benchmark, product opportunity, or repository-structure change must update every affected document, index, registry, owner, review rule, and support statement in the same reviewed change.
 
 The detailed documents remain the source of truth. This README is the public feature map and must not silently promote research proposals into implemented or supported features.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution and production stability
+
+Turing may be implemented by software agents only through bounded, reviewed tasks. Agents cannot define their own scope, weaken validation, approve or merge their own production changes, access production signing keys, decide vulnerability disclosure, or promote a stable release.
+
+The [Agent Execution book](docs/agent-execution/README.md) defines task manifests, authority, provenance, independent verification, rollback, and escalation. The [Production Readiness book](docs/production-readiness/README.md) defines finite stable scope, supported platforms, release channels, SLOs, update trust, incident response, support, legal approval, and human release authority.
+
+Current status remains **not ready for production or stable release**. Contained architecture and implementation tasks may proceed only under the documented pre-build and agent-execution controls.

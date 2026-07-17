@@ -57,3 +57,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Status discipline
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI runtime relationship
+
+The [Native UI Runtime book](../ui-runtime/README.md) owns toolkit selection and toolkit-neutral state/command contracts. This platform book continues to own windows, displays, menus, input, IME, clipboard, drag/drop, accessibility bridges, notifications, power, packaging, and OS behavior. Toolkit APIs cannot become the public platform contract.

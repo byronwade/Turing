@@ -12,14 +12,14 @@ body:
     id: problem
     attributes:
       label: Problem and impact
-      description: What behavior, requirement, user, developer workflow, research question, experiment, or detailed engineering contract is affected?
+      description: What behavior, requirement, user, developer workflow, research question, opportunity, UI framework/budget, readiness item, experiment, or detailed engineering contract is affected?
     validations:
       required: true
   - type: input
     id: identifiers
     attributes:
       label: Requirement, risk, ADR, work-package, milestone, research, or experiment IDs
-      placeholder: REQ-..., R-..., ADR-..., WP-..., M..., RQ-..., EXP-...
+      placeholder: REQ-..., R-..., ADR-..., WP-..., M..., RQ-..., OP-..., UIF-..., UIB-..., PB-..., EXP-...
   - type: textarea
     id: evidence
     attributes:

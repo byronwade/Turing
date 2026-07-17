@@ -72,6 +72,11 @@ The Blueprint remains the normative owner. These books expand implementation res
 - [Embedding and Multi-language SDK](../embedding/README.md)
 - [Professional Project Buildout and Operating Handbook](../project-buildout/README.md)
 - [Market Strategy and Differentiation](../market-strategy/README.md)
+- [Native UI Runtime and Browser Chrome Engineering](../ui-runtime/README.md)
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+- [Agent Execution and Autonomous Engineering](../agent-execution/README.md)
+- [Production Readiness and Stable Release Engineering](../production-readiness/README.md)
 
 The [performance, security, developer, and missing-systems audit](../research/performance-security-developer-expansion-audit-2026-07.md) records this expansion and its limitations.
 
@@ -90,6 +95,8 @@ Current reports:
 - [Performance, security, developer, and missing-systems expansion audit — July 2026](../research/performance-security-developer-expansion-audit-2026-07.md)
 - [Professional buildout gap audit — July 2026](../research/professional-buildout-gap-audit-2026-07.md)
 - [Browser market gap and differentiation research — July 2026](../research/browser-market-gap-2026-07.md)
+- [Native UI framework evaluation — July 2026](../research/native-ui-framework-evaluation-2026-07.md)
+- [Pre-build readiness gap audit — July 2026](../research/pre-build-readiness-gap-audit-2026-07.md)
 
 Recommendations from a report or detailed book become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
 
@@ -127,3 +134,8 @@ All changes to the Blueprint, detailed engineering books, prototype, registries,
 Turing succeeds as an engineering project before it succeeds as a consumer browser if it produces independently useful work: a memory-accountable process model, a standards-driven engine architecture, a capability-safe agent protocol, a reproducible benchmark corpus, and a transparent record of tradeoffs.
 
 Production readiness is a later claim requiring sustained compatibility, security response, signed distribution, incident operations, accessibility evidence, and independent review.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI and pre-build machine companions
+
+UI framework candidates and footprint contracts live under [`docs/ui-runtime/machine/`](../ui-runtime/README.md). The canonical implementation-kickoff status is [`pre-build-readiness.json`](machine/pre-build-readiness.json). These records remain research controls and do not promote a toolkit, reference platform, dependency, performance target, or implementation status.

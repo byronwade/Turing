@@ -211,3 +211,8 @@ A profile directory uses explicit sub-stores and version files. Secrets are stor
 ## Proposed Space principal
 
 `OP-001` researches whether a Space should become a first-class product, identity, resource, Plug-in, recovery, and agent-policy principal. No kernel or process identity changes until an RFC/ADR defines ownership, profile relationship, lifetime, IPC identity, cross-Space sharing, and compatibility behavior.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Browser-shell UI boundary
+
+The product shell is split into toolkit-neutral Rust state/commands, a replaceable presentation adapter, platform services, and page-surface composition. The toolkit cannot own navigation, profile, permission, credential, agent, Plug-in, persistence, or update authority. Renderer and GPU surfaces use typed handles with document and device generations.

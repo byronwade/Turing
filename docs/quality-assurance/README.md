@@ -59,3 +59,13 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Market-opportunity validation
 
 Product opportunities require longitudinal usability, migration, recovery, resource-comprehension, accessibility, and agent-safety studies in addition to automated correctness tests. Negative findings and rejected opportunities remain public evidence.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI adapter conformance
+
+Every candidate adapter runs the same state-machine, command, component fixture, keyboard, focus, accessibility, IME, localization, page-surface, fault, recovery, screenshot, geometry, and performance suites. Toolkit-specific tests supplement rather than replace adapter conformance.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Independent evidence for agent-generated work
+
+Tests authored by an implementation agent do not alone certify its change. Conformance suites, separate verification runs, fuzzing, model/property tests, platform accessibility evaluation, fixed-hardware measurements, and release rehearsals provide independent evidence lanes.

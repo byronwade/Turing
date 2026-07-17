@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "proposed_tuf_evaluation",
+  "roles": [
+    {
+      "id": "UPDATE-ROOT",
+      "online": false,
+      "threshold": null,
+      "purpose": "delegate top-level trust and rotate keys"
+    },
+    {
+      "id": "UPDATE-TARGETS",
+      "online": "limited_or_delegated",
+      "threshold": null,
+      "purpose": "authorize release artifacts and channels"
+    },
+    {
+      "id": "UPDATE-SNAPSHOT",
+      "online": true,
+      "threshold": null,
+      "purpose": "bind repository metadata versions"
+    },
+    {
+      "id": "UPDATE-TIMESTAMP",
+      "online": true,
+      "threshold": null,
+      "purpose": "provide freshness and freeze resistance"
+    }
+  ],
+  "required_properties": [
+    "threshold signatures",
+    "offline root",
+    "expiration",
+    "consistent snapshots",
+    "rollback protection",
+    "freeze protection",
+    "delegation",
+    "rotation",
+    "revocation",
+    "compromise recovery"
+  ]
+}

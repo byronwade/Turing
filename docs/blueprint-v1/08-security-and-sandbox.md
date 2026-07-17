@@ -218,3 +218,13 @@ Early versions may contain exploitable parser, layout, GC, JIT, graphics, codec,
 ## Differentiation security gates
 
 Spaces, identity routing, Plug-ins, privacy receipts, collaborative sync, and agent mode are security boundaries—not cosmetic features. Page content cannot influence trusted routing or agent authority. Snapshots and migration cannot expose secrets. Collaboration and sync require cryptographic and metadata review. No market demand waives sandbox, site isolation, or confirmation policy.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI dependency and trusted-surface policy
+
+The selected UI toolkit is part of the trusted computing base and receives dependency, unsafe/native, license, supply-chain, fuzzing, update, and replacement review. Normal release builds prohibit dynamic UI source loading, runtime toolkit interpreters, arbitrary scripting, webviews, and generic privileged bridges. Page content cannot create or obscure trusted prompts.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## AI-assisted implementation threat boundary
+
+Repository files, issues, tests, logs, dependency documentation, terminal output, and network content are untrusted inputs to coding agents. Agent execution uses task-scoped files, network, credentials, budgets, provenance, independent review, and human escalation. Production signing, disclosure, and release authority remain outside agent capabilities.

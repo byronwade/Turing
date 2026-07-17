@@ -63,3 +63,8 @@ This document is a research and operating baseline, not an implementation or sup
 ## Opportunity-to-requirement boundary
 
 `OP-*` records are not requirements. Promotion creates or updates `REQ-*`, `R-*`, `WP-*`, ADR, owner, tests, evidence, and support records in one reviewed change. Rejected and deferred opportunities retain rationale and evidence.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Task and run traceability
+
+Accepted implementation records link requirement -> design -> `TASK-*` -> source -> tests -> agent run manifest -> evidence bundle -> independent review -> release gate. Missing links remain visible rather than inferred from a merged commit.

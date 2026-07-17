@@ -238,3 +238,8 @@ Each milestone report includes:
 - known data-loss or recovery defects;
 - dependency/unsafe/SBOM changes;
 - go/no-go decision and signed owners.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework conformance
+
+Candidate adapters run one toolkit-neutral suite covering state sequences, commands, components, keyboard/focus, accessibility, IME, clipboard, drag/drop, localization, themes, page surfaces, crash/device loss, recovery, binary, memory, latency, frame pacing, and energy. Results include exact framework source, backend, renderer, features, license, platform, and raw artifacts.

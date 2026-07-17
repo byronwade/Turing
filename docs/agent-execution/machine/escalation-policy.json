@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "required",
+  "triggers": [
+    {
+      "id": "AEX-E-001",
+      "condition": "new or changed trust boundary",
+      "route": [
+        "architecture",
+        "security"
+      ]
+    },
+    {
+      "id": "AEX-E-002",
+      "condition": "suspected vulnerability or exploitability",
+      "route": [
+        "security",
+        "incident-response"
+      ]
+    },
+    {
+      "id": "AEX-E-003",
+      "condition": "license patent trademark privacy or regulatory decision",
+      "route": [
+        "legal",
+        "program"
+      ]
+    },
+    {
+      "id": "AEX-E-004",
+      "condition": "signing update release or disclosure decision",
+      "route": [
+        "release",
+        "security",
+        "human-release-authority"
+      ]
+    },
+    {
+      "id": "AEX-E-005",
+      "condition": "data loss migration or irreversible state change",
+      "route": [
+        "storage",
+        "product",
+        "release"
+      ]
+    },
+    {
+      "id": "AEX-E-006",
+      "condition": "authority outside task manifest",
+      "route": [
+        "agent-operations",
+        "task-owner"
+      ]
+    },
+    {
+      "id": "AEX-E-007",
+      "condition": "repeated non-reproducible failure or budget exhaustion",
+      "route": [
+        "quality",
+        "program"
+      ]
+    },
+    {
+      "id": "AEX-E-008",
+      "condition": "insufficient independent review capacity",
+      "route": [
+        "program",
+        "code-owner"
+      ]
+    }
+  ]
+}

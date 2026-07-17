@@ -1,71 +1,8 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-17",
   "note": "Provisional single-owner research-phase assignments; backups required before preview.",
   "owners": [
-    {
-      "scope": "program",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "architecture",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "security",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "engine",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "javascript",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "networking",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "storage",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "platform",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
-    {
-      "scope": "media",
-      "status": "provisional",
-      "primary": "@byronwade",
-      "backup": null,
-      "next_review": "2026-10-16"
-    },
     {
       "scope": "accessibility",
       "status": "provisional",
@@ -74,7 +11,14 @@
       "next_review": "2026-10-16"
     },
     {
-      "scope": "developer-experience",
+      "scope": "agent-operations",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-17"
+    },
+    {
+      "scope": "ai-agent",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
@@ -88,7 +32,21 @@
       "next_review": "2026-10-16"
     },
     {
-      "scope": "plugins",
+      "scope": "architecture",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "developer-experience",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "documentation-research",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
@@ -102,7 +60,56 @@
       "next_review": "2026-10-16"
     },
     {
-      "scope": "ai-agent",
+      "scope": "engine",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "human-release-authority",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-17"
+    },
+    {
+      "scope": "incident-response",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-17"
+    },
+    {
+      "scope": "javascript",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "legal-community",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "market-strategy",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "media",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "networking",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
@@ -110,6 +117,41 @@
     },
     {
       "scope": "performance",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "platform",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "plugins",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "privacy-data",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "product",
+      "status": "provisional",
+      "primary": "@byronwade",
+      "backup": null,
+      "next_review": "2026-10-16"
+    },
+    {
+      "scope": "program",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
@@ -130,39 +172,39 @@
       "next_review": "2026-10-16"
     },
     {
-      "scope": "privacy-data",
+      "scope": "security",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
       "next_review": "2026-10-16"
     },
     {
-      "scope": "legal-community",
+      "scope": "storage",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
       "next_review": "2026-10-16"
     },
     {
-      "scope": "documentation-research",
+      "scope": "supply-chain",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
-      "next_review": "2026-10-16"
+      "next_review": "2026-10-17"
     },
     {
-      "scope": "market-strategy",
+      "scope": "support",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
-      "next_review": "2026-10-16"
+      "next_review": "2026-10-17"
     },
     {
-      "scope": "product",
+      "scope": "ui-runtime",
       "status": "provisional",
       "primary": "@byronwade",
       "backup": null,
-      "next_review": "2026-10-16"
+      "next_review": "2026-10-17"
     }
   ]
 }

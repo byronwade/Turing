@@ -186,3 +186,13 @@ Changes must inspect the professional ownership, traceability, phase, review, an
 ## Market opportunity changes
 
 A new or changed `OP-*` record requires synchronized updates to the market-strategy book, dated evidence report or source notes, feature-opportunity registry, research log, ownership, relevant product/security/performance/accessibility/AI/Plug-in/embedding documents, and validation. Promotion to accepted scope additionally requires requirements, risks, ADRs where needed, work packages, traceability, and support statements.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI documentation impact
+
+A change to shell state, commands, toolkit adapters, design tokens, components, page surfaces, windowing, input, accessibility, backend/renderer features, design-lab tooling, or UI budgets updates the Native UI Runtime book, repository map, framework/budget registries, pre-build readiness, affected Blueprint chapters, tests, benchmarks, ownership, and support language in the same change.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent and release-control impact
+
+Changes produced by agents must include task/run provenance and independent evidence when applicable. Any production-scope, platform, SLO, release-channel, update, incident, support, signing, or legal change must update `docs/production-readiness/` and its machine registries. Any agent-authority, task, tool, credential, provenance, review, or escalation change must update `docs/agent-execution/`.

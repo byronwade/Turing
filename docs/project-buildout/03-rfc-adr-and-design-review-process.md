@@ -62,3 +62,8 @@ This document is a research and operating baseline, not an implementation or sup
 ## Market proposal review
 
 Use `docs/templates/market-opportunity.md`. Workspace identity, sync trust, snapshot retention, agent authority, public interchange, or collaboration cryptography normally requires an RFC and may require an ADR after prototype evidence.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent-authored design
+
+An agent may draft an RFC or ADR, but acceptance requires the same identified owners and independent review as human-authored design. Agent convenience, model confidence, or implementation completion is not decision evidence.

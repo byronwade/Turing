@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "not_ready_for_broad_implementation",
+  "allowed_now": [
+    "documentation",
+    "research",
+    "contained architecture prototypes",
+    "benchmark harnesses",
+    "sandbox probes",
+    "tooling spikes"
+  ],
+  "gate": "PB-GATE-0",
+  "items": [
+    {
+      "id": "PB-001",
+      "name": "Canonical documentation and validation baseline",
+      "status": "ready",
+      "owner_scope": "documentation-research",
+      "evidence": [
+        "docs/README.md",
+        "tools/validate_blueprint.py"
+      ]
+    },
+    {
+      "id": "PB-002",
+      "name": "Engine source strategy and Servo relationship",
+      "status": "blocked",
+      "owner_scope": "architecture",
+      "evidence_required": [
+        "ADR-0009",
+        "source/provenance experiment"
+      ]
+    },
+    {
+      "id": "PB-003",
+      "name": "Toolkit-neutral UI model and adapter contract",
+      "status": "proposed",
+      "owner_scope": "ui-runtime",
+      "evidence_required": [
+        "ADR-0013",
+        "contract prototype"
+      ]
+    },
+    {
+      "id": "PB-004",
+      "name": "Native UI framework selection",
+      "status": "not_started",
+      "owner_scope": "ui-runtime",
+      "evidence_required": [
+        "three-adapter reference shell",
+        "ADR-0014",
+        "license review"
+      ]
+    },
+    {
+      "id": "PB-005",
+      "name": "Page-surface and compositor composition",
+      "status": "not_started",
+      "owner_scope": "ui-runtime",
+      "evidence_required": [
+        "UI-GATE-7 prototype",
+        "ADR-0016"
+      ]
+    },
+    {
+      "id": "PB-006",
+      "name": "M1 reference desktop platform",
+      "status": "not_selected",
+      "owner_scope": "platform",
+      "evidence_required": [
+        "platform scorecard",
+        "support/CI availability"
+      ]
+    },
+    {
+      "id": "PB-007",
+      "name": "Cargo workspace and crate dependency graph",
+      "status": "documented_no_source",
+      "owner_scope": "architecture",
+      "evidence_required": [
+        "workspace skeleton",
+        "machine-checked forbidden edges"
+      ]
+    },
+    {
+      "id": "PB-008",
+      "name": "Pinned compiler SDK linker and toolchain",
+      "status": "not_started",
+      "owner_scope": "release-operations",
+      "evidence_required": [
+        "rust-toolchain.toml",
+        "platform toolchain manifests"
+      ]
+    },
+    {
+      "id": "PB-009",
+      "name": "Bootstrap and read-only doctor commands",
+      "status": "not_started",
+      "owner_scope": "release-operations",
+      "evidence_required": [
+        "fresh-host reproduction on reference platform"
+      ]
+    },
+    {
+      "id": "PB-010",
+      "name": "Dependency unsafe native and provenance ledgers",
+      "status": "not_started",
+      "owner_scope": "security",
+      "evidence_required": [
+        "machine-readable ledgers",
+        "CI diff gates"
+      ]
+    },
+    {
+      "id": "PB-011",
+      "name": "Canonical IPC schema and process capability generation",
+      "status": "partial",
+      "owner_scope": "architecture",
+      "evidence_required": [
+        "schema generator",
+        "negative sender tests"
+      ]
+    },
+    {
+      "id": "PB-012",
+      "name": "Reference sandbox probe harness",
+      "status": "not_started",
+      "owner_scope": "security",
+      "evidence_required": [
+        "packaged negative capability tests"
+      ]
+    },
+    {
+      "id": "PB-013",
+      "name": "Reference hardware corpus and benchmark runner",
+      "status": "documented_no_runner",
+      "owner_scope": "performance",
+      "evidence_required": [
+        "fixed hardware",
+        "offline corpus",
+        "raw result schema"
+      ]
+    },
+    {
+      "id": "PB-014",
+      "name": "Design tokens component inventory and fixtures",
+      "status": "not_started",
+      "owner_scope": "product",
+      "evidence_required": [
+        "component registry",
+        "tokens",
+        "accessibility fixtures"
+      ]
+    },
+    {
+      "id": "PB-015",
+      "name": "Window input IME accessibility and page-tree spike",
+      "status": "not_started",
+      "owner_scope": "accessibility",
+      "evidence_required": [
+        "reference-platform workflow matrix"
+      ]
+    },
+    {
+      "id": "PB-016",
+      "name": "Profile Space session and migration formats",
+      "status": "proposed",
+      "owner_scope": "storage",
+      "evidence_required": [
+        "versioned schemas",
+        "crash/power-loss model"
+      ]
+    },
+    {
+      "id": "PB-017",
+      "name": "Research package identity and updater laboratory",
+      "status": "not_started",
+      "owner_scope": "release-operations",
+      "evidence_required": [
+        "signed research package",
+        "rollback and migration tests"
+      ]
+    },
+    {
+      "id": "PB-018",
+      "name": "Security incident and patch rehearsal",
+      "status": "not_started",
+      "owner_scope": "security",
+      "evidence_required": [
+        "tabletop exercise",
+        "private report workflow"
+      ]
+    },
+    {
+      "id": "PB-019",
+      "name": "Backup ownership for build-critical scopes",
+      "status": "blocked",
+      "owner_scope": "program",
+      "evidence_required": [
+        "named qualified backups"
+      ]
+    },
+    {
+      "id": "PB-020",
+      "name": "Implementation kickoff review",
+      "status": "blocked",
+      "owner_scope": "program",
+      "evidence_required": [
+        "all P0 items ready or approved time-bounded exceptions"
+      ]
+    }
+  ],
+  "completion_rule": "PB-GATE-0 passes when every item required for the selected contained milestone is ready or has a reviewed, expiring exception. Stable-release prerequisites remain later gates."
+}

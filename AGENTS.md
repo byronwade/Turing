@@ -204,3 +204,15 @@ Before production implementation, use the [project-buildout handbook](docs/proje
 ## Market-strategy impact
 
 Changes to product positioning, workspaces, migration, synchronization, resource UX, agent UX, comparison/research workflows, privacy receipts, or collaboration must inspect `docs/market-strategy/`, the dated market report, the `OP-*` registry, relevant Blueprint chapters, product/security/performance/accessibility/AI/Plug-in/embedding books, ownership, traceability, risks, and roadmap. Market demand never bypasses evidence or safety gates.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI rule
+
+Trusted browser chrome is toolkit-replaceable and contains no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser in release builds. UI work must update `docs/ui-runtime/`, the framework and budget registries, pre-build readiness, affected platform/product/security/performance/accessibility documentation, and repository validation.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production implementation-agent controls
+
+Before broad implementation, the documentation-only direct-to-main exception is not available for production source. Production work uses protected pull requests, code-owner review, approval after the latest push, required checks, and independent verification.
+
+An agent may execute only an approved `TASK-*` manifest. It cannot approve or merge its own production work; weaken its own acceptance criteria; disable a failing gate; access offline root or production signing keys; decide disclosure; promote stable; or claim security, performance, accessibility, or compatibility leadership. Read `docs/agent-execution/` and `docs/production-readiness/` before production implementation or release work.

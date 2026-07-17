@@ -60,3 +60,13 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Product workflow laboratory
 
 Add controlled Space switching, recovery, migration, 30-tab resource comprehension, Research Canvas, agent trust, cross-device conflict, and Developer Causal Mode tasks. Report completion, errors, loss, accessibility, latency, resource use, and user confidence together.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI framework bake-off
+
+The laboratory runs identical Slint, Vizia, and Floem/GPUI reference shells on one pinned platform before architectural selection. Empty-window data is retained but cannot outweigh 100-tab, split-view, page-surface, IME, accessibility, failure, and recovery results.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## SLO evidence
+
+The laboratory owns reproducible methods and raw artifacts used to set and verify `SLO-*` targets. An implementation agent cannot select only favorable samples or change the workload after seeing a result.

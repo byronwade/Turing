@@ -68,3 +68,13 @@ The store links listing to signed package, performs automated and risk-based man
 ## Space and market-strategy integration
 
 Plug-ins may be installed per Space, receive session-only grants, and appear in resource/privacy receipts. First-party candidates should validate the market portfolio through the same bounded platform. Market popularity never grants privileged APIs.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Plug-in UI composition
+
+Plug-ins do not receive arbitrary native toolkit objects, React execution, or direct access to trusted chrome. Plug-in UI is expressed through constrained schema-backed surfaces or isolated content, with capabilities, accessibility metadata, lifecycle, resource attribution, and user-visible origin. First-party Plug-ins follow the same boundary.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production Plug-in readiness
+
+A public Plug-in ecosystem requires signed packages, update/revocation, store operations, compatibility windows, capability review, resource SLOs, incident response, support, and stable release gates. Agent popularity or market demand cannot bypass those controls.

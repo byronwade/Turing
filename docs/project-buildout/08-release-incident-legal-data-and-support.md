@@ -58,3 +58,8 @@ Turn release principles into executable build, signing, update, rollback, migrat
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production readiness ownership
+
+The Production Readiness book owns stable scope, platforms, channels, SLOs, update roles, vulnerability SLAs, service dependencies, support, signing, legal approval, and human release authority. Agents may prepare evidence but cannot make these decisions.

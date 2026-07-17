@@ -59,3 +59,8 @@ Define the final workspace, dependency direction, reproducible developer environ
 ## Status discipline
 
 This document is a research and operating baseline, not an implementation or support claim. Any accepted change must update the owning Blueprint records, requirements, risks, ADRs, source, tests, evidence, and support statements in the same reviewed change.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI workspace additions
+
+The planned workspace separates `turing-ui-model`, `turing-ui-contracts`, the selected toolkit adapter, platform integration, page surfaces, assets, testkit, and benchmarks. UI state and command crates remain free of toolkit and OS dependencies. The selected toolkit is pinned behind one adapter and cannot become a browser-wide ambient runtime.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-17",
   "phases": [
     {
       "id": "M0",
@@ -9,7 +9,9 @@
       "evidence": [],
       "blockers": [
         "Professional controls and multi-person ownership incomplete.",
-        "Initial market-opportunity validation and promotion decisions remain incomplete."
+        "Initial market-opportunity validation and promotion decisions remain incomplete.",
+        "UI framework, page-surface composition, reference platform, and PB-GATE-0 evidence incomplete.",
+        "Agent task/provenance controls, protected review, and implementation kickoff evidence incomplete."
       ]
     },
     {
@@ -59,21 +61,27 @@
       "status": "not_started",
       "owner_scope": "program",
       "evidence": [],
-      "blockers": []
+      "blockers": [
+        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+      ]
     },
     {
       "id": "M8",
       "status": "not_started",
       "owner_scope": "program",
       "evidence": [],
-      "blockers": []
+      "blockers": [
+        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+      ]
     },
     {
       "id": "M9",
       "status": "not_started",
       "owner_scope": "program",
       "evidence": [],
-      "blockers": []
+      "blockers": [
+        "Production readiness PRG gates, SLOs, support, incident, signing, legal, and human release authority incomplete."
+      ]
     }
   ]
 }

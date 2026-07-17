@@ -58,3 +58,8 @@ Prompt injection is treated as a confused-deputy and authority problem, not mere
 The intended policy is coordinated disclosure with credit where desired, a clear affected-version statement, patch and update guidance, regression coverage, and a root-cause-oriented postmortem when it benefits users without enabling active exploitation.
 
 This policy will be expanded before public binary distribution.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Implementation agents and security operations
+
+Coding agents are supply-chain principals and receive deny-by-default authority. They never receive offline update roots or production signing keys and cannot decide vulnerability severity, disclosure timing, incident closure, or stable promotion. Formal response SLAs remain unset until the vulnerability SLA registry is approved with demonstrated staffing and update capacity.

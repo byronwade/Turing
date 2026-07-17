@@ -35,3 +35,8 @@ The primary integrated hypothesis is a project-native Space that owns organizati
 ## Research-question ownership
 
 Market validation is owned by `RQ-49` through `RQ-54`. `RQ-45` through `RQ-48` remain assigned to professional project controls, reproducible environments, traceability, and sustainability. Research-question identifiers are globally unique and contiguous.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native implementation constraint
+
+Market differentiation must not drive Turing into a second browser runtime. Spaces, Time Machine, Resource Truth, Research Canvas, and agent UI are evaluated on the native toolkit-neutral model. Visual prototyping speed is valuable only when production security, footprint, accessibility, and recovery remain intact.

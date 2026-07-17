@@ -285,3 +285,13 @@ Renumbered market-differentiation studies from the conflicting `RQ-45`–`RQ-50`
 ## 2026-07-16 — Market strategy consistency and validator hardening
 
 After the market-strategy merge, a repository-wide audit corrected canonical table placement, added explicit product ownership, normalized release-review scope naming, and extended validation to `OP-*` IDs, reviewer-to-owner resolution, and market index invariants. No opportunity was promoted and no implementation or support status changed.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## 2026-07-17 — Native UI architecture and pre-build readiness
+
+Added the Native UI Runtime book, Slint/Vizia/Floem/GPUI evaluation, React design-lab boundary, page-surface integration plan, UI framework and budget registries, PB-001 through PB-020 readiness control, proposed ADR-0013 through ADR-0016, RQ-55 through RQ-58, repository-wide cross-references, and validation requirements. No UI framework, dependency, reference platform, performance claim, support claim, or implementation status was accepted.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## 2026-07-17 — Agent execution and production readiness
+
+Added task-scoped agent authority, run and evidence provenance, independent-verification rules, stable-scope and platform contracts, release channels, SLO catalog, production gates, update trust roles, service dependencies, vulnerability SLA framework, secure-development crosswalk, signing separation, and human release authority. Turing remains not ready for production or stable release.

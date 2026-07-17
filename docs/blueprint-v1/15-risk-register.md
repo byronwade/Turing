@@ -307,3 +307,13 @@ These are candidates in the `OP-*` registry and do not renumber or silently alte
 - **MR-CAND-006 — Feature sprawl:** differentiation work could outrun engine, security, accessibility, and maintenance capacity.
 
 Promotion requires deciding whether each candidate becomes a stable `R-*` entry.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework risk mapping
+
+Framework selection may create license incompatibility, hidden native/unsafe surface, page-composition coupling, accessibility gaps, unstable GPU dependencies, binary growth, multi-backend bloat, migration lock-in, and design/runtime drift. These concerns map into the existing dependency, security, performance, accessibility, platform, licensing, maintenance, and schedule risks. New `R-*` entries are created only if experiments reveal a materially distinct program risk.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent and production-readiness risk concentration
+
+The active program must track prompt or repository injection into coding agents, excessive tool authority, self-review, fabricated evidence, poisoned dependencies, secret leakage, unbounded autonomous changes, insufficient review capacity, unsigned or unreproducible artifacts, update-key compromise, unsupported stable scope, unavailable services, unmet vulnerability response, and release decisions without qualified human authority. Promotion requires corresponding machine controls and evidence.

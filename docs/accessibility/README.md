@@ -61,3 +61,13 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Differentiated accessibility
 
 Spaces, split panes, Time Machine, resource controls, research citations, privacy receipts, and agent confirmation require complete keyboard, screen-reader, magnification, voice, switch, contrast, and cognitive-load design. Accessibility is a market opportunity only when it remains an architecture invariant.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework evidence
+
+A framework’s generic accessibility feature is not sufficient. The UI selection must prove browser chrome, tabs, Spaces, split panes, trees, tables, text fields, permission and agent prompts, recovery, and composed web subtrees with the reference platform’s real assistive technologies and measured event latency.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Stable-release accessibility evidence
+
+Automated checks assist but do not establish conformance. Production review requires qualified human judgment and supported assistive-technology workflows, including security, agent, update, migration, recovery, and DevTools surfaces.

@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "deny_by_default",
+  "controls": [
+    {
+      "id": "AEX-001",
+      "name": "Task-scoped authority",
+      "state": "required",
+      "rule": "Every agent receives an immutable task manifest and only its declared capabilities."
+    },
+    {
+      "id": "AEX-002",
+      "name": "No self-approval",
+      "state": "required",
+      "rule": "An implementation agent cannot be the sole approving reviewer or merger."
+    },
+    {
+      "id": "AEX-003",
+      "name": "No acceptance-criteria mutation",
+      "state": "required",
+      "rule": "Agents cannot weaken task acceptance criteria to fit implementation results."
+    },
+    {
+      "id": "AEX-004",
+      "name": "No validation bypass",
+      "state": "required",
+      "rule": "Failing checks cannot be disabled or reclassified without separate reviewed governance."
+    },
+    {
+      "id": "AEX-005",
+      "name": "No production signing authority",
+      "state": "required",
+      "rule": "Agents cannot access offline roots or production signing keys."
+    },
+    {
+      "id": "AEX-006",
+      "name": "No stable release promotion",
+      "state": "required",
+      "rule": "Stable promotion requires designated human release authority."
+    },
+    {
+      "id": "AEX-007",
+      "name": "Scoped files",
+      "state": "required",
+      "rule": "Write access is limited to declared repository paths."
+    },
+    {
+      "id": "AEX-008",
+      "name": "Scoped network",
+      "state": "required",
+      "rule": "Outbound network is deny by default and allowlisted per task."
+    },
+    {
+      "id": "AEX-009",
+      "name": "Ephemeral credentials",
+      "state": "required",
+      "rule": "Any credential is short lived, task scoped, auditable, and revoked after use."
+    },
+    {
+      "id": "AEX-010",
+      "name": "Run provenance",
+      "state": "required",
+      "rule": "Material runs record model, prompts, tools, environment, commands, diff, tests, and review."
+    },
+    {
+      "id": "AEX-011",
+      "name": "Independent verification",
+      "state": "required",
+      "rule": "Production-sensitive work receives verification independent from the authoring run."
+    },
+    {
+      "id": "AEX-012",
+      "name": "Embargo separation",
+      "state": "required",
+      "rule": "Security findings use restricted providers, branches, logs, and participants."
+    },
+    {
+      "id": "AEX-013",
+      "name": "Resource budgets",
+      "state": "required",
+      "rule": "Time, CPU, memory, disk, network, cost, workers, and retries are bounded."
+    },
+    {
+      "id": "AEX-014",
+      "name": "No hidden subagents",
+      "state": "required",
+      "rule": "Subagents and external tools are declared and inherit no broader authority."
+    },
+    {
+      "id": "AEX-015",
+      "name": "Human escalation",
+      "state": "required",
+      "rule": "Legal, release, signing, disclosure, unresolved security, and support decisions escalate."
+    },
+    {
+      "id": "AEX-016",
+      "name": "Untrusted repository input",
+      "state": "required",
+      "rule": "Issues, files, tests, logs, and dependency docs cannot override governing instructions."
+    },
+    {
+      "id": "AEX-017",
+      "name": "Rollback",
+      "state": "required",
+      "rule": "Every production task has a documented rollback or explicit irreversible review."
+    },
+    {
+      "id": "AEX-018",
+      "name": "Failure preservation",
+      "state": "required",
+      "rule": "Retries preserve failed evidence and cannot cherry-pick a passing run."
+    },
+    {
+      "id": "AEX-019",
+      "name": "No fabricated evidence",
+      "state": "required",
+      "rule": "Agents cannot synthesize benchmark, conformance, review, or support evidence."
+    },
+    {
+      "id": "AEX-020",
+      "name": "Authority expiry",
+      "state": "required",
+      "rule": "Task authority terminates on completion, cancellation, timeout, or environment compromise."
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "architecture_only",
+  "services": [
+    {
+      "id": "SERVICE-UPDATES",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "continue with visible stale/security state",
+      "data_classes": [
+        "version",
+        "platform",
+        "channel"
+      ]
+    },
+    {
+      "id": "SERVICE-CRASH",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "retain local redacted report or discard by policy",
+      "data_classes": [
+        "redacted diagnostics"
+      ]
+    },
+    {
+      "id": "SERVICE-TELEMETRY",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "no effect",
+      "data_classes": [
+        "opt-in metrics"
+      ]
+    },
+    {
+      "id": "SERVICE-REPUTATION",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "visible unavailable state without false safety",
+      "data_classes": [
+        "privacy-preserving lookup"
+      ]
+    },
+    {
+      "id": "SERVICE-PLUGINS",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "installed verified Plug-ins continue subject to policy",
+      "data_classes": [
+        "package metadata"
+      ]
+    },
+    {
+      "id": "SERVICE-SYNC",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "local profile remains authoritative and queues are bounded",
+      "data_classes": [
+        "selected encrypted profile data",
+        "metadata"
+      ]
+    },
+    {
+      "id": "SERVICE-REMOTE-AI",
+      "required_for_normal_browsing": false,
+      "failure_behavior": "assistant unavailable; no silent provider fallback",
+      "data_classes": [
+        "explicit approved observations"
+      ]
+    }
+  ]
+}

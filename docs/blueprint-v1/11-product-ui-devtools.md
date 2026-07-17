@@ -192,3 +192,10 @@ Automation profiles are isolated and ephemeral by default. Disabling confirmatio
 ## Proposed product differentiation
 
 Research targets project-native Spaces, Workspace Time Machine, Research Canvas, identity routing, open migration, privacy receipts, Web App Fabric, and Developer Causal Mode. Familiar browsing remains the default. Advanced project capability is progressively disclosed and fully keyboard/screen-reader operable.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## 18. Native UI implementation working hypothesis
+
+Browser state, typed commands, policy, persistence, recovery, tracing, and resource accounting remain pure Rust. A compiled native toolkit is isolated behind a Turing-owned adapter. Slint is evaluated first against Vizia and Floem or GPUI. React is permitted only in a separate design lab consuming shared tokens and fixtures; it does not ship in trusted chrome.
+
+The decisive prototype composes renderer-produced page textures with chrome across resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, and GPU device loss. `UI-GATE-7` through `UI-GATE-12` in the [Native UI Runtime book](../ui-runtime/README.md) govern selection.

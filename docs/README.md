@@ -48,6 +48,11 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Embedding and Multi-language SDK](embedding/README.md) | Rust API, stable C ABI, generated SDKs, lifecycle, surfaces, host security, packaging, and conformance |
 | [Professional Project Buildout and Operating Handbook](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, schemas, cross-cutting review, operations, source strategy, product, and sustainability |
 | [Market Strategy and Differentiation](market-strategy/README.md) | Competitive evidence, project-native Spaces, Time Machine, resource truth, trustworthy agents, research canvas, migration, sync, collaboration, prioritization, and validation |
+| [Native UI Runtime and Browser Chrome Engineering](ui-runtime/README.md) | Toolkit selection, pure Rust state/commands, Slint/Vizia/Floem/GPUI comparison, page surfaces, React design lab, accessibility, footprint, testing, and migration |
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+| [Agent Execution and Autonomous Engineering](agent-execution/README.md) | Agent authority, task graphs, protected review, tools and secrets, provenance, independent evidence, rollback, budgets, and escalation |
+| [Production Readiness and Stable Release Engineering](production-readiness/README.md) | Stable scope, platforms, channels, SLOs, compatibility, security, accessibility, recovery, updates, services, support, provenance, signing, and release authority |
 
 ## Active research
 
@@ -58,6 +63,8 @@ The Blueprint owns accepted high-level architecture. These books expand it into 
 | [Performance, security, developer, and missing-systems expansion audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Adds eleven books and advanced performance, security, and developer research; no implementation or support claim |
 | [Professional buildout gap audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, source strategy, technology, Plug-in, embedding, operations, legal, data, product, and sustainability controls |
 | [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | Market concentration, competitor workflows, user-demand signals, switching barriers, and OP-001 through OP-014 validation hypotheses |
+| [Native UI framework evaluation — July 2026](research/native-ui-framework-evaluation-2026-07.md) | Slint-first working hypothesis, comparison candidates, React design-lab boundary, page-surface risks, and prototype decision method |
+| [Pre-build readiness gap audit — July 2026](research/pre-build-readiness-gap-audit-2026-07.md) | PB-001 through PB-020 and the remaining evidence required before broad implementation |
 
 Research reports are evidence artifacts, not automatic architecture decisions. Any recommendation that changes a requirement, risk, ADR, milestone, interface, or support statement must update the owning Blueprint record in the same change.
 

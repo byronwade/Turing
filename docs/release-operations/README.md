@@ -63,3 +63,13 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Migration, export, sync, and support
 
 Market differentiation creates long-lived formats and services. Release evidence must cover importer safety, export compatibility, snapshot restoration, sync conflicts, key recovery, collaboration revocation, support, and end-of-life.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI package profiles
+
+Release manifests record the selected UI toolkit, exact source, license choice, backend, renderer, native libraries, feature flags, assets, locales, and build identity. Normal packages must not accidentally include multiple renderers, runtime UI interpreters, design-lab assets, React/Node dependencies, or webviews.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Stable release and agent boundary
+
+Release operations must implement the Production Readiness machine gates, SLOs, update roles, vulnerability SLA activation, source/build provenance, service failure behavior, signing separation, and human authorization. Coding agents never receive offline root keys or stable-promotion authority.

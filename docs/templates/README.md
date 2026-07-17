@@ -41,3 +41,17 @@ User job; publisher; execution tier; manifest/capabilities/origins/data; lifecyc
 ## Product and market strategy
 
 - [Market opportunity proposal](market-opportunity.md) — target segment, job, evidence, alternatives, risks, validation, promotion, expiry, and removal.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework evaluation
+
+- [UI framework experiment](ui-framework-experiment.md) — equivalent shell scope, exact dependency/backend/renderer configuration, page surfaces, accessibility, IME, security, footprint, development workflow, licensing, maintenance, and replacement evidence.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution and production release
+
+- [Agent execution task](agent-task.md)
+- [Agent run review](agent-run-review.md)
+- [Production readiness review](production-readiness-review.md)
+- [Release exception](release-exception.md)
+- [Incident exercise](incident-exercise.md)

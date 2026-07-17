@@ -27,3 +27,13 @@ Each issue must reference stable requirement/risk/ADR IDs, define negative and f
 ## Market-opportunity research queue
 
 `OP-001` through `OP-014` remain outside the accepted `WP-001` through `WP-018` executable backlog. The first candidate additions are a market-validation harness, Space data-model prototype, migration/export corpus, Time Machine journal experiment, and Resource Truth usability study. New `WP-*` entries require reviewed promotion and dependency mapping.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native shell work-package refinement
+
+`WP-004` remains the native accessible browser-shell spike. Before its implementation hardens around a framework, it produces a toolkit-neutral Rust state/command contract, equivalent Slint/Vizia/Floem-or-GPUI reference shells, page-surface and accessibility composition evidence, a reference-platform decision, and proposed ADR-0013 through ADR-0016. This refinement does not change the 18-work-package registry or claim WP-004 has started.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution and production-readiness preparation
+
+Before decomposing WP-001 through WP-018 into agent tasks, create the `TASK-*` graph, protected review policy, run/evidence storage, tool and secret boundaries, stable-scope draft, SLO measurement methods, update laboratory, incident exercises, supported-platform evidence, and release review procedure. This does not change existing work-package status.

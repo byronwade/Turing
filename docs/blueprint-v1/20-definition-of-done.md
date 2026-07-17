@@ -167,3 +167,36 @@ Ownership, traceability, phase, decision class, review, evidence, exception, doc
 - accepted requirements, risks, ADRs, work packages, ownership, and traceability updated only after promotion;
 - experimental expiry, removal, rollback, and support language defined;
 - no competitor code, branding, assets, or misleading equivalence claim.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI framework, shell component, or adapter
+
+- toolkit-neutral state, typed commands, identities, epochs, threading, cancellation, error, and recovery behavior documented;
+- no product/security logic exists only in toolkit or React design code;
+- keyboard, focus, accessibility, IME, clipboard, drag/drop, localization, themes, and failure states tested;
+- page-surface, damage, scale, occlusion, capture, renderer crash, and GPU loss covered where applicable;
+- binary, package, startup, memory, allocations, input, frame pacing, energy, and hidden-window evidence attached;
+- backend, renderer, feature flags, dependencies, unsafe/native surface, license, provenance, updates, and replacement plan reviewed;
+- release build contains no prohibited webview, runtime React/JavaScript, Node, runtime UI interpreter, or unused backend;
+- owning Native UI Runtime, platform, product, security, performance, accessibility, repository, and readiness records agree.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent-executed production work
+
+- approved `TASK-*` manifest and scoped authority;
+- authoring and independent-review identities are distinct;
+- run manifest records model, instructions, source, environment, tools, commands, and credentials by identifier;
+- failed runs and limitations are preserved;
+- evidence bundle reconciles acceptance criteria and negative tests;
+- no self-approval, self-merge, signing, disclosure, or stable-promotion authority;
+- rollback and escalation are verified.
+
+## Production or stable release
+
+- finite accepted scope and platform matrix;
+- all applicable `PRG-*` gates ready with evidence;
+- numeric blocking `SLO-*` targets within error budget;
+- compatibility, security, accessibility, migration, update, provenance, service, support, legal, and incident evidence complete;
+- qualified primary and backup owners active;
+- human production-readiness and release approval recorded;
+- exact artifact digest, signatures, update metadata, rollback, and supported-version statement published.

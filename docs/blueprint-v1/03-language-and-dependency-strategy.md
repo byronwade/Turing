@@ -173,3 +173,8 @@ Preference or benchmark micro-wins alone are insufficient.
 ## Detailed technology selection
 
 The [Technology Stack](../technology-stack/README.md) documents candidates and adoption gates. A named library is not approved without exact source/version, owner, license/provenance, unsafe/native and hostile-input review, fuzzing, platform/performance/build evidence, Turing-owned adapter, and replacement plan.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native browser-chrome toolkit research
+
+The release shell uses Rust for durable state, commands, policy, recovery, and diagnostics. A compiled native toolkit may be used behind a replaceable adapter. Slint is the initial candidate; Vizia and Floem or GPUI are required comparisons. React/TypeScript may support a separate design lab, but React, JavaScript, Node, Electron, Tauri, and system webviews are excluded from trusted release chrome.

@@ -400,3 +400,69 @@ docs/templates/market-opportunity.md
 ```
 
 The book owns product-opportunity research. Accepted product behavior remains owned by the Blueprint, requirements, ADRs, risks, and work packages.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI and pre-build additions
+
+```text
+docs/
+├── ui-runtime/
+│   ├── README.md
+│   ├── 01-goals-trust-boundary-and-working-hypothesis.md
+│   ├── 02-framework-landscape-and-selection-method.md
+│   ├── 03-rust-state-command-and-adapter-architecture.md
+│   ├── 04-page-surface-compositor-and-process-integration.md
+│   ├── 05-slint-adapter-component-model-and-exit-strategy.md
+│   ├── 06-react-design-lab-tokens-and-authoring-workflow.md
+│   ├── 07-windowing-input-ime-accessibility-and-platform.md
+│   ├── 08-performance-memory-binary-and-energy-budgets.md
+│   ├── 09-testing-observability-recovery-and-release-gates.md
+│   ├── 10-prototype-plan-decision-record-and-migration.md
+│   └── machine/
+│       ├── framework-candidates.json
+│       └── ui-performance-budgets.json
+├── project-buildout/
+│   └── 11-pre-build-readiness-checklist.md
+├── research/
+│   ├── native-ui-framework-evaluation-2026-07.md
+│   └── pre-build-readiness-gap-audit-2026-07.md
+└── templates/
+    └── ui-framework-experiment.md
+
+docs/blueprint-v1/machine/
+└── pre-build-readiness.json
+```
+
+Future implementation places toolkit-neutral crates separately from the selected adapter, platform, page-surface, asset, testkit, and benchmark crates. This documentation topology does not claim those source directories exist yet.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution and production readiness topology
+
+```text
+docs/
+├── agent-execution/
+│   ├── README.md
+│   ├── 01-...md through 11-...md
+│   └── machine/
+│       ├── agent-capability-matrix.json
+│       ├── agent-run-manifest.schema.json
+│       ├── execution-task.schema.json
+│       ├── evidence-bundle.schema.json
+│       ├── escalation-policy.json
+│       └── prohibited-agent-actions.json
+├── production-readiness/
+│   ├── README.md
+│   ├── 01-...md through 14-...md
+│   └── machine/
+│       ├── stable-scope.json
+│       ├── supported-platforms.json
+│       ├── release-channels.json
+│       ├── product-slos.json
+│       ├── release-gates.json
+│       ├── service-dependencies.json
+│       ├── vulnerability-slas.json
+│       ├── update-trust-roles.json
+│       └── secure-development-controls.json
+└── project-buildout/
+    └── 12-agent-execution-and-production-readiness.md
+```

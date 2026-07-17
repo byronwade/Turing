@@ -247,3 +247,13 @@ Lines of code, number of features, closed issues, or benchmark wins are not stan
 ## Professional operating controls
 
 `.github/CODEOWNERS` and the professional machine records operationalize ownership, traceability, phase, review, and exceptions. Current assignments are provisional and do not satisfy preview/beta/stable multi-person gates.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI ownership and review
+
+The UI runtime owner coordinates toolkit-neutral state/commands, adapter selection, component contracts, page surfaces, design-system generation, and migration. Toolkit adoption or replacement requires architecture, security, performance, accessibility, platform, build, legal, product, and release review plus an ADR. A React design prototype cannot approve a production UI behavior.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent implementation and human release authority
+
+Production implementation is task-based. No implementation agent approves or merges its own change. Agent-run provenance, independent verification, protected branches, code-owner review, and explicit authority are required. Only designated humans can approve legal posture, security disclosure, offline signing, support commitments, and stable promotion.

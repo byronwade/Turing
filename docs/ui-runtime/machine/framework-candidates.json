@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "research-candidates",
+  "selection_status": "not_selected",
+  "working_hypothesis": "Pure Rust state and command model with a replaceable native UI adapter; evaluate Slint first against Vizia and Floem or GPUI; React only in a non-shipping design lab.",
+  "candidates": [
+    {
+      "id": "UIF-001",
+      "name": "Slint",
+      "role": "initial-production-candidate",
+      "runtime_model": "ahead-of-time declarative native UI",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "stable 1.x API claimed by upstream",
+      "license": "GPLv3, royalty-free, or paid options; legal review required",
+      "blocking_evidence": [
+        "page-surface composition",
+        "license decision",
+        "accessibility matrix",
+        "IME and platform behavior",
+        "binary and memory benchmark",
+        "replacement prototype"
+      ]
+    },
+    {
+      "id": "UIF-002",
+      "name": "Vizia",
+      "role": "styling-oriented-comparison",
+      "runtime_model": "pure Rust declarative/reactive UI with stylesheet workflow",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "pre-1.0 comparison candidate",
+      "license": "MIT",
+      "blocking_evidence": [
+        "browser surface integration",
+        "Skia/native footprint",
+        "accessibility matrix",
+        "API stability"
+      ]
+    },
+    {
+      "id": "UIF-003",
+      "name": "Floem",
+      "role": "fine-grained-reactivity-comparison",
+      "runtime_model": "one-time view tree with reactive signals and virtual lists",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "upstream states still maturing",
+      "license": "MIT",
+      "blocking_evidence": [
+        "API stability",
+        "renderer maturity",
+        "accessibility matrix",
+        "browser surface integration"
+      ]
+    },
+    {
+      "id": "UIF-004",
+      "name": "GPUI",
+      "role": "high-density-performance-reference",
+      "runtime_model": "hybrid retained/immediate GPU UI",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "pre-1.0",
+      "license": "repository and component-specific legal review required",
+      "blocking_evidence": [
+        "coupling and extraction cost",
+        "platform matrix",
+        "license",
+        "API stability",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "UIF-005",
+      "name": "Xilem",
+      "role": "architecture-watch",
+      "runtime_model": "experimental reactive Rust UI",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "experimental/pre-alpha",
+      "license": "Apache-2.0",
+      "blocking_evidence": [
+        "maturity",
+        "renderer stability",
+        "component breadth",
+        "platform evidence"
+      ]
+    },
+    {
+      "id": "UIF-006",
+      "name": "Makepad",
+      "role": "gpu-live-design-watch",
+      "runtime_model": "Rust-first shader UI and live design DSL",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "in development",
+      "license": "project-specific review required",
+      "blocking_evidence": [
+        "accessibility",
+        "native desktop behavior",
+        "browser-scale state",
+        "API stability"
+      ]
+    },
+    {
+      "id": "UIF-007",
+      "name": "Freya",
+      "role": "react-like-rust-watch",
+      "runtime_model": "native declarative Rust UI using Skia",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "active architectural evolution",
+      "license": "MIT",
+      "blocking_evidence": [
+        "release/API stability",
+        "Skia footprint",
+        "accessibility",
+        "browser surface integration"
+      ]
+    },
+    {
+      "id": "UIF-008",
+      "name": "egui",
+      "role": "internal-engineering-tools",
+      "runtime_model": "immediate-mode pure Rust GUI",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "widely used but not native-looking product target",
+      "license": "MIT or Apache-2.0",
+      "blocking_evidence": [
+        "not evaluated for primary trusted chrome"
+      ]
+    },
+    {
+      "id": "UIF-009",
+      "name": "Restricted TSX to native compiler",
+      "role": "future-escape-path",
+      "runtime_model": "custom ahead-of-time compiler to Rust/static UI data",
+      "webview": false,
+      "javascript_runtime": false,
+      "maturity": "not implemented",
+      "license": "Turing-owned source plus parser/tool dependencies",
+      "blocking_evidence": [
+        "native component contracts must stabilize",
+        "compiler/tooling cost justification",
+        "prototype demonstrating benefit over adapters"
+      ]
+    }
+  ],
+  "decision_rule": "No candidate becomes an accepted dependency until equivalent reference-shell evidence, page-surface integration, accessibility, licensing, security, performance, maintenance, and replacement review are complete."
+}

@@ -58,3 +58,8 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Market-strategy integration
 
 The proposed product center is a durable Space with folders, layouts, identity, recovery, resource policy, migration, and optional agent/Plug-in context. The [market strategy book](../market-strategy/README.md) owns hypotheses and validation; this book continues to own accepted everyday workflows.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## UI implementation boundary
+
+Product workflows are specified independently from the selected toolkit. Component states, commands, focus, recovery, trusted indicators, and accessibility fixtures must run through every candidate adapter. React may accelerate design exploration, but no product behavior exists only in a React prototype.

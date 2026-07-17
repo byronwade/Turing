@@ -327,3 +327,18 @@ Before substantial production implementation, resolve ADR-0009, accept the works
 - M7+: optional encrypted sync, low-risk isolated agent actions, collaboration, and wider Plug-in ecosystem after security and operations gates.
 
 An opportunity enters the executable backlog only after promotion through evidence and ownership.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI and pre-build sequencing
+
+Before M1 shell code expands, complete the toolkit-neutral UI contracts, select one reference desktop platform, build equivalent Slint/Vizia/Floem-or-GPUI shells, prove page-surface/accessibility/IME/crash integration, and review licensing. These are controlled M0/M1 experiments, not a reason to delay unrelated parser, schema, sandbox, or benchmark research.
+
+`PB-GATE-0` tracks the minimum applicable evidence for implementation kickoff; preview and stable operational gates remain later milestones.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Agent execution and production sequencing
+
+- M0: establish protected review, task/run/evidence schemas, agent authority, root workspace, and provenance.
+- M1–M4: permit contained component tasks with independent review; no production claim.
+- M5+: activate preview gates only after update, security, migration, accessibility, and incident evidence.
+- Beta and stable: require `PRG-001` through `PRG-020`, numeric SLOs, supported platform contracts, qualified backup ownership, and human release authority.

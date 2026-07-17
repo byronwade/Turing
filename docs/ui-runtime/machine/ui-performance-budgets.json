@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "measurement-contract",
+  "numeric_targets_status": "pending_reference_prototypes",
+  "budgets": [
+    {
+      "id": "UIB-001",
+      "name": "No secondary browser runtime",
+      "type": "hard",
+      "requirement": "Trusted shell package contains no Electron, Tauri, system webview, Chromium/WebKit/Gecko shell dependency, or remote-rendered chrome."
+    },
+    {
+      "id": "UIB-002",
+      "name": "No shell JavaScript runtime",
+      "type": "hard",
+      "requirement": "Normal release shell contains no React runtime, JavaScript VM, Node runtime, DOM, CSSOM, or runtime HTML/CSS parser."
+    },
+    {
+      "id": "UIB-003",
+      "name": "Single production backend",
+      "type": "hard",
+      "requirement": "Compile one selected backend and renderer; additional fallback requires measured platform evidence."
+    },
+    {
+      "id": "UIB-004",
+      "name": "Interactive startup",
+      "type": "measured",
+      "metric": "process start to interactive address field",
+      "target": null,
+      "gate": "Set after equivalent toolkit prototype on reference platform."
+    },
+    {
+      "id": "UIB-005",
+      "name": "Idle shell memory",
+      "type": "measured",
+      "metric": "physical/private memory after stable idle",
+      "target": null,
+      "gate": "Set after equivalent toolkit prototype."
+    },
+    {
+      "id": "UIB-006",
+      "name": "Input latency",
+      "type": "measured",
+      "metric": "key-to-present p50/p95/p99 under 1/30/100-tab synthetic state",
+      "target": null,
+      "gate": "Must fit product interaction budget without hidden work."
+    },
+    {
+      "id": "UIB-007",
+      "name": "Update allocation",
+      "type": "measured",
+      "metric": "allocations and bytes for tab activation, close, reorder, address typing, and resource updates",
+      "target": null,
+      "gate": "No full-tree rebuild for bounded local updates."
+    },
+    {
+      "id": "UIB-008",
+      "name": "Hidden-window efficiency",
+      "type": "hard",
+      "requirement": "No unbounded animation or periodic wakeup when hidden, minimized, occluded, or suspended."
+    },
+    {
+      "id": "UIB-009",
+      "name": "Lazy feature loading",
+      "type": "hard",
+      "requirement": "Settings, history, DevTools, agents, and first-party Plug-in panels are not instantiated before use."
+    },
+    {
+      "id": "UIB-010",
+      "name": "Package contribution",
+      "type": "measured",
+      "metric": "stripped binary, compressed package, dynamic libraries, assets, and symbols by UI feature set",
+      "target": null,
+      "gate": "Candidate comparison must disclose backend and renderer features."
+    },
+    {
+      "id": "UIB-011",
+      "name": "Page composition",
+      "type": "measured",
+      "metric": "surface publish-to-present latency, damage cost, resize, scale, and device-loss recovery",
+      "target": null,
+      "gate": "UI-GATE-7."
+    },
+    {
+      "id": "UIB-012",
+      "name": "Accessibility latency",
+      "type": "measured",
+      "metric": "state change to platform accessibility event/tree availability",
+      "target": null,
+      "gate": "Must pass real assistive-technology workflow thresholds."
+    }
+  ]
+}

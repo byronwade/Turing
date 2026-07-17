@@ -202,3 +202,13 @@ The shell must remain interactive when the test renderer hangs or crashes.
 The following remain research proposals, not accepted `REQ-*` entries: `OP-001` Spaces, `OP-002` Time Machine, `OP-003` Resource Truth Center, `OP-004` Trustworthy Agent Mode, `OP-005` Research Canvas, `OP-006` Identity Routing, `OP-007` Migration/Portability, `OP-008` Plug-in Trust Platform, `OP-009` Developer Causal Mode, `OP-010` Collaborative Spaces, `OP-011` Web App Fabric, `OP-012` Privacy Receipts/Authenticity, `OP-013` Accessibility/Focus differentiation, and `OP-014` lock-in-free continuity.
 
 Promotion requires validated user value, architecture and threat review, measurable acceptance criteria, owner, milestone, risk mapping, and synchronized machine requirements.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Proposed native UI architecture — non-normative
+
+The current implementation hypothesis is a pure Rust shell model and command layer with a replaceable compiled native UI adapter. Slint is the first candidate, with Vizia and Floem/GPUI comparisons. React is restricted to a non-shipping design lab. No framework, backend, renderer, page-surface model, binary target, or reference platform becomes an accepted `REQ-*` until the UI research gates pass.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Production-support status
+
+No current requirement implies a stable product, supported platform, vulnerability SLA, update service, cloud service, Plug-in store, or support term. Those become normative only through the Production Readiness book, accepted requirements and ADRs, and `PRG-*` evidence. Implementation agents cannot promote research or prototype behavior into supported product scope.

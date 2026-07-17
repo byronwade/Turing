@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "required_before_stable",
+  "controls": [
+    {
+      "id": "SRC-001",
+      "name": "NIST SSDF 1.1 crosswalk",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-002",
+      "name": "NIST SP 800-218A AI development crosswalk",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-003",
+      "name": "SLSA source provenance",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-004",
+      "name": "SLSA build provenance",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-005",
+      "name": "review attestations",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-006",
+      "name": "agent run provenance",
+      "state": "documented"
+    },
+    {
+      "id": "SRC-007",
+      "name": "hermetic release build",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-008",
+      "name": "reproducibility verification",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-009",
+      "name": "SBOM and license notices",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-010",
+      "name": "dependency and unsafe-code inventory",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-011",
+      "name": "artifact signing and verification",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-012",
+      "name": "generated-code provenance",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-013",
+      "name": "vulnerability and advisory reconciliation",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-014",
+      "name": "release evidence archive",
+      "state": "not_started"
+    },
+    {
+      "id": "SRC-015",
+      "name": "independent supply-chain review",
+      "state": "not_started"
+    }
+  ],
+  "normative_baseline": "NIST SSDF 1.1",
+  "tracked_draft": "NIST SSDF 1.2 draft",
+  "slsa_version": "1.2"
+}

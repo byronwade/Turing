@@ -51,3 +51,13 @@ Portable automation belongs in WebDriver BiDi. Turing-specific introspection bel
 ## Research Canvas and Causal Mode
 
 `OP-005` and `OP-009` connect multi-pane research, provenance, deterministic replay, trace diff, causal explanation, and reduced-test generation. Developer claims require measured task completion against current reference tools.
+
+<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
+## Native UI development tooling
+
+The shell program includes a native UI inspector for component/source identity, layout, tokens, bindings, invalidation, paint, accessibility, input routing, typed command emission, memory, and update timing. A separate React design lab may preview shared tokens and fixtures but cannot inspect or invoke browser authority.
+
+<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
+## Protocol release support
+
+Stable protocol claims name exact schema and WebDriver BiDi revisions, generated clients, compatibility windows, migration, security, and support ownership. WebDriver BiDi remains version-pinned while it is a Working Draft.
