@@ -171,7 +171,7 @@ task = task.replace(
 TASK.write_text(task, encoding="utf-8")
 
 report = REPORT.read_text(encoding="utf-8")
-marker = "## Residual limitations\n"
+marker = "## Important limitations\n"
 note = (
     "## Process-ID reuse hardening\n\n"
     "The kernel retains the last issued epoch for every allocated `ProcessId`, "
