@@ -57,7 +57,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         None => {
             debug_assert_eq!(identity.maturity, Maturity::Research);
             println!("Turing M0 shell laboratory");
-            println!("No native UI, web engine, network, storage, Plug-ins, or AI runtime exists yet.");
+            println!(
+                "No native UI, web engine, network, storage, Plug-ins, or AI runtime exists yet."
+            );
             println!("Run with --self-test to validate toolkit-neutral shell contracts.");
         }
     }
