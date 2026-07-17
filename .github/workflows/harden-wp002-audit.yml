@@ -1,0 +1,88 @@
+name: Harden WP-002 audit findings
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: harden-wp002-audit-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  harden:
+    if: github.event.pull_request.title == 'Implement WP-002 kernel identities and bounded IPC' && github.actor == github.repository_owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TARGET_DIR: /tmp/turing-wp002-audit-target
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out WP-002
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Apply the focused audit patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'turing-research[bot]'
+          git config user.email 'turing-research[bot]@users.noreply.github.com'
+          git rev-parse HEAD > /tmp/wp002-audit-source-sha
+          python3 -B tools/wp002_audit_patch.py
+          cargo fmt --all
+
+      - name: Validate hardened WP-002
+        shell: bash
+        run: |
+          set +e
+          {
+            python3 -B tools/generate_ipc.py --check
+            python3 -B tools/validate_blueprint.py
+            python3 -B tools/validate_build_foundation.py
+            cargo fmt --all -- --check
+            cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+            cargo test --workspace --all-targets --all-features --locked
+            cargo run --locked -p turing-shell -- --self-test
+            cargo run --locked -p turing-architecture-prototype --quiet
+            cargo run --locked -p xtask -- check
+            test ! -e target
+            test ! -e transfer
+          } > /tmp/wp002-audit.log 2>&1
+          status=$?
+          cat /tmp/wp002-audit.log
+          if test "$status" -ne 0; then
+            {
+              echo '### WP-002 audit-hardening failure'
+              echo
+              echo '```text'
+              tail -180 /tmp/wp002-audit.log
+              echo '```'
+            } > /tmp/wp002-audit-comment.md
+            gh pr comment '${{ github.event.pull_request.number }}' \
+              --repo '${{ github.repository }}' \
+              --body-file /tmp/wp002-audit-comment.md
+            exit "$status"
+          fi
+
+      - name: Commit hardened source and evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha=$(cat /tmp/wp002-audit-source-sha)
+          rm -f tools/wp002_audit_patch.py
+          git checkout "$source_sha" -- .github/workflows/harden-wp002-audit.yml
+          git add -A
+          git diff --cached --quiet && {
+            echo 'Expected audit-hardening changes.' >&2
+            exit 1
+          }
+          git commit -m 'Harden WP-002 channel and queue ownership'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
