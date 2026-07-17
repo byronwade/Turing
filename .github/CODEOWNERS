@@ -14,14 +14,22 @@
 /prototype/ @byronwade
 /.github/ @byronwade
 
+# High-authority program and implementation controls
+/docs/project-buildout/implementation-plan/ @byronwade
+/docs/blueprint-v1/machine/implementation-execution-graph.json @byronwade
+/docs/blueprint-v1/machine/implementation-milestone-gates.json @byronwade
+/docs/blueprint-v1/machine/implementation-interface-freezes.json @byronwade
+/docs/blueprint-v1/machine/implementation-evidence-catalog.json @byronwade
+/docs/blueprint-v1/machine/implementation-task-sequence.json @byronwade
+/docs/agent-execution/ @byronwade
+/docs/production-readiness/ @byronwade
+
 # Canonical documentation
 /docs/ @byronwade
 /docs/engine/ @byronwade
 /docs/javascript/ @byronwade
 /docs/security-engine/ @byronwade
 /docs/ui-runtime/ @byronwade
-/docs/agent-execution/ @byronwade
-/docs/production-readiness/ @byronwade
 /docs/plugins/ @byronwade
 /docs/embedding/ @byronwade
 /docs/technology-stack/ @byronwade
