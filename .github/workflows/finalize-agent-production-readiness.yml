@@ -3,6 +3,8 @@ name: Finalize agent production readiness verification and cleanup
 on:
   issues:
     types: [opened]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
@@ -15,7 +17,9 @@ concurrency:
 
 jobs:
   finalize:
-    if: github.event.issue.title == 'Run final Turing production readiness verification and cleanup' && github.actor == github.repository_owner
+    if: >-
+      (github.event_name == 'issues' && github.event.issue.title == 'Run final Turing production readiness verification and cleanup' && github.actor == github.repository_owner) ||
+      (github.event_name == 'pull_request' && github.event.pull_request.title == 'Run final Turing production readiness verification and cleanup' && github.actor == github.repository_owner)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -93,5 +97,9 @@ jobs:
             --comment 'The validated canonical documentation is on main; this non-merge trigger branch was deleted.' || true
           gh issue close 33 --repo '${{ github.repository }}' --reason completed \
             --comment 'Agent execution and production readiness documentation is on main; validation passed and temporary branches were removed.' || true
-          gh issue close '${{ github.event.issue.number }}' --repo '${{ github.repository }}' --reason completed \
-            --comment 'Final repository/prototype validation passed and main is the only remote branch.'
+          gh issue close 35 --repo '${{ github.repository }}' --reason completed \
+            --comment 'Final repository/prototype validation passed and main is the only remote branch.' || true
+          if test '${{ github.event_name }}' = 'pull_request'; then
+            gh pr close '${{ github.event.pull_request.number }}' --repo '${{ github.repository }}' \
+              --comment 'Final main verification and branch cleanup completed; this trigger branch was deleted.' || true
+          fi
