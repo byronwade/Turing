@@ -59,15 +59,34 @@ jobs:
       - name: Validate intended final source tree and executable prototype
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           rm -f .github/workflows/finalize-agent-production-readiness.yml
-          python3 -B tools/validate_blueprint.py
-          cargo fmt --manifest-path prototype/Cargo.toml -- --check
-          cargo test --manifest-path prototype/Cargo.toml --all-targets
-          cargo run --manifest-path prototype/Cargo.toml --quiet
-          test ! -e prototype/target
-          test ! -e tools/__pycache__
-          test ! -e transfer
+          {
+            python3 -B tools/validate_blueprint.py
+            cargo fmt --manifest-path prototype/Cargo.toml -- --check
+            cargo test --manifest-path prototype/Cargo.toml --all-targets
+            cargo run --manifest-path prototype/Cargo.toml --quiet
+            test ! -e prototype/target
+            test ! -e tools/__pycache__
+            test ! -e transfer
+          } > /tmp/turing-final-validation.log 2>&1
+          status=$?
+          cat /tmp/turing-final-validation.log
+          if test "$status" -ne 0; then
+            if test '${{ github.event_name }}' = 'pull_request'; then
+              {
+                echo '### Final production readiness validation failure'
+                echo
+                echo '```text'
+                tail -160 /tmp/turing-final-validation.log
+                echo '```'
+              } > /tmp/turing-final-validation-comment.md
+              gh pr comment '${{ github.event.pull_request.number }}' \
+                --repo '${{ github.repository }}' \
+                --body-file /tmp/turing-final-validation-comment.md
+            fi
+            exit "$status"
+          fi
 
       - name: Delete every non-main branch
         shell: bash
