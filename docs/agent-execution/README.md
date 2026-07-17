@@ -12,6 +12,12 @@ This book defines how software agents may contribute to Turing without becoming 
 
 An implementation agent cannot approve or merge its own production work. Independent review and the protected merge path remain mandatory even when an agent wrote the implementation, tests, documentation, and evidence bundle.
 
+## Implementation game plan
+
+The [Implementation Master Plan](../project-buildout/implementation-plan/README.md) is mandatory reading before task creation or execution. It defines the M0–M9 sequence, WP dependencies, decision gates, interface freezes, evidence classes, work-package playbooks, stop conditions, and handoffs.
+
+The plan does not grant authority. A separate `TASK-*` manifest must be reviewed and marked `ready`. Work from an unmerged branch is not an accepted dependency.
+
 ## Reading order
 
 1. [Agent trust model and authority](01-agent-trust-model-and-authority.md)
@@ -25,6 +31,8 @@ An implementation agent cannot approve or merge its own production work. Indepen
 9. [Security embargo, release, and incident boundaries](09-security-embargo-release-and-incident-boundaries.md)
 10. [Cost, resource, and concurrency budgets](10-cost-resource-and-concurrency-budgets.md)
 11. [Human handoff and escalation](11-human-handoff-and-escalation.md)
+12. [Implementation agent operating protocol](../project-buildout/implementation-plan/02-agent-operating-protocol.md)
+13. [Task kickoff, review, and handoff checklists](../project-buildout/implementation-plan/17-delivery-checklists-and-handoffs.md)
 
 ## Machine-readable companions
 
@@ -34,6 +42,13 @@ An implementation agent cannot approve or merge its own production work. Indepen
 - [Evidence bundle schema](machine/evidence-bundle.schema.json)
 - [Escalation policy](machine/escalation-policy.json)
 - [Prohibited agent actions](machine/prohibited-agent-actions.json)
+- [Implementation execution graph](../blueprint-v1/machine/implementation-execution-graph.json)
+- [Implementation task sequence](../blueprint-v1/machine/implementation-task-sequence.json)
+- [Implementation evidence catalog](../blueprint-v1/machine/implementation-evidence-catalog.json)
+
+## Task source
+
+Durable task manifests live beneath `docs/agent-execution/machine/tasks/` when created. A task manifest records status, owner, reviewer, dependencies, paths, tests, budgets, rollback, and expiry. It never silently changes accepted requirements or WP status.
 
 ## Normative baselines
 
