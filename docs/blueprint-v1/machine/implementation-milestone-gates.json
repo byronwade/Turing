@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "planning_baseline",
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Repository and evidence foundation",
+      "entry": [],
+      "blocking_outputs": ["root workspace","pinned toolchain","task and evidence controls","requirements risks ADR and WP registries","dependency unsafe native generated and provenance ledgers","clean CI"],
+      "exit_evidence": ["fresh-host validation","all top-level requirements have stable ownership state","architecture and security invariants have executable reference tests","no production claim"],
+      "prohibited_claims": ["usable browser","hostile-web safe","preview","beta","stable"]
+    },
+    {
+      "id": "M1",
+      "name": "Native shell and process laboratory",
+      "entry": ["M0 gate","WP-002 accepted research contract","reference platform selected for evidence"],
+      "blocking_outputs": ["native accessible shell","effective renderer sandbox evidence","bounded authenticated IPC laboratory","surface crash recovery","lifecycle and resource simulator","signed research package laboratory"],
+      "exit_evidence": ["shell responsive during child hangs","prohibited ambient capabilities denied","resource and lifecycle state visible","research package install rollback and recovery"],
+      "prohibited_claims": ["web browser","general browsing","production sandbox across untested platforms"]
+    },
+    {
+      "id": "M2",
+      "name": "Static document engine",
+      "entry": ["M1 process and surface contracts","ADR-0009","parser and corpus provenance"],
+      "blocking_outputs": ["HTML tokenizer and tree builder","DOM","CSS parser and cascade","block and text layout","display list","CPU reference raster","accessibility tree","static DevTools traces"],
+      "exit_evidence": ["declared WPT subset threshold","deterministic reference rendering","sandbox and resource caps","keyboard and accessibility critical flows"],
+      "prohibited_claims": ["JavaScript support","modern web compatibility","daily browser"]
+    },
+    {
+      "id": "M3",
+      "name": "JavaScript interpreter and dynamic DOM",
+      "entry": ["DOM lifetime contract","Test262 revision","renderer sandbox"],
+      "blocking_outputs": ["lexer parser bytecode interpreter","exact GC","Web IDL generator","event loop","timers","dynamic DOM and style","console and debugger foundation"],
+      "exit_evidence": ["published Test262 map","GC stress and wrapper lifecycle evidence","dynamic DOM WPT subset","OOM cancellation and crash behavior"],
+      "prohibited_claims": ["JIT performance","full JavaScript","arbitrary-web safety"]
+    },
+    {
+      "id": "M4",
+      "name": "Navigation network storage and controlled applications",
+      "entry": ["IF-001","IF-003","renderer sandbox","profile and partition identity contracts"],
+      "blocking_outputs": ["navigation transaction","renderer assignment","HTTP TLS Fetch subset","cookies and cache","persistent storage","service-worker foundation","downloads permissions workers","network and storage DevTools"],
+      "exit_evidence": ["cross-origin and cross-profile tests","storage crash migration and quota evidence","renderer has no ambient sockets or paths","controlled application corpus"],
+      "prohibited_claims": ["broad compatibility","sensitive daily use","stable storage beyond declared guarantees"]
+    },
+    {
+      "id": "M5",
+      "name": "Developer preview",
+      "entry": ["M1-M4 integration","signed update laboratory","profile migration format","security and accessibility baseline"],
+      "blocking_outputs": ["coherent browser shell","layout breadth","initial DevTools and automation","signed auto-updating developer channel","crash and recovery tooling","exact compatibility report"],
+      "exit_evidence": ["update and rollback reliability","emergency patch rehearsal","UI accessibility baseline","critical sandbox update data-loss and trusted-UI issues resolved"],
+      "prohibited_claims": ["safe replacement browser","beta","stable"]
+    },
+    {
+      "id": "M6",
+      "name": "JIT media Plug-ins and agent preview",
+      "entry": ["interpreter and GC reference","sandboxed utility processes","capability and protocol contracts"],
+      "blocking_outputs": ["baseline JIT","WebAssembly track","media PDF printing foundations","restricted Plug-in platform","read-only then low-risk agent preview","real 30-tab integration"],
+      "exit_evidence": ["JIT equivalence W^X and fuzzing","media parser sandbox/fuzz evidence","Plug-in revocation and budgets","agent prompt-injection and authority evaluation"],
+      "prohibited_claims": ["unrestricted agents","complete extension compatibility","universal media or DRM support"]
+    },
+    {
+      "id": "M7",
+      "name": "Beta hardening",
+      "entry": ["operational preview channel","supported beta platform candidates","continuous labs and incident intake"],
+      "blocking_outputs": ["compatibility breadth","optimizing performance work","robust recovery and migrations","cross-platform packages","independent review","numeric SLOs","support and on-call"],
+      "exit_evidence": ["critical security findings resolved","sustained fuzzing","published conformance thresholds","accessibility and platform matrices","incident update and migration rehearsals"],
+      "prohibited_claims": ["stable","all users","unsupported platforms"]
+    },
+    {
+      "id": "M8",
+      "name": "Stable general-purpose release candidate",
+      "entry": ["ADR-0018","PRG-001 through PRG-020 ready","human release authority"],
+      "blocking_outputs": ["finite scope and platform contract","signed reproducible artifacts","support and EOL","security accessibility migration and update evidence","production services and offline behavior"],
+      "exit_evidence": ["zero critical security update signing or data-loss issues","all stable gates","artifact digest signatures and update metadata","release board approval"],
+      "prohibited_claims": ["Chrome-class parity outside measured scope","unsupported proprietary capabilities"]
+    },
+    {
+      "id": "M9",
+      "name": "Continuous parity and maintenance",
+      "entry": ["supported stable release","sustainable ownership and operations"],
+      "blocking_outputs": ["continuous standards conformance","compatibility and performance campaigns","security response","enterprise and ecosystem breadth","platform evolution","documentation and governance refresh"],
+      "exit_evidence": ["none; recurring quarterly and release-train review"],
+      "prohibited_claims": ["permanently complete browser","unqualified number-one claim"]
+    }
+  ]
+}
