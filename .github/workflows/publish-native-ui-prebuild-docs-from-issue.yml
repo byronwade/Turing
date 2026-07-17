@@ -50,10 +50,26 @@ jobs:
 
       - name: Generate canonical documentation
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cp /tmp/generate_native_ui_docs.py tools/generate_native_ui_docs.py
-          PYTHONDONTWRITEBYTECODE=1 python3 -B tools/generate_native_ui_docs.py
+          if ! PYTHONDONTWRITEBYTECODE=1 python3 -B tools/generate_native_ui_docs.py > /tmp/turing-generator.log 2>&1; then
+            cat /tmp/turing-generator.log
+            {
+              echo '### Native UI generator failure'
+              echo
+              echo '```text'
+              tail -80 /tmp/turing-generator.log
+              echo '```'
+            } > /tmp/turing-generator-comment.md
+            gh pr comment '${{ github.event.pull_request.number }}' \
+              --repo '${{ github.repository }}' \
+              --body-file /tmp/turing-generator-comment.md
+            exit 1
+          fi
+          cat /tmp/turing-generator.log
 
       - name: Require synchronized native UI and readiness surface
         shell: bash
