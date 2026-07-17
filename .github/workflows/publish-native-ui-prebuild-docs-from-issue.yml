@@ -1,20 +1,22 @@
-name: Publish native UI and pre-build documentation from issue
+name: Publish native UI and pre-build documentation
 
 on:
-  issues:
-    types: [opened]
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-native-ui-prebuild-docs-from-issue.yml
 
 permissions:
   contents: write
-  issues: write
 
 concurrency:
-  group: publish-native-ui-prebuild-docs-from-issue
+  group: publish-native-ui-prebuild-docs
   cancel-in-progress: false
 
 jobs:
   publish:
-    if: github.event.issue.title == 'Run Turing native UI documentation publication' && github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -117,13 +119,3 @@ jobs:
         run: |
           set -euo pipefail
           git push origin --delete ops/native-ui-prebuild-docs
-
-      - name: Close operational issue
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh issue close '${{ github.event.issue.number }}' \
-            --repo '${{ github.repository }}' \
-            --reason completed \
-            --comment 'Native UI and pre-build documentation was generated, validated, committed to main, and the temporary publication branch was deleted.'
