@@ -453,13 +453,13 @@ impl ProcessRegistry {
             });
         }
         let required_capability = kind.required_capability();
-        if let Some(capability) = required_capability {
-            if !sender.allows(capability) {
-                return Err(KernelError::MissingCapability {
-                    role: sender.role(),
-                    capability,
-                });
-            }
+        if let Some(capability) = required_capability
+            && !sender.allows(capability)
+        {
+            return Err(KernelError::MissingCapability {
+                role: sender.role(),
+                capability,
+            });
         }
 
         let channel_id = envelope.channel();
