@@ -1,32 +1,32 @@
-# Provisional single-owner research-phase routing. Multi-person backup and qualified domain ownership are required before preview/beta/stable.
+# Provisional single-owner routing. Qualified backups are required before preview.
 * @byronwade
+
+# Build and source foundations
+/Cargo.toml @byronwade
+/Cargo.lock @byronwade
+/rust-toolchain.toml @byronwade
+/rustfmt.toml @byronwade
+/clippy.toml @byronwade
+/apps/ @byronwade
+/crates/ @byronwade
+/security/ @byronwade
+/tools/ @byronwade
+/prototype/ @byronwade
+/.github/ @byronwade
+
+# Canonical documentation
 /docs/ @byronwade
 /docs/engine/ @byronwade
 /docs/javascript/ @byronwade
 /docs/security-engine/ @byronwade
+/docs/ui-runtime/ @byronwade
+/docs/agent-execution/ @byronwade
+/docs/production-readiness/ @byronwade
 /docs/plugins/ @byronwade
 /docs/embedding/ @byronwade
 /docs/technology-stack/ @byronwade
 /docs/project-buildout/ @byronwade
-/prototype/ @byronwade
-/tools/ @byronwade
-/.github/ @byronwade
-
-# MARKET-STRATEGY-2026-07
-# Market strategy and product opportunity research
 /docs/market-strategy/ @byronwade
-/docs/research/browser-market-gap-2026-07.md @byronwade
-/docs/templates/market-opportunity.md @byronwade
 
-<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
-/docs/ui-runtime/ @byronwade
-/docs/research/native-ui-framework-evaluation-2026-07.md @byronwade
-/docs/research/pre-build-readiness-gap-audit-2026-07.md @byronwade
-/docs/blueprint-v1/machine/pre-build-readiness.json @byronwade
-
-<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
-# Agent execution and production readiness
-/docs/agent-execution/ @byronwade
-/docs/production-readiness/ @byronwade
-/docs/research/agent-execution-production-readiness-audit-2026-07.md @byronwade
+# Ownership policy itself
 /.github/CODEOWNERS @byronwade
