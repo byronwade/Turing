@@ -37,10 +37,16 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   ├── research/
 │   ├── project-buildout/
 │   ├── agent-execution/
+│   │   └── machine/
+│   │       └── tasks/
 │   ├── production-readiness/
 │   ├── ui-runtime/
 │   └── subsystem engineering books
 ├── prototype/
+├── schemas/
+│   └── sandbox/
+│       ├── probe-catalog.json
+│       └── probe-evidence.schema.json
 ├── security/
 │   ├── dependencies.json
 │   ├── unsafe-code.json
@@ -103,6 +109,23 @@ A toolkit, platform, GPU, network, storage, or runtime dependency may not enter 
 
 The dependency-free architecture prototype remains a research executable. It is a reference model, not the production browser implementation.
 
+## `schemas/`
+
+Versioned source schemas for generated interfaces, evidence records, profile formats, settings, policies, and other machine contracts live here when they are implementation inputs rather than documentation-only companions.
+
+Current sandbox-planning contracts:
+
+- `sandbox/probe-catalog.json` defines stable probe IDs, platform applicability, safe test targets, expected outcomes, and rules that prevent unsupported or application-stub behavior from counting as a pass;
+- `sandbox/probe-evidence.schema.json` defines build, platform, policy, process, redaction, result, and summary evidence for sandbox laboratories.
+
+These schemas are planning contracts only. No sandbox launcher, native platform adapter, or effective restriction is implemented by their presence. Schema changes require the owning task, security review, compatibility analysis, deterministic validation, and documentation update.
+
+## Agent execution task records
+
+`docs/agent-execution/machine/tasks/` contains bounded task manifests created under the [Agent Execution book](agent-execution/README.md).
+
+A task record declares allowed paths, prohibited authority, preconditions, acceptance criteria, negative tests, resource budgets, rollback, dependencies, reviewer, and expiry. It does not prove implementation or acceptance. `TASK-000002` specifies the WP-003 sandbox-probe work and remains blocked on independent acceptance of `TASK-000001`.
+
 ## `security/`
 
 Machine-readable source and supply-chain ledgers live here.
@@ -133,7 +156,7 @@ Tools must fail visibly, avoid hidden network access, preserve source-tree clean
 
 All durable prose belongs under `docs/`. Root Markdown is limited to repository discovery and agent-control files.
 
-A new document must have an owner, status, unsupported behavior, evidence expectations, and an inbound link. Machine-readable companions use JSON under the owning `machine/` directory.
+A new document must have an owner, status, unsupported behavior, evidence expectations, and an inbound link. Machine-readable documentation companions use JSON under the owning `machine/` directory; implementation input schemas live under `schemas/`.
 
 ## Build output and temporary material
 
@@ -149,7 +172,7 @@ For any structural change:
 2. update `Cargo.toml` and `workspace-components.json` when workspace membership changes;
 3. update CODEOWNERS and professional ownership;
 4. update dependency, unsafe, native, generated, and provenance ledgers;
-5. update affected Blueprint, book, roadmap, and readiness records;
-6. update validation;
+5. update affected Blueprint, book, roadmap, readiness, and task records;
+6. update validation and schema checks;
 7. run `sh tools/check.sh`;
-8. attach evidence and unsupported behavior to the review.
+8. attach evidence, unsupported behavior, rollback, and residual risk to the review.
