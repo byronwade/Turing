@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "proposed_contract",
+  "default_policy": "deny",
+  "result_values": [
+    "allowed",
+    "denied",
+    "killed",
+    "brokered",
+    "unsupported",
+    "not_attempted",
+    "error"
+  ],
+  "rules": {
+    "unsupported_is_pass": false,
+    "application_stub_denial_is_pass": false,
+    "unexpected_allow_is_blocking": true,
+    "unexpected_deny_requires_review": true,
+    "destructive_external_targets_forbidden": true
+  },
+  "operations": [
+    {
+      "id": "SBX-PROBE-001",
+      "name": "assigned-output-write",
+      "category": "control",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "allowed",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "launcher-provided evidence channel",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-002",
+      "name": "assigned-input-read",
+      "category": "control",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "allowed",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "launcher-provided read-only fixture handle",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-003",
+      "name": "monotonic-clock-read",
+      "category": "control",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "allowed",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "platform monotonic clock",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-004",
+      "name": "arbitrary-filesystem-read",
+      "category": "filesystem",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed_or_platform_acl_denied",
+      "target": "harness-created file outside the sandbox grant set",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-005",
+      "name": "arbitrary-filesystem-write",
+      "category": "filesystem",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "harness-created writable directory outside the sandbox grant set",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-006",
+      "name": "untrusted-dynamic-library-load",
+      "category": "code-loading",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied_or_killed",
+      "unsandboxed_control_expectation": "allowed_when_fixture_is_valid",
+      "target": "harness-owned unsigned or untrusted fixture outside allowed roots",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-007",
+      "name": "outbound-network-connect",
+      "category": "network",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "loopback harness listener owned by the test runner",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-008",
+      "name": "network-listen",
+      "category": "network",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "loopback ephemeral port",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-009",
+      "name": "raw-socket-create",
+      "category": "network",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed_or_host_privilege_denied",
+      "target": "non-transmitting raw socket",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-010",
+      "name": "child-process-create",
+      "category": "process",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "inert harness child",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-011",
+      "name": "debug-attach",
+      "category": "process",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed_or_host_policy_denied",
+      "target": "harness-owned sibling process",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-012",
+      "name": "cross-process-memory-read",
+      "category": "process",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed_or_host_policy_denied",
+      "target": "harness-owned sibling process fixture",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-013",
+      "name": "credential-store-access",
+      "category": "credential",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "fixture_dependent",
+      "target": "dedicated empty test credential namespace; never a real user vault",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-014",
+      "name": "global-clipboard-read",
+      "category": "ui-global-state",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "fixture_dependent",
+      "target": "isolated test-session clipboard containing non-sensitive sentinel data",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-015",
+      "name": "device-open",
+      "category": "device",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "fixture_dependent",
+      "target": "non-destructive harness-owned virtual or test device",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-016",
+      "name": "ambient-platform-ipc",
+      "category": "platform-ipc",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed_or_service_absent",
+      "target": "harness-owned D-Bus, XPC, COM, RPC, or named-pipe endpoint not granted to the probe",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-017",
+      "name": "registry-or-preference-write",
+      "category": "configuration",
+      "platforms": ["macos", "windows"],
+      "sandbox_expectation": "denied",
+      "unsandboxed_control_expectation": "allowed",
+      "target": "harness-created external preference domain or registry key",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-018",
+      "name": "unexpected-inherited-handle",
+      "category": "launch-hygiene",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "denied_or_absent",
+      "unsandboxed_control_expectation": "fixture_dependent",
+      "target": "harness-created descriptor or handle not included in the allowlist",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-019",
+      "name": "secret-environment-variable",
+      "category": "launch-hygiene",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "absent",
+      "unsandboxed_control_expectation": "present_in_control_fixture",
+      "target": "synthetic sentinel environment variable",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-020",
+      "name": "unsafe-working-directory",
+      "category": "launch-hygiene",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "replaced_or_inaccessible",
+      "unsandboxed_control_expectation": "accessible",
+      "target": "harness-created external working directory",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-021",
+      "name": "broker-disconnect",
+      "category": "recovery",
+      "platforms": ["linux", "macos", "windows"],
+      "sandbox_expectation": "fail_closed_or_terminate",
+      "unsandboxed_control_expectation": "not_applicable",
+      "target": "authenticated test broker channel",
+      "destructive": false
+    }
+  ]
+}
