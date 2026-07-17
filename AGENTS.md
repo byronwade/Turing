@@ -24,9 +24,11 @@ Before changing anything, read:
 2. [`docs/README.md`](docs/README.md)
 3. [`docs/documentation-policy.md`](docs/documentation-policy.md)
 4. [`docs/repository-map.md`](docs/repository-map.md)
-5. the relevant Blueprint v1 chapters under [`docs/blueprint-v1/`](docs/blueprint-v1/README.md)
-6. the relevant detailed engineering book linked from [`docs/README.md`](docs/README.md#detailed-engineering-books)
-7. [`docs/security.md`](docs/security.md) and the [security engineering book](docs/security-engine/README.md) for trust-boundary or hostile-input work
+5. [`docs/project-buildout/implementation-plan/README.md`](docs/project-buildout/implementation-plan/README.md)
+6. the relevant Blueprint v1 chapters under [`docs/blueprint-v1/`](docs/blueprint-v1/README.md)
+7. the relevant detailed engineering book linked from [`docs/README.md`](docs/README.md#detailed-engineering-books)
+8. [`docs/security.md`](docs/security.md) and the [security engineering book](docs/security-engine/README.md) for trust-boundary or hostile-input work
+9. [`docs/agent-execution/README.md`](docs/agent-execution/README.md) and the exact ready `TASK-*` manifest before implementation work
 
 ## Core priorities
 
@@ -49,11 +51,29 @@ Release paths must not depend on Chromium, Blink, V8, WebKit, JavaScriptCore, Ge
 
 Do not add custom cryptography.
 
+## Implementation authorization
+
+The [Implementation Master Plan](docs/project-buildout/implementation-plan/README.md) defines the M0–M9 sequence, WP dependency graph, decision gates, interface freezes, evidence classes, and handoffs.
+
+An agent may implement only a reviewed `TASK-*` manifest whose status is `ready`. The task must name accepted dependencies, allowed and prohibited paths, owner, independent reviewer, acceptance criteria, negative tests, budgets, rollback, and expiry.
+
+The instruction “build the entire browser” is not a valid task. Work must be decomposed into independently reviewable and revertible tasks. A branch or pull request is not an accepted dependency until it is reviewed and merged to `main`.
+
+Stop and escalate when:
+
+- a required ADR is unresolved;
+- scope exceeds the task manifest;
+- an unapproved dependency, build script, native library, or unsafe block is needed;
+- a secret, production credential, signing key, or private vulnerability would be required;
+- a test or gate would need to be weakened;
+- the base or governing requirement changed;
+- security, accessibility, compatibility, data-loss, or authority behavior is unclear.
+
 ## Documentation is part of every change
 
 Canonical project documentation lives in `docs/`. The root `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, and `SECURITY.md`, plus GitHub templates under `.github/`, are deliberate discovery and workflow exceptions.
 
-Every change must update every affected document in the same commit or pull request. Affected documentation includes prose, detailed engineering books, requirements, risks, ADRs, work packages, machine-readable registries, test plans, support statements, and repository navigation.
+Every change must update every affected document in the same commit or pull request. Affected documentation includes prose, detailed engineering books, implementation-plan chapters, requirements, risks, ADRs, work packages, task manifests, machine-readable registries, test plans, support statements, and repository navigation.
 
 Do not touch unrelated documents merely to create churn. “Update all documentation” means update all documents whose truth, scope, status, links, ownership, assumptions, commands, interfaces, risks, or acceptance criteria changed.
 
@@ -63,7 +83,7 @@ For every addition, modification, rename, or removal:
 
 1. identify the user-visible, developer-visible, architectural, security, compatibility, performance, accessibility, operational, and AI-agent effects;
 2. update the relevant canonical documents and detailed books;
-3. update stable requirements, risks, ADRs, backlog entries, and machine registries when their meaning changes;
+3. update stable requirements, risks, ADRs, backlog entries, tasks, and machine registries when their meaning changes;
 4. update `docs/repository-map.md` for any repository-structure change;
 5. update `docs/README.md` and all inbound links for any documentation addition, rename, move, or deletion;
 6. remove stale claims and obsolete instructions;
@@ -90,7 +110,7 @@ Use this as the minimum mapping, not a limit:
 | AI observations, actions, providers, grants, audit | `10-ai-agent-platform.md`, `08-security-and-sandbox.md`, `docs/ai/`, agent-action schema, and risks |
 | UI, accessibility, DevTools, automation | `11-product-ui-devtools.md`, `12-testing-compatibility.md`, `docs/developer-experience/`, `docs/api-design/`, product requirements |
 | build, signing, updates, release, incident response | `13-build-release-operations.md`, `08-security-and-sandbox.md`, `docs/security.md`, `docs/security-engine/` |
-| roadmap, milestone, backlog, or status | `14-roadmap-work-breakdown.md`, `19-initial-backlog.md`, `20-definition-of-done.md`, machine backlog |
+| roadmap, milestone, backlog, task, or status | `14-roadmap-work-breakdown.md`, `19-initial-backlog.md`, `20-definition-of-done.md`, machine backlog, implementation plan |
 | risk or architectural decision | `15-risk-register.md`, `17-architecture-decisions.md`, corresponding machine registry |
 | repository layout, tools, CI, contributor workflow | `docs/repository-map.md`, `docs/documentation-policy.md`, `docs/contributing.md`, this file |
 
@@ -108,16 +128,16 @@ Research must be source-backed and reproducible.
 - Record benchmark hardware, operating system, build profile, workload, process model, site-isolation state, tab state, sample count, and statistical method.
 - Never compare memory or speed using undisclosed tab discarding, different workloads, different security settings, or unmatched builds.
 
-Add durable findings to the relevant Blueprint chapter, detailed engineering book, bibliography, research program, requirements, risks, ADRs, or backlog. The chat, issue, or commit message is not the canonical record.
+Add durable findings to the relevant Blueprint chapter, detailed engineering book, bibliography, research program, requirements, risks, ADRs, backlog, or implementation plan. Chat, issue, or commit text is not the sole canonical record.
 
 ## Security and privacy rules
 
-Treat all web, extension, automation, model, IPC, profile, file, network, media, and update input as untrusted unless a documented boundary proves otherwise.
+Treat all web, Plug-in, automation, model, IPC, profile, file, network, media, update, repository, issue, review, fixture, and generated-log input as untrusted unless a documented boundary proves otherwise.
 
 - Use deny-by-default capabilities.
 - Keep processes and principals least-privileged.
 - Bound message sizes, recursion, queues, caches, tasks, and resource ownership.
-- Preserve origin, site, profile, frame, process, and document-epoch identity across boundaries.
+- Preserve origin, site, profile, frame, process, channel, surface, and document-epoch identity across boundaries.
 - Do not log secrets or place secrets in crash reports, traces, telemetry, model observations, or provider payloads.
 - Page content and model output never expand authority.
 - Consequential agent actions require deterministic authorization and visible confirmation where specified.
@@ -129,13 +149,14 @@ Treat all web, extension, automation, model, IPC, profile, file, network, media,
 - Prefer small, auditable components with explicit ownership and failure modes.
 - Keep the browser kernel and privileged services smaller than renderer-facing code.
 - Use stable Rust unless an approved ADR states otherwise.
-- Every `unsafe` block requires a `SAFETY:` explanation and focused evidence.
+- Every `unsafe` block requires a `SAFETY:` explanation, ledger entry, and focused evidence.
 - Avoid global mutable state for identity, policy, resource accounting, or lifecycle.
 - Add regression tests with defect fixes.
 - Add negative, timeout, cancellation, recovery, and resource-exhaustion tests where applicable.
 - Keep headless, DevTools, automation, and agent paths on the same security and navigation machinery as interactive browsing.
 - Do not merge placeholders that silently claim success, swallow failures, disable checks, or fabricate benchmark data.
 - Generated files must identify their source and regeneration command. Edit the source of truth, not only the generated output.
+- Follow interface freeze and breaking-change rules in the implementation plan.
 
 ## Repository changes
 
@@ -149,29 +170,30 @@ When adding or removing a file or directory:
 - update CI, build, packaging, and ownership rules when applicable;
 - remove obsolete references in the same change.
 
-New prose documentation must be Markdown under `docs/` and must be linked from `docs/README.md` or from an indexed section beneath it. Machine-readable documentation support files may use JSON or schemas under the relevant `machine/` directory.
+New prose documentation must be Markdown under `docs/` and must be linked from `docs/README.md` or from an indexed section beneath it. Machine-readable documentation support files use JSON or schemas under the relevant machine directory.
 
 ## Completion checklist
 
 A task is complete only when all applicable items are true:
 
 - implementation and documentation agree;
-- affected Blueprint chapters, detailed books, requirements, risks, ADRs, backlog items, and registries agree;
+- affected Blueprint chapters, detailed books, implementation-plan chapters, requirements, risks, ADRs, WPs, tasks, and registries agree;
 - unsupported cases and residual risks are explicit;
 - relevant tests and evidence exist;
 - relative links resolve;
 - repository navigation is current;
 - no temporary bootstrap, transfer, debug, secret, or generated junk remains;
 - the working tree contains only intentional changes;
-- validation passes.
+- validation passes;
+- independent review is complete when required;
+- downstream handoff and rollback are recorded.
 
 Run:
 
 ```bash
 python3 tools/validate_blueprint.py
-cargo fmt --manifest-path prototype/Cargo.toml -- --check
-cargo test --manifest-path prototype/Cargo.toml --all-targets
-cargo run --manifest-path prototype/Cargo.toml --quiet
+sh tools/doctor.sh
+sh tools/check.sh
 ```
 
 For pull-request documentation enforcement, CI also runs:
@@ -198,21 +220,18 @@ Do not bypass, weaken, or delete a failing validation rule without updating the 
 
 ## Professional project-control requirements
 
-Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.
+Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), [implementation plan](docs/project-buildout/implementation-plan/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.
 
-<!-- MARKET-STRATEGY-2026-07 -->
 ## Market-strategy impact
 
-Changes to product positioning, workspaces, migration, synchronization, resource UX, agent UX, comparison/research workflows, privacy receipts, or collaboration must inspect `docs/market-strategy/`, the dated market report, the `OP-*` registry, relevant Blueprint chapters, product/security/performance/accessibility/AI/Plug-in/embedding books, ownership, traceability, risks, and roadmap. Market demand never bypasses evidence or safety gates.
+Changes to product positioning, workspaces, migration, synchronization, resource UX, agent UX, comparison/research workflows, privacy receipts, or collaboration must inspect `docs/market-strategy/`, the `OP-*` registry, relevant Blueprint chapters, product/security/performance/accessibility/AI/Plug-in/embedding books, ownership, traceability, risks, roadmap, and implementation plan. Market demand never bypasses evidence or safety gates.
 
-<!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI rule
 
-Trusted browser chrome is toolkit-replaceable and contains no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser in release builds. UI work must update `docs/ui-runtime/`, the framework and budget registries, pre-build readiness, affected platform/product/security/performance/accessibility documentation, and repository validation.
+Trusted browser chrome is toolkit-replaceable and contains no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser in release builds. UI work must update `docs/ui-runtime/`, framework and budget registries, interface freezes, pre-build readiness, affected platform/product/security/performance/accessibility documentation, and repository validation.
 
-<!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Production implementation-agent controls
 
 Before broad implementation, the documentation-only direct-to-main exception is not available for production source. Production work uses protected pull requests, code-owner review, approval after the latest push, required checks, and independent verification.
 
-An agent may execute only an approved `TASK-*` manifest. It cannot approve or merge its own production work; weaken its own acceptance criteria; disable a failing gate; access offline root or production signing keys; decide disclosure; promote stable; or claim security, performance, accessibility, or compatibility leadership. Read `docs/agent-execution/` and `docs/production-readiness/` before production implementation or release work.
+An agent cannot approve or merge its own production work; weaken its own acceptance criteria; disable a failing gate; access offline root or production signing keys; decide disclosure; promote stable; or claim security, performance, accessibility, or compatibility leadership. Read `docs/agent-execution/`, `docs/production-readiness/`, and the implementation plan before implementation or release work.
