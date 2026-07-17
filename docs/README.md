@@ -58,7 +58,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Original documentation gap analysis |
 | [Performance, security, developer, and systems audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Detailed subsystem expansion |
 | [Professional buildout audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, operations, legal, and sustainability |
-| [Browser market gap — July 2026](research/browser-market-gap-2026-07.md) | `OP-001` through `OP-014` product hypotheses |
+| [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | `OP-001` through `OP-014` product hypotheses |
 | [Native UI framework evaluation — July 2026](research/native-ui-framework-evaluation-2026-07.md) | Slint-first comparison hypothesis and browser-specific risks |
 | [Pre-build readiness audit — July 2026](research/pre-build-readiness-gap-audit-2026-07.md) | `PB-001` through `PB-020` |
 | [Agent execution and production-readiness audit — July 2026](research/agent-execution-production-readiness-audit-2026-07.md) | Agent authority and stable-release controls |
