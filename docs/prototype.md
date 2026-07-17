@@ -43,11 +43,13 @@ cargo test --locked -p turing-architecture-prototype --all-targets
 cargo run --locked -p turing-architecture-prototype --quiet
 ```
 
-The package uses only the Rust standard library, retains Edition 2021 and a Rust 1.85 minimum, and is compiled in CI through the repository-pinned Rust 1.97.1 toolchain. It does not depend on the new production-oriented crates.
+The package uses only the Rust standard library, retains Edition 2021, and declares Rust 1.97 as its minimum within the repository-pinned Rust 1.97.1 toolchain. It does not depend on the new production-oriented crates.
 
 ## Relationship to the M0 workspace
 
 The root workspace now contains typed identity, IPC, kernel, UI-model, build-identity, shell-laboratory, and repository-tool packages. Those crates are the contained M0 implementation foundation. This prototype remains an independent oracle for earlier architectural invariants; it is not silently converted into the production browser.
+
+The reference model intentionally defines roles, action classes, lifecycle states, protection reasons, and credential modes beyond those used by its executable smoke path. Such catalog items use targeted `#[expect(dead_code)]` annotations with reasons; the production-oriented crates do not receive broad dead-code exemptions.
 
 ## Change requirements
 
