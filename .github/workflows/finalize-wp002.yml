@@ -100,11 +100,32 @@ jobs:
       - name: Commit the clean implementation branch
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
           git add -A
-          git diff --cached --quiet && {
-            echo 'Expected WP-002 changes, but the clean tree is unchanged.' >&2
-            exit 1
-          }
-          git commit -m 'Implement WP-002 kernel identities and bounded IPC'
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          {
+            echo '--- git status ---'
+            git status --short
+            echo '--- staged summary ---'
+            git diff --cached --stat
+            if git diff --cached --quiet; then
+              echo 'Expected WP-002 changes, but the clean tree is unchanged.' >&2
+              exit 1
+            fi
+            git commit -m 'Implement WP-002 kernel identities and bounded IPC'
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          } > /tmp/wp002-commit.log 2>&1
+          status=$?
+          cat /tmp/wp002-commit.log
+          if test "$status" -ne 0; then
+            {
+              echo '### WP-002 publication failure'
+              echo
+              echo '```text'
+              tail -160 /tmp/wp002-commit.log
+              echo '```'
+            } > /tmp/wp002-commit-comment.md
+            gh pr comment '${{ github.event.pull_request.number }}' \
+              --repo '${{ github.repository }}' \
+              --body-file /tmp/wp002-commit-comment.md
+            exit "$status"
+          fi
