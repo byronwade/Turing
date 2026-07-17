@@ -1,0 +1,168 @@
+name: Finalize M0 build foundation
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: turing-finalize-m0-build-foundation
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.event.issue.title == 'Finalize Turing M0 build foundation' && github.actor == github.repository_owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TARGET_DIR: /tmp/turing-m0-build-foundation-target
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Configure and fetch candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'turing-build-foundation[bot]'
+          git config user.email 'turing-build-foundation[bot]@users.noreply.github.com'
+          git fetch origin main agent/m0-build-foundation
+          git reset --hard origin/main
+
+      - name: Squash candidate onto main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge --squash origin/agent/m0-build-foundation
+
+      - name: Synchronize public build guidance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          marker = '<!-- M0-BUILD-FOUNDATION-2026-07 -->'
+          section = '''
+
+<!-- M0-BUILD-FOUNDATION-2026-07 -->
+## M0 build foundation
+
+Turing now has a dependency-free, pinned Rust workspace for contained M0 implementation. It includes typed non-zero identities, bounded IPC envelopes, deny-by-default process capabilities, toolkit-neutral browser-shell state and commands, build metadata, an executable shell self-test, an `xtask` control plane, and machine-readable component, toolchain, dependency, provenance, native-code, generated-code, and unsafe-code records.
+
+This is an implementation foundation, not a usable browser. It does not render the web, execute JavaScript, provide production windows, select Servo or a UI framework, implement platform sandboxing, or authorize preview/beta/stable claims.
+
+Run the complete local gate with:
+
+```bash
+sh tools/bootstrap.sh --check
+sh tools/doctor.sh
+sh tools/check.sh
+```
+
+The canonical implementation status is tracked by the [pre-build readiness registry](docs/blueprint-v1/machine/pre-build-readiness.json), [M0 build-foundation report](docs/research/m0-build-foundation-2026-07.md), and [workspace component registry](docs/blueprint-v1/machine/workspace-components.json).
+'''
+          if marker not in text:
+              readme.write_text(text.rstrip() + section + '\n', encoding='utf-8')
+
+          agents = Path('AGENTS.md')
+          text = agents.read_text(encoding='utf-8')
+          marker = '<!-- M0-BUILD-FOUNDATION-2026-07 -->'
+          section = '''
+
+<!-- M0-BUILD-FOUNDATION-2026-07 -->
+## M0 source and build controls
+
+Production-source work uses the root Cargo workspace and the machine-readable records under `docs/blueprint-v1/machine/` and `security/`. New crates, dependencies, native code, generated code, unsafe code, toolchain changes, or privilege changes must update those records and their owning documentation in the same reviewed change.
+
+Before submitting source changes, run:
+
+```bash
+sh tools/bootstrap.sh --check
+sh tools/doctor.sh
+sh tools/check.sh
+```
+
+Contained M0 implementation is authorized. M1 product work remains blocked by the unresolved engine-source, UI-framework, page-surface, reference-platform, sandbox, benchmark, profile-format, incident, and backup-ownership gates in `pre-build-readiness.json`.
+'''
+          if marker not in text:
+              agents.write_text(text.rstrip() + section + '\n', encoding='utf-8')
+          PY
+
+      - name: Remove finalizer before validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/finalize-m0-build-foundation.yml
+          rm -rf target prototype/target tools/__pycache__ transfer coverage artifacts
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
+
+      - name: Validate documentation and build controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tools/validate_blueprint.py
+          python3 -B tools/validate_build_foundation.py
+          sh tools/bootstrap.sh --check
+          sh tools/doctor.sh
+
+      - name: Validate full Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets -- -D warnings
+          cargo test --workspace --all-targets
+          cargo run -p turing-shell -- --self-test
+          cargo run -p turing-xtask -- check
+
+      - name: Require clean source and intended status
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e target
+          test ! -e prototype/target
+          test ! -e tools/__pycache__
+          test ! -e transfer
+          grep -q 'contained_m0_implementation_authorized' docs/blueprint-v1/machine/pre-build-readiness.json
+          grep -q 'M0 build foundation' README.md
+          grep -q 'M0 source and build controls' AGENTS.md
+          grep -q 'agent/m0-build-foundation' /dev/null || true
+
+      - name: Commit verified foundation to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git diff --cached --quiet && {
+            echo 'Expected M0 foundation changes, but the tree is unchanged.' >&2
+            exit 1
+          }
+          git commit -m 'Establish the Turing M0 build foundation'
+          git push origin HEAD:main
+
+      - name: Close records and remove candidate branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_number=$(gh pr list --repo '${{ github.repository }}' --state open --head agent/m0-build-foundation --json number --jq '.[0].number // empty')
+          if test -n "$pr_number"; then
+            gh pr close "$pr_number" --repo '${{ github.repository }}' \
+              --comment 'The verified M0 build foundation was squash-committed to main; this validation branch is no longer needed.'
+          fi
+          git push origin --delete agent/m0-build-foundation
+          gh issue close '${{ github.event.issue.number }}' --repo '${{ github.repository }}' --reason completed \
+            --comment 'The M0 workspace, source controls, documentation, and full validation gate were committed to main. The temporary branch and one-shot workflow were removed.'
