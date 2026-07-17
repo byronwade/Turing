@@ -149,6 +149,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          git checkout origin/main -- .github/workflows
           git add -A
           git diff --cached --quiet && {
             echo 'Expected synchronized documentation changes, but the tree is unchanged.' >&2
@@ -160,5 +161,5 @@ jobs:
           if test '${{ github.event_name }}' = 'pull_request'; then
             gh pr comment '${{ github.event.pull_request.number }}' \
               --repo '${{ github.repository }}' \
-              --body "Validated candidate commit published: \`${candidate}\` on \`ops/agent-production-readiness-output\`. Repository validation and Rust formatting/tests/smoke execution passed."
+              --body "Validated candidate commit published: \`${candidate}\` on \`ops/agent-production-readiness-output\`. Documentation validation and Rust formatting/tests/smoke execution passed. Workflow cleanup will be applied through the repository-authorized GitHub connection before final main verification."
           fi
