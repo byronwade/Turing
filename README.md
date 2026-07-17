@@ -8,7 +8,7 @@ Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operatin
 
 ## Build status
 
-The repository is ready for **contained M0 implementation tasks**. The documentation library contains twenty-seven detailed engineering and product books covering the engine, product, security, UI, agent execution, and production readiness.
+The repository is ready for **contained M0 implementation tasks**. The documentation library contains twenty-seven detailed engineering and product books, expanding the earlier twenty-five detailed engineering and product books baseline, covering the engine, product, security, UI, agent execution, and production readiness.
 
 Implemented foundation:
 
