@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated": "2026-07-17",
-  "status": "ready_for_contained_m0_implementation",
+  "status": "not_ready_for_broad_implementation",
   "allowed_now": [
     "documentation",
     "research",
@@ -37,7 +37,7 @@
     {
       "id": "PB-003",
       "name": "Toolkit-neutral UI model and adapter contract",
-      "status": "implemented_m0_proposed_architecture",
+      "status": "partial",
       "owner_scope": "ui-runtime",
       "evidence": [
         "crates/turing-ui-model",
@@ -72,7 +72,7 @@
     {
       "id": "PB-006",
       "name": "M0 reference desktop environment",
-      "status": "ready_for_ci_not_product_support",
+      "status": "ready",
       "owner_scope": "platform",
       "evidence": [
         "docs/blueprint-v1/machine/toolchains.json",
@@ -85,7 +85,7 @@
     {
       "id": "PB-007",
       "name": "Cargo workspace and crate dependency graph",
-      "status": "ready_for_contained_m0",
+      "status": "ready",
       "owner_scope": "architecture",
       "evidence": [
         "Cargo.toml",
@@ -96,7 +96,7 @@
     {
       "id": "PB-008",
       "name": "Pinned compiler SDK linker and toolchain",
-      "status": "ready_for_pure_rust_m0",
+      "status": "ready",
       "owner_scope": "release-operations",
       "evidence": [
         "rust-toolchain.toml",
@@ -109,18 +109,21 @@
     {
       "id": "PB-009",
       "name": "Bootstrap and read-only doctor commands",
-      "status": "implemented_needs_independent_fresh_host_reproduction",
+      "status": "partial",
       "owner_scope": "release-operations",
       "evidence": [
         "tools/bootstrap.sh",
         "tools/doctor.sh",
         "tools/xtask"
+      ],
+      "evidence_required": [
+        "independent fresh-host reproduction"
       ]
     },
     {
       "id": "PB-010",
       "name": "Dependency unsafe native and provenance ledgers",
-      "status": "ready_initial_zero_dependency_baseline",
+      "status": "ready",
       "owner_scope": "security",
       "evidence": [
         "security/dependencies.json",
@@ -228,7 +231,7 @@
     {
       "id": "PB-020",
       "name": "Implementation kickoff review",
-      "status": "authorized_for_contained_m0_only",
+      "status": "partial",
       "owner_scope": "program",
       "evidence": [
         "docs/project-buildout/11-pre-build-readiness-checklist.md",
@@ -239,5 +242,6 @@
       ]
     }
   ],
-  "completion_rule": "PB-GATE-0 currently authorizes bounded M0 tasks that use the root workspace and agent-execution controls. M1, preview, beta, and stable claims remain separately gated."
+  "completion_rule": "PB-GATE-0 currently authorizes bounded M0 tasks that use the root workspace and agent-execution controls. M1, preview, beta, and stable claims remain separately gated.",
+  "contained_m0_authorization": "ready"
 }
