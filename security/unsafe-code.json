@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "empty",
+  "policy": "Unsafe Rust is forbidden by default. Any future exception requires a SAFETY rationale, owner, bounded interface, tests, review, and explicit ledger entry.",
+  "scan_roots": [
+    "apps",
+    "crates",
+    "prototype",
+    "tools/xtask"
+  ],
+  "entries": []
+}
