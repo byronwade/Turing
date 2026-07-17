@@ -122,6 +122,10 @@ CI also checks deterministic regeneration, formatting, Clippy with warnings deni
 - Message, queue, process, and channel resources are bounded.
 - Sequence failures and policy denials are explicit results rather than ignored conditions.
 
+## Process-ID reuse hardening
+
+The kernel retains the last issued epoch for every allocated `ProcessId`, including removed processes. Relaunching a previously used ID advances the epoch rather than resetting it, so stale handles and envelopes cannot become current again when process and channel identifiers are reused. The epoch ledger is bounded by the generated process-table limit. A regression test covers launch, channel registration, removal, relaunch, stale replay rejection, and fresh-sequence acceptance.
+
 ## Important limitations
 
 The reference does not yet establish:

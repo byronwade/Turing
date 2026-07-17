@@ -6,7 +6,6 @@
 
 use core::fmt;
 use std::collections::BTreeMap;
-use std::collections::btree_map::Entry;
 
 pub use turing_ipc::{Capability, MessageKind, ProcessRole};
 use turing_ipc::{ControlEnvelope, MAX_REGISTERED_PROCESSES, SequenceError, SequenceTracker};
@@ -300,6 +299,7 @@ impl From<SequenceError> for KernelError {
 pub struct ProcessRegistry {
     kernel: ProcessIdentity,
     processes: BTreeMap<ProcessId, ProcessPolicy>,
+    last_epochs: BTreeMap<ProcessId, ProcessEpoch>,
     channels: BTreeMap<ChannelId, ChannelState>,
 }
 
@@ -315,6 +315,7 @@ impl ProcessRegistry {
         Self {
             kernel,
             processes: BTreeMap::from([(kernel_id, policy)]),
+            last_epochs: BTreeMap::from([(kernel_id, kernel.epoch())]),
             channels: BTreeMap::new(),
         }
     }
@@ -372,27 +373,33 @@ impl ProcessRegistry {
         if !capabilities.is_subset_of(CapabilitySet::for_role(child_role)) {
             return Err(KernelError::CapabilityEscalation { role: child_role });
         }
-        if self.processes.len() >= MAX_REGISTERED_PROCESSES {
+        if self.processes.contains_key(&child_id) {
+            return Err(KernelError::DuplicateProcessId { id: child_id });
+        }
+        if !self.last_epochs.contains_key(&child_id)
+            && self.last_epochs.len() >= MAX_REGISTERED_PROCESSES
+        {
             return Err(KernelError::ProcessTableFull {
                 maximum: MAX_REGISTERED_PROCESSES,
             });
         }
-
-        let identity = ProcessIdentity::new(
+        let epoch = match self.last_epochs.get(&child_id).copied() {
+            Some(last) => last
+                .checked_next()
+                .ok_or(KernelError::ProcessEpochExhausted { id: child_id })?,
+            None => ProcessEpoch::new(1).expect("one is a valid process epoch"),
+        };
+        let identity = ProcessIdentity::new(child_id, epoch);
+        self.processes.insert(
             child_id,
-            ProcessEpoch::new(1).expect("one is a valid process epoch"),
+            ProcessPolicy {
+                identity,
+                role: child_role,
+                capabilities,
+            },
         );
-        match self.processes.entry(child_id) {
-            Entry::Vacant(entry) => {
-                entry.insert(ProcessPolicy {
-                    identity,
-                    role: child_role,
-                    capabilities,
-                });
-                Ok(identity)
-            }
-            Entry::Occupied(_) => Err(KernelError::DuplicateProcessId { id: child_id }),
-        }
+        self.last_epochs.insert(child_id, epoch);
+        Ok(identity)
     }
 
     /// Restarts a child process with the same role and attenuated capabilities.
@@ -425,6 +432,7 @@ impl ProcessRegistry {
                 capabilities: policy.capabilities(),
             },
         );
+        self.last_epochs.insert(current.id(), next_epoch);
         self.channels
             .retain(|_, channel| channel.sender != current && channel.receiver != current);
         Ok(next)
@@ -628,6 +636,46 @@ mod tests {
             registry.policy(renderer),
             Err(KernelError::StaleProcess { .. })
         ));
+    }
+
+    #[test]
+    fn removed_process_id_uses_a_new_epoch_and_rejects_stale_replay() {
+        let mut registry = ProcessRegistry::new(ProcessId::new(1).expect("valid kernel id"));
+        let kernel = registry.kernel();
+        let renderer = registry
+            .launch(
+                kernel,
+                ProcessId::new(2).expect("valid renderer id"),
+                ProcessRole::Renderer,
+            )
+            .expect("kernel launches renderer");
+        let channel = ChannelId::new(1).expect("valid channel");
+        registry
+            .register_channel(kernel, channel, renderer, kernel)
+            .expect("kernel registers channel");
+        let stale = envelope(MessageKind::NavigationIntent, renderer, kernel, 1, 1);
+
+        registry
+            .remove(kernel, renderer)
+            .expect("kernel removes renderer");
+        let replacement = registry
+            .launch(kernel, renderer.id(), ProcessRole::Renderer)
+            .expect("kernel relaunches renderer id");
+        assert_eq!(replacement.id(), renderer.id());
+        assert!(replacement.epoch() > renderer.epoch());
+        registry
+            .register_channel(kernel, channel, replacement, kernel)
+            .expect("kernel reuses channel for replacement identity");
+
+        assert!(matches!(
+            registry.authorize(&stale),
+            Err(KernelError::StaleProcess { current, supplied })
+                if current == replacement && supplied == renderer
+        ));
+        let fresh = envelope(MessageKind::NavigationIntent, replacement, kernel, 1, 1);
+        registry
+            .authorize(&fresh)
+            .expect("replacement starts a fresh authenticated sequence");
     }
 
     #[test]
