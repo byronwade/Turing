@@ -81,6 +81,8 @@ fn doctor(require_exact_toolchain: bool) -> Result<(), String> {
         "Cargo.lock",
         "rust-toolchain.toml",
         "docs/README.md",
+        "docs/project-buildout/implementation-plan/README.md",
+        "tools/validate_implementation_plan.py",
         "security/dependencies.json",
         "security/unsafe-code.json",
     ] {
@@ -109,6 +111,11 @@ fn check() -> Result<(), String> {
         &root,
         "python3",
         ["-B", "tools/validate_build_foundation.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_implementation_plan.py"],
     )?;
     command(&root, "cargo", ["fmt", "--all", "--", "--check"])?;
     command(
@@ -147,7 +154,7 @@ fn check() -> Result<(), String> {
         ],
     )?;
 
-    println!("check: all M0 repository checks passed");
+    println!("check: all M0 repository and implementation-plan checks passed");
     Ok(())
 }
 
