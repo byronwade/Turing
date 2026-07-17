@@ -34,8 +34,17 @@ Update rule: required for every file or directory addition, deletion, rename, or
 ├── docs/
 │   ├── README.md
 │   ├── blueprint-v1/
+│   │   └── machine/
+│   │       ├── implementation-execution-graph.json
+│   │       ├── implementation-milestone-gates.json
+│   │       ├── implementation-interface-freezes.json
+│   │       ├── implementation-evidence-catalog.json
+│   │       └── implementation-task-sequence.json
 │   ├── research/
 │   ├── project-buildout/
+│   │   └── implementation-plan/
+│   │       ├── README.md
+│   │       └── 01–17 execution chapters
 │   ├── agent-execution/
 │   ├── production-readiness/
 │   ├── ui-runtime/
@@ -63,19 +72,9 @@ The detailed documentation topology is indexed by [`docs/README.md`](README.md).
 
 `Cargo.toml` is the canonical Rust workspace definition. `Cargo.lock` is committed. `rust-toolchain.toml` pins the M0 compiler and required components.
 
-Workspace membership must match [`workspace-components.json`](blueprint-v1/machine/workspace-components.json). Every component record declares:
+Workspace membership must match [`workspace-components.json`](blueprint-v1/machine/workspace-components.json). Every component record declares package/path, owner, privilege, hostile-input exposure, public/internal status, unsafe policy, targets, internal dependencies, and failure boundary.
 
-- package and path;
-- owner;
-- privilege;
-- hostile-input exposure;
-- public or internal status;
-- unsafe policy;
-- supported development targets;
-- internal dependencies;
-- failure boundary.
-
-`tools/validate_build_foundation.py` rejects missing components, dependency cycles, toolchain drift, unledgered unsafe/native syntax, or M0 external runtime dependencies.
+`tools/validate_build_foundation.py` rejects missing components, dependency cycles, toolchain drift, unledgered unsafe/native syntax, or prohibited M0 external runtime dependencies.
 
 ## `apps/`
 
@@ -83,7 +82,7 @@ Application binaries live here.
 
 `turing-shell` is currently a command-line M0 laboratory. It validates toolkit-neutral shell contracts but has no native UI, web engine, networking, storage, Plug-in, or AI capability.
 
-Future application directories require an accepted purpose, owner, maturity label, support boundary, and package/update implications.
+Future applications require an accepted purpose, owner, maturity label, support boundary, task/WP mapping, and package/update implications.
 
 ## `crates/`
 
@@ -102,6 +101,25 @@ A toolkit, platform, GPU, network, storage, or runtime dependency may not enter 
 ## `prototype/`
 
 The dependency-free architecture prototype remains a research executable. It is a reference model, not the production browser implementation.
+
+## `docs/project-buildout/implementation-plan/`
+
+This nested handbook is the canonical implementation game plan. It contains:
+
+- M0 through M9 phase sequencing;
+- the WP-001 through WP-018 critical path;
+- agent startup, stop, review, rollback, and handoff rules;
+- decision gates and interface freezes;
+- subsystem milestone plans;
+- cross-cutting evidence requirements;
+- staffing, capacity, replan, replacement, and abandonment rules;
+- work-package and delivery checklists.
+
+It is linked from the root README, documentation index, project-buildout handbook, roadmap, backlog, pre-build checklist, and `AGENTS.md`.
+
+## Implementation machine records
+
+The five `implementation-*.json` files under `docs/blueprint-v1/machine/` provide machine-readable dependency, milestone, interface, evidence, and planned-wave records. They do not promote task or production status. The accepted backlog remains authoritative for WP dependencies, and only a reviewed ready `TASK-*` authorizes implementation.
 
 ## `security/`
 
@@ -127,19 +145,19 @@ Repository-owned tools live here.
 - `validate_build_foundation.py`: executable workspace, toolchain, ledger, and source-policy validation;
 - `check_documentation_change.py`: pull-request same-change documentation enforcement.
 
-Tools must fail visibly, avoid hidden network access, preserve source-tree cleanliness, and document any generated output.
+Tools must fail visibly, avoid hidden network access, preserve source-tree cleanliness, and document generated output.
 
 ## Documentation
 
 All durable prose belongs under `docs/`. Root Markdown is limited to repository discovery and agent-control files.
 
-A new document must have an owner, status, unsupported behavior, evidence expectations, and an inbound link. Machine-readable companions use JSON under the owning `machine/` directory.
+A new document must have an owner, status, unsupported behavior, evidence expectations, and an inbound link. Machine-readable companions use JSON under the owning machine directory.
 
 ## Build output and temporary material
 
 Build output, caches, transfer payloads, generated publication scripts, secrets, and local editor state are not durable source.
 
-CI and wrapper commands set `CARGO_TARGET_DIR` outside the repository. The repository validator rejects known generated or temporary paths.
+CI and wrapper commands set `CARGO_TARGET_DIR` outside the repository. Validation rejects known generated or temporary paths.
 
 ## Change procedure
 
@@ -149,7 +167,7 @@ For any structural change:
 2. update `Cargo.toml` and `workspace-components.json` when workspace membership changes;
 3. update CODEOWNERS and professional ownership;
 4. update dependency, unsafe, native, generated, and provenance ledgers;
-5. update affected Blueprint, book, roadmap, and readiness records;
-6. update validation;
+5. update affected Blueprint, detailed book, implementation plan, roadmap, and readiness records;
+6. update validation deliberately;
 7. run `sh tools/check.sh`;
-8. attach evidence and unsupported behavior to the review.
+8. attach evidence, unsupported behavior, rollback, and downstream handoff to review.
