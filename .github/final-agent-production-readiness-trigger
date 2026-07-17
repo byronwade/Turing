@@ -1,2 +1,2 @@
 Run final exact-main validation and delete all non-main branches.
-Retry after removing the one-shot workflow from the validation workspace: 2026-07-17T04:04:00Z
+Diagnostic retry: 2026-07-17T04:06:00Z
