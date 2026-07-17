@@ -39,10 +39,10 @@ An implementation agent cannot approve or merge its own production work. Indepen
 
 | Task | Scope | Status |
 |---|---|---|
-| [`TASK-000001`](machine/tasks/TASK-000001.json) | `WP-002` kernel identities, capabilities, generated control policy, and bounded IPC reference | Review pending; requires independent approval before merge |
+| `TASK-000001` ([PR #40](https://github.com/byronwade/Turing/pull/40)) | `WP-002` kernel identities, capabilities, generated control policy, and bounded IPC reference | Review pending; requires independent approval before merge |
 | [`TASK-000002`](machine/tasks/TASK-000002.json) | `WP-003` sandbox probe catalog, evidence contract, safe fixtures, and staged platform laboratories | Specified; implementation blocked until `TASK-000001` is independently accepted and merged |
 
-A task manifest records authorization and evidence expectations; it is not evidence that the task has been implemented or accepted.
+A task manifest records authorization and evidence expectations; it is not evidence that the task has been implemented or accepted. `TASK-000001` remains on its implementation pull request and is deliberately not copied into this main-based planning branch.
 
 ## Normative baselines
 
