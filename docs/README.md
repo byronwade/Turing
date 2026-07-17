@@ -14,6 +14,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Contributing](contributing.md) | Engineering process and provenance |
 | [Security policy](security.md) | Current security status and private reporting |
 | [Architecture prototype](prototype.md) | Exact purpose and limits of `prototype/` |
+| [Research log](research-log.md) | Chronological record of material engineering and documentation decisions |
 | [Research index](research/README.md) | Dated evidence and experiment queue |
 | [Blueprint v1](blueprint-v1/README.md) | Normative product and architecture baseline |
 | [Pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md) | Current M0 build authorization and remaining blockers |
