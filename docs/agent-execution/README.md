@@ -35,6 +35,15 @@ An implementation agent cannot approve or merge its own production work. Indepen
 - [Escalation policy](machine/escalation-policy.json)
 - [Prohibited agent actions](machine/prohibited-agent-actions.json)
 
+## Current bounded tasks
+
+| Task | Scope | Status |
+|---|---|---|
+| [`TASK-000001`](machine/tasks/TASK-000001.json) | `WP-002` kernel identities, capabilities, generated control policy, and bounded IPC reference | Review pending; requires independent approval before merge |
+| [`TASK-000002`](machine/tasks/TASK-000002.json) | `WP-003` sandbox probe catalog, evidence contract, safe fixtures, and staged platform laboratories | Specified; implementation blocked until `TASK-000001` is independently accepted and merged |
+
+A task manifest records authorization and evidence expectations; it is not evidence that the task has been implemented or accepted.
+
 ## Normative baselines
 
 Turing maps these controls to NIST SSDF 1.1, NIST SP 800-218A for AI-related secure development, SLSA source/build provenance, repository rulesets, and Turing's stricter browser-specific threat model. External frameworks guide the control design; Turing's accepted requirements and evidence remain authoritative.
