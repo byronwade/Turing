@@ -1,0 +1,67 @@
+name: Fix WP-002 process epoch reuse from PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-wp002-process-epoch-from-pr
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    if: github.event.pull_request.number == 40 && github.event.pull_request.head.ref == 'agent/wp-002-kernel-ipc'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_TARGET_DIR: /tmp/turing-wp002-epoch-fix-target
+    steps:
+      - name: Check out implementation branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/wp-002-kernel-ipc
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Configure and apply reviewed fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'turing-research[bot]'
+          git config user.email 'turing-research[bot]@users.noreply.github.com'
+          git fetch origin main
+          git show origin/main:.github/scripts/fix_wp002_epoch.py > /tmp/fix_wp002_epoch.py
+          python3 -B /tmp/fix_wp002_epoch.py
+          cargo fmt --all
+
+      - name: Validate the hardened branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tools/generate_ipc.py --check
+          python3 -B tools/validate_blueprint.py
+          python3 -B tools/validate_build_foundation.py
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+          cargo test --workspace --all-targets --all-features --locked
+          cargo run --locked -p turing-shell -- --self-test
+          cargo run --locked -p turing-architecture-prototype --quiet
+          cargo run --locked -p xtask -- check
+
+      - name: Commit the hardened implementation branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add crates/turing-kernel/src/lib.rs \
+            docs/agent-execution/machine/tasks/TASK-000001.json \
+            docs/research/wp-002-kernel-ipc-2026-07.md
+          git diff --cached --quiet && {
+            echo 'Expected the epoch-reuse fix to modify the branch.' >&2
+            exit 1
+          }
+          git commit -m 'Prevent process identity resurrection after removal'
+          git push origin HEAD:agent/wp-002-kernel-ipc
