@@ -2,13 +2,13 @@
 
 Turing is an independent, Rust-first browser and web-engine program focused on minimalism, speed, security, developer experience, accessibility, open integration, and capability-scoped AI.
 
-> **Current status:** M0 research and build-foundation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, and the first buildable production-workspace skeleton. It is not yet a usable browser and is not safe for sensitive or hostile browsing.
+> **Current status:** M0 research and build-foundation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, and the first buildable production-workspace skeleton. It is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
 
 Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operating-system webview, or remote rendering.
 
 ## Build status
 
-The repository is now ready for **contained M0 implementation tasks**.
+The repository is now ready for **contained M0 implementation tasks**. The documentation library grew from twenty-five detailed engineering and product books to twenty-seven as native UI, agent-execution, and production-readiness controls were added.
 
 Implemented build foundation:
 
