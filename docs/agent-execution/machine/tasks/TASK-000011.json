@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "id": "TASK-000001",
+  "id": "TASK-000011",
   "status": "review_pending",
   "owner": "agent:gpt-5.6-pro",
   "independent_reviewer": "human-owner-or-separately-controlled-reviewer",
@@ -79,7 +79,7 @@
     "strategy": "close the pull request or revert its squash commit; generated outputs are regenerated from the prior schema",
     "evidence_required": [
       "main remains green",
-      "no schema or generated output from TASK-000001 remains after rollback"
+      "no schema or generated output from TASK-000011 remains after rollback"
     ]
   },
   "dependencies": [],

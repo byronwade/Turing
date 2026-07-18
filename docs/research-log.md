@@ -2,6 +2,37 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - Execution task ID collision cleanup
+
+Question:
+
+Can the docs answer whether building has started without reusing one `TASK-*` ID for both a proposed build-readiness handoff and an active execution manifest?
+
+Inputs:
+
+- [Agent Execution book](agent-execution/README.md);
+- [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json);
+- [WP-002 kernel identity and IPC reference](research/wp-002-kernel-ipc-2026-07.md);
+- [Documentation Readiness Completion Audit](research/documentation-readiness-completion-audit-2026-07.md);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json);
+- [`validate_build_foundation.py`](../tools/validate_build_foundation.py).
+
+Method:
+
+Separated the active `WP-002` M0 execution manifest from the proposed build-readiness queue. The proposed queue keeps `TASK-000001` through `TASK-000010`; the implemented `WP-002` reference task is now `TASK-000011` and remains `review_pending`.
+
+Decision:
+
+Treat `TASK-000011` as contained M0 implementation evidence pending independent review. Treat `TASK-000001` through `TASK-000010` as proposed future handoff records only.
+
+Impact:
+
+The docs can now state that contained M0 source work has started, but not that broad building is approved. No proposed queue task is approved, running, accepted, or release-gated, and no Chrome-class, production, compatibility, security, accessibility, speed, memory, energy, or daily-driver claim changed.
+
+Next question:
+
+Should the next owner-reviewed manifest accept or reject `TASK-000011`, or should the project first produce fresh-host reproduction evidence for `TASK-000002`?
+
 ## 2026-07-18 - Chrome-class capability traceability map
 
 Question:

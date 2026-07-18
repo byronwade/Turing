@@ -14,7 +14,9 @@ COMPONENTS_PATH = ROOT / "docs/blueprint-v1/machine/workspace-components.json"
 TOOLCHAINS_PATH = ROOT / "docs/blueprint-v1/machine/toolchains.json"
 IPC_SCHEMA_PATH = ROOT / "schemas/ipc/control-plane.json"
 PROCESS_CAPABILITIES_PATH = ROOT / "docs/blueprint-v1/machine/process-capabilities.json"
-TASK_PATH = ROOT / "docs/agent-execution/machine/tasks/TASK-000001.json"
+BUILD_READINESS_TASK_QUEUE_PATH = ROOT / "docs/blueprint-v1/machine/build-readiness-task-queue.json"
+M0_EXECUTION_TASK_ID = "TASK-000011"
+TASK_PATH = ROOT / f"docs/agent-execution/machine/tasks/{M0_EXECUTION_TASK_ID}.json"
 
 REQUIRED_FILES = [
     ROOT / "Cargo.toml",
@@ -49,6 +51,7 @@ REQUIRED_FILES = [
     ROOT / "tools/generate_ipc.py",
     IPC_SCHEMA_PATH,
     PROCESS_CAPABILITIES_PATH,
+    BUILD_READINESS_TASK_QUEUE_PATH,
     TASK_PATH,
     COMPONENTS_PATH,
     TOOLCHAINS_PATH,
@@ -249,19 +252,28 @@ def check_ledgers() -> None:
 def check_execution_task() -> None:
     task = load_json(TASK_PATH)
     if not isinstance(task, dict) or task.get("schema_version") != 1:
-        fail("TASK-000001 must be schema version 1")
-    if task.get("id") != "TASK-000001" or task.get("status") != "review_pending":
-        fail("TASK-000001 must remain review_pending until independent review")
+        fail(f"{M0_EXECUTION_TASK_ID} must be schema version 1")
+    if task.get("id") != M0_EXECUTION_TASK_ID or task.get("status") != "review_pending":
+        fail(f"{M0_EXECUTION_TASK_ID} must remain review_pending until independent review")
     if task.get("owner") == task.get("independent_reviewer"):
-        fail("TASK-000001 owner and independent reviewer must differ")
+        fail(f"{M0_EXECUTION_TASK_ID} owner and independent reviewer must differ")
     if task.get("requirements") != ["REQ-SEC-003", "REQ-PERF-004"]:
-        fail("TASK-000001 must map exactly to REQ-SEC-003 and REQ-PERF-004")
+        fail(f"{M0_EXECUTION_TASK_ID} must map exactly to REQ-SEC-003 and REQ-PERF-004")
     for field in ("allowed_paths", "preconditions", "acceptance_criteria", "negative_tests"):
         if not isinstance(task.get(field), list) or not task[field]:
-            fail(f"TASK-000001 {field} must be a non-empty array")
+            fail(f"{M0_EXECUTION_TASK_ID} {field} must be a non-empty array")
     rollback = task.get("rollback")
     if not isinstance(rollback, dict) or not rollback.get("strategy"):
-        fail("TASK-000001 must define rollback")
+        fail(f"{M0_EXECUTION_TASK_ID} must define rollback")
+
+    task_queue = load_json(BUILD_READINESS_TASK_QUEUE_PATH)
+    if not isinstance(task_queue, dict) or not isinstance(task_queue.get("tasks"), list):
+        fail("build-readiness-task-queue.json must contain a tasks array")
+    proposed_queue_ids = {
+        item.get("id") for item in task_queue["tasks"] if isinstance(item, dict)
+    }
+    if M0_EXECUTION_TASK_ID in proposed_queue_ids:
+        fail(f"{M0_EXECUTION_TASK_ID} must not collide with proposed build-readiness queue IDs")
 
 
 def check_source_policy() -> None:

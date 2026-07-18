@@ -46,6 +46,8 @@ The focused validator checks that:
 
 The documentation set is organized enough for contained M0 continuation. A maintainer or agent can find the current gate posture, first continuation path, research lane set, proposed task queue, machine registries, dependency graph, validation commands, owner-only decisions, and unsupported-claim boundaries without relying on chat history.
 
+Separately, [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json) records the contained `WP-002` M0 reference implementation as `review_pending`. The proposed build-readiness queue still reserves `TASK-000001` through `TASK-000010` for future handoff records; those queue rows are not approved, running, accepted, or release-gated.
+
 The same audit proves the broad goal is not complete. Full build preparation for a Chrome-class browser still requires owner-reviewed closure or approved time-bounded exceptions for source strategy, fresh-host reproduction, owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template, owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template, owner-reviewed benchmark readiness beyond the checked no-claim benchmark readiness-review template, native shell and accessibility, profile/session, package/update, incident-response, ownership, production, and release controls.
 
 ## Claim Boundary

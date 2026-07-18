@@ -3,6 +3,7 @@
 Status: M0 implementation evidence; not an operating-system IPC transport or production security claim
 Owner: architecture, security, performance, quality, and documentation
 Related work package: `WP-002`
+Related execution task: [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json)
 Related requirements: `REQ-SEC-003`, `REQ-PERF-004`
 
 ## Purpose

@@ -59,7 +59,7 @@ Detailed books now cover networking, storage, media/documents, native platforms,
 
 ## Current implementation state
 
-The prototype encodes typed process roles, bounded messages, legal tab lifecycle transitions, ordered rendering stages, scoped network identity, and deterministic agent authorization. It does not parse HTML, render pages, execute JavaScript, create native windows, or open network connections.
+The prototype encodes typed process roles, bounded messages, legal tab lifecycle transitions, ordered rendering stages, scoped network identity, and deterministic agent authorization. The first contained source task, [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json), has implemented the M0 reference portion of `WP-002` and is `review_pending`; it is not accepted or production-ready. The prototype does not parse HTML, render pages, execute JavaScript, create native windows, or open network connections.
 
 ## Current build-readiness state
 

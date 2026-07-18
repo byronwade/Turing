@@ -114,7 +114,7 @@
         "The proposed task queue records TASK-000001 through TASK-000010 with owners, reviewers, dependencies, allowed paths, prohibited paths, negative evidence, rollback, and acceptance-evidence requirements. The checked no-claim task approval template defines the owner, independent reviewer, authority, evidence-bundle, rollback, expiry, and rejection controls required before any proposed row becomes an immutable reviewed execution manifest."
       ],
       "missing_for_full_goal": [
-        "No TASK record is approved, executed, independently reviewed, accepted, release-gated, or sufficient for broad M1 implementation."
+        "No proposed build-readiness queue task is approved, running, accepted, release-gated, or sufficient for broad M1 implementation. The separate WP-002 M0 execution manifest is review_pending and still requires independent review before acceptance."
       ],
       "next_audit_action": "Before execution, convert a proposed queue row into an approved immutable task manifest with independent review and evidence-bundle targets.",
       "claim_boundary": "No execution approval claim, implementation completion claim, broad build readiness claim, or agent authority expansion claim from proposed task-shaped handoffs.",
