@@ -560,16 +560,16 @@ def validate_schema_source(path: Path) -> None:
         fail(f"{path}: missing validation commands: {', '.join(missing_commands)}")
 
     docs_to_check = {
-        ROOT / "README.md": ["IPC schema-source template", "no schema generator"],
-        DOCS / "start-here.md": ["IPC schema-source template", "no canonical schema generator"],
-        DOCS / "README.md": ["IPC schema-source template", "no canonical schema generator"],
-        DOCS / "repository-map.md": ["IPC schema-source template", "ipc-schema-source.schema.json"],
-        DOCS / "research" / "README.md": ["IPC schema-source template", "schema generator evidence beyond the checked no-claim schema-source template"],
-        DOCS / "research" / "ipc-capability-boundary-inventory-2026-07.md": ["IPC schema-source template", "schema generator evidence beyond the checked no-claim schema-source template"],
-        DOCS / "api-design" / "03-schemas-errors-versioning-and-compatibility.md": ["IPC schema-source template", "no approved generator source"],
-        DOCS / "project-buildout" / "13-build-readiness-operating-board.md": ["IPC schema-source template", "no approved schema generator"],
+        ROOT / "README.md": ["IPC schema-source template", "`TASK-000011` acceptance"],
+        DOCS / "start-here.md": ["IPC schema-source template", "no accepted `TASK-000011`"],
+        DOCS / "README.md": ["IPC schema-source template", "`TASK-000011` acceptance"],
+        DOCS / "repository-map.md": ["IPC schema-source template", "`TASK-000011` review handoff"],
+        DOCS / "research" / "README.md": ["IPC schema-source template", "Independent review and evidence bundle for `TASK-000011`"],
+        DOCS / "research" / "ipc-capability-boundary-inventory-2026-07.md": ["IPC schema-source template", "accepted `TASK-000011` evidence bundle"],
+        DOCS / "api-design" / "03-schemas-errors-versioning-and-compatibility.md": ["IPC schema-source template", "review-pending M0 generator/reference"],
+        DOCS / "project-buildout" / "13-build-readiness-operating-board.md": ["IPC schema-source template", "no accepted `TASK-000011`"],
         DOCS / "project-buildout" / "17-build-readiness-task-queue.md": ["IPC schema-source template", "no schema-generator approval"],
-        DOCS / "project-buildout" / "18-documentation-readiness-evidence-matrix.md": ["IPC schema-source template", "schema generator evidence beyond the checked no-claim schema-source template"],
+        DOCS / "project-buildout" / "18-documentation-readiness-evidence-matrix.md": ["TASK-000011 WP-002 review handoff", "evidence-bundle instance"],
     }
     for doc_path, phrases in docs_to_check.items():
         content = doc_path.read_text(encoding="utf-8")

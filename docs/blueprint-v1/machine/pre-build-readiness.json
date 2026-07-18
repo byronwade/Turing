@@ -273,6 +273,7 @@
         "crates/turing-ipc",
         "crates/turing-kernel",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
         "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
         "docs/blueprint-v1/machine/ipc-capability-boundary.json",
@@ -284,7 +285,7 @@
         "tools/validate_ipc_readiness_review.py"
       ],
       "evidence_required": [
-        "implemented schema generator evidence beyond the checked no-claim schema-source template",
+        "accepted TASK-000011 schema generator and M0 reference evidence bundle beyond the checked no-claim schema-source template",
         "wire encoding decision",
         "connection authentication",
         "operating-system IPC transport",

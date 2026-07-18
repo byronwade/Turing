@@ -4,6 +4,7 @@ Status: M0 implementation evidence; not an operating-system IPC transport or pro
 Owner: architecture, security, performance, quality, and documentation
 Related work package: `WP-002`
 Related execution task: [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json)
+Related review handoff: [TASK-000011 WP-002 Review Handoff](task-000011-wp002-review-handoff-2026-07.md)
 Related requirements: `REQ-SEC-003`, `REQ-PERF-004`
 
 ## Purpose
@@ -158,4 +159,4 @@ The reference does not yet establish:
 
 ## Status conclusion
 
-`WP-002` is in progress with a buildable M0 policy reference. The work package is not complete until a real authenticated transport, generated wire codec, negative harness, platform process launcher, and independent security evidence exist.
+`WP-002` is in progress with a buildable M0 policy reference. `TASK-000011` remains `review_pending` until independent review and an evidence bundle accept or reject the contained M0 reference. The work package is not complete until a real authenticated transport, generated wire codec, negative harness, platform process launcher, and independent security evidence exist.

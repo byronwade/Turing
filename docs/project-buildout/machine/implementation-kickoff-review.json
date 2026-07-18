@@ -162,22 +162,23 @@
       "status": "partial",
       "owner_scope": "architecture",
       "current_evidence": [
-        "Checked IPC capability boundary inventory, no-claim schema-source template, and no-claim IPC readiness-review template exist for M0 ControlEnvelope evidence, oversized-message rejection, typed identities, process-role capability models, process-capability records, future generator handoff fields, and future owner-review handoff fields."
+        "Checked IPC capability boundary inventory, WP-002 M0 reference report, TASK-000011 review handoff, no-claim schema-source template, and no-claim IPC readiness-review template exist for M0 ControlEnvelope evidence, oversized-message rejection, typed identities, process-role capability models, process-capability records, generated-reference evidence, future schema-source handoff fields, and future owner-review handoff fields."
       ],
       "required_before_m1": [
-        "Implemented IPC schema generator evidence beyond the checked no-claim schema-source template, reviewed wire encoding decision, connection authentication, bounded queues/backpressure, stale-epoch rejection, timeout/cancellation behavior, malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, fuzz, and model tests, plus owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template."
+        "Accepted TASK-000011 evidence bundle, reviewed wire encoding decision, connection authentication, bounded queues/backpressure on a real transport, stale-epoch receiver proof, timeout/cancellation behavior, malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, fuzz, and model tests, plus owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template."
       ],
       "first_next_actions": [
-        "Draft schema-generator and wire-encoding experiments with negative-test fixtures for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases, then replace the checked no-claim IPC readiness-review template with owner-reviewed evidence."
+        "Run independent TASK-000011 review with an evidence bundle, then draft wire-encoding and transport experiments with negative-test fixtures for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases before replacing the checked no-claim IPC readiness-review template with owner-reviewed evidence."
       ],
       "owner_only_decisions": [
-        "Accept wire format, authority model, trust-boundary policy, schema-generator source, owner-reviewed IPC readiness, and production-facing process topology."
+        "Accept TASK-000011, wire format, authority model, trust-boundary policy, schema-generator source for production use, owner-reviewed IPC readiness, and production-facing process topology."
       ],
       "prohibited_claims": [
-        "No schema-generator approval, wire-encoding approval, owner-reviewed IPC readiness, renderer-security claim, agent-security claim, process-isolation readiness, site-isolation claim, timeout/cancellation implementation claim, production IPC claim, or implementation claim."
+        "No TASK-000011 acceptance, schema-generator approval for production use, wire-encoding approval, owner-reviewed IPC readiness, renderer-security claim, agent-security claim, process-isolation readiness, site-isolation claim, timeout/cancellation implementation claim, production IPC claim, or implementation claim."
       ],
       "validation_or_evidence_refs": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/blueprint-v1/machine/ipc-capability-boundary.json",
         "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
         "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
@@ -431,9 +432,9 @@
       "id": "KICKOFF-GATE-IPC_BOUNDARY",
       "related_readiness_items": ["PB-011"],
       "gate": "ipc-boundary",
-      "blocked_until": "Implemented schema generator evidence beyond the checked no-claim schema-source template, wire encoding, authentication, bounded queues, timeout/cancellation, stale-epoch rejection, negative tests, and owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template exist.",
-      "owner_only_decision": "Owner accepts wire format, authority model, owner-reviewed IPC readiness, and production-facing process topology.",
-      "no_claim_boundary": "No owner-reviewed IPC readiness, production IPC, renderer-security, agent-security, process-isolation, site-isolation, or implementation claim."
+      "blocked_until": "Accepted TASK-000011 evidence bundle, wire encoding, authentication, real-transport bounded queues, timeout/cancellation, stale-epoch receiver proof, negative tests, and owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template exist.",
+      "owner_only_decision": "Owner accepts TASK-000011, wire format, authority model, owner-reviewed IPC readiness, and production-facing process topology.",
+      "no_claim_boundary": "No TASK-000011 acceptance, owner-reviewed IPC readiness, production IPC, renderer-security, agent-security, process-isolation, site-isolation, or implementation claim."
     },
     {
       "id": "KICKOFF-GATE-SANDBOX_PROBES",

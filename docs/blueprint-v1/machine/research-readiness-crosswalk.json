@@ -102,6 +102,9 @@
       "research_questions": ["RQ-02", "RQ-13", "RQ-20", "RQ-22", "RQ-36"],
       "evidence_start": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/wp-002-kernel-ipc-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/agent-execution/machine/tasks/TASK-000011.json",
         "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
       "docs/blueprint-v1/machine/ipc-capability-boundary.json",
       "docs/blueprint-v1/machine/ipc-schema-source.schema.json",
@@ -118,7 +121,7 @@
         "docs/blueprint-v1/08-security-and-sandbox.md"
       ],
       "next_proof": [
-      "implemented schema generator evidence beyond the checked no-claim schema-source template",
+      "independent review of TASK-000011 with an evidence bundle tied to the exact source commit for the contained M0 reference",
       "reviewed wire encoding decision",
       "bounded queue, backpressure, connection authentication, timeout, cancellation, and stale-epoch behavior",
       "negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases",
@@ -130,7 +133,9 @@
       "no agent-security claim",
       "no process-isolation readiness claim",
       "no site-isolation readiness claim",
-      "no schema-generator, schema-source, or wire-encoding approval",
+      "no TASK-000011 acceptance",
+      "no schema-generator approval for production use",
+      "no schema-source or wire-encoding approval",
       "no timeout or cancellation implementation claim",
       "no production IPC claim from the checked no-claim IPC readiness-review template",
       "no production IPC stability claim beyond the tested M0 boundary"

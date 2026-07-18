@@ -41,7 +41,7 @@ The checked no-claim [backup-ownership readiness-review template](../project-bui
 
 ## Active bounded task
 
-- [`TASK-000011`](machine/tasks/TASK-000011.json) implements the M0 reference portion of `WP-002`: restart-safe process identity, generated capabilities and routes, bounded envelopes and queues, sequence validation, and kernel authorization. Its status is `review_pending`; the implementation agent cannot approve or merge it.
+- [`TASK-000011`](machine/tasks/TASK-000011.json) implements the M0 reference portion of `WP-002`: restart-safe process identity, generated capabilities and routes, bounded envelopes and queues, sequence validation, and kernel authorization. Its [review handoff](../research/task-000011-wp002-review-handoff-2026-07.md) maps candidate evidence and remaining evidence-bundle gaps. The task status is `review_pending`; the implementation agent cannot approve or merge it.
 
 The proposed build-readiness queue reserves `TASK-000001` through `TASK-000010` for future handoff records. Those queue rows remain proposed only and are not execution approval.
 

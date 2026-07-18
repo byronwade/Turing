@@ -230,9 +230,10 @@
     {
       "id": "ipc-and-sandbox",
       "blockers": ["PB-011", "PB-012", "TASK-000003", "TASK-000004"],
-      "missing_before_full_goal": "IPC and sandbox still need implemented schema generator evidence beyond the checked no-claim schema-source template, reviewed wire encoding, connection authentication, stale-epoch rejection, timeout and cancellation behavior, negative IPC tests, owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template, packaged expected-deny probes beyond the checked no-claim probe-package template, effective platform policy capture, and owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template.",
+      "missing_before_full_goal": "IPC and sandbox still need accepted TASK-000011 evidence with an evidence bundle tied to the exact source commit, reviewed wire encoding, connection authentication, stale-epoch rejection on a real transport, timeout and cancellation behavior, transport-level negative IPC tests, owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template, packaged expected-deny probes beyond the checked no-claim probe-package template, effective platform policy capture, and owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template.",
       "source_refs": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/research/sandbox-probe-inventory-2026-07.md"
       ]
     },

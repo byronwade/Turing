@@ -2,6 +2,42 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - TASK-000011 WP-002 review handoff
+
+Question:
+
+Can the review-pending `WP-002` M0 reference task be handed to an independent reviewer without relying on scattered source, tests, generated output, CI context, or chat history?
+
+Inputs:
+
+- [TASK-000011 WP-002 Review Handoff](research/task-000011-wp002-review-handoff-2026-07.md);
+- [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json);
+- [WP-002 kernel identity and IPC reference](research/wp-002-kernel-ipc-2026-07.md);
+- [Agent Execution book](agent-execution/README.md);
+- [Build Readiness Operating Board](project-buildout/13-build-readiness-operating-board.md);
+- [Pre-build Readiness Checklist](project-buildout/11-pre-build-readiness-checklist.md);
+- [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json);
+- [`research-readiness-crosswalk.json`](blueprint-v1/machine/research-readiness-crosswalk.json);
+- [`validate_ipc_capability_boundaries.py`](../tools/validate_ipc_capability_boundaries.py);
+- [`validate_ipc_readiness_review.py`](../tools/validate_ipc_readiness_review.py).
+
+Method:
+
+Added a dated review handoff that maps `TASK-000011` acceptance criteria, manifest negative tests, source/test evidence, required review commands, evidence-bundle gaps, and rejection triggers. Updated the human stop/resume docs, research index, operating board, checklist, repository map, WP-002 report, machine evidence lists, and IPC validators to link the packet and enforce the review-pending boundary without changing readiness status.
+
+Decision:
+
+Treat the packet as candidate independent-review organization evidence only. It does not accept `TASK-000011`, create an evidence-bundle instance, promote `PB-011`, complete `WP-002`, approve `TASK-000003`, or establish production IPC, process-isolation, site-isolation, renderer-security, agent-security, Chrome-class, performance, compatibility, accessibility, release, beta, stable, or daily-driver claims.
+
+Impact:
+
+The docs now provide a coherent continuation path for either accepting/rejecting `TASK-000011` through independent review or leaving it `review_pending` while continuing another contained M0 lane. `PB-011` remains partial and broad building remains unsupported.
+
+Next question:
+
+Should the owner assign an independent reviewer to produce the `TASK-000011` evidence bundle, or continue the next contained M0 lane such as fresh-host reproduction for `TASK-000002`?
+
 ## 2026-07-18 - Execution task ID collision cleanup
 
 Question:

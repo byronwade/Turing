@@ -382,7 +382,7 @@ def validate_readiness_registry() -> None:
     for phrase in [
         "checked no-claim IPC readiness-review template",
         "owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template",
-        "implemented schema generator evidence beyond the checked no-claim schema-source template",
+        "accepted TASK-000011 schema generator and M0 reference evidence bundle beyond the checked no-claim schema-source template",
         "wire encoding decision",
         "connection authentication",
         "bounded queues",
