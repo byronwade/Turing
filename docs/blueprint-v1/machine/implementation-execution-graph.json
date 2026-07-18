@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "canonical_dependency_order",
+  "authoritative_work_package_source": "docs/blueprint-v1/machine/backlog.json",
+  "nodes": [
+    {"id":"WP-001","milestone":"M0","title":"Repository validation and evidence foundation","depends_on":[],"decision_gates":[],"parallel_lane":"foundation"},
+    {"id":"WP-002","milestone":"M1","title":"Kernel identities process roles capabilities and bounded IPC","depends_on":["WP-001"],"decision_gates":[],"parallel_lane":"kernel-security"},
+    {"id":"WP-003","milestone":"M1","title":"Cross-platform renderer sandbox probes","depends_on":["WP-002"],"decision_gates":["reference-platform-selected","native-boundary-reviewed"],"parallel_lane":"kernel-security"},
+    {"id":"WP-004","milestone":"M1","title":"Native accessible browser shell spike","depends_on":["WP-002"],"decision_gates":["ADR-0013","ADR-0014","ADR-0015","ADR-0016","ui-license-review"],"parallel_lane":"product-shell"},
+    {"id":"WP-005","milestone":"M1","title":"Tab lifecycle resource attribution and thirty-tab simulator","depends_on":["WP-002","WP-004"],"decision_gates":[],"parallel_lane":"product-shell"},
+    {"id":"WP-006","milestone":"M2","title":"HTML tokenizer and tree builder","depends_on":["WP-001"],"decision_gates":["ADR-0009"],"parallel_lane":"static-engine"},
+    {"id":"WP-007","milestone":"M2","title":"DOM arena mutation epochs and events","depends_on":["WP-006"],"decision_gates":[],"parallel_lane":"static-engine"},
+    {"id":"WP-008","milestone":"M2","title":"CSS parser selectors cascade and computed values","depends_on":["WP-007"],"decision_gates":[],"parallel_lane":"static-engine"},
+    {"id":"WP-009","milestone":"M2","title":"Block text layout display list and reference raster","depends_on":["WP-008"],"decision_gates":["text-font-foundation-review","graphics-foundation-review"],"parallel_lane":"static-engine"},
+    {"id":"WP-010","milestone":"M3","title":"JavaScript parser bytecode interpreter and Test262 harness","depends_on":["WP-001"],"decision_gates":[],"parallel_lane":"javascript"},
+    {"id":"WP-011","milestone":"M3","title":"Exact tracing GC and Web IDL bindings","depends_on":["WP-007","WP-010"],"decision_gates":[],"parallel_lane":"javascript"},
+    {"id":"WP-012","milestone":"M4","title":"Navigation transactions site instances and renderer swaps","depends_on":["WP-002","WP-007"],"decision_gates":["IF-001","IF-003"],"parallel_lane":"navigation-services"},
+    {"id":"WP-013","milestone":"M4","title":"Scoped HTTP TLS cache cookies and hermetic server","depends_on":["WP-002","WP-012"],"decision_gates":["tls-dependency-review","url-origin-contract"],"parallel_lane":"navigation-services"},
+    {"id":"WP-014","milestone":"M4","title":"Storage broker quota migrations and service-worker foundation","depends_on":["WP-002","WP-013"],"decision_gates":["profile-storage-schema","database-dependency-review"],"parallel_lane":"navigation-services"},
+    {"id":"WP-015","milestone":"M2","title":"Versioned DevTools automation protocol and trace viewer","depends_on":["WP-002","WP-009"],"decision_gates":["IF-001","IF-003"],"parallel_lane":"developer-observability"},
+    {"id":"WP-016","milestone":"M6","title":"Capability-safe agent reference implementation","depends_on":["WP-002","WP-007","WP-015"],"decision_gates":["ADR-0005","agent-provider-review"],"parallel_lane":"agents-plugins"},
+    {"id":"WP-017","milestone":"M5","title":"Signed update rollback and profile migration laboratory","depends_on":["WP-001","WP-002","WP-014"],"decision_gates":["ADR-0019","ADR-0020"],"parallel_lane":"release-operations"},
+    {"id":"WP-018","milestone":"M5","title":"Fixed-hardware compatibility performance and energy laboratory","depends_on":["WP-005","WP-009","WP-013"],"decision_gates":["reference-hardware-accepted","corpus-provenance-reviewed"],"parallel_lane":"measurement"}
+  ],
+  "critical_paths": [
+    ["WP-001","WP-002","WP-003"],
+    ["WP-001","WP-002","WP-004","WP-005","WP-018"],
+    ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-018"],
+    ["WP-001","WP-010","WP-011"],
+    ["WP-001","WP-002","WP-012","WP-013","WP-014","WP-017"],
+    ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-015","WP-016"]
+  ],
+  "rule": "A node may begin production implementation only when every depends_on node is accepted and every decision gate is accepted or covered by a reviewed expiring exception."
+}

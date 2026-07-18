@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "planning_sequence_not_task_acceptance",
+  "rule": "Only a separately reviewed TASK manifest with status ready authorizes implementation. This sequence does not promote any task or branch.",
+  "waves": [
+    {
+      "id": "WAVE-00",
+      "name": "M0 repository and decision completion",
+      "parallelism": "limited",
+      "items": [
+        "keep WP-001 validation green",
+        "accept or reject ADR-0009",
+        "complete remaining WP-002 wire transport cancellation and negative-harness tasks",
+        "select a reference desktop platform for evidence",
+        "establish initial benchmark runner and corpus provenance"
+      ],
+      "exit": ["IF-000 ready","IF-001 ready for M1 research","no unresolved dependency drift"]
+    },
+    {
+      "id": "WAVE-01",
+      "name": "M1 security and shell laboratories",
+      "parallelism": "two controlled lanes",
+      "items": [
+        "WP-003 Stage 0 common sandbox harness",
+        "WP-004 toolkit-neutral shell contract and equivalent UI prototypes",
+        "signed research package skeleton"
+      ],
+      "exit": ["sandbox evidence on reference platform","UI toolkit and compositor ADRs","IF-002 ready"]
+    },
+    {
+      "id": "WAVE-02",
+      "name": "M1 lifecycle and multi-platform evidence",
+      "parallelism": "platform capacity limited",
+      "items": [
+        "WP-005 lifecycle and resource simulator",
+        "WP-003 remaining platform laboratories",
+        "page surface accessibility IME crash and device-loss integration",
+        "profile and session schema experiments"
+      ],
+      "exit": ["M1 gate","30-tab reference baseline","research package rollback"]
+    },
+    {
+      "id": "WAVE-03",
+      "name": "M2 static engine",
+      "parallelism": "dependency ordered with test tooling in parallel",
+      "items": ["WP-006","WP-007","WP-008","WP-009","WP-015 schema and trace research"],
+      "exit": ["IF-003","M2 conformance threshold","sandboxed deterministic static rendering"]
+    },
+    {
+      "id": "WAVE-04",
+      "name": "M3 JavaScript reference runtime",
+      "parallelism": "WP-010 then WP-011 integration",
+      "items": ["WP-010","WP-011","event loop and dynamic DOM","debugger and runtime diagnostics"],
+      "exit": ["IF-004","Test262 map","GC and wrapper lifecycle evidence"]
+    },
+    {
+      "id": "WAVE-05",
+      "name": "M4 navigation and services",
+      "parallelism": "transaction core then service lanes",
+      "items": ["WP-012","WP-013","WP-014","worker and service-worker integration","profile migration and recovery"],
+      "exit": ["IF-005","controlled application corpus","cross-origin and data durability gates"]
+    },
+    {
+      "id": "WAVE-06",
+      "name": "M5 developer preview",
+      "parallelism": "product engine DevTools release and measurement lanes",
+      "items": ["layout and product breadth","WP-015 productization","WP-017","WP-018","accessibility and emergency update readiness"],
+      "exit": ["signed developer preview","exact compatibility report","M5 gate"]
+    },
+    {
+      "id": "WAVE-07",
+      "name": "M6 advanced capabilities",
+      "parallelism": "separate gated tracks",
+      "items": ["baseline JIT","WebAssembly","media PDF printing","Plug-in preview","WP-016","real 30-tab integration"],
+      "exit": ["IF-006","JIT media Plug-in and agent gates"]
+    },
+    {
+      "id": "WAVE-08",
+      "name": "M7 beta hardening",
+      "parallelism": "continuous program",
+      "items": ["compatibility breadth","independent security review","sustained fuzzing","numeric SLOs","platform accessibility","incident and support operation"],
+      "exit": ["beta risk acceptance","M7 gate"]
+    },
+    {
+      "id": "WAVE-09",
+      "name": "M8 stable release candidate",
+      "parallelism": "release-board coordinated",
+      "items": ["ADR-0018","PRG-001 through PRG-020","production signing and update","stable artifact rehearsal","human approval"],
+      "exit": ["IF-007","stable release decision"]
+    },
+    {
+      "id": "WAVE-10",
+      "name": "M9 continuous parity",
+      "parallelism": "capacity governed",
+      "items": ["standards evolution","compatibility","performance","security","ecosystem","enterprise","platform expansion","maintenance"],
+      "exit": ["recurring review only"]
+    }
+  ]
+}

@@ -2,6 +2,39 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — Implementation master plan import
+
+Question:
+
+Can the stale draft implementation-plan branch be ported onto current `main` as checked execution documentation without granting work-package approval, broad implementation readiness, preview, beta, stable, production, release, or product-readiness claims?
+
+Inputs:
+
+- [Implementation Master Plan](project-buildout/implementation-plan/README.md);
+- [Full implementation game plan audit](research/full-implementation-game-plan-audit-2026-07.md);
+- [`implementation-execution-graph.json`](blueprint-v1/machine/implementation-execution-graph.json);
+- [`implementation-milestone-gates.json`](blueprint-v1/machine/implementation-milestone-gates.json);
+- [`implementation-interface-freezes.json`](blueprint-v1/machine/implementation-interface-freezes.json);
+- [`implementation-evidence-catalog.json`](blueprint-v1/machine/implementation-evidence-catalog.json);
+- [`implementation-task-sequence.json`](blueprint-v1/machine/implementation-task-sequence.json);
+- [`tools/validate_implementation_plan.py`](../tools/validate_implementation_plan.py).
+
+Method:
+
+Ported the additive implementation-plan documentation, machine registries, validator, and CI workflow onto current `main`, then integrated them into the repository map, start-here path, project-buildout handbook, research index, aggregate blueprint validation, and `xtask check`.
+
+Decision:
+
+Treat the plan as dependency-ordered execution documentation only. It can guide sequencing, handoffs, milestone gate criteria, evidence classes, and stop/replan triggers, but only a reviewed `TASK-*` manifest authorizes production implementation.
+
+Impact:
+
+The project now has a checked M0-to-M9 implementation plan and machine-readable execution graph on current `main` without raw-merging the stale draft branch or deleting current repository state. The plan preserves the no-claim boundary for implementation, preview, beta, stable, production, release, compatibility, performance, security, accessibility, and product readiness.
+
+Next question:
+
+Which bounded `TASK-*` manifest should be owner-reviewed first under the implementation plan: source strategy, native shell, IPC, sandbox probes, benchmark runner, profile/storage, release operations, incident response, or ownership controls?
+
 ## 2026-07-18 — WP-003 sandbox probe contract
 
 Question:

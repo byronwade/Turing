@@ -27,6 +27,7 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 17. [17 Build Readiness Task Queue](17-build-readiness-task-queue.md)
 18. [18 Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md)
 19. [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md)
+20. [Implementation Master Plan](implementation-plan/README.md)
 
 ## Machine-readable companions
 
@@ -40,6 +41,11 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 - [Implementation kickoff review](machine/implementation-kickoff-review.json)
 - [Build readiness dependency graph](machine/build-readiness-dependency-graph.json)
 - [Documentation readiness completion audit](machine/documentation-readiness-completion-audit.json)
+- [Implementation execution graph](../blueprint-v1/machine/implementation-execution-graph.json)
+- [Implementation milestone gates](../blueprint-v1/machine/implementation-milestone-gates.json)
+- [Implementation interface freezes](../blueprint-v1/machine/implementation-interface-freezes.json)
+- [Implementation evidence catalog](../blueprint-v1/machine/implementation-evidence-catalog.json)
+- [Implementation task sequence](../blueprint-v1/machine/implementation-task-sequence.json)
 
 ## Non-negotiable rule
 
@@ -67,9 +73,10 @@ Use this section as the fast continuation path after reading [Start Here](../sta
 4. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
 5. Use the checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md) before calling documentation preparation complete; it confirms contained M0 continuation only and keeps all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
 6. Use the [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) to verify that the entry points, registries, research crosswalk, task controls, and validation commands still support contained M0 continuation.
-7. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
-8. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
-9. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
+7. Use the [Implementation Master Plan](implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks.
+8. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
+9. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
+10. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
 
 ### Source-strategy lane
 

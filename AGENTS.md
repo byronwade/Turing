@@ -27,6 +27,7 @@ Before changing anything, read:
 5. the relevant Blueprint v1 chapters under [`docs/blueprint-v1/`](docs/blueprint-v1/README.md)
 6. the relevant detailed engineering book linked from [`docs/README.md`](docs/README.md#detailed-engineering-books)
 7. [`docs/security.md`](docs/security.md) and the [security engineering book](docs/security-engine/README.md) for trust-boundary or hostile-input work
+8. [`docs/project-buildout/implementation-plan/README.md`](docs/project-buildout/implementation-plan/README.md) before sequencing implementation work
 
 ## Core priorities
 
@@ -205,7 +206,7 @@ Do not bypass, weaken, or delete a failing validation rule without updating the 
 
 ## Professional project-control requirements
 
-Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.
+Before production implementation, use the [project-buildout handbook](docs/project-buildout/README.md), [implementation master plan](docs/project-buildout/implementation-plan/README.md), machine ownership/traceability/review records, and [engineering templates](docs/templates/README.md). No Servo-derived release code lands before ADR-0009. No dependency is approved merely by appearing in research. Every Plug-in is a separate, revocable, resource-bounded principal. Public embedding uses an opaque stable ABI and generated SDKs, never Rust layout. Configuration, exceptions, evidence, and maturity are explicit and time-bounded.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-strategy impact

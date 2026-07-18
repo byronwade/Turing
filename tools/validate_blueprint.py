@@ -313,6 +313,7 @@ REQUIRED_DOCS = [
     RESEARCH / "ipc-capability-boundary-inventory-2026-07.md",
     RESEARCH / "sandbox-probe-inventory-2026-07.md",
     RESEARCH / "wp-003-sandbox-probe-plan-2026-07.md",
+    RESEARCH / "full-implementation-game-plan-audit-2026-07.md",
     RESEARCH / "agent-execution-production-readiness-audit-2026-07.md",
     RESEARCH / "servo-unsafe-ffi-contract-review-2026-07.md",
     DOCS / "templates" / "agent-task.md",
@@ -510,6 +511,11 @@ REQUIRED_MACHINE_FILES = [
     / "machine"
     / "build-readiness-closure-reviews"
     / "no-claim-build-readiness-closure-template.json",
+    MACHINE / "implementation-execution-graph.json",
+    MACHINE / "implementation-milestone-gates.json",
+    MACHINE / "implementation-interface-freezes.json",
+    MACHINE / "implementation-evidence-catalog.json",
+    MACHINE / "implementation-task-sequence.json",
     MACHINE / "pre-build-readiness.json",
     DOCS / "agent-execution" / "machine" / "agent-capability-matrix.json",
     DOCS / "agent-execution" / "machine" / "agent-run-manifest.schema.json",
@@ -835,6 +841,17 @@ REQUIRED_DOCUMENTATION_READINESS_COMPLETION_AUDIT_FILES = [
     RESEARCH / "documentation-readiness-completion-audit-2026-07.md",
 ]
 
+REQUIRED_IMPLEMENTATION_PLAN_FILES = [
+    ROOT / "tools" / "validate_implementation_plan.py",
+    RESEARCH / "full-implementation-game-plan-audit-2026-07.md",
+    DOCS / "project-buildout" / "implementation-plan" / "README.md",
+    MACHINE / "implementation-execution-graph.json",
+    MACHINE / "implementation-milestone-gates.json",
+    MACHINE / "implementation-interface-freezes.json",
+    MACHINE / "implementation-evidence-catalog.json",
+    MACHINE / "implementation-task-sequence.json",
+]
+
 REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES = [
     ROOT / "tools" / "validate_ipc_capability_boundaries.py",
     RESEARCH / "ipc-capability-boundary-inventory-2026-07.md",
@@ -971,6 +988,7 @@ def check_required_files() -> None:
             *REQUIRED_IMPLEMENTATION_KICKOFF_REVIEW_FILES,
             *REQUIRED_BUILD_READINESS_DEPENDENCY_GRAPH_FILES,
             *REQUIRED_DOCUMENTATION_READINESS_COMPLETION_AUDIT_FILES,
+            *REQUIRED_IMPLEMENTATION_PLAN_FILES,
             *REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES,
             *REQUIRED_IPC_READINESS_REVIEW_FILES,
             *REQUIRED_SANDBOX_PROBE_INVENTORY_FILES,
@@ -2929,6 +2947,22 @@ def check_sandbox_probe_inventory() -> None:
             line for line in [result.stdout.strip(), result.stderr.strip()] if line
         )
         fail(detail or "sandbox probe inventory validation failed")
+
+
+def check_implementation_plan() -> None:
+    validator = ROOT / "tools" / "validate_implementation_plan.py"
+    result = subprocess.run(
+        [sys.executable, "-B", str(validator)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = "\n".join(
+            line for line in [result.stdout.strip(), result.stderr.strip()] if line
+        )
+        fail(detail or "implementation plan validation failed")
 
 
 def check_sandbox_contracts() -> None:
@@ -6549,6 +6583,7 @@ def check_xtask_aggregate_check() -> None:
     ).read_text(encoding="utf-8")
     xtask_required = [
         '["-B", "tools/validate_blueprint.py"]',
+        '["-B", "tools/validate_implementation_plan.py"]',
         '["-B", "tools/validate_adr_0009_evidence.py"]',
         '["-B", "tools/validate_build_foundation.py"]',
         '["diff", "--check"]',
@@ -6580,18 +6615,18 @@ def check_xtask_aggregate_check() -> None:
 
     doc_requirements = {
         ROOT / "README.md": [
-            "CI for documentation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
-            "`xtask check` runs documentation validation, ADR-0009 evidence validation",
+            "CI for documentation, implementation-plan validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
+            "`xtask check` runs documentation validation, implementation-plan validation, ADR-0009 evidence validation",
             "local unstaged and staged diff whitespace checks",
             "cargo run --locked -p xtask -- check",
         ],
         DOCS / "prototype.md": [
             "cargo fmt --manifest-path prototype/Cargo.toml -- --check",
             "cargo test --manifest-path prototype/Cargo.toml --all-targets",
-            "documentation validation, ADR-0009 evidence validation, diff whitespace checks, and `xtask check`",
+            "documentation validation, implementation-plan validation, ADR-0009 evidence validation, diff whitespace checks, and `xtask check`",
         ],
         RESEARCH / "m0-build-foundation-2026-07.md": [
-            "`check` runs documentation validation, ADR-0009 evidence validation",
+            "`check` runs documentation validation, implementation-plan validation, ADR-0009 evidence validation",
             "local unstaged and staged diff whitespace checks",
         ],
     }
@@ -6910,6 +6945,7 @@ def main() -> int:
         check_implementation_kickoff_review()
         check_build_readiness_dependency_graph()
         check_documentation_readiness_completion_audit()
+        check_implementation_plan()
         check_ipc_capability_boundaries()
         check_ipc_readiness_review()
         check_sandbox_probe_inventory()
@@ -6949,7 +6985,7 @@ def main() -> int:
         "research-readiness crosswalk, ADR-0009 decision-review template, benchmark manifest, hardware, OS-control, resource attribution, "
         "competitor versions, competitor local installs, browser-pin capture, "
         "browser-pin capture self-test, browser-pin diagnostics, corpus, "
-        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
+        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, implementation master plan, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
         "research-log chronology, repository-map core registries, index/root/start machine-registry navigation, "
         "research-index lanes/crosswalk, start-here continuation, "
         "documentation-readiness evidence/DoD, "

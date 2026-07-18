@@ -1,0 +1,71 @@
+name: Implementation plan validation
+
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'docs/project-buildout/**'
+      - 'docs/blueprint-v1/14-roadmap-work-breakdown.md'
+      - 'docs/blueprint-v1/19-initial-backlog.md'
+      - 'docs/blueprint-v1/20-definition-of-done.md'
+      - 'docs/blueprint-v1/machine/backlog.json'
+      - 'docs/blueprint-v1/machine/implementation-*.json'
+      - 'docs/blueprint-v1/machine/pre-build-readiness.json'
+      - 'docs/production-readiness/machine/release-gates.json'
+      - 'tools/validate_implementation_plan.py'
+      - '.github/workflows/implementation-plan-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'docs/project-buildout/**'
+      - 'docs/blueprint-v1/14-roadmap-work-breakdown.md'
+      - 'docs/blueprint-v1/19-initial-backlog.md'
+      - 'docs/blueprint-v1/20-definition-of-done.md'
+      - 'docs/blueprint-v1/machine/backlog.json'
+      - 'docs/blueprint-v1/machine/implementation-*.json'
+      - 'docs/blueprint-v1/machine/pre-build-readiness.json'
+      - 'docs/production-readiness/machine/release-gates.json'
+      - 'tools/validate_implementation_plan.py'
+      - '.github/workflows/implementation-plan-validation.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: implementation-plan-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Validate implementation plan
+        shell: bash
+        run: |
+          set +e
+          python3 -B tools/validate_implementation_plan.py > implementation-plan-validation.log 2>&1
+          status=$?
+          cat implementation-plan-validation.log
+          exit "$status"
+
+      - name: Upload implementation-plan diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: implementation-plan-validation-${{ github.run_id }}
+          path: implementation-plan-validation.log
+          if-no-files-found: error
+          retention-days: 7

@@ -33,6 +33,8 @@ Each issue must reference stable requirement/risk/ADR IDs, define negative and f
 
 `WP-004` remains the native accessible browser-shell spike. Before its implementation hardens around a framework, it produces a toolkit-neutral Rust state/command contract, equivalent Slint/Vizia/Floem-or-GPUI reference shells, page-surface and accessibility composition evidence, a reference-platform decision, and proposed ADR-0013 through ADR-0016. This refinement does not change the 18-work-package registry or claim WP-004 has started.
 
+The [implementation master plan](../project-buildout/implementation-plan/README.md) provides dependency-ordered execution documentation for `WP-001` through `WP-018`. It does not approve any work package, promote broad implementation readiness, or replace reviewed `TASK-*` manifests.
+
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Agent execution and production-readiness preparation
 

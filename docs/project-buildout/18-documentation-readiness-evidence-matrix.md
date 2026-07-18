@@ -107,6 +107,7 @@ python3 -B tools/validate_incident_patch_rehearsal.py
 python3 -B tools/validate_incident_patch_readiness_review.py
 python3 -B tools/validate_backup_ownership_gap.py
 python3 -B tools/validate_backup_ownership_readiness_review.py
+python3 -B tools/validate_implementation_plan.py
 python3 -B tools/validate_implementation_kickoff_review.py
 python3 -B tools/validate_build_readiness_dependency_graph.py
 python3 -B tools/validate_documentation_readiness_completion_audit.py

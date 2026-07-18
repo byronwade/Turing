@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-17",
+  "status": "canonical_evidence_classes",
+  "classes": [
+    {"id":"EV-SPEC","name":"Specification and requirements","required_fields":["sources and revisions","supported subset","requirements risks ADRs WPs","invalid and future behavior","ambiguities"]},
+    {"id":"EV-UNIT","name":"Focused correctness","required_fields":["unit tests","boundary and overflow","invalid states","property or model tests where applicable","regressions"]},
+    {"id":"EV-CONFORMANCE","name":"Standards and protocol conformance","required_fields":["suite revision","full denominator","skip reasons","raw results","reduced failures"]},
+    {"id":"EV-SECURITY","name":"Security and hostile input","required_fields":["threat model","identity and authority","negative tests","sandbox or mitigation evidence","fuzz or model evidence","independent review","residual risk"]},
+    {"id":"EV-PRIVACY","name":"Privacy and data flow","required_fields":["data classes","purpose and consent","retention deletion export","partitioning and recipients","private-session and outage behavior"]},
+    {"id":"EV-PERF","name":"Performance memory and energy","required_fields":["hardware OS toolchain build","workload and lifecycle","samples and statistics","memory reconciliation","before and after","regression threshold"]},
+    {"id":"EV-A11Y","name":"Accessibility and usability","required_fields":["semantics","keyboard and focus","assistive technology matrix","human evaluation","latency and failures"]},
+    {"id":"EV-RELIABILITY","name":"Failure recovery and durability","required_fields":["cancellation timeout crash and restart","OOM disk and power faults where applicable","retry and idempotency","data-loss statement","long-duration stability"]},
+    {"id":"EV-COMPAT","name":"Version compatibility and migration","required_fields":["schema or API version","compatibility matrix","unknown and future behavior","migration downgrade rollback","deprecation"]},
+    {"id":"EV-OPERATIONS","name":"Build package update and support","required_fields":["reproducibility and provenance","SBOM notices symbols","install update rollback","runbook owner escalation","support and offline behavior"]},
+    {"id":"EV-DOCS","name":"Documentation and status integrity","required_fields":["affected canonical docs","registries and owners","repository navigation","unsupported behavior","verified commands and examples"]}
+  ],
+  "bundle_required_files": ["manifest.json","summary.md","requirements.json","commands.json","review.json","rollback.md"],
+  "claim_rule": "A claim may be no broader than immutable evidence tied to a named version environment workload denominator date and limitation set."
+}

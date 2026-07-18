@@ -81,6 +81,7 @@ fn doctor(require_exact_toolchain: bool) -> Result<(), String> {
         "Cargo.lock",
         "rust-toolchain.toml",
         "docs/README.md",
+        "docs/project-buildout/implementation-plan/README.md",
         "schemas/ipc/control-plane.json",
         "schemas/sandbox/probe-catalog.json",
         "schemas/sandbox/probe-evidence.schema.json",
@@ -110,6 +111,11 @@ fn bootstrap() -> Result<(), String> {
 fn check() -> Result<(), String> {
     let root = repository_root();
     command(&root, "python3", ["-B", "tools/validate_blueprint.py"])?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_implementation_plan.py"],
+    )?;
     command(&root, "python3", ["-B", "tools/generate_ipc.py", "--check"])?;
     command(
         &root,
@@ -160,7 +166,7 @@ fn check() -> Result<(), String> {
         ],
     )?;
 
-    println!("check: all M0 repository checks passed");
+    println!("check: all M0 repository and implementation-plan checks passed");
     Ok(())
 }
 

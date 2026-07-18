@@ -227,71 +227,30 @@ Work includes:
 
 There is no honest fixed end date. The web platform evolves continuously.
 
-## 13. Initial work packages
+## 13. Canonical work packages
 
-### WP-001 — Repository validation
+The following list is synchronized with [`backlog.json`](machine/backlog.json):
 
-Create stable requirement/risk/ADR schemas, link checks, source policy, and CI.
+1. **WP-001 — Repository validation and evidence foundation.**
+2. **WP-002 — Kernel identities, process roles, capabilities, and bounded IPC.**
+3. **WP-003 — Cross-platform renderer sandbox probes.**
+4. **WP-004 — Native accessible browser-shell spike.**
+5. **WP-005 — Tab lifecycle, resource attribution, and 30-tab simulator.**
+6. **WP-006 — HTML tokenizer and tree builder.**
+7. **WP-007 — DOM arena, mutation epochs, and events.**
+8. **WP-008 — CSS parser, selectors, cascade, and computed values.**
+9. **WP-009 — Block text layout, display list, and reference raster.**
+10. **WP-010 — JavaScript parser, bytecode, interpreter, and Test262 harness.**
+11. **WP-011 — Exact tracing GC and Web IDL bindings.**
+12. **WP-012 — Navigation transactions, site instances, and renderer swaps.**
+13. **WP-013 — Scoped HTTP, TLS, cache, cookies, and hermetic server.**
+14. **WP-014 — Storage broker, quota, migrations, and service-worker foundation.**
+15. **WP-015 — Versioned DevTools, automation protocol, and trace viewer.**
+16. **WP-016 — Capability-safe agent reference implementation.**
+17. **WP-017 — Signed update, rollback, and profile migration laboratory.**
+18. **WP-018 — Fixed-hardware compatibility, performance, and energy lab.**
 
-### WP-002 — Rust kernel types
-
-Process roles, identities, origins/sites, profiles, document epochs, capabilities, bounded IPC, errors.
-
-### WP-003 — Tab lifecycle simulator
-
-State machine, protection reasons, memory pressure, accounting, trace export, 30-tab scenarios.
-
-### WP-004 — Sandbox probes
-
-Per-platform child process that attempts forbidden operations and reports effective restrictions.
-
-### WP-005 — Native shell spike
-
-Window, tab strip, command field, accessibility, compositor surface, event trace.
-
-### WP-006 — HTML tokenizer
-
-Spec-state implementation, streaming decoder interface, parser traces, WPT/reduced tests, fuzzer.
-
-### WP-007 — DOM arena
-
-Generational handles, tree mutation, attributes, text, traversal, epochs, wrapper hooks.
-
-### WP-008 — CSS parser/cascade
-
-Tokenizer, rules, declarations, selectors, specificity, cascade, computed-value skeleton.
-
-### WP-009 — Block/text layout reference
-
-Fragments, intrinsic sizing, line shaping, bidi adapter, paint geometry, semantic traces.
-
-### WP-010 — Display-list reference
-
-Paint properties, display items, CPU raster, screenshot and trace harness.
-
-### WP-011 — JS language kernel
-
-Parser, bytecode, interpreter, values, objects, functions, exceptions, Test262 runner.
-
-### WP-012 — Exact GC
-
-Heap, roots, handles, tracing, stress mode, weak processing plan, external-memory accounting.
-
-### WP-013 — Navigation/process assignment model
-
-Browsing contexts, sites, origins, commits, redirects, process swaps, history, BFCache eligibility.
-
-### WP-014 — Network request context
-
-URL/origin, HTTP/1.1/TLS adapter, request policy, cache/cookie skeleton, hermetic server.
-
-### WP-015 — Agent policy reference
-
-Principal/grant/action schema, risk classifier, epoch validation, confirmation simulator, adversarial tests.
-
-### WP-016 — Trace and resource model
-
-Stable event schema, process/tab attribution, local viewer, redaction, benchmark exporter.
+Detailed dependencies, task families, negative tests, evidence, handoffs, and non-goals are in the [work-package playbooks](../project-buildout/implementation-plan/16-work-package-playbooks.md) and [`implementation-execution-graph.json`](machine/implementation-execution-graph.json).
 
 ## 14. Staffing reality
 
@@ -315,7 +274,7 @@ The long-term vision is fixed; implementation choices remain empirical.
 
 ## Professional buildout prerequisite
 
-Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. The checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) document the current `PB-019` blocker but do not provide named qualified backups, two-person control, or owner-reviewed backup ownership readiness. This refines M0 without changing WP-001 through WP-018 status.
+Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, staff backup ownership, and use the [implementation master plan](../project-buildout/implementation-plan/README.md) only as execution documentation for reviewed, bounded tasks. The checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) document the current `PB-019` blocker but do not provide named qualified backups, two-person control, or owner-reviewed backup ownership readiness. This refines M0 without changing WP-001 through WP-018 status.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-opportunity sequencing

@@ -16,6 +16,18 @@
     "task-scoped diagnostic tooling"
   ],
   "gate": "PB-GATE-0",
+  "implementation_plan": {
+    "status": "ready_as_execution_documentation",
+    "index": "docs/project-buildout/implementation-plan/README.md",
+    "machine_records": [
+      "docs/blueprint-v1/machine/implementation-execution-graph.json",
+      "docs/blueprint-v1/machine/implementation-milestone-gates.json",
+      "docs/blueprint-v1/machine/implementation-interface-freezes.json",
+      "docs/blueprint-v1/machine/implementation-evidence-catalog.json",
+      "docs/blueprint-v1/machine/implementation-task-sequence.json"
+    ],
+    "authority_limit": "The plan does not authorize a task. Only a reviewed TASK manifest with status ready authorizes implementation."
+  },
   "items": [
     {
       "id": "PB-001",
@@ -581,5 +593,6 @@
       ]
     }
   ],
+  "contained_m0_authorization": "ready",
   "completion_rule": "PB-GATE-0 passes when every item required for the selected contained milestone is ready or has a reviewed, expiring exception. Stable-release prerequisites remain later gates."
 }
