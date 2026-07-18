@@ -18,10 +18,13 @@ This repository is an architecture, research, and execution baseline, not a prod
 8. [Performance and memory](blueprint-v1/09-performance-memory.md)
 9. [AI and agent platform](blueprint-v1/10-ai-agent-platform.md)
 10. [Roadmap and work breakdown](blueprint-v1/14-roadmap-work-breakdown.md)
-11. [Risk register](blueprint-v1/15-risk-register.md)
-12. [Detailed engineering books](README.md#detailed-engineering-books)
-13. [Active research](research/README.md)
-14. [Repository map](repository-map.md)
+11. [Pre-build readiness checklist](project-buildout/11-pre-build-readiness-checklist.md)
+12. [Build readiness operating board](project-buildout/13-build-readiness-operating-board.md)
+13. [Build readiness task queue](project-buildout/17-build-readiness-task-queue.md)
+14. [Risk register](blueprint-v1/15-risk-register.md)
+15. [Detailed engineering books](README.md#detailed-engineering-books)
+16. [Active research](research/README.md)
+17. [Repository map](repository-map.md)
 
 The Blueprint is the normative overview. The detailed books expand implementation research and evidence requirements without silently changing accepted decisions.
 
@@ -44,8 +47,9 @@ The Blueprint is the normative overview. The detailed books expand implementatio
 The repository currently contains:
 
 - the normative product and engineering Blueprint;
-- nineteen detailed engineering and competitive research books;
-- dated engine-landscape and documentation-gap research;
+- twenty-seven detailed engineering, product, operating, and competitive research books;
+- dated engine-landscape, market, Servo/source-strategy, readiness, and documentation-gap research;
+- a human build-readiness operating board plus machine-readable pre-build gates;
 - machine-readable requirements, risks, work packages, process capabilities, benchmark and agent-action schemas;
 - repository validation and documentation-governance checks;
 - a dependency-free Rust architecture prototype.
@@ -55,6 +59,46 @@ Detailed books now cover networking, storage, media/documents, native platforms,
 ## Current implementation state
 
 The prototype encodes typed process roles, bounded messages, legal tab lifecycle transitions, ordered rendering stages, scoped network identity, and deterministic agent authorization. It does not parse HTML, render pages, execute JavaScript, create native windows, or open network connections.
+
+## Current build-readiness state
+
+Turing is ready for contained M0 implementation tasks only. It is not ready for broad M1 expansion, developer preview, beta, stable release, or Chrome-class claims.
+
+Use this stop/resume map before continuing:
+
+- Status and gate truth: use the [Build Readiness Operating Board](project-buildout/13-build-readiness-operating-board.md), [Pre-build Readiness Checklist](project-buildout/11-pre-build-readiness-checklist.md), [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md), and machine [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
+- Implementation kickoff continuity: use the checked [Implementation Kickoff Review Inventory](research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes. It records first next actions, owner-only decisions, prohibited claims, and release-authority boundaries without approving tasks or promoting readiness.
+- Sequencing control: use the checked [Build Readiness Dependency Graph](research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, decision-gate relationships, or parallel no-claim lane boundaries.
+- Documentation readiness completion audit: use the checked [Documentation Readiness Completion Audit](research/documentation-readiness-completion-audit-2026-07.md) and checked no-claim [build-readiness closure-review template](project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json) before calling documentation preparation complete. They confirm contained-M0 continuation only and keep all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
+- Core registry navigation: use the [core program registries](repository-map.md#core-program-registries) before changing requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas.
+- Research lane selection: use the [Research Index](research/README.md#current-implementation-research-lanes) to choose the source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, or ownership lane, then use its [build-readiness research crosswalk](research/README.md#build-readiness-research-crosswalk) to connect the work to primary `RQ-*`, `PB-*`, and `TASK-*` records.
+- Task shaping: use the proposed [Build Readiness Task Queue](project-buildout/17-build-readiness-task-queue.md) and checked no-claim [task approval template](agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to create reviewed task manifests. No proposed `TASK-*` item is execution approval. The template is not execution approval either.
+- Source-strategy blocker: the first broad-web-engine blocker is the Servo/source strategy in `PB-002`; use the [ADR-0009 source packet](project-buildout/14-adr-0009-source-strategy-decision-packet.md), [ADR-0009 evidence matrix](project-buildout/15-adr-0009-evidence-traceability-matrix.md), [ADR-0009 decision draft](project-buildout/16-adr-0009-decision-draft.md), and checked no-claim [ADR-0009 decision-review template](blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json) before any source-strategy-dependent implementation.
+- Fresh-host build status: `PB-009` has a checked no-claim [Fresh Host Reproduction Inventory](research/fresh-host-reproduction-inventory-2026-07.md) and project-buildout machine registry, but no independent fresh-host run, owner-approved clean-VM equivalent, retained clean-host bootstrap/doctor/check/xtask logs, cache/target-directory proof, source-tree cleanliness proof, `PB-009` readiness promotion, preview/beta/stable readiness, production readiness, or Chrome-class claim.
+- IPC boundary status: `PB-011` has a checked no-claim [IPC Capability Boundary Inventory](research/ipc-capability-boundary-inventory-2026-07.md), checked no-claim [IPC schema-source template](blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), checked no-claim [IPC readiness-review template](blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), and machine registry, but no canonical schema generator, wire encoding decision, timeout/cancellation implementation, stale-epoch receiver proof, no owner-reviewed IPC readiness, renderer-security claim, agent-security claim, process-isolation readiness, site-isolation claim, production IPC claim, or implementation claim.
+- Sandbox probe status: `PB-012` has a checked no-claim [Sandbox Probe Inventory](research/sandbox-probe-inventory-2026-07.md), security-engine machine registry, checked no-claim [probe-package template](security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), and checked no-claim [sandbox readiness-review template](security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), but no packaged expected-deny probes, effective platform-policy capture, no owner-reviewed sandbox readiness, sandbox-readiness claim, renderer-security claim, site-isolation claim, hostile-browsing safety claim, SEC-GATE-1 claim, SEC-GATE-6 claim, production-safety claim, or implementation claim.
+- Native-shell adapter-contract status: `PB-003` has a checked no-claim [Toolkit-Neutral UI Adapter Contract Inventory](research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md) and UI-runtime machine registry, but no accepted `ADR-0013`, native adapter prototype, complete state/command/surface/accessibility/diagnostic/adapter contract, no-toolkit-owned-authority negative tests, trusted-chrome readiness, accessibility readiness, page-surface approval, toolkit selection, or release-path UI approval.
+- Native-shell framework status: `PB-004` has a checked no-claim [Native UI Framework Bake-Off Inventory](research/native-ui-framework-bakeoff-inventory-2026-07.md) and UI-runtime machine registry, but no equivalent Slint/Vizia/Floem-or-GPUI adapter evidence, accepted `ADR-0014`, accessibility readiness, IME/keyboard proof, page-surface approval, crash/GPU-loss proof, startup/memory/binary/latency/frame-pacing/energy result, license/provenance approval, toolkit selection, trusted-chrome readiness, or release-path UI approval.
+- Native-shell page-surface status: `PB-005` has a checked no-claim [Page Surface Composition Inventory](research/page-surface-composition-inventory-2026-07.md) and UI-runtime machine registry, but no executable `UI-GATE-7` prototype, accepted `ADR-0016`, typed page-surface handles, brokered surface handle proof, compositor ownership decision, renderer-texture composition proof, resize/scale/damage proof, input/IME/accessibility routing proof, occlusion/capture proof, renderer-crash/GPU-loss proof, software fallback, latency/frame-pacing trace, or page-surface approval.
+- Native-shell accessibility status: `PB-015` has a checked no-claim [Window Input Accessibility Spike Inventory](research/window-input-accessibility-spike-inventory-2026-07.md) and accessibility machine registry, but no executable reference-platform workflow matrix, manual assistive-technology coverage, screen-reader coverage, page-tree composition proof, IME correctness, renderer-hang, crash, GPU-loss, UI-GATE-7, UI-GATE-10, or accessibility-readiness claim.
+- Chrome-class and extreme-performance evidence: use the [Performance Benchmark Readiness Packet](research/performance-benchmark-readiness-packet-2026-07.md), [Benchmark Corpus Expansion](research/benchmark-corpus-expansion-2026-07.md), [Chrome-Class Performance Runbook](research/chrome-class-performance-runbook-2026-07.md), benchmark manifests, server lifecycle evidence, browser-pin capture records, diagnostic records, launch-runner contract and self-test evidence, smoke-runner evidence, checked no-claim [claim-bundle template](blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json), and checked no-claim [benchmark readiness-review template](blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json) before any owner-reviewed claim bundle or performance measurement plan becomes build-ready. There is no owner-reviewed benchmark readiness, benchmark-ready status, public performance claim, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, competitor-result claim, daily-driver claim, production claim, or implementation claim.
+- Operating controls: use the [project-buildout handbook](project-buildout/README.md) and [Agent Execution book](agent-execution/README.md) before delegating implementation or converting evidence into a task.
+
+All of the above still supports contained M0 and no-claim evidence work only. It does not approve broad M1 expansion, source adoption, benchmark-ready browser pins, Chrome-class comparison, speed, memory, energy, compatibility, security, accessibility, production, beta, stable, or daily-driver claims.
+
+## Validation Before Handoff
+
+Before handing work to another maintainer or expanding a contained task, run the aggregate check for your shell:
+
+```bash
+sh tools/check.sh
+```
+
+```powershell
+.\tools\check.ps1
+```
+
+Both wrappers delegate to the same locked `xtask check` path and keep Cargo build output outside the repository when `CARGO_TARGET_DIR` is unset. The direct command family is listed in the [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md#validation-commands). A passing check proves only the current M0 repository validation scope, not broad implementation readiness or product support.
 
 ## Current safety statement
 
@@ -76,7 +120,23 @@ After reading the professional buildout controls, use the [Market Strategy and D
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI status
 
-The project has a documented native-shell working hypothesis but no selected toolkit. Slint, Vizia, and Floem or GPUI require equivalent prototypes. React is restricted to a non-shipping design lab. See the [Native UI Runtime book](ui-runtime/README.md) and [pre-build readiness audit](research/pre-build-readiness-gap-audit-2026-07.md).
+The project has a documented native-shell working hypothesis, checked no-claim adapter contract inventory, checked no-claim framework bake-off inventory, checked no-claim page-surface composition inventory, checked no-claim component fixture inventory, and checked no-claim window/input/accessibility workflow inventory, but no accepted `ADR-0013`, native adapter prototype, selected toolkit, equivalent adapter run, accepted `ADR-0014`, rendered fixture pack, executable `UI-GATE-7` prototype, compositor ownership decision, reference-platform workflow matrix, manual assistive-technology coverage, or page-tree composition proof. Slint, Vizia, and Floem or GPUI require equivalent prototypes. React is restricted to a non-shipping design lab. See the [Native UI Runtime book](ui-runtime/README.md), [Toolkit-Neutral UI Adapter Contract Inventory](research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md), [Native UI Framework Bake-Off Inventory](research/native-ui-framework-bakeoff-inventory-2026-07.md), [Page Surface Composition Inventory](research/page-surface-composition-inventory-2026-07.md), [Native UI component fixture inventory](research/native-ui-component-fixture-inventory-2026-07.md), [Window Input Accessibility Spike Inventory](research/window-input-accessibility-spike-inventory-2026-07.md), and [pre-build readiness audit](research/pre-build-readiness-gap-audit-2026-07.md).
+
+## Profile/session format status
+
+The project has a checked no-claim [Profile Session Format Inventory](research/profile-session-format-inventory-2026-07.md) and checked no-claim [schema-package template](storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json) for `PB-016`, but no executable profile, Space, session, snapshot, or migration schemas beyond that template and no real-profile migration. Sync, credential storage, user-data handling readiness, data-loss safety, and production profile-format behavior remain blocked until executable schemas, fault tests, fixture policy, and owner review exist.
+
+## Research package/update status
+
+The project has a checked no-claim [Research Package Update Lab Inventory](research/research-package-update-lab-inventory-2026-07.md) and checked no-claim [update-lab package template](release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json) for `PB-017`, but no executable package manifest, metadata parser, signature/threshold verifier, staged installer, rollback lab, real updater, stable channel, production signing path, or public distribution path beyond that template. Rollback safety, migration safety, release readiness, and supported-security claims remain blocked.
+
+## Incident-response rehearsal status
+
+The project has a checked no-claim [Incident Patch Rehearsal Inventory](research/incident-patch-rehearsal-inventory-2026-07.md) and checked no-claim [incident patch rehearsal template](security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json) for `PB-018`, but no executed private-intake tabletop, emergency patch dry run, coordinated disclosure rehearsal, postmortem evidence, role review, backup-owner coverage, or proven response capacity beyond that template. Incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, signing authority, stable promotion, incident closure authority, and production-safe browsing claims remain blocked.
+
+## Backup ownership status
+
+The project has a checked blocked [Backup Ownership Gap Inventory](research/backup-ownership-gap-inventory-2026-07.md) and checked no-claim [backup-owner qualification template](project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json) for `PB-019`, but no named qualified backup owners for build-critical scopes beyond that template. Current owner records and CODEOWNERS remain provisional and primary-only. Broad readiness, production authority, release authority, stable signing, update trust, supported-version changes, security-disclosure authority, irreversible migration approval, incident closure, legal approval, and owner-coverage claims remain blocked.
 
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Implementation-agent and production status

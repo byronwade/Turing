@@ -64,6 +64,10 @@ Track security-test inventory, fuzzing CPU time and coverage proxies, unique roo
 - Emergency patch, signing, update, rollback, and incident tabletop drills.
 - Published residual-risk and unsupported-security map.
 
+The checked [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md) and checked no-claim [sandbox probe-package template](machine/sandbox-probe-packages/no-claim-expected-deny-template.json) are current no-claim `PB-012` planning evidence for role targets, access surfaces, package handoff fields, platform evidence requirements, host-safety requirements, and blocker records. They do not satisfy SEC-GATE-1, SEC-GATE-6, sandbox readiness, site-isolation, hostile-browsing safety, or release evidence until packaged probes run against the effective platform policies for the claimed artifacts.
+
+The checked [Incident Patch Rehearsal Inventory](../research/incident-patch-rehearsal-inventory-2026-07.md), checked no-claim [incident patch rehearsal template](machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), and checked no-claim [incident/patch readiness-review template](machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json) are current `PB-018` planning evidence for private intake, emergency patch, incident-class, role, timing, escalation, secret-rotation, fixture-policy, lifecycle, rejection-rule, owner-review handoff, and unsupported-boundary terms. They do not satisfy the emergency patch, incident tabletop, owner-reviewed incident/patch readiness, supported-security, stable-release, implementation, or production-safe browsing gates until actual tabletop, dry-run, and owner-review evidence exists beyond the templates.
+
 ## Known risks and unresolved questions
 
 - Coverage metrics can create false confidence without attacker-oriented review.

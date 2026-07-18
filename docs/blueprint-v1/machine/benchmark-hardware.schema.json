@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-hardware-v1.json",
+  "title": "Turing Benchmark Hardware and OS Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "hardware_id",
+    "status",
+    "claim_status",
+    "observed_at",
+    "hardware_tier",
+    "host",
+    "cpu",
+    "memory",
+    "gpus",
+    "storage",
+    "os_image",
+    "power_thermal",
+    "stability_controls",
+    "unsupported_behavior",
+    "evidence_required",
+    "sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "hardware_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.HARDWARE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate_current_host",
+        "draft",
+        "reviewed",
+        "retired"
+      ]
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hardware_tier": {
+      "enum": [
+        "Tier L",
+        "Tier M",
+        "Tier H"
+      ]
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostname",
+        "manufacturer",
+        "model",
+        "system_type",
+        "role",
+        "owner"
+      ],
+      "properties": {
+        "hostname": {
+          "type": "string"
+        },
+        "manufacturer": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "system_type": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "cpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "physical_cores",
+        "logical_processors"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "physical_cores": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "logical_processors": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_physical_bytes",
+        "installed_capacity_bytes",
+        "module_count"
+      ],
+      "properties": {
+        "total_physical_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "installed_capacity_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "module_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "gpus": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "driver_version",
+          "current_refresh_hz"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "driver_version": {
+            "type": "string"
+          },
+          "current_refresh_hz": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "storage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "media_type",
+          "size_bytes",
+          "role"
+        ],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "media_type": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "os_image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caption",
+        "version",
+        "build_number",
+        "display_version",
+        "ubr",
+        "edition_id",
+        "installation_type",
+        "install_date",
+        "last_boot_time",
+        "update_control_status"
+      ],
+      "properties": {
+        "caption": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "build_number": {
+          "type": "string"
+        },
+        "display_version": {
+          "type": "string"
+        },
+        "ubr": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edition_id": {
+          "type": "string"
+        },
+        "installation_type": {
+          "type": "string"
+        },
+        "install_date": {
+          "type": "string"
+        },
+        "last_boot_time": {
+          "type": "string"
+        },
+        "update_control_status": {
+          "type": "string"
+        }
+      }
+    },
+    "power_thermal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active_power_scheme",
+        "thermal_state",
+        "display_refresh_control"
+      ],
+      "properties": {
+        "active_power_scheme": {
+          "type": "string"
+        },
+        "thermal_state": {
+          "type": "string"
+        },
+        "display_refresh_control": {
+          "type": "string"
+        }
+      }
+    },
+    "stability_controls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim Media Document Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.45;
+      }
+
+      body {
+        margin: 0;
+        padding: 1.5rem;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        max-width: 84ch;
+      }
+
+      figure,
+      section {
+        border: 1px solid currentColor;
+        padding: 1rem;
+      }
+
+      canvas {
+        border: 1px dashed currentColor;
+        display: block;
+        max-width: 100%;
+      }
+
+      .poster {
+        align-items: center;
+        aspect-ratio: 16 / 9;
+        border: 1px solid currentColor;
+        display: grid;
+        justify-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Generated Media Document Fixture</h1>
+      <p>
+        This generated local page exercises media-adjacent document structure,
+        figures, captions, canvas fallback, poster placeholders, progress, and
+        meter elements without loading external assets.
+      </p>
+
+      <figure>
+        <div class="poster" role="img" aria-label="Generated poster placeholder">
+          Local poster placeholder
+        </div>
+        <figcaption>Generated image-like region with accessible text.</figcaption>
+      </figure>
+
+      <section aria-labelledby="canvas-heading">
+        <h2 id="canvas-heading">Canvas Fallback</h2>
+        <canvas width="320" height="120">
+          Canvas fallback text for browsers without canvas support.
+        </canvas>
+      </section>
+
+      <section aria-labelledby="document-controls-heading">
+        <h2 id="document-controls-heading">Document Controls</h2>
+        <p><progress value="35" max="100">35 percent</progress></p>
+        <p><meter min="0" max="10" value="6">6 of 10</meter></p>
+        <details>
+          <summary>Generated transcript placeholder</summary>
+          <p>No audio, video, PDF, remote image, or codec behavior is exercised.</p>
+        </details>
+      </section>
+    </main>
+  </body>
+</html>

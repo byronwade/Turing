@@ -63,3 +63,9 @@ The proposed product center is a durable Space with folders, layouts, identity, 
 ## UI implementation boundary
 
 Product workflows are specified independently from the selected toolkit. Component states, commands, focus, recovery, trusted indicators, and accessibility fixtures must run through every candidate adapter. React may accelerate design exploration, but no product behavior exists only in a React prototype.
+
+The checked [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md) defines the current no-claim `PB-014` component surfaces and fixture axes. It is planning evidence only; rendered fixtures, adapter-specific outputs, and owner-reviewed accessibility evidence remain missing.
+
+## Profile/session format boundary
+
+The checked [Profile Session Format Inventory](../research/profile-session-format-inventory-2026-07.md) and checked no-claim [schema-package template](../storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json) define current no-claim `PB-016` planning evidence for product-facing profile, Space, session, snapshot, migration, recovery, privacy, and data-loss behavior. They do not define executable schemas beyond the template or approve real-profile migration, sync, credential storage, user-data handling readiness, data-loss safety, or production profile-format behavior.

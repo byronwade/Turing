@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-18",
+  "adr_id": "ADR-0009",
+  "readiness_gate": "PB-002",
+  "decision_status": "no_source_strategy_decision",
+  "claim_status": "evidence tracking only; no Servo source strategy, no source baseline, no dependency approval, no component approval, no compatibility claim, no performance claim, and no release-code authorization",
+  "items": [
+    {
+      "id": "ADR9-EV-001",
+      "decision_area": "Source identity and checkout trust",
+      "status": "partial",
+      "owner_scopes": [
+        "architecture",
+        "supply-chain"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-source-archive-provenance-audit-2026-07.md",
+        "docs/research/servo-upstream-source-provenance-2026-07.md",
+        "docs/research/servo-independent-source-verification-2026-07.md",
+        "docs/research/servo-source-baseline-equivalence-policy-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner-selected source baseline",
+        "signed-tag or equivalent provenance decision",
+        "owner-accepted source equivalence policy",
+        "full blob and legal review for the selected baseline",
+        "rerun plan if the selected baseline differs from the current build baseline"
+      ],
+      "next_action": "Select the candidate source baseline model and record the accepted provenance and equivalence policy before downstream evidence is treated as reusable."
+    },
+    {
+      "id": "ADR9-EV-002",
+      "decision_area": "Reference build reproduction",
+      "status": "partial",
+      "owner_scopes": [
+        "release-operations",
+        "quality"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-independent-build-reproduction-2026-07.md",
+        "docs/research/servo-source-strategy-inventory-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner acceptance of the replay protocol",
+        "clean-target reproduction on an independent host or clean VM",
+        "target and cache isolation replay",
+        "success and failure log bundle"
+      ],
+      "next_action": "Convert the replay protocol draft into an owner-accepted script and rerun it from a clean target on an independent host or clean VM."
+    },
+    {
+      "id": "ADR9-EV-003",
+      "decision_area": "Cargo dependency and SBOM posture",
+      "status": "partial",
+      "owner_scopes": [
+        "security",
+        "supply-chain",
+        "legal-community"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-dependency-provenance-inventory-2026-07.md",
+        "docs/research/servo-supply-chain-policy-scan-2026-07.md",
+        "docs/research/servo-license-advisory-decision-prep-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner-selected SBOM format and toolchain",
+        "full SBOM for the selected source baseline and feature profile",
+        "yanked and advisory snapshot with timestamps",
+        "duplicate-version decisions",
+        "generated-output and native-package inclusion rules"
+      ],
+      "next_action": "Choose the SBOM tool/profile and produce a Turing-owned SBOM plus advisory snapshot for the selected baseline."
+    },
+    {
+      "id": "ADR9-EV-004",
+      "decision_area": "Turing license, notice, patent, and source-offer decisions",
+      "status": "partial",
+      "owner_scopes": [
+        "legal-community",
+        "release-operations"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-license-advisory-decision-prep-2026-07.md",
+        "docs/research/servo-supply-chain-policy-scan-2026-07.md",
+        "docs/research/servo-native-package-decision-prep-2026-07.md"
+      ],
+      "missing_outputs": [
+        "Turing license acceptance list",
+        "third-party notices",
+        "source-offer obligations",
+        "codec and patent review",
+        "native license review",
+        "accepted exception records"
+      ],
+      "next_action": "Convert the license and native notice inventories into accepted Turing license, notice, patent, and exception decisions."
+    },
+    {
+      "id": "ADR9-EV-005",
+      "decision_area": "Native bootstrap source-build or binary-package exceptions",
+      "status": "partial",
+      "owner_scopes": [
+        "release-operations",
+        "security",
+        "legal-community"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-native-bootstrap-provenance-audit-2026-07.md",
+        "docs/research/servo-native-package-decision-prep-2026-07.md"
+      ],
+      "missing_outputs": [
+        "source-build recipes or explicit binary-package exception records",
+        "GStreamer, moztools, MSYS2-derived tools, codec, crypto, servo-build-deps, ANGLE, and redistributable decisions",
+        "package-minimization decisions",
+        "final manifests",
+        "owner approvals"
+      ],
+      "next_action": "Decide which native packages must be source-built and which require time-bounded binary-package exceptions."
+    },
+    {
+      "id": "ADR9-EV-006",
+      "decision_area": "Deterministic native download verification",
+      "status": "partial",
+      "owner_scopes": [
+        "release-operations",
+        "security"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-native-bootstrap-provenance-audit-2026-07.md",
+        "docs/research/servo-native-package-decision-prep-2026-07.md"
+      ],
+      "missing_outputs": [
+        "accepted hash, signature, and mirror policy",
+        "revocation and freshness rule",
+        "bootstrap verification implementation",
+        "independent replay result"
+      ],
+      "next_action": "Turn the deterministic-download policy proposal into an accepted verification implementation and independently replay it."
+    },
+    {
+      "id": "ADR9-EV-007",
+      "decision_area": "Generated-output determinism and provenance",
+      "status": "partial",
+      "owner_scopes": [
+        "engine",
+        "supply-chain",
+        "quality"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-build-script-generated-output-audit-2026-07.md"
+      ],
+      "missing_outputs": [
+        "clean-target regeneration diff",
+        "independent-host comparison",
+        "generator manifest",
+        "source-to-output license and provenance mapping"
+      ],
+      "next_action": "Regenerate selected generated outputs from a clean target and compare hashes plus provenance on an independent host."
+    },
+    {
+      "id": "ADR9-EV-008",
+      "decision_area": "Registry, git, and path build-script and proc-macro side effects",
+      "status": "partial",
+      "owner_scopes": [
+        "security",
+        "release-operations",
+        "engine"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
+        "docs/research/servo-build-script-generated-output-audit-2026-07.md",
+        "docs/research/servo-build-script-proc-macro-side-effect-audit-2026-07.md"
+      ],
+      "missing_outputs": [
+        "selected baseline, profile, and component boundary",
+        "accepted side-effect policy",
+        "dynamic tracing for filesystem, process, network, time, environment, compiler, linker, and native-copy actions",
+        "proc-macro provenance and expansion-risk review",
+        "owner approval"
+      ],
+      "next_action": "Define the accepted build-script side-effect policy, then trace the selected baseline/profile dynamically."
+    },
+    {
+      "id": "ADR9-EV-009",
+      "decision_area": "Unsafe-code review",
+      "status": "partial",
+      "owner_scopes": [
+        "security",
+        "engine"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
+        "docs/research/servo-unsafe-ffi-contract-review-2026-07.md"
+      ],
+      "missing_outputs": [
+        "block-level unsafe inventory",
+        "SAFETY comment coverage",
+        "invariants",
+        "owner assignments",
+        "tests, fuzz, sanitizer, or Miri evidence",
+        "release relevance classification"
+      ],
+      "next_action": "Select the ADR-0009 candidate boundary, then complete a block-level unsafe ledger for only that boundary using the unsafe and FFI contract review as the triage plan."
+    },
+    {
+      "id": "ADR9-EV-010",
+      "decision_area": "FFI and ABI contracts",
+      "status": "partial",
+      "owner_scopes": [
+        "embedding",
+        "security",
+        "engine"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
+        "docs/research/servo-unsafe-ffi-contract-review-2026-07.md"
+      ],
+      "missing_outputs": [
+        "C API and platform ABI contracts",
+        "lifetime, threading, and panic policy",
+        "C conformance tests",
+        "header and source provenance"
+      ],
+      "next_action": "Define the versioned ABI, panic, allocator, callback, pointer, string, thread, and conformance-test contracts before any Servo C API or platform ABI is considered for release-path use."
+    },
+    {
+      "id": "ADR9-EV-011",
+      "decision_area": "Candidate component boundaries",
+      "status": "partial",
+      "owner_scopes": [
+        "architecture",
+        "engine"
+      ],
+      "existing_evidence": [
+        "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+        "docs/research/servo-dependency-provenance-inventory-2026-07.md",
+        "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
+        "docs/research/servo-component-boundary-analysis-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner-selected ADR-0009 option, source baseline, feature profile, and target platform",
+        "per-option release-path dependency-closure reports with normal, build, dev, and target-specific separation",
+        "in and out component lists with accepted APIs, generated-output policy, and replacement contracts",
+        "SpiderMonkey, Stylo, WebRender, and GStreamer reachability acceptance or rejection",
+        "owner-reviewed replacement plans and maintenance boundaries"
+      ],
+      "next_action": "Select the candidate source baseline and feature profile, then turn the first-pass closure report into owner-reviewed component boundaries."
+    },
+    {
+      "id": "ADR9-EV-012",
+      "decision_area": "JavaScript-runtime conflict analysis",
+      "status": "partial",
+      "owner_scopes": [
+        "javascript",
+        "architecture"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-source-strategy-inventory-2026-07.md",
+        "docs/research/servo-component-boundary-analysis-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner-reviewed option-by-option impact decision for Turing-owned JavaScript semantics",
+        "no-JIT proof and remaining SpiderMonkey dependency analysis",
+        "Web IDL bindings replacement or supersession plan",
+        "GC, wrapper lifetime, realm, and cross-origin identity conflict model",
+        "debugger and DevTools protocol impact decision",
+        "Test262 strategy that attributes the actual runtime and does not hide SpiderMonkey-derived semantics"
+      ],
+      "next_action": "Decide whether each ADR-0009 option preserves ADR-0004, treats SpiderMonkey only as a comparator, or explicitly supersedes the Turing-owned runtime commitment."
+    },
+    {
+      "id": "ADR9-EV-013",
+      "decision_area": "Compatibility corpus and WPT/Test262 evidence",
+      "status": "partial",
+      "owner_scopes": [
+        "quality"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-independent-build-reproduction-2026-07.md",
+        "docs/research/servo-local-compatibility-corpus-2026-07.md",
+        "docs/blueprint-v1/machine/servo-local-compatibility-corpus.schema.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-https-harness.schema.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-harnesses/no-claim-https-host-alias.plan.json",
+        "benchmarks/compatibility/adr0009/no-claim-tiny",
+        "tools/validate_servo_local_compatibility_corpus.py",
+        "tools/validate_servo_local_compatibility_https_harness.py",
+        "tools/serve_servo_local_compatibility_corpus.py"
+      ],
+      "missing_outputs": [
+        "local HTTPS harness execution and host-alias browser runs against the external Servo build with raw logs, certificate artifacts, host-alias cleanup proof, and hashes",
+        "focused WPT subset run for the selected ADR-0009 option",
+        "disabled-test, expected-failure, timeout, crash, and unsupported-API accounting",
+        "failure denominator and flakiness policy",
+        "separate Turing Test262 harness plan for ADR-0004"
+      ],
+      "next_action": "Execute the checked HTTPS host-alias harness against the checked local compatibility corpus fixtures, then run a focused WPT subset against the external Servo build with complete denominator accounting."
+    },
+    {
+      "id": "ADR9-EV-014",
+      "decision_area": "Fixed-hardware performance and memory baseline",
+      "status": "partial",
+      "owner_scopes": [
+        "performance",
+        "release-operations"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-source-strategy-inventory-2026-07.md",
+        "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+        "docs/research/semantic-resource-attribution-taxonomy-2026-07.md",
+        "docs/research/servo-performance-baseline-2026-07.md"
+      ],
+      "missing_outputs": [
+        "runner-generated local corpus baseline with raw samples and artifact hashes",
+        "owner-approved fixed-host hardware and OS image manifest",
+        "process and site-isolation disclosure",
+        "lifecycle state disclosure",
+        "browser-emitted private working set, resident, committed, shared, compressed, swap, semantic-owner, and GPU memory data",
+        "startup, input, frame pacing, CPU, wakeup, and energy measures",
+        "competitor or equivalent-baseline denominator only after equal-security and equal-workload runbooks exist"
+      ],
+      "next_action": "Turn the preparation report into a browser-launch no-claim run against the selected source baseline, with raw traces and full process, lifecycle, memory, and failure denominator disclosure."
+    },
+    {
+      "id": "ADR9-EV-015",
+      "decision_area": "Security model and sandbox implications",
+      "status": "partial",
+      "owner_scopes": [
+        "security",
+        "architecture"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
+        "docs/research/servo-native-bootstrap-provenance-audit-2026-07.md",
+        "docs/research/servo-security-maintenance-implications-2026-07.md"
+      ],
+      "missing_outputs": [
+        "owner-reviewed process authority map for each ADR-0009 option",
+        "Windows, macOS, and Linux sandbox boundary delta with effective-policy evidence",
+        "negative sandbox tests for file, socket, process, registry, device, debug, shared-memory, profile, credential, and IPC access",
+        "site, profile, origin, browsing-context-group, service-worker, storage, cookie, cache, DevTools, extension, and agent identity preservation review",
+        "native, media, GPU, JavaScript runtime, JIT, WebDriver, Bluetooth, and update risk review",
+        "fuzzing, sanitizer, crash, memory-corruption, and compromised-process evidence for any accepted component boundary"
+      ],
+      "next_action": "Turn the Windows sandbox gap and authority-sender inventory into an owner-reviewed security model for each source-strategy option before any release-path relationship is accepted."
+    },
+    {
+      "id": "ADR9-EV-016",
+      "decision_area": "Maintenance and upstream relationship model",
+      "status": "partial",
+      "owner_scopes": [
+        "program",
+        "architecture"
+      ],
+      "existing_evidence": [
+        "docs/research/servo-source-strategy-inventory-2026-07.md",
+        "docs/research/servo-security-maintenance-implications-2026-07.md"
+      ],
+      "missing_outputs": [
+        "patch ownership for each ADR-0009 option",
+        "upstream cadence, selected baseline, merge window, and stale-evidence policy",
+        "LTS and security-response expectation split between upstream and Turing",
+        "merge burden estimate for source, generated output, dependencies, native packages, WPT metadata, SpiderMonkey, Stylo, WebRender, GStreamer, and platform build changes",
+        "breakage handling, rollback, and source-baseline refresh plan",
+        "named primary owner, backup owner, reviewer, release owner, security owner, and legal/community owner"
+      ],
+      "next_action": "Convert upstream activity, release, CODEOWNERS, Dependabot, and workflow signals into an owner-approved patch, merge, security-response, and breakage-handling contract for each ADR option."
+    },
+    {
+      "id": "ADR9-EV-017",
+      "decision_area": "Public claims, requirements, risks, and support impact",
+      "status": "partial",
+      "owner_scopes": [
+        "documentation-research",
+        "product",
+        "program"
+      ],
+      "existing_evidence": [
+        "docs/start-here.md",
+        "docs/blueprint-v1/20-definition-of-done.md",
+        "docs/project-buildout/13-build-readiness-operating-board.md",
+        "docs/project-buildout/16-adr-0009-decision-draft.md"
+      ],
+      "missing_outputs": [
+        "owner-selected ADR-0009 option",
+        "owner-applied document and registry diff",
+        "final unsupported behavior for the accepted option",
+        "final residual risk for the accepted option",
+        "final support language for the accepted option",
+        "final public-claim boundaries for the accepted option"
+      ],
+      "next_action": "After an owner selects, rejects, or supersedes an ADR-0009 option, apply the matching document, registry, support-language, unsupported-behavior, residual-risk, and claim-boundary diff from the decision draft."
+    },
+    {
+      "id": "ADR9-EV-018",
+      "decision_area": "ADR-0009 decision and review",
+      "status": "blocked",
+      "owner_scopes": [
+        "architecture",
+        "program"
+      ],
+      "existing_evidence": [
+        "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+        "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
+        "docs/project-buildout/16-adr-0009-decision-draft.md",
+        "docs/blueprint-v1/machine/adr-0009-decision-review.schema.json",
+        "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json"
+      ],
+      "missing_outputs": [
+        "accepted, rejected, or superseded ADR text beyond the checked no-claim decision-review template",
+        "owner approvals beyond the checked no-claim decision-review template",
+        "rejected options",
+        "time-bounded exceptions",
+        "post-decision work packages",
+        "real ADR-0009 decision review replacing template-only null option, baseline, feature profile, owner reviewer, independent reviewer, and false decision status flags"
+      ],
+      "blocked_by": [
+        "ADR9-EV-001",
+        "ADR9-EV-002",
+        "ADR9-EV-003",
+        "ADR9-EV-004",
+        "ADR9-EV-005",
+        "ADR9-EV-006",
+        "ADR9-EV-007",
+        "ADR9-EV-008",
+        "ADR9-EV-009",
+        "ADR9-EV-010",
+        "ADR9-EV-011",
+        "ADR9-EV-012",
+        "ADR9-EV-013",
+        "ADR9-EV-014",
+        "ADR9-EV-015",
+        "ADR9-EV-016",
+        "ADR9-EV-017"
+      ],
+      "next_action": "Draft ADR-0009 only after the preceding evidence is owner-reviewed or explicitly rejected with time-bounded exceptions, then replace the checked no-claim decision-review template with a real owner-reviewed decision record."
+    }
+  ]
+}

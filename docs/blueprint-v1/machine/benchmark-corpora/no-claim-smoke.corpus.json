@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+  "status": "sample_only_no_benchmark_result",
+  "created_at": "2026-07-17T00:00:00Z",
+  "purpose": "Seed the PB-013 offline-corpus contract with generated local fixtures across static, app-like, accessibility, international, hostile-markup, media-document, and service-worker-contract shapes before any benchmark runner or performance claim exists.",
+  "license": "Project-generated fixture content under repository license; no third-party page content.",
+  "cases": [
+    {
+      "case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+      "name": "Generated static document fixture",
+      "category": "static_document",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/static-document/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+      "sha256": "c3fc5bfc89ca90018cb2272ba78118fc0de5bc3710b195aec4e1633d1f3a3219",
+      "bytes": 3156,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "headings",
+        "paragraphs",
+        "list",
+        "table",
+        "form",
+        "inline-css",
+        "accessibility-labels"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-APP-LIKE-001",
+      "name": "Generated app-like interaction fixture",
+      "category": "app_like",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/app-like/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+      "sha256": "62ef9ed709a7f590980bc81902b38a0c94911d288d38a11d6863cc15d3930a43",
+      "bytes": 3545,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "two-column-layout",
+        "form-controls",
+        "list-filtering",
+        "inline-css",
+        "inline-javascript",
+        "aria-live"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-ACCESSIBILITY-FORM-001",
+      "name": "Generated accessibility form fixture",
+      "category": "accessibility",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/accessibility-form/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/accessibility-form/",
+      "sha256": "201c5829a012cfe449292883adfb140bede16a61d2332dd7a65421ff6525f4ef",
+      "bytes": 2953,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "landmarks",
+        "skip-link",
+        "fieldset",
+        "labels",
+        "aria-describedby",
+        "aria-live",
+        "keyboard-focus"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-INTERNATIONAL-TEXT-001",
+      "name": "Generated international text fixture",
+      "category": "international_text",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/international-text/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/international-text/",
+      "sha256": "452a9e809c4e27fcbeb537444ed2be4cb344426bc6d9c5611f461c944d14bbfa",
+      "bytes": 2449,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "unicode-text",
+        "bidirectional-text",
+        "cjk-text",
+        "combining-marks",
+        "emoji",
+        "locale-sections"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-HOSTILE-MARKUP-001",
+      "name": "Generated hostile-markup fixture",
+      "category": "hostile_markup",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/hostile-markup/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/hostile-markup/",
+      "sha256": "a3667760cce57aceee35e90a188937391cd35fa07af0b32548df1734eb7a695d",
+      "bytes": 2769,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "nested-elements",
+        "long-attributes",
+        "escaped-entities",
+        "dense-table",
+        "bounded-hostile-shape"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-MEDIA-DOCUMENT-001",
+      "name": "Generated media-document fixture",
+      "category": "media_document",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/media-document/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/media-document/",
+      "sha256": "1f4a9adf87efa30edefa40a05ca934ad3b2e5327402a1f4320b99f3c4a78083c",
+      "bytes": 2200,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "figure",
+        "figcaption",
+        "canvas-fallback",
+        "poster-placeholder",
+        "progress",
+        "meter",
+        "details"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    },
+    {
+      "case_id": "PB13-CORPUS-SERVICE-WORKER-CONTRACT-001",
+      "name": "Generated service-worker contract fixture",
+      "category": "service_worker_contract",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/service-worker-contract/index.html",
+      "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/service-worker-contract/",
+      "sha256": "f8814812f2bc038aff23dc5bf63d6a6610ab2e8ce1cdb0a918e7cde05703e609",
+      "bytes": 2312,
+      "generated": true,
+      "license": "Project-generated fixture content under repository license.",
+      "features": [
+        "service-worker-api-surface-check",
+        "no-registration",
+        "no-cache-open",
+        "no-fetch-interception",
+        "inline-javascript",
+        "explicit-boundaries"
+      ],
+      "expected_m0_status": "unsupported_m0_web_rendering",
+      "external_network_allowed": false,
+      "measurement_claim_allowed": false
+    }
+  ]
+}

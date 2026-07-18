@@ -39,6 +39,10 @@ This book defines what “production” and “stable” must mean for Turing. I
 
 The canonical decision state is `not_ready_for_production`. No numeric SLO, supported platform, vulnerability SLA, stable scope, or release channel is accepted merely because it is listed here.
 
+The checked no-claim [incident/patch readiness-review template](../security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json) is a `PB-018` handoff shape only. It does not approve owner-reviewed incident/patch readiness, incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, stable promotion, signing authority, incident closure authority, implementation, or production-safe browsing.
+
+The checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) is a `PB-019` handoff shape only. It does not approve owner-reviewed backup ownership readiness, named qualified backups, owner coverage, two-person control, release authority, signing authority, security-disclosure authority, legal approval, incident closure authority, production authority, broad readiness, or implementation.
+
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Relationship to pre-build readiness
 

@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "capture_plan_id": "TURING.BENCHMARK.BROWSER_PIN_CAPTURE.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "status": "plan_no_browser_run",
+  "claim_status": "Plan only; no browser was launched by this manifest, no browser-reported version was captured, no profile was created, no benchmark ran, no competitor result exists, and no performance claim is supported.",
+  "created_at": "2026-07-17T20:41:50.3721645-04:00",
+  "host_references": {
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "release_catalog_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
+    "local_install_manifest_id": "TURING.BENCHMARK.COMPETITOR_LOCAL_INSTALLS.CURRENT_WINDOWS_HIGH_END.2026_07"
+  },
+  "privacy_boundary": {
+    "allowed_reads": [
+      "browser executable metadata already listed in the local-install manifest",
+      "the isolated temporary profile directory created for the capture run",
+      "runner-owned stdout, stderr, process-list, and artifact files"
+    ],
+    "prohibited_reads": [
+      "real Chrome, Edge, Firefox, Safari, or Safari Technology Preview user profile directories",
+      "browser history, cookies, credentials, bookmarks, downloads, sessions, cache, crash reports, sync data, account data, and extension data",
+      "personal files outside the runner-owned temporary artifact directory"
+    ],
+    "allowed_writes": [
+      "%TEMP%\\turing-browser-pin-capture\\${run_id}\\",
+      "runner-owned benchmark artifact package directory"
+    ],
+    "prohibited_writes": [
+      "installed browser application directories",
+      "real user browser profile directories",
+      "source-controlled repository files except generated manifest updates reviewed by the operator"
+    ],
+    "retention_policy": "Temporary profiles are deleted after artifact hashing unless the operator explicitly keeps a redacted artifact bundle for review."
+  },
+  "isolation_policy": {
+    "profile_root_policy": "Every browser launch uses a new runner-owned profile under %TEMP%\\turing-browser-pin-capture\\${run_id}\\<browser>; the runner rejects existing user profile paths.",
+    "profile_lifecycle": "Create empty profile, launch for version/settings capture, collect artifacts, close browser, hash artifact index, delete profile by default.",
+    "network_policy": "Version capture is offline by default; any network access or browser-update check requires an explicit profiled network policy and owner approval.",
+    "account_policy": "No account, sync, password manager, credential store, or platform single-sign-on state may be attached to the capture profile.",
+    "extension_policy": "Extensions are disabled or absent unless an owner-approved extension workload explicitly records extension identity and state.",
+    "update_policy": "The capture records update state but must not trigger browser update, component update, or installation repair unless the owner has approved a separate update-control run.",
+    "benchmark_argument_policy": "Capture-only arguments used to prevent first-run, sync, or background network side effects are not automatically valid benchmark workload arguments."
+  },
+  "browser_targets": [
+    {
+      "target_id": "chrome-current-host-pin-capture",
+      "product_name": "Google Chrome",
+      "platform": "Windows desktop",
+      "release_catalog_browser_id": "chrome-stable-desktop",
+      "local_install_browser_id": "chrome-local-desktop",
+      "status": "planned_from_local_executable",
+      "planned_profile_mode": "new temporary --user-data-dir under the runner-owned temp root",
+      "planned_version_capture": [
+        "capture executable file/product version and SHA-256 from the local-install manifest",
+        "launch Chrome with the temporary profile and capture browser-reported version from a trusted version surface or automation endpoint",
+        "capture effective command line, profile path, update state, extension state, sync/account state, cache state, sandbox/site-isolation state, memory-saver state, and user-agent policy"
+      ],
+      "planned_capture_arguments": [
+        "--user-data-dir=%TEMP%\\turing-browser-pin-capture\\${run_id}\\chrome",
+        "--no-first-run",
+        "--disable-sync",
+        "--disable-background-networking",
+        "--disable-component-update"
+      ],
+      "expected_artifacts": [
+        "browser-reported version text or structured automation output",
+        "effective command-line record",
+        "redacted settings and feature-state record",
+        "temporary profile hash manifest",
+        "stdout/stderr and process exit record",
+        "artifact index with SHA-256 hashes"
+      ],
+      "blocked_until": [
+        "owner approves capture-only argument list",
+        "runner implements timeout, close, cleanup, and artifact hashing",
+        "capture output proves the browser-reported version without using the owner profile"
+      ]
+    },
+    {
+      "target_id": "edge-current-host-pin-capture",
+      "product_name": "Microsoft Edge",
+      "platform": "Windows desktop",
+      "release_catalog_browser_id": "edge-stable-desktop",
+      "local_install_browser_id": "edge-local-desktop",
+      "status": "planned_from_local_executable",
+      "planned_profile_mode": "new temporary --user-data-dir under the runner-owned temp root",
+      "planned_version_capture": [
+        "capture executable file/product version and SHA-256 from the local-install manifest",
+        "launch Edge with the temporary profile and capture browser-reported version from a trusted version surface or automation endpoint",
+        "capture channel or update-ring proof because local executable metadata is newer than the recorded Stable release catalog",
+        "capture effective command line, profile path, update state, extension state, sync/account state, sidebar/workspaces state, cache state, sandbox/site-isolation state, memory-saver state, and user-agent policy"
+      ],
+      "planned_capture_arguments": [
+        "--user-data-dir=%TEMP%\\turing-browser-pin-capture\\${run_id}\\edge",
+        "--no-first-run",
+        "--disable-sync",
+        "--disable-background-networking",
+        "--disable-component-update"
+      ],
+      "expected_artifacts": [
+        "browser-reported version text or structured automation output",
+        "channel or update-ring evidence",
+        "effective command-line record",
+        "redacted settings and feature-state record",
+        "temporary profile hash manifest",
+        "stdout/stderr and process exit record",
+        "artifact index with SHA-256 hashes"
+      ],
+      "blocked_until": [
+        "owner resolves Edge channel/update-ring classification",
+        "owner approves capture-only argument list",
+        "runner implements timeout, close, cleanup, and artifact hashing",
+        "capture output proves the browser-reported version without using the owner profile"
+      ]
+    },
+    {
+      "target_id": "firefox-current-host-pin-capture",
+      "product_name": "Mozilla Firefox",
+      "platform": "Windows desktop",
+      "release_catalog_browser_id": "firefox-stable-desktop",
+      "local_install_browser_id": null,
+      "status": "blocked_missing_local_install",
+      "planned_profile_mode": "new temporary profile created by the runner once Firefox is installed on an approved host",
+      "planned_version_capture": [
+        "capture executable metadata and SHA-256",
+        "launch Firefox with a temporary profile and capture browser-reported version from about:support or an approved automation endpoint",
+        "capture ETP, Fission/site-isolation, JIT, update, extension, sync/account, cache, user-agent, and command-line state"
+      ],
+      "planned_capture_arguments": [
+        "-profile",
+        "%TEMP%\\turing-browser-pin-capture\\${run_id}\\firefox",
+        "-no-remote"
+      ],
+      "expected_artifacts": [
+        "local executable hash record",
+        "browser-reported version output",
+        "redacted settings and feature-state record",
+        "temporary profile hash manifest",
+        "artifact index with SHA-256 hashes"
+      ],
+      "blocked_until": [
+        "Firefox is installed on an approved benchmark host",
+        "owner approves Firefox temporary-profile capture method",
+        "runner implements timeout, close, cleanup, and artifact hashing"
+      ]
+    },
+    {
+      "target_id": "safari-stable-pin-capture",
+      "product_name": "Apple Safari",
+      "platform": "macOS desktop",
+      "release_catalog_browser_id": "safari-stable-desktop",
+      "local_install_browser_id": null,
+      "status": "blocked_requires_platform_host",
+      "planned_profile_mode": "new temporary macOS host-specific isolated user/profile strategy to be defined before capture",
+      "planned_version_capture": [
+        "capture browser-reported version, Safari application version, and code-signature evidence on an approved macOS host",
+        "capture profile isolation, iCloud/account state, extension state, cache state, privacy settings, WebDriver state, power settings, and process settings"
+      ],
+      "planned_capture_arguments": [],
+      "expected_artifacts": [
+        "macOS host manifest",
+        "Safari application identity and version record",
+        "code-signature or platform-specific integrity record",
+        "redacted settings and profile-isolation record",
+        "artifact index with hashes"
+      ],
+      "blocked_until": [
+        "approved macOS benchmark host exists",
+        "Safari profile-isolation method is defined",
+        "runner has macOS capture support"
+      ]
+    },
+    {
+      "target_id": "safari-technology-preview-pin-capture",
+      "product_name": "Safari Technology Preview",
+      "platform": "macOS desktop preview",
+      "release_catalog_browser_id": "safari-technology-preview",
+      "local_install_browser_id": null,
+      "status": "blocked_requires_platform_host",
+      "planned_profile_mode": "new temporary macOS host-specific isolated preview-profile strategy to be defined before capture",
+      "planned_version_capture": [
+        "capture browser-reported version, Safari Technology Preview application version, and code-signature evidence on an approved macOS host",
+        "capture explicit preview-channel label, profile isolation, extension state, cache state, WebDriver state, power settings, and process settings"
+      ],
+      "planned_capture_arguments": [],
+      "expected_artifacts": [
+        "macOS host manifest",
+        "Safari Technology Preview application identity and version record",
+        "code-signature or platform-specific integrity record",
+        "redacted settings and profile-isolation record",
+        "artifact index with hashes"
+      ],
+      "blocked_until": [
+        "approved macOS benchmark host exists",
+        "Safari Technology Preview profile-isolation method is defined",
+        "runner has macOS capture support"
+      ]
+    }
+  ],
+  "artifact_contract": [
+    "Every capture emits a manifest linking hardware_id, os_control_id, release_catalog_manifest_id, local_install_manifest_id, and capture_plan_id.",
+    "Every artifact has kind, path, byte size, and SHA-256.",
+    "Every browser target records whether the browser was launched, whether a temporary profile was created, whether cleanup succeeded, and whether any prohibited path was accessed.",
+    "Failed, timed-out, blocked, unsupported, and manually aborted captures remain in the denominator."
+  ],
+  "validation_contract": [
+    "Reject any capture that uses a profile path under a real user browser profile.",
+    "Reject any capture that omits browser-reported version, effective command line, profile path, update state, extension state, cache state, sandbox/site-isolation state, or unsupported behavior once status moves beyond plan_no_browser_run.",
+    "Reject any benchmark comparison that uses capture-only arguments as workload arguments without owner review.",
+    "Reject any claim status other than no-claim until runner-generated benchmark artifacts and owner-reviewed comparison evidence exist."
+  ],
+  "unsupported_behavior": [
+    "No browser was launched by this plan.",
+    "No browser-reported version was captured.",
+    "No temporary profile was created or hashed.",
+    "No command-line, settings, update, extension, sync/account, cache, sandbox, site-isolation, lifecycle, memory-saver, energy-saver, power, or user-agent output was captured.",
+    "No benchmark ran and no competitor comparison exists."
+  ],
+  "evidence_required": [
+    "implemented browser-launch capture runner with timeout, cleanup, artifact hashing, and prohibited-path checks",
+    "owner-approved capture-only argument list for each browser",
+    "browser-reported version and effective settings capture for Chrome and Edge on Windows",
+    "Firefox local-install evidence on an approved Windows host",
+    "Safari and Safari Technology Preview local-install evidence on an approved macOS host",
+    "runner-generated benchmark manifest that references capture_plan_id and the resulting benchmark-ready browser pin IDs",
+    "raw artifacts and owner review before any competitor comparison or performance claim"
+  ]
+}

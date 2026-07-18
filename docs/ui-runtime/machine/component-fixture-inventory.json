@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "inventory_id": "UI.FIXTURE.NOCLAIM_SHELL_COMPONENTS.2026_07",
+  "status": "no_claim_planning_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim planning inventory only; no UI toolkit selection, no rendered fixture, no accessibility readiness, no trusted-chrome readiness, no release-path UI approval, and no implementation claim",
+  "token_groups": [
+    {
+      "token_group_id": "UI-TOKEN-GROUP-TYPOGRAPHY",
+      "name": "Typography",
+      "purpose": "Define text roles, platform font stacks, numeric alignment, truncation, and code text without binding a toolkit.",
+      "tokens": [
+        "font.family.ui",
+        "font.family.monospace",
+        "text.role.title",
+        "text.role.body",
+        "text.role.caption",
+        "text.role.code",
+        "text.truncation.middle",
+        "text.line_height.compact"
+      ]
+    },
+    {
+      "token_group_id": "UI-TOKEN-GROUP-SPACING-DENSITY",
+      "name": "Spacing And Density",
+      "purpose": "Define compact, standard, and touch density without resizing trusted state indicators unpredictably.",
+      "tokens": [
+        "space.1",
+        "space.2",
+        "space.3",
+        "control.height.compact",
+        "control.height.standard",
+        "control.height.touch",
+        "hit_target.minimum",
+        "layout.gap.panel"
+      ]
+    },
+    {
+      "token_group_id": "UI-TOKEN-GROUP-COLOR-STATE",
+      "name": "Color And State",
+      "purpose": "Define semantic state colors while requiring non-color indicators for security and permission meaning.",
+      "tokens": [
+        "surface.window",
+        "surface.panel",
+        "text.primary",
+        "text.muted",
+        "border.default",
+        "state.danger",
+        "state.warning",
+        "state.success",
+        "state.permission.active",
+        "state.agent.active"
+      ]
+    },
+    {
+      "token_group_id": "UI-TOKEN-GROUP-FOCUS-MOTION",
+      "name": "Focus And Motion",
+      "purpose": "Define visible focus treatment and reduced-motion alternatives for shell transitions and alerts.",
+      "tokens": [
+        "focus.ring.width",
+        "focus.ring.offset",
+        "focus.ring.color",
+        "motion.duration.short",
+        "motion.duration.medium",
+        "motion.easing.standard",
+        "motion.reduced.instant",
+        "animation.indicator.pulse"
+      ]
+    },
+    {
+      "token_group_id": "UI-TOKEN-GROUP-ICONOGRAPHY",
+      "name": "Iconography",
+      "purpose": "Define icon sizing, stroke, labels, and fallback text for familiar browser commands and unfamiliar trust states.",
+      "tokens": [
+        "icon.size.small",
+        "icon.size.command",
+        "icon.stroke.default",
+        "icon.label.required",
+        "icon.security.origin",
+        "icon.lifecycle.frozen",
+        "icon.agent.stop",
+        "icon.resource.memory"
+      ]
+    }
+  ],
+  "fixture_axes": [
+    {
+      "axis_id": "UI-FIXTURE-AXIS-KEYBOARD",
+      "name": "Keyboard",
+      "purpose": "Every component exposes reachable command paths without pointer-only behavior.",
+      "required_conditions": [
+        "tab order",
+        "accelerator path",
+        "escape or cancel path",
+        "activation path",
+        "conflict behavior with page shortcuts"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-FOCUS",
+      "name": "Focus",
+      "purpose": "Focus remains visible, bounded, recoverable, and independent of page rendering.",
+      "required_conditions": [
+        "initial focus",
+        "focus return after close",
+        "modal trap when required",
+        "renderer crash focus fallback",
+        "forced-color focus visibility"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-SCREEN-READER",
+      "name": "Screen Reader",
+      "purpose": "Components expose native roles, names, states, values, relationships, and live updates.",
+      "required_conditions": [
+        "role",
+        "accessible name",
+        "state",
+        "value",
+        "relationship",
+        "live region when state changes"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-FORCED-COLOR",
+      "name": "Forced Color",
+      "purpose": "Components preserve meaning when the platform overrides authored colors.",
+      "required_conditions": [
+        "no color-only security meaning",
+        "visible borders",
+        "visible focus",
+        "system color mapping",
+        "icon fallback"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+      "name": "High Contrast",
+      "purpose": "Components remain legible and distinguishable under high-contrast themes.",
+      "required_conditions": [
+        "text contrast",
+        "state contrast",
+        "disabled state",
+        "selection contrast",
+        "warning and danger distinction"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-REDUCED-MOTION",
+      "name": "Reduced Motion",
+      "purpose": "State changes remain understandable without animation.",
+      "required_conditions": [
+        "no required animation",
+        "instant transition alternative",
+        "persistent state text",
+        "no looping nonessential motion"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-DENSITY",
+      "name": "Density",
+      "purpose": "Compact, standard, and touch density preserve information hierarchy, target size, and text fit.",
+      "required_conditions": [
+        "compact",
+        "standard",
+        "touch",
+        "30-tab pressure",
+        "100-tab overflow"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-LOCALIZATION",
+      "name": "Localization",
+      "purpose": "Text expansion, bidi labels, shortcuts, and locale-sensitive formats do not corrupt trusted state.",
+      "required_conditions": [
+        "long English labels",
+        "right-to-left labels",
+        "CJK labels",
+        "locale number formatting",
+        "shortcut text separation"
+      ]
+    },
+    {
+      "axis_id": "UI-FIXTURE-AXIS-ERROR-STATE",
+      "name": "Error State",
+      "purpose": "Failures, blocked actions, stale identity, and recovery paths are visible and reversible where possible.",
+      "required_conditions": [
+        "blocked command",
+        "stale document epoch",
+        "permission denied",
+        "renderer crash",
+        "network or storage unavailable",
+        "data-loss warning"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "component_id": "UI-COMPONENT-BROWSER-CHROME",
+      "surface": "browser_chrome",
+      "name": "Browser Chrome",
+      "purpose": "Window frame, origin/profile indicators, navigation controls, side-panel controls, and persistent trusted state.",
+      "required_states": [
+        "normal",
+        "private profile",
+        "permission active",
+        "capture active",
+        "agent active",
+        "update attention",
+        "renderer crashed"
+      ],
+      "required_commands": [
+        "navigate",
+        "back",
+        "forward",
+        "reload",
+        "stop",
+        "open page info",
+        "open settings",
+        "stop agent"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "window role",
+        "named toolbar regions",
+        "origin and profile state exposed as text",
+        "permission indicators announced",
+        "crash recovery action reachable"
+      ],
+      "authority_boundary": "The chrome emits typed commands only; it cannot grant navigation, profile, permission, credential, agent, Plug-in, persistence, update, or release authority."
+    },
+    {
+      "component_id": "UI-COMPONENT-TABS",
+      "surface": "tabs",
+      "name": "Tabs And Tab Strip",
+      "purpose": "Horizontal or vertical tab presentation with lifecycle, audio, capture, crash, memory, and protected-work indicators.",
+      "required_states": [
+        "active",
+        "inactive",
+        "pinned",
+        "muted",
+        "audio",
+        "capture",
+        "frozen",
+        "discarded",
+        "unsaved protected",
+        "crashed"
+      ],
+      "required_commands": [
+        "new tab",
+        "close tab",
+        "restore tab",
+        "duplicate tab",
+        "move tab",
+        "pin tab",
+        "mute tab",
+        "keep active",
+        "discard tab"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "tablist role",
+        "tab role",
+        "selected state",
+        "lifecycle state in accessible name or description",
+        "close and restore actions reachable"
+      ],
+      "authority_boundary": "Tab UI cannot decide lifecycle, crash recovery, profile, storage, or unsaved-work authority; kernel and session services revalidate commands."
+    },
+    {
+      "component_id": "UI-COMPONENT-SPACES",
+      "surface": "spaces",
+      "name": "Spaces And Workspace Rail",
+      "purpose": "Named workspace views over tabs, panels, layouts, developer bindings, and optional agent context inside one profile.",
+      "required_states": [
+        "selected",
+        "empty",
+        "dirty layout",
+        "developer binding active",
+        "agent context active",
+        "export available",
+        "cross-profile blocked"
+      ],
+      "required_commands": [
+        "create Space",
+        "rename Space",
+        "switch Space",
+        "move tab to Space",
+        "export Space",
+        "remove developer binding",
+        "revoke agent context"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "navigation landmark",
+        "selected state",
+        "profile boundary description",
+        "layout changed status",
+        "export omission of secrets announced"
+      ],
+      "authority_boundary": "Spaces are organizational views, not security boundaries or authority boundaries; profile and storage separation remains enforced outside UI."
+    },
+    {
+      "component_id": "UI-COMPONENT-COMMAND-FIELD",
+      "surface": "command_field",
+      "name": "Address Search Command Field",
+      "purpose": "Combined URL, search, history, tab, setting, and command entry with category separation and privileged-action confirmation.",
+      "required_states": [
+        "empty",
+        "URL candidate",
+        "search candidate",
+        "history result",
+        "open tab result",
+        "privileged command result",
+        "stale result",
+        "blocked command"
+      ],
+      "required_commands": [
+        "focus field",
+        "accept navigation",
+        "accept search",
+        "run command",
+        "open result menu",
+        "clear input",
+        "cancel"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "combobox role",
+        "result category announced",
+        "privileged command distinct from web result",
+        "active descendant tracking",
+        "blocked command reason exposed"
+      ],
+      "authority_boundary": "Field results cannot exercise privileged authority without command revalidation and confirmation where required."
+    },
+    {
+      "component_id": "UI-COMPONENT-PERMISSION-PROMPT",
+      "surface": "permission_prompts",
+      "name": "Permission Prompt",
+      "purpose": "Trusted confirmation for camera, microphone, location, display capture, devices, fullscreen, pointer lock, and similar browser grants.",
+      "required_states": [
+        "request pending",
+        "temporary allow",
+        "persistent allow",
+        "deny",
+        "blocked by policy",
+        "stale origin",
+        "active indicator"
+      ],
+      "required_commands": [
+        "allow once",
+        "allow always",
+        "deny",
+        "open details",
+        "manage setting",
+        "dismiss"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "modal dialog role",
+        "origin and profile in accessible text",
+        "default action is not destructive",
+        "focus trap",
+        "persistent grant state announced"
+      ],
+      "authority_boundary": "Prompt UI does not mint permission authority; the permission service validates origin, profile, frame, policy, and document epoch."
+    },
+    {
+      "component_id": "UI-COMPONENT-AGENT-CONFIRMATION",
+      "surface": "agent_confirmations",
+      "name": "Agent Confirmation",
+      "purpose": "Trusted review surface for model-observed data, proposed actions, risk class, provider destination, and stop/revoke controls.",
+      "required_states": [
+        "observation only",
+        "reversible action",
+        "consequential action",
+        "batch action",
+        "provider unavailable",
+        "stale document",
+        "revoked grant"
+      ],
+      "required_commands": [
+        "approve",
+        "reject",
+        "stop",
+        "inspect data flow",
+        "open audit",
+        "revoke grant",
+        "edit scope"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "modal or panel role matched to risk",
+        "risk class exposed",
+        "observed data categories exposed",
+        "primary and destructive actions named",
+        "stop control always reachable"
+      ],
+      "authority_boundary": "Page content and model output cannot expand authority or grant scope; agent execution services revalidate principal, action, risk, and confirmation."
+    },
+    {
+      "component_id": "UI-COMPONENT-RESOURCE-MANAGER",
+      "surface": "resource_manager",
+      "name": "Resource Manager",
+      "purpose": "Task-manager replacement showing tabs, frames, workers, extensions, DevTools, agents, shared services, and charged resource views.",
+      "required_states": [
+        "normal",
+        "30-tab pressure",
+        "unknown bucket",
+        "shared resource",
+        "kill warning",
+        "freeze warning",
+        "trace export available",
+        "process crashed"
+      ],
+      "required_commands": [
+        "sort",
+        "filter",
+        "inspect",
+        "kill",
+        "freeze",
+        "discard",
+        "keep active",
+        "export trace",
+        "report issue"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "table or treegrid role",
+        "sortable columns announced",
+        "physical and charged resource labels",
+        "dangerous action warning",
+        "unknown bucket reason exposed"
+      ],
+      "authority_boundary": "Resource UI requests lifecycle and diagnostic actions; process, tab, storage, and trace services decide authority and data-loss behavior."
+    },
+    {
+      "component_id": "UI-COMPONENT-SETTINGS",
+      "surface": "settings",
+      "name": "Settings",
+      "purpose": "Profile, privacy, permissions, updates, accessibility, agent, Plug-in, DevTools, and diagnostic settings with search and reset paths.",
+      "required_states": [
+        "default",
+        "changed",
+        "policy locked",
+        "profile scoped",
+        "requires restart",
+        "invalid input",
+        "reset available"
+      ],
+      "required_commands": [
+        "search settings",
+        "change setting",
+        "reset section",
+        "open policy details",
+        "export diagnostics",
+        "cancel"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "section headings",
+        "form control names",
+        "policy lock reason exposed",
+        "changed state announced",
+        "invalid value described"
+      ],
+      "authority_boundary": "Settings UI writes no durable authority or policy directly; owning services validate scope, profile, enterprise policy, and rollback behavior."
+    },
+    {
+      "component_id": "UI-COMPONENT-RECOVERY",
+      "surface": "recovery_ui",
+      "name": "Recovery UI",
+      "purpose": "Crash, hang, safe mode, session restore, update rollback, profile repair, and data-loss warning surfaces.",
+      "required_states": [
+        "renderer crash",
+        "browser crash restart",
+        "safe mode",
+        "session restore",
+        "profile repair",
+        "update rollback",
+        "data-loss warning"
+      ],
+      "required_commands": [
+        "reload crashed page",
+        "restore session",
+        "open safe mode",
+        "repair profile",
+        "discard unsafe restore",
+        "export report",
+        "continue without restore"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "alert or dialog role matched to severity",
+        "recovery choice consequences exposed",
+        "data-loss warning announced",
+        "report export path named",
+        "safe default action"
+      ],
+      "authority_boundary": "Recovery UI exercises no authority to replay state, migrate profiles, roll back updates, or delete data directly; recovery services validate snapshots, versions, and risk."
+    }
+  ],
+  "unsupported": [
+    "no rendered fixture exists",
+    "no UI toolkit selection exists",
+    "no adapter prototype exists",
+    "no accessibility readiness claim exists",
+    "no trusted-chrome readiness claim exists",
+    "no release-path UI approval exists",
+    "no implementation claim exists"
+  ]
+}

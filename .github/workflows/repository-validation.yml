@@ -49,6 +49,40 @@ jobs:
           cat repository-validation.log
           exit "$status"
 
+      - name: Validate ADR-0009 evidence records
+        shell: bash
+        run: |
+          set +e
+          python3 -B tools/validate_adr_0009_evidence.py > adr-0009-evidence-validation.log 2>&1
+          status=$?
+          cat adr-0009-evidence-validation.log
+          exit "$status"
+
+      - name: Check committed diff whitespace
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_HEAD_SHA: ${{ github.sha }}
+        run: |
+          set +e
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            base="$PR_BASE_SHA"
+            head="$PR_HEAD_SHA"
+          else
+            base="$PUSH_BEFORE_SHA"
+            head="$PUSH_HEAD_SHA"
+          fi
+          if [ -z "$base" ] || [[ "$base" =~ ^0+$ ]]; then
+            git diff-tree --check --root -r "$head" > diff-whitespace.log 2>&1
+          else
+            git diff --check "$base" "$head" > diff-whitespace.log 2>&1
+          fi
+          status=$?
+          cat diff-whitespace.log
+          exit "$status"
+
       - name: Validate executable build foundation
         shell: bash
         run: |
@@ -65,6 +99,8 @@ jobs:
           name: repository-validation-${{ github.run_id }}
           path: |
             repository-validation.log
+            adr-0009-evidence-validation.log
+            diff-whitespace.log
             build-foundation-validation.log
           if-no-files-found: error
           retention-days: 7

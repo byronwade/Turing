@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-network-profile-v1.json",
+  "title": "Turing Benchmark Network Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "status",
+    "created_at",
+    "claim_status",
+    "corpus_id",
+    "server",
+    "origin",
+    "dns",
+    "protocols",
+    "cache",
+    "network_conditions",
+    "authentication",
+    "routes",
+    "unsupported"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "sample_only_no_server",
+        "self_test_only_no_benchmark_result",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "corpus_id": {
+      "type": "string"
+    },
+    "server": {
+      "$ref": "#/$defs/server"
+    },
+    "origin": {
+      "$ref": "#/$defs/origin"
+    },
+    "dns": {
+      "$ref": "#/$defs/dns"
+    },
+    "protocols": {
+      "$ref": "#/$defs/protocols"
+    },
+    "cache": {
+      "$ref": "#/$defs/cache"
+    },
+    "network_conditions": {
+      "$ref": "#/$defs/network_conditions"
+    },
+    "authentication": {
+      "$ref": "#/$defs/authentication"
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "bind_host",
+        "port_policy",
+        "document_root",
+        "external_network_allowed"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "bind_host": {
+          "type": "string"
+        },
+        "port_policy": {
+          "type": "string"
+        },
+        "document_root": {
+          "type": "string"
+        },
+        "external_network_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheme",
+        "host",
+        "port",
+        "base_url_template"
+      ],
+      "properties": {
+        "scheme": {
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "base_url_template": {
+          "type": "string"
+        }
+      }
+    },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "host",
+        "address",
+        "external_dns_allowed"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "external_dns_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protocols": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "http1",
+        "http2",
+        "http3",
+        "tls"
+      ],
+      "properties": {
+        "http1": {
+          "type": "boolean"
+        },
+        "http2": {
+          "type": "boolean"
+        },
+        "http3": {
+          "type": "boolean"
+        },
+        "tls": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_state",
+        "reset_required",
+        "response_headers"
+      ],
+      "properties": {
+        "default_state": {
+          "enum": [
+            "cold",
+            "warm",
+            "mixed"
+          ]
+        },
+        "reset_required": {
+          "type": "boolean"
+        },
+        "response_headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "network_conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "latency_ms",
+        "loss_percent",
+        "bandwidth",
+        "shaping"
+      ],
+      "properties": {
+        "transport": {
+          "type": "string"
+        },
+        "latency_ms": {
+          "type": "number"
+        },
+        "loss_percent": {
+          "type": "number"
+        },
+        "bandwidth": {
+          "type": "string"
+        },
+        "shaping": {
+          "type": "string"
+        }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "credentials"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "credentials": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "origin_path",
+        "entry_path",
+        "expected_status",
+        "content_type"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string"
+        },
+        "origin_path": {
+          "type": "string"
+        },
+        "entry_path": {
+          "type": "string"
+        },
+        "expected_status": {
+          "type": "integer"
+        },
+        "content_type": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/profile-session-format-inventory-v1.json",
+  "title": "Turing Profile Session Format Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "record_types",
+    "behavior_matrix",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^STORAGE\\.FORMAT\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "no_claim_format_inventory",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "record_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/record_type"
+      }
+    },
+    "behavior_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/behavior"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "record_type": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type_id",
+        "name",
+        "purpose",
+        "versioning",
+        "authority_boundary",
+        "required_fields",
+        "privacy_rules",
+        "failure_cases",
+        "unsupported"
+      ],
+      "properties": {
+        "record_type_id": {
+          "type": "string",
+          "pattern": "^STO-FORMAT-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "versioning": {
+          "type": "string"
+        },
+        "authority_boundary": {
+          "type": "string"
+        },
+        "required_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "privacy_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failure_cases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "behavior_id",
+        "name",
+        "purpose",
+        "required_conditions",
+        "safe_failure"
+      ],
+      "properties": {
+        "behavior_id": {
+          "type": "string",
+          "pattern": "^STO-BEHAVIOR-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "required_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "safe_failure": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

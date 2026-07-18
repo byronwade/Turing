@@ -14,6 +14,8 @@ The schema repository is the source of truth for types, commands, events, constr
 
 Hand-written transport objects are prohibited where generated types exist. Generated files identify source and regeneration command.
 
+Current `PB-011` work is still before that generator: the checked [IPC Capability Boundary Inventory](../research/ipc-capability-boundary-inventory-2026-07.md), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), and checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json) record existing M0 IPC/kernel/type evidence, future schema-source handoff fields, future owner-review handoff fields, and the missing generated-schema, wire-encoding, timeout/cancellation, stale-epoch, owner-reviewed IPC readiness, and negative-test proof. The templates have no approved generator source, no owner-reviewed IPC readiness, and do not approve a schema source or transport encoding.
+
 ## Type design
 
 Use explicit records, enums with unknown-value handling, tagged unions, opaque identifiers, timestamps with clock domain, units in field names or types, bounded strings/bytes, and optional fields only when absence has defined meaning. Avoid “any”, untyped dictionaries, generic method names, and sentinel magic values.

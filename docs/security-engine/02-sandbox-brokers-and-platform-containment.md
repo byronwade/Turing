@@ -50,6 +50,8 @@ Sandbox probes attempt prohibited filesystem reads/writes, sockets, DNS, process
 
 Tests run from real process roles in packaged builds, not only unit-test mocks.
 
+The checked [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md), checked no-claim [sandbox probe-package template](machine/sandbox-probe-packages/no-claim-expected-deny-template.json), and checked no-claim [sandbox readiness-review template](machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json) record the current `PB-012` no-claim probe target and surface inventory, package handoff fields, readiness-review handoff fields, platform evidence requirements, and harness blockers. They are planning evidence only; they do not replace packaged role execution beyond the template, effective-policy capture, broker fixtures, compromised-client harnesses, or owner review, and they provide no owner-reviewed sandbox readiness.
+
 ## Non-negotiable invariants
 
 - A process that cannot be sandboxed to its declared role does not launch in a claimed-safe configuration.

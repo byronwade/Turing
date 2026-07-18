@@ -1,0 +1,460 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-launch-runner-v1.json",
+  "title": "Turing Benchmark Launch Runner Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "launch_runner_id",
+    "status",
+    "created_at",
+    "claim_status",
+    "command_contract",
+    "registry_references",
+    "target_policy",
+    "stage_contract",
+    "sample_control",
+    "cache_profile_policy",
+    "timeout_cancellation_policy",
+    "failure_finalization_policy",
+    "trace_artifact_policy",
+    "resource_attribution_policy",
+    "unsupported_behavior",
+    "evidence_required"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "launch_runner_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.LAUNCH_RUNNER\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "contract_only_no_browser_benchmark",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "command_contract": {
+      "$ref": "#/$defs/command_contract"
+    },
+    "registry_references": {
+      "$ref": "#/$defs/registry_references"
+    },
+    "target_policy": {
+      "$ref": "#/$defs/target_policy"
+    },
+    "stage_contract": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/stage"
+      }
+    },
+    "sample_control": {
+      "$ref": "#/$defs/sample_control"
+    },
+    "cache_profile_policy": {
+      "$ref": "#/$defs/cache_profile_policy"
+    },
+    "timeout_cancellation_policy": {
+      "$ref": "#/$defs/timeout_cancellation_policy"
+    },
+    "failure_finalization_policy": {
+      "$ref": "#/$defs/failure_finalization_policy"
+    },
+    "trace_artifact_policy": {
+      "$ref": "#/$defs/trace_artifact_policy"
+    },
+    "resource_attribution_policy": {
+      "$ref": "#/$defs/resource_attribution_policy"
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "command_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planned_runner_path",
+        "planned_modes",
+        "required_arguments",
+        "forbidden_arguments",
+        "self_test_status"
+      ],
+      "properties": {
+        "planned_runner_path": {
+          "type": "string"
+        },
+        "planned_modes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_arguments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/argument"
+          }
+        },
+        "forbidden_arguments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "self_test_status": {
+          "type": "string"
+        }
+      }
+    },
+    "argument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "required_for_real_run",
+        "purpose"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "required_for_real_run": {
+          "type": "boolean"
+        },
+        "purpose": {
+          "type": "string"
+        }
+      }
+    },
+    "registry_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hardware_id",
+        "os_control_id",
+        "corpus_id",
+        "network_profile_id",
+        "resource_attribution_id",
+        "tab_scenario_set_id",
+        "artifact_package_id",
+        "browser_pin_capture_plan_id",
+        "browser_pin_diagnostic_id",
+        "competitor_version_manifest_id",
+        "competitor_local_install_manifest_id"
+      ],
+      "properties": {
+        "hardware_id": {
+          "type": "string"
+        },
+        "os_control_id": {
+          "type": "string"
+        },
+        "corpus_id": {
+          "type": "string"
+        },
+        "network_profile_id": {
+          "type": "string"
+        },
+        "resource_attribution_id": {
+          "type": "string"
+        },
+        "tab_scenario_set_id": {
+          "type": "string"
+        },
+        "artifact_package_id": {
+          "type": "string"
+        },
+        "browser_pin_capture_plan_id": {
+          "type": "string"
+        },
+        "browser_pin_diagnostic_id": {
+          "type": "string"
+        },
+        "competitor_version_manifest_id": {
+          "type": "string"
+        },
+        "competitor_local_install_manifest_id": {
+          "type": "string"
+        }
+      }
+    },
+    "target_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "browser_launch_allowed_in_this_record",
+        "target_resolution",
+        "profile_boundary",
+        "network_boundary",
+        "comparison_boundary"
+      ],
+      "properties": {
+        "browser_launch_allowed_in_this_record": {
+          "type": "boolean"
+        },
+        "target_resolution": {
+          "type": "string"
+        },
+        "profile_boundary": {
+          "type": "string"
+        },
+        "network_boundary": {
+          "type": "string"
+        },
+        "comparison_boundary": {
+          "type": "string"
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "name",
+        "status",
+        "required_for_real_run",
+        "inputs",
+        "outputs",
+        "failure_policy"
+      ],
+      "properties": {
+        "stage_id": {
+          "type": "string",
+          "pattern": "^PB13-LAUNCH-STAGE-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "contract_only_not_implemented",
+            "implemented"
+          ]
+        },
+        "required_for_real_run": {
+          "type": "boolean"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failure_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "sample_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_repetitions_for_real_run",
+        "warmup_policy",
+        "randomization_policy",
+        "denominator_policy",
+        "result_label",
+        "measurement_claim_allowed"
+      ],
+      "properties": {
+        "minimum_repetitions_for_real_run": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "warmup_policy": {
+          "type": "string"
+        },
+        "randomization_policy": {
+          "type": "string"
+        },
+        "denominator_policy": {
+          "type": "string"
+        },
+        "result_label": {
+          "type": "string"
+        },
+        "measurement_claim_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cache_profile_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temporary_profile_required",
+        "real_profile_access_allowed",
+        "cache_reset_required",
+        "cookie_storage_policy",
+        "extension_policy",
+        "account_sync_policy",
+        "cleanup_required"
+      ],
+      "properties": {
+        "temporary_profile_required": {
+          "type": "boolean"
+        },
+        "real_profile_access_allowed": {
+          "type": "boolean"
+        },
+        "cache_reset_required": {
+          "type": "boolean"
+        },
+        "cookie_storage_policy": {
+          "type": "string"
+        },
+        "extension_policy": {
+          "type": "string"
+        },
+        "account_sync_policy": {
+          "type": "string"
+        },
+        "cleanup_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "timeout_cancellation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "global_timeout_seconds",
+        "per_stage_timeout_seconds",
+        "cancellation_records_required",
+        "cleanup_on_timeout_required"
+      ],
+      "properties": {
+        "global_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "per_stage_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cancellation_records_required": {
+          "type": "boolean"
+        },
+        "cleanup_on_timeout_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "failure_finalization_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "failures_in_denominator",
+        "unsupported_in_denominator",
+        "crash_records_required",
+        "partial_artifact_required",
+        "result_finalization_required"
+      ],
+      "properties": {
+        "failures_in_denominator": {
+          "type": "boolean"
+        },
+        "unsupported_in_denominator": {
+          "type": "boolean"
+        },
+        "crash_records_required": {
+          "type": "boolean"
+        },
+        "partial_artifact_required": {
+          "type": "boolean"
+        },
+        "result_finalization_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "trace_artifact_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_package_required",
+        "trace_capture_required",
+        "sha256_manifest_required",
+        "redaction_review_required",
+        "retention_decision_required"
+      ],
+      "properties": {
+        "artifact_package_required": {
+          "type": "boolean"
+        },
+        "trace_capture_required": {
+          "type": "boolean"
+        },
+        "sha256_manifest_required": {
+          "type": "boolean"
+        },
+        "redaction_review_required": {
+          "type": "boolean"
+        },
+        "retention_decision_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "resource_attribution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_owner_required",
+        "unknown_bucket_policy",
+        "shared_resource_policy",
+        "gpu_accounting_required"
+      ],
+      "properties": {
+        "semantic_owner_required": {
+          "type": "boolean"
+        },
+        "unknown_bucket_policy": {
+          "type": "string"
+        },
+        "shared_resource_policy": {
+          "type": "string"
+        },
+        "gpu_accounting_required": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

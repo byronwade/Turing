@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-resource-attribution-v1.json",
+  "title": "Turing Benchmark Resource Attribution Taxonomy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "resource_attribution_id",
+    "status",
+    "claim_status",
+    "owner_classes",
+    "metrics",
+    "attribution_rules",
+    "shared_resource_policy",
+    "collection_plan",
+    "ui_reporting_contract",
+    "unsupported_behavior",
+    "evidence_required",
+    "external_sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "resource_attribution_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.RESOURCE_ATTRIBUTION\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "taxonomy_draft_no_instrumentation",
+        "draft",
+        "reviewed",
+        "retired"
+      ]
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "owner_classes": {
+      "type": "array",
+      "minItems": 1
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 1
+    },
+    "attribution_rules": {
+      "type": "array",
+      "minItems": 1
+    },
+    "shared_resource_policy": {
+      "type": "object"
+    },
+    "collection_plan": {
+      "type": "object"
+    },
+    "ui_reporting_contract": {
+      "type": "object"
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "external_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

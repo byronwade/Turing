@@ -46,6 +46,8 @@ One person may provisionally hold both roles during the research phase, but the 
 - Departed maintainers retain no privileged access.
 - Every reviewer scope named by a machine-readable review rule resolves to a registered owner scope or the change owner.
 
+The checked no-claim [backup-ownership readiness-review template](machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) is a future owner-review shape only. It does not satisfy backup coverage, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence.
+
 ## Risks and failure modes
 
 - A global wildcard can mask ownership gaps.

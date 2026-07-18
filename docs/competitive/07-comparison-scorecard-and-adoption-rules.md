@@ -77,7 +77,7 @@ Quarterly or milestone reviews refresh current stable versions, standards focus 
 
 - Web Platform Tests — https://web-platform-tests.org/
 - Speedometer — https://browserbench.org/Speedometer3.1/
-- MotionMark — https://browserbench.org/MotionMark1.3/
+- MotionMark — https://browserbench.org/MotionMark/
 - JetStream — https://browserbench.org/
 - W3C Web Platform Design Principles — https://www.w3.org/TR/design-principles/
 

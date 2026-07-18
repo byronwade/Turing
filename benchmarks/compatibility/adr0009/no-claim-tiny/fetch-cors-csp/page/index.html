@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src https://api.turing.invalid/; img-src 'self'"
+    >
+    <title>ADR-0009 Fetch CORS CSP Fixture</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-FETCH-CSP-001">
+    <main>
+      <h1>Fetch CORS CSP Fixture</h1>
+      <p>
+        Future runs must map this document to https://fetch.turing.invalid/
+        and a paired API route to https://api.turing.invalid/.
+      </p>
+      <template id="route-contract">
+        {
+          "same_origin": "/ok.json",
+          "cors_allowed": "https://api.turing.invalid/cors/allowed.json",
+          "cors_denied": "https://api.turing.invalid/cors/denied.json",
+          "redirect": "https://api.turing.invalid/redirect/local",
+          "mixed_content_denial": "blocked-by-policy"
+        }
+      </template>
+      <pre id="policy-log">not executed</pre>
+    </main>
+    <script>
+      document.querySelector("#policy-log").textContent = JSON.stringify({
+        claim: "no compatibility claim",
+        case: document.body.dataset.adr9Case,
+        routesDeclared: true,
+      });
+    </script>
+  </body>
+</html>

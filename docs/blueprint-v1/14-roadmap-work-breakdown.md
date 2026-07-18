@@ -315,7 +315,7 @@ The long-term vision is fixed; implementation choices remain empirical.
 
 ## Professional buildout prerequisite
 
-Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. This refines M0 without changing WP-001 through WP-018 status.
+Before substantial production implementation, resolve ADR-0009, accept the workspace/toolchain/interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, and staff backup ownership. The checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) document the current `PB-019` blocker but do not provide named qualified backups, two-person control, or owner-reviewed backup ownership readiness. This refines M0 without changing WP-001 through WP-018 status.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-opportunity sequencing

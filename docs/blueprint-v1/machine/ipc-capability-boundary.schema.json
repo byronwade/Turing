@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/ipc-capability-boundary-v1.json",
+  "title": "Turing IPC Capability Boundary Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "m0_evidence",
+    "schema_and_transport_blockers",
+    "negative_coverage_requirements",
+    "role_capability_boundaries",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^IPC\\.CAPABILITY\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_boundary_inventory", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "m0_evidence": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "artifact", "evidence", "limit"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^IPC-M0-[A-Z0-9_]+$"
+          },
+          "artifact": {
+            "type": "string",
+            "minLength": 3
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 30
+          },
+          "limit": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "schema_and_transport_blockers": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "blocker", "status", "required_evidence", "safe_failure"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^IPC-BLOCKER-[A-Z0-9_]+$"
+          },
+          "blocker": {
+            "type": "string",
+            "minLength": 3
+          },
+          "status": {
+            "type": "string",
+            "enum": ["missing", "partially_covered", "proposed"]
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 40
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "negative_coverage_requirements": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "case",
+          "current_status",
+          "current_evidence",
+          "required_evidence",
+          "safe_failure"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^IPC-NEG-[A-Z0-9_]+$"
+          },
+          "case": {
+            "type": "string",
+            "minLength": 3
+          },
+          "current_status": {
+            "type": "string",
+            "enum": ["implemented_m0_test", "missing", "not_executable_without_schema"]
+          },
+          "current_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 40
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "role_capability_boundaries": {
+      "type": "array",
+      "minItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "process_capability_role",
+          "boundary",
+          "current_evidence",
+          "missing_evidence"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^IPC-ROLE-[A-Z0-9_]+$"
+          },
+          "process_capability_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "boundary": {
+            "type": "string",
+            "minLength": 30
+          },
+          "current_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "inventory_id": "SANDBOX.PROBE.INVENTORY.2026_07",
+  "status": "no_claim_probe_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim sandbox probe inventory only; no sandbox-readiness claim, no renderer-security claim, no site-isolation claim, no hostile-browsing safety claim, no platform containment claim, no packaged-build probe claim, no effective-policy claim, no SEC-GATE-1 claim, no SEC-GATE-6 claim, and no production-safety claim.",
+  "source_records": [
+    "docs/blueprint-v1/04-system-architecture.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/security-engine/01-threat-model-and-process-isolation.md",
+    "docs/security-engine/02-sandbox-brokers-and-platform-containment.md",
+    "docs/security-engine/06-security-verification-and-release-gates.md",
+    "docs/platform/README.md",
+    "docs/blueprint-v1/machine/process-capabilities.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/security-engine/machine/sandbox-readiness-review.schema.json",
+    "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+    "tools/validate_sandbox_readiness_review.py"
+  ],
+  "required_probe_surfaces": [
+    {
+      "surface": "file",
+      "hostile_attempt": "Attempt arbitrary filesystem read, arbitrary filesystem write, path traversal, symlink or junction escape, and cross-profile file access.",
+      "expected_safe_result": "Deny or return a bounded policy error unless a broker-issued, task-scoped handle authorizes the exact operation.",
+      "missing_evidence": "No packaged role process, broker fixture, path-race test, effective policy capture, or probe result log exists."
+    },
+    {
+      "surface": "socket",
+      "hostile_attempt": "Attempt ambient TCP, UDP, DNS, proxy bypass, loopback listener, and destination not covered by a kernel-issued request context.",
+      "expected_safe_result": "Deny ambient socket access; the network role may use sockets only through authorized request context checks.",
+      "missing_evidence": "No per-role network namespace, AppContainer, seatbelt, seccomp, broker, or socket-denial probe exists."
+    },
+    {
+      "surface": "process",
+      "hostile_attempt": "Attempt child process creation, shell execution, job escape, fork/exec, service launch, and inherited-handle abuse.",
+      "expected_safe_result": "Deny process creation and inherited authority unless the browser kernel deliberately launches an allowed role.",
+      "missing_evidence": "No role launcher, handle allowlist inspection, process-creation denial probe, or packaged result artifact exists."
+    },
+    {
+      "surface": "registry",
+      "hostile_attempt": "Attempt Windows registry or platform configuration reads and writes outside explicitly brokered policy.",
+      "expected_safe_result": "Deny registry/configuration access or return unsupported on non-Windows platforms without treating the probe as passed.",
+      "missing_evidence": "No Windows effective-token, AppContainer, registry virtualization, or denial log evidence exists."
+    },
+    {
+      "surface": "device",
+      "hostile_attempt": "Attempt camera, microphone, display capture, USB, Bluetooth, serial, HID, graphics-device, raw input, or other raw device access.",
+      "expected_safe_result": "Deny raw device access unless a broker-issued, user-approved, task-scoped device handle exists.",
+      "missing_evidence": "No packaged platform-device probe, permission fixture, or brokered-device denial evidence exists."
+    },
+    {
+      "surface": "shared-memory",
+      "hostile_attempt": "Attempt unbounded shared-memory allocation, executable mapping, writable trusted metadata, stale generation reuse, or cross-process mapping not issued by a trusted service.",
+      "expected_safe_result": "Deny untrusted shared memory and executable mappings; allow only bounded, typed, purpose-specific, revocable regions.",
+      "missing_evidence": "No shared-memory creation broker, generation check, mapping inspection, or stale-handle denial probe exists."
+    },
+    {
+      "surface": "credential",
+      "hostile_attempt": "Attempt direct keychain, password vault, cookie store, passkey, client certificate, payment identity, or provider-token access.",
+      "expected_safe_result": "Deny direct credential access; require origin/profile/user-policy mediated handles with redacted diagnostics.",
+      "missing_evidence": "No credential broker, fake vault fixture, platform keychain denial probe, or redaction artifact exists."
+    },
+    {
+      "surface": "debug",
+      "hostile_attempt": "Attempt debugger attach, ptrace, process memory read, remote debug listener creation, debug-port binding, crash dump expansion, or release-symbol access.",
+      "expected_safe_result": "Deny debug authority unless a visible, authenticated DevTools or crash path has explicitly scoped permission.",
+      "missing_evidence": "No debugger denial harness, remote-listener probe, visible-indicator proof, or symbol-access denial artifact exists."
+    },
+    {
+      "surface": "profile",
+      "hostile_attempt": "Attempt profile directory read/write, cross-profile object access, private-session data access, history/bookmark/cookie database access, or origin-store escape.",
+      "expected_safe_result": "Deny ambient profile access; storage operations must use brokered profile/origin/partition-scoped handles.",
+      "missing_evidence": "No real-profile-free fixture, cross-profile denial harness, storage broker probe, or profile cleanup artifact exists."
+    },
+    {
+      "surface": "IPC",
+      "hostile_attempt": "Attempt unauthorized service connection, wrong-role message, forged identity, stale epoch, duplicate capability, platform IPC, COM/RPC/Mach/dbus escape, or internal protocol access.",
+      "expected_safe_result": "Deny unauthorized IPC and return bounded policy errors without granting authority or hiding connection failures.",
+      "missing_evidence": "No canonical IPC schema, connection-authentication proof, platform IPC probe, or compromised-client harness exists."
+    }
+  ],
+  "probe_targets": [
+    {
+      "target": "renderer",
+      "process_capability_role": "renderer",
+      "purpose": "Host hostile web content with assigned IPC, assigned shared memory, assigned surfaces, and read-only font handles only.",
+      "current_evidence": "process-capabilities.json forbids ambient network, arbitrary filesystem, credential store, process creation, debug attach, raw devices, global clipboard, update service, and browser-internal protocol access.",
+      "missing_evidence": "No real renderer-role packaged process, platform policy, effective-policy capture, or compromised-renderer probe result exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and cross-profile paths before broker work.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny ambient network sockets and unauthorized loopback listeners.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny child process creation, shell execution, and inherited handle abuse.", "current_status": "policy_record_only"},
+        {"surface": "registry", "expected_result": "Deny platform configuration and Windows registry access.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices, camera, microphone, screen capture, and raw input.", "current_status": "policy_record_only"},
+        {"surface": "shared-memory", "expected_result": "Deny unassigned, executable, stale, or oversized shared memory.", "current_status": "policy_record_only"},
+        {"surface": "credential", "expected_result": "Deny keychain, password vault, cookie, passkey, and token access.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, memory read, and remote debug listener creation.", "current_status": "policy_record_only"},
+        {"surface": "profile", "expected_result": "Deny profile files and cross-profile storage without brokered logical handles.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny unauthorized services, forged role, wrong principal, stale epoch, and internal protocol access.", "current_status": "policy_record_only"}
+      ]
+    },
+    {
+      "target": "network",
+      "process_capability_role": "network",
+      "purpose": "Own protocol connections while remaining unable to read password vaults, arbitrary profile files, browser UI, or agent confirmation authority.",
+      "current_evidence": "process-capabilities.json allows network sockets, proxy resolution, certificate verification adapter, HTTP cache, and cookie attachment while forbidding password vault and arbitrary profile files.",
+      "missing_evidence": "No real network-role packaged process, request-context verifier, effective platform policy, or ambient-socket bypass probe exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and arbitrary profile files outside approved cache roots.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny ambient socket use outside kernel-issued request contexts and configured proxy policy.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny child process creation and shell execution from network input.", "current_status": "missing_no_harness"},
+        {"surface": "registry", "expected_result": "Deny ambient platform configuration edits and registry writes.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices and capture APIs.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny unassigned shared memory and executable mappings.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny password vault and direct credential secret export.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, process memory read, and debug listener creation.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny browser history, bookmarks, and arbitrary profile databases.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny wrong-role messages, forged request contexts, and unauthorized internal services.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "storage",
+      "process_capability_role": "storage",
+      "purpose": "Own profile storage roots, quota database, and logical origin stores without ambient network or browser UI authority.",
+      "current_evidence": "process-capabilities.json allows profile storage roots, quota database, and logical origin stores while forbidding network sockets, credential secret export, browser UI, and process creation.",
+      "missing_evidence": "No storage-role process, origin/profile fixture, migration-safe denial probe, or effective storage sandbox artifact exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny files outside assigned profile storage roots and origin stores.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny network sockets and DNS access from storage input.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny child process creation and shell execution.", "current_status": "policy_record_only"},
+        {"surface": "registry", "expected_result": "Deny registry and platform configuration access not explicitly brokered.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices and capture APIs.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny unassigned shared memory and executable mappings.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny credential secret export and password vault reads.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, process memory read, and debug listener creation.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny cross-profile and private-session data outside assigned storage scope.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny wrong-origin, wrong-profile, wrong-role, and unauthorized broker calls.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "gpu",
+      "process_capability_role": "gpu",
+      "purpose": "Own graphics device, assigned surfaces, and validated shared memory without profile, network, credential, or arbitrary filesystem authority.",
+      "current_evidence": "process-capabilities.json allows graphics device, assigned surfaces, and validated shared memory while forbidding profile storage, network sockets, credential store, and arbitrary filesystem.",
+      "missing_evidence": "No GPU-role platform process, graphics-device policy, shared-memory generation probe, or device-reset denial artifact exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and profile storage access.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny network sockets and DNS access.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny process creation and shell execution.", "current_status": "missing_no_harness"},
+        {"surface": "registry", "expected_result": "Deny registry/config writes beyond reviewed driver query policy.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices except assigned graphics device handles under role policy.", "current_status": "policy_record_only"},
+        {"surface": "shared-memory", "expected_result": "Deny unvalidated, stale-generation, executable, or oversized shared memory.", "current_status": "policy_record_only"},
+        {"surface": "credential", "expected_result": "Deny credential store and keychain access.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, process memory read, and debug listener creation.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny profile storage, history, bookmarks, and cross-profile files.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny wrong-surface, wrong-device-generation, wrong-role, and unauthorized service IPC.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "decoder",
+      "process_capability_role": "media_utility",
+      "purpose": "Run hostile codecs, fonts, images, PDFs, archives, or other native parser tasks with task-scoped input and bounded output only.",
+      "current_evidence": "process-capabilities.json records media_utility as the current decoder-class role with task-scoped input, bounded output, and optional assigned device handles while forbidding ambient network, arbitrary filesystem, profile storage, browser UI, and credential store.",
+      "missing_evidence": "No packaged decoder/media utility process, hostile-input fixture, codec-specific policy, output-bound proof, or platform sandbox probe exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and profile storage outside task-scoped input handles.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny ambient network sockets and DNS access.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny process creation and shell execution from hostile parser input.", "current_status": "missing_no_harness"},
+        {"surface": "registry", "expected_result": "Deny registry and platform configuration access.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices except optional assigned device handles for reviewed tasks.", "current_status": "policy_record_only"},
+        {"surface": "shared-memory", "expected_result": "Deny unbounded output buffers, executable mappings, and stale shared-memory generations.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny credential store, keychain, cookies, and provider tokens.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, process memory read, and debug listener creation.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny profile storage, history, bookmarks, and private-session data.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny unauthorized broker calls, wrong task identity, stale task handles, and internal protocol access.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "extension",
+      "process_capability_role": "extension_host",
+      "purpose": "Run extension APIs and granted host access without kernel memory, ungranted profiles, ambient native messaging, update signing, or agent confirmation authority.",
+      "current_evidence": "process-capabilities.json records declared extension APIs, granted hosts, and extension storage while forbidding kernel memory, ungranted profiles, ambient native messaging, update signing, and agent confirmation.",
+      "missing_evidence": "No extension-host process, extension identity fixture, host-grant denial probe, native-messaging broker probe, or incognito policy artifact exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and ungranted native messaging paths.", "current_status": "missing_no_harness"},
+        {"surface": "socket", "expected_result": "Deny ambient network sockets outside declared and granted extension policy.", "current_status": "missing_no_harness"},
+        {"surface": "process", "expected_result": "Deny process creation and ambient native messaging.", "current_status": "policy_record_only"},
+        {"surface": "registry", "expected_result": "Deny registry/configuration access except reviewed enterprise-policy read paths.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices without declared permission and user approval.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny unassigned shared memory and executable mappings.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny password vault, cookies outside grants, and agent confirmation authority.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach and target inspection without explicit DevTools attachment.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny ungranted profiles, private sessions, and cross-profile extension storage.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny ungranted extension APIs, wrong extension identity, wrong host grant, and update signing IPC.", "current_status": "policy_record_only"}
+      ]
+    },
+    {
+      "target": "devtools",
+      "process_capability_role": "devtools",
+      "purpose": "Expose attached target protocol and local frontend resources without ambient remote listener, unattached profile access, or release signing authority.",
+      "current_evidence": "process-capabilities.json allows attached target protocol and local frontend resources while forbidding unattached profiles, ambient remote listener, release signing, and agent confirmation.",
+      "missing_evidence": "No DevTools attachment authorization probe, remote-listener denial probe, target epoch check, or visible-indicator artifact exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem and local frontend path escapes.", "current_status": "missing_no_harness"},
+        {"surface": "socket", "expected_result": "Deny ambient remote listener and unauthenticated debug ports.", "current_status": "policy_record_only"},
+        {"surface": "process", "expected_result": "Deny process creation and release tooling execution.", "current_status": "missing_no_harness"},
+        {"surface": "registry", "expected_result": "Deny registry/configuration edits and unreviewed developer-mode persistence.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices and capture APIs unless debugging an explicitly attached target with policy.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny direct renderer memory and unassigned shared-memory mappings.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny credential store and agent confirmation authority.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny unattached target debugging, hidden remote listener creation, and process memory read.", "current_status": "policy_record_only"},
+        {"surface": "profile", "expected_result": "Deny unattached profiles and cross-profile debugging state.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny wrong target, wrong epoch, unattached target protocol, and release signing IPC.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "agent",
+      "process_capability_role": "agent_host",
+      "purpose": "Run model adapters, proposed actions, granted observations, and audit append without raw cookies, direct input injection, or confirmation authority.",
+      "current_evidence": "process-capabilities.json allows granted observations, model adapter, proposed actions, and audit append while forbidding raw cookies, password vault, direct renderer memory, direct input injection, confirmation approval, ungranted files, and ungranted origins.",
+      "missing_evidence": "No agent-host sandbox process, provider adapter fixture, grant-token probe, prompt-injection compromised-client harness, or confirmation-denial artifact exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny ungranted files, downloads, uploads, and local path reads.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny ambient sockets outside configured model provider or MCP/tool policy.", "current_status": "missing_no_harness"},
+        {"surface": "process", "expected_result": "Deny process creation, direct input injection, and shell execution from model output.", "current_status": "policy_record_only"},
+        {"surface": "registry", "expected_result": "Deny registry/configuration access and policy edits.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny camera, microphone, screen, USB, HID, and clipboard device authority without explicit grants.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny direct renderer memory and unassigned shared-memory mappings.", "current_status": "policy_record_only"},
+        {"surface": "credential", "expected_result": "Deny raw cookies, password vault, passkeys, tokens, and confirmation approval.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, hidden inspection, and raw process memory access.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny ungranted origins, profiles, private-session data, and browsing history.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny direct action execution, forged grants, stale document epoch, and confirmation bypass IPC.", "current_status": "missing_no_harness"}
+      ]
+    },
+    {
+      "target": "updater",
+      "process_capability_role": "updater",
+      "purpose": "Verify signed metadata, stage artifacts, and install version roots without web profile content, browser history, agent data, or arbitrary execution.",
+      "current_evidence": "process-capabilities.json allows update endpoint, signed metadata, staging directory, and version install roots while forbidding web profile content, browser history, agent data, and arbitrary execution.",
+      "missing_evidence": "No updater-role sandbox process, no-production-key update lab probe, staged-install denial artifact, or rollback/version-root policy probe exists.",
+      "probe_matrix": [
+        {"surface": "file", "expected_result": "Deny arbitrary filesystem outside staging directory and version install roots.", "current_status": "policy_record_only"},
+        {"surface": "socket", "expected_result": "Deny ambient sockets outside update endpoint policy and signed metadata flow.", "current_status": "missing_no_harness"},
+        {"surface": "process", "expected_result": "Deny arbitrary execution and child process launch not part of reviewed installer policy.", "current_status": "policy_record_only"},
+        {"surface": "registry", "expected_result": "Deny registry/configuration edits outside reviewed install metadata.", "current_status": "missing_no_harness"},
+        {"surface": "device", "expected_result": "Deny raw devices, capture APIs, and unrelated platform resources.", "current_status": "missing_no_harness"},
+        {"surface": "shared-memory", "expected_result": "Deny unassigned shared memory and executable mappings.", "current_status": "missing_no_harness"},
+        {"surface": "credential", "expected_result": "Deny web profile credentials, browser cookies, agent provider tokens, and signing keys.", "current_status": "policy_record_only"},
+        {"surface": "debug", "expected_result": "Deny debugger attach, memory read, and release signing authority.", "current_status": "missing_no_harness"},
+        {"surface": "profile", "expected_result": "Deny web profile content, browser history, and agent data.", "current_status": "policy_record_only"},
+        {"surface": "IPC", "expected_result": "Deny wrong-target update commands, unsigned metadata flow, forged version roots, and browser-command IPC.", "current_status": "missing_no_harness"}
+      ]
+    }
+  ],
+  "platform_evidence_requirements": [
+    {
+      "platform": "macos",
+      "required_artifacts": [
+        "effective seatbelt or App Sandbox profile",
+        "entitlements and hardened-runtime flags",
+        "code-signing and notarization identity",
+        "Mach service and file-handle allowlist",
+        "negative probe logs for each role and surface"
+      ],
+      "missing_evidence": "No macOS packaged role, signed artifact, effective sandbox profile, entitlement capture, or negative probe result exists."
+    },
+    {
+      "platform": "windows",
+      "required_artifacts": [
+        "restricted token and integrity level",
+        "AppContainer capabilities where viable",
+        "job object limits and inherited-handle allowlist",
+        "process mitigation and dynamic-code policy",
+        "registry, COM/RPC, device, file, socket, and debug negative probe logs"
+      ],
+      "missing_evidence": "No Windows packaged role, AppContainer/token manifest, job/mitigation capture, inherited-handle inspection, or negative probe result exists."
+    },
+    {
+      "platform": "linux",
+      "required_artifacts": [
+        "user, mount, PID, network, and IPC namespace policy",
+        "seccomp filters and no-new-privileges state",
+        "Landlock or portal policy where applicable",
+        "capabilities, cgroups, rlimits, and broker descriptors",
+        "file, socket, process, device, shared-memory, credential, debug, profile, and IPC negative probe logs"
+      ],
+      "missing_evidence": "No Linux packaged role, namespace/seccomp/Landlock manifest, effective-policy capture, or negative probe result exists."
+    }
+  ],
+  "harness_blockers": [
+    {
+      "id": "SBX-BLOCKER-PACKAGED_ROLE_RUNNER",
+      "blocker": "packaged role runner",
+      "status": "missing",
+      "required_evidence": "Each probe must run inside the same packaged process role, launch path, handle set, and platform policy used by the configuration being evaluated.",
+      "safe_failure": "Block sandbox-readiness claims when a role cannot launch under its declared policy."
+    },
+    {
+      "id": "SBX-BLOCKER-EFFECTIVE_POLICY_CAPTURE",
+      "blocker": "effective policy capture",
+      "status": "missing",
+      "required_evidence": "Probe artifacts must include effective platform policy, token/entitlement/namespace state, handle descriptors, and unsupported/degraded mode markers.",
+      "safe_failure": "Reject or label results as design-only when effective policy cannot be captured."
+    },
+    {
+      "id": "SBX-BLOCKER-PROBE_RESULT_SCHEMA",
+      "blocker": "probe result schema",
+      "status": "missing",
+      "required_evidence": "Probe output must use a stable schema with role, platform, surface, attempted operation, expected result, actual result, error code, artifact hash, and cleanup status.",
+      "safe_failure": "Fail closed on ambiguous, missing, skipped, swallowed, or unsupported probe results."
+    },
+    {
+      "id": "SBX-BLOCKER-SAFE_HOST_EXECUTION",
+      "blocker": "safe host execution",
+      "status": "missing",
+      "required_evidence": "Probes must use bounded temporary roots, fake credentials, fake profiles, loopback-only network fixtures where needed, and cleanup checks that cannot damage the developer host.",
+      "safe_failure": "Abort probes before host mutation if safe roots, fake stores, or cleanup controls are unavailable."
+    },
+    {
+      "id": "SBX-BLOCKER-BROKER_FIXTURES",
+      "blocker": "broker fixtures",
+      "status": "missing",
+      "required_evidence": "Brokered allowed operations must have task-scoped fixtures so expected-deny probes distinguish ambient authority from narrowly authorized behavior.",
+      "safe_failure": "Hold allowed-operation claims and record only denial coverage when broker scope cannot be proven."
+    },
+    {
+      "id": "SBX-BLOCKER-COMPROMISED_CLIENTS",
+      "blocker": "compromised client harnesses",
+      "status": "missing",
+      "required_evidence": "Harnesses must forge IDs, origins, epochs, handles, paths, sizes, ordering, retries, and disconnected state against each privileged interface.",
+      "safe_failure": "Block SEC-GATE-1 and SEC-GATE-6 claims until compromised-client probes execute."
+    },
+    {
+      "id": "SBX-BLOCKER-PLATFORM_MATRIX",
+      "blocker": "platform matrix",
+      "status": "missing",
+      "required_evidence": "macOS, Windows, and Linux evidence must name OS version, primitive set, packaging mode, degraded state, unsupported state, and equivalent probe result coverage.",
+            "safe_failure": "Block transferring sandbox evidence across platforms or configurations."
+        },
+    {
+      "id": "SBX-BLOCKER-OWNER_REVIEW",
+      "blocker": "owner review",
+      "status": "missing",
+      "required_evidence": "Security and platform owners must review probe semantics, waiver policy, critical failures, host safety, and residual unsupported behavior before promotion.",
+      "safe_failure": "Keep PB-012 partial and block security, sandbox, site-isolation, and hostile-browsing claims."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no sandbox-readiness claim",
+    "no renderer-security claim",
+    "no site-isolation claim",
+    "no hostile-browsing safety claim",
+    "no platform containment claim",
+    "no packaged-build probe claim",
+    "no effective-policy claim",
+    "no SEC-GATE-1 claim",
+    "no SEC-GATE-6 claim",
+    "no production-safety claim"
+  ]
+}

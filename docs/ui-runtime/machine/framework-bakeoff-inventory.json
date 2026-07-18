@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "inventory_id": "UI.FRAMEWORK.NOCLAIM_BAKEOFF.2026_07",
+  "status": "no_claim_framework_bakeoff_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim framework bake-off inventory only; no UI toolkit selection, no ADR-0014 approval, no equivalent adapter evidence, no accessibility readiness, no IME or keyboard proof, no page-surface approval, no trusted-chrome readiness, no release-path UI approval, no performance memory or energy claim, no license or provenance approval, and no production claim",
+  "source_records": [
+    "docs/blueprint-v1/03-language-and-dependency-strategy.md",
+    "docs/blueprint-v1/11-product-ui-devtools.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/security.md",
+    "docs/security-engine/README.md",
+    "docs/ui-runtime/README.md",
+    "docs/ui-runtime/02-framework-landscape-and-selection-method.md",
+    "docs/ui-runtime/03-rust-state-command-and-adapter-architecture.md",
+    "docs/ui-runtime/04-page-surface-compositor-and-process-integration.md",
+    "docs/ui-runtime/07-windowing-input-ime-accessibility-and-platform.md",
+    "docs/ui-runtime/08-performance-memory-binary-and-energy-budgets.md",
+    "docs/ui-runtime/09-testing-observability-recovery-and-release-gates.md",
+    "docs/ui-runtime/10-prototype-plan-decision-record-and-migration.md",
+    "docs/ui-runtime/machine/framework-candidates.json",
+    "docs/ui-runtime/machine/ui-performance-budgets.json",
+    "docs/research/native-ui-framework-evaluation-2026-07.md",
+    "docs/research/native-ui-component-fixture-inventory-2026-07.md",
+    "docs/research/page-surface-composition-inventory-2026-07.md",
+    "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+  ],
+  "external_observations": [
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-SLINT_DOCS",
+      "source": "Context7 /websites/slint_dev_rust_slint and Slint docs, retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "Slint documentation shows ahead-of-time .slint compilation through slint_build, Winit backend access, platform abstraction, WGPU renderer integration examples, and texture import or rendering notifier hooks relevant to page-surface experiments.",
+      "claim_boundary": "This does not prove browser page-surface composition, accessibility coverage, licensing acceptance, or suitability for trusted chrome."
+    },
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-SLINT_LICENSE",
+      "source": "https://github.com/slint-ui/slint/blob/master/LICENSE.md and Slint licensing material, retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "Slint offers GPLv3, royalty-free, and commercial licensing paths with attribution and embedded-system distinctions that require written Turing legal and distribution review.",
+      "claim_boundary": "This does not approve any Slint license path for Turing."
+    },
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-VIZIA_DOCS",
+      "source": "Context7 /vizia/vizia, retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "Vizia documentation shows a declarative Rust desktop GUI model with signals, events, CSS-style styling, Winit application setup, cross-platform window management, accessibility features, custom drawing, localization, and animation support.",
+      "claim_boundary": "This does not prove Vizia can handle Turing page surfaces, browser-scale accessibility, native IME behavior, or production stability."
+    },
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-FLOEM_DOCS",
+      "source": "Context7 /lapce/floem, retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "Floem documentation shows fine-grained reactive signals, a persistent view tree, CSS-inspired styling, VirtualStack for large lists, GPU-backed renderers, and a CPU fallback path.",
+      "claim_boundary": "This does not prove Floem accessibility, IME, browser page-surface composition, or release-path maturity for Turing."
+    },
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-GPUI_DOCS",
+      "source": "https://gpui.rs/ and Zed GPUI documentation, retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "GPUI documentation presents a Rust UI framework from the creators of Zed with examples and API documentation in Zed crates, making it a high-density comparison candidate.",
+      "claim_boundary": "This does not prove extraction cost, platform coverage, licensing, accessibility, or suitability for a standalone Turing browser shell."
+    },
+    {
+      "source_id": "UI-FRAMEWORK-SOURCE-TAURI_ARCHITECTURE",
+      "source": "https://v2.tauri.app/concept/architecture/ retrieved 2026-07-18",
+      "retrieved": "2026-07-18",
+      "observation": "Tauri architecture documentation describes desktop applications built with Rust tools and HTML rendered in a WebView.",
+      "claim_boundary": "This reinforces the release-shell exclusion of Tauri, WRY, system webviews, and runtime web UI for trusted chrome."
+    }
+  ],
+  "candidate_summaries": [
+    {
+      "candidate_id": "UIF-001",
+      "name": "Slint",
+      "source_ids": ["UI-FRAMEWORK-SOURCE-SLINT_DOCS", "UI-FRAMEWORK-SOURCE-SLINT_LICENSE"],
+      "current_disposition": "initial candidate for equivalent reference-shell bake-off only; not selected",
+      "required_bakeoff_evidence": [
+        "Slint adapter over the shared Turing UI model and command contract",
+        "page-surface texture or custom-render integration evidence",
+        "accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, and replacement evidence"
+      ],
+      "blockers": [
+        "written license/distribution review",
+        "browser-specific page-surface composition proof",
+        "manual assistive-technology evidence",
+        "stable low-level renderer integration decision",
+        "package, memory, and replacement-cost evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-002",
+      "name": "Vizia",
+      "source_ids": ["UI-FRAMEWORK-SOURCE-VIZIA_DOCS"],
+      "current_disposition": "styling-oriented comparison candidate only; not selected",
+      "required_bakeoff_evidence": [
+        "Vizia adapter over the shared Turing UI model and command contract",
+        "equivalent component, page placeholder, input, IME, accessibility, and failure fixtures",
+        "dependency, native, renderer, license, package, startup, memory, latency, and replacement evidence"
+      ],
+      "blockers": [
+        "browser surface integration evidence",
+        "platform accessibility and IME evidence",
+        "renderer/native footprint evidence",
+        "API stability and maintenance evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-003",
+      "name": "Floem",
+      "source_ids": ["UI-FRAMEWORK-SOURCE-FLOEM_DOCS"],
+      "current_disposition": "fine-grained reactivity comparison candidate only; not selected",
+      "required_bakeoff_evidence": [
+        "Floem adapter over the shared Turing UI model and command contract",
+        "virtualized 100-tab, resource, history, settings, and prompt workflow evidence",
+        "accessibility, IME, keyboard, page-surface, renderer-hang, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, dependency, provenance, and replacement evidence"
+      ],
+      "blockers": [
+        "browser-scale accessibility evidence",
+        "native IME and platform behavior evidence",
+        "page-surface integration proof",
+        "renderer fallback and maintenance evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-004",
+      "name": "GPUI",
+      "source_ids": ["UI-FRAMEWORK-SOURCE-GPUI_DOCS"],
+      "current_disposition": "high-density performance reference candidate only; not selected",
+      "required_bakeoff_evidence": [
+        "GPUI adapter or owner-approved extraction experiment over the shared Turing UI model",
+        "dense tab, command, resource, prompt, and recovery workflow evidence",
+        "platform, accessibility, IME, page-surface, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, and extraction-cost evidence"
+      ],
+      "blockers": [
+        "Zed coupling and extraction cost",
+        "standalone platform matrix evidence",
+        "accessibility and IME evidence",
+        "license and component-specific provenance review"
+      ]
+    },
+    {
+      "candidate_id": "UIF-005",
+      "name": "Xilem",
+      "source_ids": [],
+      "current_disposition": "architecture-watch candidate only; not selected and not in the initial required adapter set",
+      "required_bakeoff_evidence": [
+        "owner-approved inclusion decision before any bake-off slot",
+        "renderer, platform, accessibility, packaging, and maintenance evidence"
+      ],
+      "blockers": [
+        "experimental status",
+        "renderer maturity",
+        "component breadth",
+        "platform evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-006",
+      "name": "Makepad",
+      "source_ids": [],
+      "current_disposition": "GPU/live-design watch candidate only; not selected and not in the initial required adapter set",
+      "required_bakeoff_evidence": [
+        "owner-approved inclusion decision before any bake-off slot",
+        "desktop accessibility, text, IME, native-window, package, and maintenance evidence"
+      ],
+      "blockers": [
+        "accessibility evidence",
+        "native desktop behavior evidence",
+        "browser-scale state evidence",
+        "API stability evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-007",
+      "name": "Freya",
+      "source_ids": [],
+      "current_disposition": "React-like Rust watch candidate only; not selected and not in the initial required adapter set",
+      "required_bakeoff_evidence": [
+        "owner-approved inclusion decision before any bake-off slot",
+        "Skia footprint, accessibility, release/API stability, and browser surface integration evidence"
+      ],
+      "blockers": [
+        "release and API stability",
+        "native dependency footprint",
+        "accessibility evidence",
+        "browser surface integration proof"
+      ]
+    },
+    {
+      "candidate_id": "UIF-008",
+      "name": "egui",
+      "source_ids": [],
+      "current_disposition": "internal tooling candidate; not primary trusted chrome",
+      "required_bakeoff_evidence": [
+        "use only in internal inspectors or laboratories unless owner review opens a separate decision",
+        "authority, accessibility, product-fit, package, and styling evidence before any trusted-chrome reconsideration"
+      ],
+      "blockers": [
+        "immediate-mode product-fit risk",
+        "non-native trusted-chrome feel",
+        "accessibility and browser-shell evidence"
+      ]
+    },
+    {
+      "candidate_id": "UIF-009",
+      "name": "Restricted TSX to native compiler",
+      "source_ids": [],
+      "current_disposition": "future escape path only; not implemented",
+      "required_bakeoff_evidence": [
+        "complete language/compiler/debugger/tooling justification",
+        "proof that compiled output contains no runtime React, JavaScript, DOM, CSS parser, webview, or hidden engine",
+        "benefit over native adapters measured on the same reference-shell tasks"
+      ],
+      "blockers": [
+        "compiler implementation cost",
+        "toolchain maintenance",
+        "semantic drift risk",
+        "no compiler prototype"
+      ]
+    }
+  ],
+  "required_bakeoff_scope": {
+    "adapter_scope": [
+      "Slint adapter",
+      "Vizia adapter",
+      "Floem or GPUI adapter",
+      "owner-approved reduced scope only if the omitted adapter is documented with explicit reason and expiry"
+    ],
+    "equivalent_shell_tasks": [
+      "100 synthetic tabs with activation, close, reorder, and virtualization",
+      "Spaces selector and address or command field",
+      "split page placeholder and page-surface integration hook",
+      "side panel, settings, permission prompt, agent confirmation, resource manager, and recovery UI",
+      "keyboard navigation, focus restoration, clipboard, text selection, international text, and IME",
+      "platform accessibility tree and manual assistive-technology workflow",
+      "high contrast, forced colors, reduced motion, density, and localization",
+      "renderer hang, renderer crash, GPU device loss, UI crash, and state restoration"
+    ],
+    "shared_inputs": [
+      "same Turing UI model snapshot and same command contract",
+      "same component fixture inventory and design token records",
+      "same page-surface composition inventory and simulated renderer frame source",
+      "same window/input/accessibility workflow inventory",
+      "same benchmark hardware, package profile, and artifact rules"
+    ]
+  },
+  "evidence_axes": [
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-EQUIVALENT_ADAPTERS",
+      "name": "Equivalent Adapter Scope",
+      "required_output": "Raw adapter run artifacts proving the same shell tasks, same UI model, same command contract, same fixtures, and same failure scenarios across Slint, Vizia, and Floem or GPUI.",
+      "missing_status": "No equivalent adapter implementation or raw run artifacts exist."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-ACCESSIBILITY",
+      "name": "Accessibility And Assistive Technology",
+      "required_output": "Platform accessibility tree snapshots, keyboard/focus traces, screen-reader transcripts, manual assistive-technology notes, contrast/motion results, and accessibility latency samples.",
+      "missing_status": "Only planning inventories exist; no reference-platform or manual assistive-technology evidence exists."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-IME_KEYBOARD_TEXT",
+      "name": "IME, Keyboard, Text, Clipboard, And Localization",
+      "required_output": "IME composition, dead-key, international text, selection, clipboard, shortcut, focus, localization, zoom, and appearance fixture outputs.",
+      "missing_status": "No candidate has executable Turing fixture output for these workflows."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-PAGE_SURFACE",
+      "name": "Page Surface And Renderer Integration",
+      "required_output": "Typed page-surface handles, brokered surface handles, renderer frame source, resize/scale/damage/input/IME/accessibility/occlusion/capture/fault fixtures, and UI-GATE-7 evidence.",
+      "missing_status": "PB-005 has a checked planning inventory only."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-CRASH_GPU_RECOVERY",
+      "name": "Crash, Renderer Hang, GPU Loss, And Recovery",
+      "required_output": "Fault-injection runs proving renderer hang, renderer crash, GPU device loss, UI crash, state restoration, no profile corruption, and no automatic replay of consequential actions.",
+      "missing_status": "No candidate-specific fault-injection output exists."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-PERFORMANCE_MEMORY_BINARY_ENERGY",
+      "name": "Performance, Memory, Binary, And Energy",
+      "required_output": "Cold/warm startup, input-to-present latency, frame-pacing, idle and 10/30/100-tab memory, allocation, binary/package contribution, wakeup, energy, and teardown measurements on the same reference hardware.",
+      "missing_status": "No candidate-specific raw measurements exist."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-LICENSE_DEPENDENCY_PROVENANCE",
+      "name": "License, Dependency, Unsafe, Native, And Provenance",
+      "required_output": "Dependency tree, license and notice review, advisory scan, unsafe/native/build-script/proc-macro review, source provenance, update cadence, maintainer health, and distribution obligation record.",
+      "missing_status": "Only qualitative candidate notes exist; no owner-accepted legal/provenance review exists."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-REPLACEMENT_MAINTENANCE",
+      "name": "Replacement, Maintenance, And Exit Cost",
+      "required_output": "Adapter boundary proof, toolkit-state non-durability proof, migration estimate, version-upgrade rehearsal, rollback path, and owner coverage.",
+      "missing_status": "No candidate replacement rehearsal or upgrade/rollback evidence exists."
+    },
+    {
+      "axis_id": "UI-FRAMEWORK-AXIS-BUILD_ITERATION_PACKAGING",
+      "name": "Build, Iteration, Packaging, And Runtime Exclusions",
+      "required_output": "Clean build time, incremental build time, preview/hot-reload behavior, package contents, dynamic-library list, no webview/runtime JavaScript/Node/React/DOM/CSS parser proof, and reproducible artifact capture.",
+      "missing_status": "No package or clean-build candidate evidence exists."
+    }
+  ],
+  "disqualifiers": [
+    {
+      "disqualifier_id": "UI-FRAMEWORK-DISQUALIFIER-WEBVIEW_RUNTIME",
+      "condition": "Candidate requires Electron, Tauri, WRY, CEF, a system webview, Node, runtime React, runtime JavaScript, runtime DOM, or runtime CSS parser in trusted release chrome.",
+      "reason": "Trusted chrome cannot include a second browser engine, webview runtime, or script-controlled policy surface."
+    },
+    {
+      "disqualifier_id": "UI-FRAMEWORK-DISQUALIFIER-TOOLKIT_AUTHORITY",
+      "condition": "Candidate requires toolkit callbacks or toolkit state to decide navigation, permission, credential, profile, Plug-in, agent, persistence, update, or release authority.",
+      "reason": "The toolkit is presentation infrastructure; Turing services must revalidate typed commands and durable state."
+    },
+    {
+      "disqualifier_id": "UI-FRAMEWORK-DISQUALIFIER-NO_ACCESSIBILITY_PATH",
+      "condition": "Candidate cannot provide platform accessibility and manual assistive-technology evidence for core browser workflows.",
+      "reason": "Browser chrome must be keyboard and assistive-technology operable before release-path UI approval."
+    },
+    {
+      "disqualifier_id": "UI-FRAMEWORK-DISQUALIFIER-NO_PAGE_SURFACE_PATH",
+      "condition": "Candidate has no reviewed path for page-surface composition, input routing, IME, accessibility composition, capture, occlusion, crash, and GPU-loss behavior.",
+      "reason": "Ordinary widget success does not prove browser shell suitability."
+    },
+    {
+      "disqualifier_id": "UI-FRAMEWORK-DISQUALIFIER-LICENSE_OR_PROVENANCE_BLOCKER",
+      "condition": "Candidate license, provenance, native dependency, build script, binary package, or update cadence cannot be accepted under Turing distribution and security policy.",
+      "reason": "A framework cannot enter release code without owner-accepted dependency and legal review."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no UI toolkit selection",
+    "no ADR-0014 approval",
+    "no equivalent adapter evidence",
+    "no accessibility readiness",
+    "no IME or keyboard proof",
+    "no page-surface approval",
+    "no trusted-chrome readiness",
+    "no release-path UI approval",
+    "no performance memory or energy claim",
+    "no license or provenance approval",
+    "no production claim"
+  ]
+}

@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/backup-ownership-readiness-review-v1.json",
+  "title": "Turing Backup Ownership Readiness Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "readiness_status",
+    "coverage_axes",
+    "qualification_axes",
+    "reconciliation_axes",
+    "two_person_control_axes",
+    "authority_boundary_axes",
+    "owner_review_axes",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "review_id": {
+      "type": "string",
+      "pattern": "^OWN\\.BACKUP_READINESS_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_backup_ownership_readiness_template",
+        "draft",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 200
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 18,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownership_inventory",
+        "qualification_record_set",
+        "owner_reviewer",
+        "independent_reviewer",
+        "security_reviewer",
+        "release_operations_reviewer",
+        "legal_reviewer",
+        "support_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "ownership_inventory": { "type": ["string", "null"] },
+        "qualification_record_set": { "type": ["string", "null"] },
+        "owner_reviewer": { "type": ["string", "null"] },
+        "independent_reviewer": { "type": ["string", "null"] },
+        "security_reviewer": { "type": ["string", "null"] },
+        "release_operations_reviewer": { "type": ["string", "null"] },
+        "legal_reviewer": { "type": ["string", "null"] },
+        "support_reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "readiness_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "independent_reviewed",
+        "security_reviewed",
+        "release_operations_reviewed",
+        "legal_reviewed",
+        "support_reviewed",
+        "all_critical_scopes_reviewed",
+        "named_backups_reviewed",
+        "owner_identity_reviewed",
+        "role_level_reviewed",
+        "subsystem_competence_reviewed",
+        "representative_path_coverage_reviewed",
+        "recent_review_records_verified",
+        "availability_reviewed",
+        "succession_reviewed",
+        "recusal_reviewed",
+        "inactivity_reviewed",
+        "removal_reviewed",
+        "emergency_replacement_reviewed",
+        "codeowners_reconciled",
+        "review_rules_reconciled",
+        "escalation_policy_reconciled",
+        "repository_access_reviewed",
+        "stale_access_reviewed",
+        "ownerless_paths_reviewed",
+        "primary_only_paths_reviewed",
+        "two_person_control_reviewed",
+        "owner_coverage_approved",
+        "release_authority_approved",
+        "release_promotion_approved",
+        "stable_signing_approved",
+        "update_trust_approved",
+        "supported_version_changes_approved",
+        "security_disclosure_approved",
+        "irreversible_migration_approved",
+        "legal_approval_supported",
+        "incident_closure_approved",
+        "production_authority_approved",
+        "broad_readiness_approved",
+        "implementation_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "independent_reviewed": { "type": "boolean" },
+        "security_reviewed": { "type": "boolean" },
+        "release_operations_reviewed": { "type": "boolean" },
+        "legal_reviewed": { "type": "boolean" },
+        "support_reviewed": { "type": "boolean" },
+        "all_critical_scopes_reviewed": { "type": "boolean" },
+        "named_backups_reviewed": { "type": "boolean" },
+        "owner_identity_reviewed": { "type": "boolean" },
+        "role_level_reviewed": { "type": "boolean" },
+        "subsystem_competence_reviewed": { "type": "boolean" },
+        "representative_path_coverage_reviewed": { "type": "boolean" },
+        "recent_review_records_verified": { "type": "boolean" },
+        "availability_reviewed": { "type": "boolean" },
+        "succession_reviewed": { "type": "boolean" },
+        "recusal_reviewed": { "type": "boolean" },
+        "inactivity_reviewed": { "type": "boolean" },
+        "removal_reviewed": { "type": "boolean" },
+        "emergency_replacement_reviewed": { "type": "boolean" },
+        "codeowners_reconciled": { "type": "boolean" },
+        "review_rules_reconciled": { "type": "boolean" },
+        "escalation_policy_reconciled": { "type": "boolean" },
+        "repository_access_reviewed": { "type": "boolean" },
+        "stale_access_reviewed": { "type": "boolean" },
+        "ownerless_paths_reviewed": { "type": "boolean" },
+        "primary_only_paths_reviewed": { "type": "boolean" },
+        "two_person_control_reviewed": { "type": "boolean" },
+        "owner_coverage_approved": { "type": "boolean" },
+        "release_authority_approved": { "type": "boolean" },
+        "release_promotion_approved": { "type": "boolean" },
+        "stable_signing_approved": { "type": "boolean" },
+        "update_trust_approved": { "type": "boolean" },
+        "supported_version_changes_approved": { "type": "boolean" },
+        "security_disclosure_approved": { "type": "boolean" },
+        "irreversible_migration_approved": { "type": "boolean" },
+        "legal_approval_supported": { "type": "boolean" },
+        "incident_closure_approved": { "type": "boolean" },
+        "production_authority_approved": { "type": "boolean" },
+        "broad_readiness_approved": { "type": "boolean" },
+        "implementation_claim_supported": { "type": "boolean" }
+      }
+    },
+    "coverage_axes": {
+      "type": "array",
+      "minItems": 22,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "qualification_axes": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "reconciliation_axes": {
+      "type": "array",
+      "minItems": 15,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "two_person_control_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "authority_boundary_axes": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 18,
+      "items": { "$ref": "#/$defs/rejection_rule" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "minLength": 3
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "template_status": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 20
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

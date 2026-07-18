@@ -98,7 +98,7 @@ fn bootstrap() -> Result<(), String> {
     println!("Turing bootstrap is intentionally non-installing during M0.");
     println!("rustup will honor rust-toolchain.toml when Cargo is invoked.");
     doctor(false)?;
-    println!("next: cargo run -p xtask -- check");
+    println!("next: cargo run --locked -p xtask -- check");
     Ok(())
 }
 
@@ -108,8 +108,15 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_adr_0009_evidence.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_build_foundation.py"],
     )?;
+    command(&root, "git", ["diff", "--check"])?;
+    command(&root, "git", ["diff", "--cached", "--check"])?;
     command(&root, "cargo", ["fmt", "--all", "--", "--check"])?;
     command(
         &root,
@@ -160,7 +167,7 @@ fn run() -> Result<(), String> {
         "doctor" => doctor(arguments.any(|argument| argument == "--ci")),
         "check" => check(),
         "help" | "--help" | "-h" => {
-            println!("usage: cargo run -p xtask -- <bootstrap|doctor [--ci]|check>");
+            println!("usage: cargo run --locked -p xtask -- <bootstrap|doctor [--ci]|check>");
             Ok(())
         }
         other => Err(format!("unknown xtask command: {other}")),

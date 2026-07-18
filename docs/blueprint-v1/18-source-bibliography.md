@@ -90,7 +90,15 @@ These sources support comparative research and falsifiable hypotheses. They do n
 
 - Servo project goals and governance — https://servo.org/about/
 - Servo repository — https://github.com/servo/servo
+- Servo GitHub releases — https://github.com/servo/servo/releases
+- Servo crates.io package — https://crates.io/crates/servo
+- Servo Stylo repository — https://github.com/servo/stylo
+- Servo build dependency release repository — https://github.com/servo/servo-build-deps
+- Servo `msvc-deps` release — https://github.com/servo/servo-build-deps/releases/tag/msvc-deps
 - Servo project updates — https://servo.org/blog/
+- Servo crate documentation — https://docs.rs/servo/latest/servo/
+- Servo LTS release policy — https://book.servo.org/embedding/lts-release.html
+- Servo WPT pass rates — https://servo.org/wpt/
 - Servo license — https://github.com/servo/servo/blob/main/LICENSE
 - Ladybird project — https://ladybird.org/
 - Ladybird repository and architecture overview — https://github.com/LadybirdBrowser/ladybird
@@ -100,7 +108,13 @@ These sources support comparative research and falsifiable hypotheses. They do n
 
 - BrowserBench index — https://browserbench.org/
 - Speedometer 3.1 — https://browserbench.org/Speedometer3.1/
-- MotionMark 1.3 — https://browserbench.org/MotionMark1.3/
+- JetStream 3.0 — https://browserbench.org/JetStream3.0/
+- MotionMark current benchmark — https://browserbench.org/MotionMark/
+- Chrome Releases — https://chromereleases.googleblog.com/
+- Microsoft Edge Stable release notes — https://learn.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel
+- Firefox release notes — https://www.firefox.com/en-US/releases/
+- Safari release notes — https://developer.apple.com/documentation/safari-release-notes/
+- Safari resources and Technology Preview — https://developer.apple.com/safari/resources/
 
 BrowserBench suites are diagnostics. Product claims also require compatibility coverage, real interaction workloads, memory, energy, process/isolation disclosure, failure accounting, and fixed hardware.
 
@@ -194,6 +208,10 @@ Product references support dated UX, privacy, workflow, distribution, and govern
 - Miri — https://github.com/rust-lang/miri
 - Rust fuzzing book — https://rust-fuzz.github.io/book/
 - Cargo supply-chain and package metadata — https://doc.rust-lang.org/cargo/
+- Cargo registry index and checksums — https://doc.rust-lang.org/cargo/reference/registry-index.html
+- Cargo-deny supply-chain checks — https://embarkstudios.github.io/cargo-deny/
+- Git archive command — https://git-scm.com/docs/git-archive
+- RustSec advisory database — https://rustsec.org/advisories/
 - Cranelift — https://cranelift.dev/
 - WebAssembly Binary Toolkit — https://github.com/WebAssembly/wabt
 - LLVM sanitizers — https://clang.llvm.org/docs/index.html
@@ -259,6 +277,7 @@ Use of any listed project is not automatic approval. It remains subject to the d
 - WebCodecs: https://www.w3.org/TR/webcodecs/
 - WebRTC: https://w3c.github.io/webrtc-pc/
 - Encrypted Media Extensions: https://www.w3.org/TR/encrypted-media/
+- GStreamer project and source releases: https://gstreamer.freedesktop.org/
 - PNG, AV1, WebM, OpenType, PDF Association, and platform printing documentation
 
 ### Platform and accessibility
@@ -276,6 +295,8 @@ Use of any listed project is not automatic approval. It remains subject to the d
 - The Update Framework: https://theupdateframework.io/
 - Sigstore: https://www.sigstore.dev/
 - SPDX and CycloneDX
+- Windows Package Manager and winget package manifests: https://learn.microsoft.com/en-us/windows/package-manager/
+- MSYS2 package and source records: https://www.msys2.org/
 
 ### Performance, security, and developer evidence
 

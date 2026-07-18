@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim Static Document Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+      }
+
+      main {
+        max-width: 72ch;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin: 1rem 0;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: 1px solid currentColor;
+        padding: 0.5rem;
+        text-align: left;
+      }
+
+      label,
+      input,
+      textarea {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Generated Static Document Fixture</h1>
+      <p>
+        This page is a generated benchmark-corpus fixture for validating
+        manifest plumbing. It is not a performance result and it is not based
+        on any third-party page.
+      </p>
+
+      <section aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Scenario Summary</h2>
+        <p>
+          The fixture covers headings, paragraphs, lists, a small table, a
+          basic form, inline styles, and accessible labels. It intentionally
+          avoids external network requests.
+        </p>
+        <ul>
+          <li>Document style: static article and documentation page.</li>
+          <li>Expected first M0 behavior: unsupported web rendering.</li>
+          <li>Claim status: harness and corpus shape only.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="table-heading">
+        <h2 id="table-heading">Fixture Data</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Expected State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Typography</td>
+              <td>Exercise simple text and headings.</td>
+              <td>Visible when rendering exists.</td>
+            </tr>
+            <tr>
+              <td>Table</td>
+              <td>Exercise semantic table markup.</td>
+              <td>Visible when layout exists.</td>
+            </tr>
+            <tr>
+              <td>Form</td>
+              <td>Exercise labels and text entry controls.</td>
+              <td>Interactive when input exists.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section aria-labelledby="form-heading">
+        <h2 id="form-heading">Local Form</h2>
+        <form action="#not-submitted" method="get">
+          <label for="fixture-name">Fixture name</label>
+          <input id="fixture-name" name="fixture-name" value="static-document">
+
+          <label for="fixture-note">Fixture note</label>
+          <textarea id="fixture-note" name="fixture-note" rows="4">No network submission is performed.</textarea>
+
+          <button type="submit">Exercise form controls</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

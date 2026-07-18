@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-artifact-package-v1.json",
+  "title": "Turing Benchmark Artifact Package Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "status",
+    "created_at",
+    "claim_status",
+    "benchmark_manifest_id",
+    "raw_artifact_index_id",
+    "hardware_id",
+    "os_control_id",
+    "corpus_id",
+    "network_profile_id",
+    "resource_attribution_id",
+    "tab_scenario_set_id",
+    "package_root_policy",
+    "trace_capture",
+    "artifact_classes",
+    "required_manifest_records",
+    "prohibited_content",
+    "unsupported_behavior",
+    "missing_proof"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.ARTIFACT_PACKAGE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "sample_only_no_benchmark_result",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "benchmark_manifest_id": {
+      "type": "string"
+    },
+    "raw_artifact_index_id": {
+      "type": "string"
+    },
+    "hardware_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.HARDWARE\\.[A-Z0-9._-]+$"
+    },
+    "os_control_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.OS_CONTROL\\.[A-Z0-9._-]+$"
+    },
+    "corpus_id": {
+      "type": "string",
+      "pattern": "^TURING\\.CORPUS\\.[A-Z0-9._-]+$"
+    },
+    "network_profile_id": {
+      "type": "string",
+      "pattern": "^TURING\\.NETWORK\\.[A-Z0-9._-]+$"
+    },
+    "resource_attribution_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.RESOURCE_ATTRIBUTION\\.[A-Z0-9._-]+$"
+    },
+    "tab_scenario_set_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.TAB_SCENARIOS\\.[A-Z0-9._-]+$"
+    },
+    "package_root_policy": {
+      "$ref": "#/$defs/package_root_policy"
+    },
+    "trace_capture": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/trace_capture"
+      }
+    },
+    "artifact_classes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact_class"
+      }
+    },
+    "required_manifest_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "prohibited_content": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_proof": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "package_root_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_kind",
+        "source_tree_policy",
+        "cleanup_required",
+        "prohibit_real_profiles",
+        "path_redaction"
+      ],
+      "properties": {
+        "root_kind": {
+          "enum": [
+            "runner_managed_temporary_or_external_artifact_root",
+            "checked_fixture_root"
+          ]
+        },
+        "source_tree_policy": {
+          "type": "string"
+        },
+        "cleanup_required": {
+          "type": "boolean"
+        },
+        "prohibit_real_profiles": {
+          "type": "boolean"
+        },
+        "path_redaction": {
+          "type": "string"
+        }
+      }
+    },
+    "trace_capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_id",
+        "trace_kind",
+        "platform",
+        "status",
+        "tool",
+        "output_extensions",
+        "required_for_real_run",
+        "redaction_boundary",
+        "missing_proof"
+      ],
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "pattern": "^PB13-TRACE-[A-Z0-9._-]+$"
+        },
+        "trace_kind": {
+          "enum": [
+            "trace-etw",
+            "trace-perfetto",
+            "trace-semantic-resource",
+            "trace-tab-lifecycle"
+          ]
+        },
+        "platform": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "not_generated",
+            "generated"
+          ]
+        },
+        "tool": {
+          "type": "string"
+        },
+        "output_extensions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_for_real_run": {
+          "type": "boolean"
+        },
+        "redaction_boundary": {
+          "type": "string"
+        },
+        "missing_proof": {
+          "type": "string"
+        }
+      }
+    },
+    "artifact_class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "status",
+        "required_for_real_run",
+        "producer",
+        "path_policy",
+        "hash_required",
+        "redaction",
+        "retention",
+        "missing_proof"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "environment-manifest",
+            "benchmark-manifest",
+            "trace-etw",
+            "trace-perfetto",
+            "runner-log",
+            "browser-stdout-stderr",
+            "screenshot",
+            "video",
+            "raw-samples",
+            "memory-snapshot",
+            "power-energy-sample",
+            "cpu-gpu-counter",
+            "failure-record",
+            "artifact-index",
+            "hashes",
+            "profile-self-test",
+            "server-run-evidence",
+            "tab-lifecycle-log"
+          ]
+        },
+        "status": {
+          "enum": [
+            "not_generated",
+            "sample_placeholder",
+            "generated"
+          ]
+        },
+        "required_for_real_run": {
+          "type": "boolean"
+        },
+        "producer": {
+          "type": "string"
+        },
+        "path_policy": {
+          "type": "string"
+        },
+        "hash_required": {
+          "type": "boolean"
+        },
+        "redaction": {
+          "type": "string"
+        },
+        "retention": {
+          "type": "string"
+        },
+        "missing_proof": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

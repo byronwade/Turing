@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Origin Storage Fixture A</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-ORIGIN-STORAGE-001" data-origin-label="a">
+    <main>
+      <h1>Origin A Storage Fixture</h1>
+      <p>
+        This page is mapped to https://a.turing.invalid/ by the future local
+        compatibility harness. It must not be treated as a run result.
+      </p>
+      <iframe
+        title="origin b placeholder"
+        srcdoc="<p>Cross-origin placeholder for https://b.turing.invalid/.</p>"
+      ></iframe>
+      <pre id="storage-log">pending</pre>
+    </main>
+    <script>
+      const key = "adr9-origin-storage-fixture";
+      localStorage.setItem(key, "a-local");
+      sessionStorage.setItem(key, "a-session");
+      document.querySelector("#storage-log").textContent = JSON.stringify({
+        claim: "no compatibility claim",
+        origin: "https://a.turing.invalid/",
+        local: localStorage.getItem(key),
+        session: sessionStorage.getItem(key),
+      });
+    </script>
+  </body>
+</html>

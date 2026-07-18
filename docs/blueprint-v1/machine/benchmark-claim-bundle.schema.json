@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-claim-bundle-v1.json",
+  "title": "Turing Benchmark Claim Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claim_bundle_id",
+    "status",
+    "created_at",
+    "claim_status",
+    "claim_level",
+    "claim_text",
+    "claim_owner_scope",
+    "independent_reviewer_scope",
+    "registry_references",
+    "evidence_inputs",
+    "statistical_controls",
+    "equivalence_controls",
+    "denominator_controls",
+    "overhead_controls",
+    "expiry_policy",
+    "publication_controls",
+    "rejection_rules",
+    "unsupported_behavior",
+    "missing_proof",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "claim_bundle_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.CLAIM_BUNDLE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "template_only_no_public_claim",
+        "draft_no_public_claim",
+        "review_pending",
+        "approved_narrow_claim",
+        "rejected",
+        "expired",
+        "superseded"
+      ]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "claim_status": { "type": "string", "minLength": 120 },
+    "claim_level": { "type": "string", "minLength": 10 },
+    "claim_text": { "type": "string", "minLength": 10 },
+    "claim_owner_scope": { "type": "string", "minLength": 3 },
+    "independent_reviewer_scope": { "type": "string", "minLength": 3 },
+    "registry_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benchmark_manifest_id",
+        "hardware_id",
+        "os_control_id",
+        "corpus_id",
+        "network_profile_id",
+        "resource_attribution_id",
+        "tab_scenario_set_id",
+        "artifact_package_id",
+        "launch_runner_id",
+        "browser_pin_capture_plan_id",
+        "browser_pin_diagnostic_id",
+        "competitor_version_manifest_id",
+        "competitor_local_install_manifest_id"
+      ],
+      "properties": {
+        "benchmark_manifest_id": { "type": "string" },
+        "hardware_id": { "type": "string" },
+        "os_control_id": { "type": "string" },
+        "corpus_id": { "type": "string" },
+        "network_profile_id": { "type": "string" },
+        "resource_attribution_id": { "type": "string" },
+        "tab_scenario_set_id": { "type": "string" },
+        "artifact_package_id": { "type": "string" },
+        "launch_runner_id": { "type": "string" },
+        "browser_pin_capture_plan_id": { "type": "string" },
+        "browser_pin_diagnostic_id": { "type": "string" },
+        "competitor_version_manifest_id": { "type": "string" },
+        "competitor_local_install_manifest_id": { "type": "string" }
+      }
+    },
+    "evidence_inputs": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["input", "required_for_public_claim", "current_status", "missing_proof"],
+        "properties": {
+          "input": { "type": "string", "minLength": 3 },
+          "required_for_public_claim": { "type": "boolean" },
+          "current_status": { "type": "string", "minLength": 3 },
+          "missing_proof": { "type": "string", "minLength": 10 }
+        }
+      }
+    },
+    "statistical_controls": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "equivalence_controls": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "denominator_controls": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "overhead_controls": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "expiry_policy": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "publication_controls": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "missing_proof": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "type": "string", "minLength": 10 }
+    }
+  }
+}

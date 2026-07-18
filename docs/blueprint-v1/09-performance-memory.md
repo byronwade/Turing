@@ -71,6 +71,12 @@ On Tier M:
 
 A second **all-live isolation stress** run keeps all eligible tabs live to expose the actual security/performance cost. Results are reported separately.
 
+The checked [no-claim 30-tab smoke scenario manifest](machine/benchmark-tab-scenarios/no-claim-30-tab-smoke.scenarios.json) records the current mixed-state and all-live denominator shape for `PB13-EV-008`. It is sample-only planning evidence over the generated smoke corpus, not the final Tier M workload, not a browser run, and not a memory, energy, Chrome-class, or performance result.
+
+The checked [no-claim trace and artifact package contract](machine/benchmark-artifact-packages/no-claim-trace-package.plan.json) records the current package-root, trace-class, artifact-class, redaction, retention, prohibited-content, unsupported-behavior, and missing-proof requirements for `PB13-EV-007`. It is not an ETW, Perfetto, memory, energy, Chrome-class, or performance result.
+
+The checked [no-claim browser launch-runner contract](machine/benchmark-launch-runners/no-claim-browser-launch.plan.json) records the current command, stage, timeout/cancellation, cache/profile, failure-finalization, trace/artifact, resource-attribution, and no-claim controls for `PB13-EV-005`. The checked no-browser browser launch-runner self-test validates command parsing, forbidden arguments, registry references, artifact-root handling, and no-claim finalization. This is not a browser launch, trace, raw-sample, memory, energy, Chrome-class, or performance result.
+
 ### 5.2 Required disclosure
 
 For each run publish:
@@ -247,6 +253,8 @@ Local models are loaded on demand and unloadable. A dormant agent feature must n
 - benchmark-specific code paths are prohibited;
 - competitor comparisons use current stable builds, default security settings, clean equivalent profiles, and the same workload;
 - failed/unsupported pages count; they are not dropped silently.
+
+The checked no-claim [benchmark readiness-review template](machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json) defines the future `PB-013` owner-review handoff across hardware, OS controls, corpus, servers, runners, artifacts, browser pins, statistics, denominators, and claim bundles. It is not owner-reviewed benchmark readiness: there is no owner-reviewed benchmark readiness, benchmark-ready status, public performance claim, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, competitor-result claim, production claim, or implementation claim from the template.
 
 ## 15. Performance gates
 

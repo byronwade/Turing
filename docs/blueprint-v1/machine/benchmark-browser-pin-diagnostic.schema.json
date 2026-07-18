@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-browser-pin-diagnostic-v1.json",
+  "title": "Turing Benchmark Browser Pin Diagnostic Capture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "diagnostic_id",
+    "status",
+    "claim_status",
+    "captured_at",
+    "tool",
+    "host_references",
+    "artifact_package",
+    "browser_targets",
+    "unsupported_behavior",
+    "evidence_required"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "diagnostic_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.BROWSER_PIN_DIAGNOSTIC\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": ["no_claim_diagnostic_unreviewed", "reviewed_no_claim", "retired"]
+    },
+    "claim_status": {"type": "string"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "tool": {"type": "object"},
+    "host_references": {"type": "object"},
+    "artifact_package": {"type": "object"},
+    "browser_targets": {"type": "array", "minItems": 1},
+    "unsupported_behavior": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_required": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "$schema": "../profile-session-schema-package.schema.json",
+  "schema_version": 1,
+  "package_id": "PROFILE_SESSION.SCHEMA_PACKAGE.NOCLAIM_TEMPLATE.2026_07",
+  "status": "no_claim_schema_package_template",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim profile/session schema-package template only; no executable profile schema, no Space schema, no session schema, no snapshot schema, no migration schema, no real-profile migration claim, no sync claim, no credential-storage claim, no data-loss safety claim, no user-data handling readiness claim, no production profile-format claim, and no implementation claim.",
+  "source_records": [
+    "docs/research/profile-session-format-inventory-2026-07.md",
+    "docs/storage/machine/profile-session-format-inventory.schema.json",
+    "docs/storage/machine/profile-session-format-inventory.json",
+    "docs/storage/machine/profile-session-schema-package.schema.json",
+    "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/07-network-storage-media.md",
+    "docs/storage/README.md",
+    "docs/product-experience/README.md"
+  ],
+  "package_status": {
+    "executable_schemas": false,
+    "migration_tests_run": false,
+    "fault_tests_run": false,
+    "real_profile_fixture_approved": false,
+    "owner_reviewed": false,
+    "current_scope": "Template and rejection rules for a future executable profile/session schema package only; it records no executable schema, no migration test, no fault test, no real-profile fixture approval, and no owner-approved production format evidence."
+  },
+  "format_targets": [
+    {
+      "target": "profile",
+      "schema_status": "template_only",
+      "versioning_required": true,
+      "privacy_review_required": true,
+      "downgrade_behavior_required": true,
+      "repair_behavior_required": true,
+      "owner_review_required": true
+    },
+    {
+      "target": "space",
+      "schema_status": "template_only",
+      "versioning_required": true,
+      "privacy_review_required": true,
+      "downgrade_behavior_required": true,
+      "repair_behavior_required": true,
+      "owner_review_required": true
+    },
+    {
+      "target": "session",
+      "schema_status": "template_only",
+      "versioning_required": true,
+      "privacy_review_required": true,
+      "downgrade_behavior_required": true,
+      "repair_behavior_required": true,
+      "owner_review_required": true
+    },
+    {
+      "target": "snapshot",
+      "schema_status": "template_only",
+      "versioning_required": true,
+      "privacy_review_required": true,
+      "downgrade_behavior_required": true,
+      "repair_behavior_required": true,
+      "owner_review_required": true
+    },
+    {
+      "target": "migration",
+      "schema_status": "template_only",
+      "versioning_required": true,
+      "privacy_review_required": true,
+      "downgrade_behavior_required": true,
+      "repair_behavior_required": true,
+      "owner_review_required": true
+    }
+  ],
+  "behavior_axes": [
+    "disk-full",
+    "power-loss",
+    "corruption",
+    "downgrade",
+    "export",
+    "deletion",
+    "private-session",
+    "crash-recovery",
+    "protected-work",
+    "privacy",
+    "data-loss"
+  ],
+  "schema_record_requirements": [
+    "schema id",
+    "schema version",
+    "profile id",
+    "space id",
+    "session id",
+    "snapshot id",
+    "migration id",
+    "created at",
+    "updated at",
+    "origin or storage key",
+    "privacy mode",
+    "encryption state",
+    "retention policy",
+    "downgrade policy",
+    "repair policy",
+    "deletion policy",
+    "export policy",
+    "checksum or integrity marker"
+  ],
+  "migration_lifecycle": [
+    {
+      "stage": "classify_source",
+      "required_record": "Classify the source profile, Space, session, snapshot, or migration record without opening real user profile data outside the approved fixture policy."
+    },
+    {
+      "stage": "validate_input",
+      "required_record": "Validate schema version, identity fields, checksums, privacy labels, downgrade policy, and bounded record sizes before any write."
+    },
+    {
+      "stage": "plan_migration",
+      "required_record": "Record the target schema, step plan, rollback plan, protected-work handling, privacy review status, and unsupported boundaries before execution."
+    },
+    {
+      "stage": "write_temporary_snapshot",
+      "required_record": "Write a bounded temporary snapshot with checksum, retention, redaction, and cleanup records before commit."
+    },
+    {
+      "stage": "commit_or_rollback",
+      "required_record": "Commit only after verification succeeds; otherwise rollback to the previous readable state without discarding protected work."
+    },
+    {
+      "stage": "repair_or_quarantine",
+      "required_record": "Repair only explicitly supported cases and quarantine corrupt, downgrade, private-session, or ambiguous data without accepting it as success."
+    },
+    {
+      "stage": "verify_privacy_and_cleanup",
+      "required_record": "Verify private-session exclusion, fake credential use, redacted diagnostics, bounded temporary root cleanup, and no real user profile data retention."
+    }
+  ],
+  "fixture_policy": {
+    "real_user_profile_data": "prohibited_until_owner_approved_policy",
+    "fake_profile_required": true,
+    "fake_credentials_required": true,
+    "private_session_fixture_required": true,
+    "bounded_temp_roots_required": true,
+    "cleanup_required": true
+  },
+  "rejection_rules": [
+    {
+      "rule": "reject_missing_executable_schema",
+      "condition": "Reject any schema-package promotion when profile, Space, session, snapshot, or migration executable schemas are missing."
+    },
+    {
+      "rule": "reject_success_path_only",
+      "condition": "Reject success-only package evidence that omits malformed-input, interruption, rollback, repair, downgrade, privacy, and data-loss tests."
+    },
+    {
+      "rule": "reject_protected_work_loss",
+      "condition": "Reject schemas or migrations that silently discard protected work, unsaved form state, downloads, uploads, or pending consequential agent actions."
+    },
+    {
+      "rule": "reject_private_session_leak",
+      "condition": "Reject fixtures or schemas that allow private-session data to enter normal profile, session, snapshot, export, trace, or diagnostic records."
+    },
+    {
+      "rule": "reject_corrupt_success",
+      "condition": "Reject corrupt, truncated, duplicated, reordered, or checksum-mismatched records when they are accepted as successful migrations."
+    },
+    {
+      "rule": "reject_downgrade_success",
+      "condition": "Reject downgrade behavior that opens newer formats for write, hides compatibility failure, or treats read-only export as format support."
+    },
+    {
+      "rule": "reject_real_user_data",
+      "condition": "Reject any package that uses real user data, real browser profiles, real credentials, or production profile roots before owner-approved policy exists."
+    },
+    {
+      "rule": "reject_sync_or_credential_claim",
+      "condition": "Reject sync, credential storage, credential safety, account, collaboration, or cloud behavior claims based only on this schema-package template."
+    },
+    {
+      "rule": "reject_production_claim",
+      "condition": "Reject production profile-format, user-data handling readiness, data-loss safety, daily-driver, beta, stable, or release-readiness claims based only on this template."
+    },
+    {
+      "rule": "reject_missing_owner_review",
+      "condition": "Reject promotion when storage, privacy-data, product, security, release-operations, quality, and program owner review is absent or stale."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no executable profile schema",
+    "no Space schema",
+    "no session schema",
+    "no snapshot schema",
+    "no migration schema",
+    "no real-profile migration claim",
+    "no sync claim",
+    "no credential-storage claim",
+    "no data-loss safety claim",
+    "no user-data handling readiness claim",
+    "no production profile-format claim",
+    "no implementation claim"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_profile_session_formats.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

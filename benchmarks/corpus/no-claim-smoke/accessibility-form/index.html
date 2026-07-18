@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim Accessibility Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.45;
+      }
+
+      body {
+        margin: 0;
+        padding: 1.5rem;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        max-width: 76ch;
+      }
+
+      fieldset,
+      aside,
+      section {
+        border: 1px solid currentColor;
+        padding: 1rem;
+      }
+
+      label,
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+      }
+
+      .field {
+        display: grid;
+        gap: 0.25rem;
+        margin-block: 0.75rem;
+      }
+
+      .skip-link:focus {
+        outline: 3px solid currentColor;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to form fixture</a>
+    <header>
+      <h1>Generated Accessibility Fixture</h1>
+      <p>
+        This generated local page exercises landmarks, headings, labels,
+        descriptions, validation text, keyboard focus, and live status copy.
+      </p>
+    </header>
+
+    <main id="content">
+      <section aria-labelledby="overview-heading">
+        <h2 id="overview-heading">Coverage Notes</h2>
+        <p id="fixture-purpose">
+          The fixture is corpus-shape evidence only. It is not an accessibility
+          conformance result and it is not a browser rendering result.
+        </p>
+        <aside aria-label="Unsupported state">
+          Expected M0 state: unsupported web rendering with no measurement
+          claim.
+        </aside>
+      </section>
+
+      <form action="#local-only" method="get" aria-describedby="fixture-purpose">
+        <fieldset>
+          <legend>Review Intake</legend>
+          <div class="field">
+            <label for="reviewer">Reviewer name</label>
+            <input id="reviewer" name="reviewer" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="scope">Scope</label>
+            <select id="scope" name="scope">
+              <option>Corpus shape</option>
+              <option>Keyboard path</option>
+              <option>Screen-reader path</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" rows="4" aria-describedby="notes-help"></textarea>
+            <span id="notes-help">No network submission is performed.</span>
+          </div>
+          <button type="submit">Record local state</button>
+        </fieldset>
+      </form>
+
+      <section aria-labelledby="status-heading">
+        <h2 id="status-heading">Live Region</h2>
+        <p aria-live="polite">Waiting for local interaction.</p>
+      </section>
+    </main>
+  </body>
+</html>

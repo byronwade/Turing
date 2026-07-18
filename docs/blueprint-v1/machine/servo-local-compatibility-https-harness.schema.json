@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/servo-local-compatibility-https-harness-v1.json",
+  "title": "ADR-0009 Local Compatibility HTTPS Harness Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "harness_id",
+    "status",
+    "created_at",
+    "related_gate",
+    "evidence_id",
+    "source_strategy_status",
+    "claim_status",
+    "corpus_manifest",
+    "route_self_test_tool",
+    "execution_status",
+    "tls_plan",
+    "host_alias_plan",
+    "origin_bindings",
+    "required_browser_run_record",
+    "prohibited_claims",
+    "unsupported"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "harness_id": {
+      "type": "string",
+      "pattern": "^ADR9-EV-013\\.HTTPS_HOST_ALIAS\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "plan_only_no_browser_run",
+        "reviewed_no_claim_plan"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "related_gate": {
+      "const": "PB-002"
+    },
+    "evidence_id": {
+      "const": "ADR9-EV-013"
+    },
+    "source_strategy_status": {
+      "const": "no_source_strategy_decision"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "corpus_manifest": {
+      "const": "docs/blueprint-v1/machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json"
+    },
+    "route_self_test_tool": {
+      "const": "tools/serve_servo_local_compatibility_corpus.py"
+    },
+    "execution_status": {
+      "const": "not_executed"
+    },
+    "tls_plan": {
+      "$ref": "#/$defs/tlsPlan"
+    },
+    "host_alias_plan": {
+      "$ref": "#/$defs/hostAliasPlan"
+    },
+    "origin_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/originBinding"
+      }
+    },
+    "required_browser_run_record": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "prohibited_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "tlsPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "certificate_strategy",
+        "certificate_private_key_committed",
+        "tls_version_min",
+        "sni_required",
+        "san_hosts",
+        "trust_store_modification_policy",
+        "certificate_artifacts_required"
+      ],
+      "properties": {
+        "certificate_strategy": {
+          "type": "string"
+        },
+        "certificate_private_key_committed": {
+          "const": false
+        },
+        "tls_version_min": {
+          "type": "string"
+        },
+        "sni_required": {
+          "const": true
+        },
+        "san_hosts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9.-]+\\.turing\\.invalid$"
+          }
+        },
+        "trust_store_modification_policy": {
+          "type": "string"
+        },
+        "certificate_artifacts_required": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "hostAliasPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "external_dns_allowed",
+        "persistent_hosts_file_allowed",
+        "host_header_substitute_for_browser_allowed",
+        "cleanup_required",
+        "required_artifacts"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "external_dns_allowed": {
+          "const": false
+        },
+        "persistent_hosts_file_allowed": {
+          "const": false
+        },
+        "host_header_substitute_for_browser_allowed": {
+          "const": false
+        },
+        "cleanup_required": {
+          "const": true
+        },
+        "required_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "originBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "host",
+        "fixture_count",
+        "route_paths"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "pattern": "^https://[a-z0-9.-]+\\.turing\\.invalid/$"
+        },
+        "host": {
+          "type": "string",
+          "pattern": "^[a-z0-9.-]+\\.turing\\.invalid$"
+        },
+        "fixture_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "route_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^/"
+          }
+        }
+      }
+    }
+  }
+}

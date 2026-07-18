@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/profile-session-schema-package-v1.json",
+  "title": "Turing Profile Session Schema Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "package_status",
+    "format_targets",
+    "behavior_axes",
+    "schema_record_requirements",
+    "migration_lifecycle",
+    "fixture_policy",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^PROFILE_SESSION\\.SCHEMA_PACKAGE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_schema_package_template",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "package_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executable_schemas",
+        "migration_tests_run",
+        "fault_tests_run",
+        "real_profile_fixture_approved",
+        "owner_reviewed",
+        "current_scope"
+      ],
+      "properties": {
+        "executable_schemas": {
+          "type": "boolean"
+        },
+        "migration_tests_run": {
+          "type": "boolean"
+        },
+        "fault_tests_run": {
+          "type": "boolean"
+        },
+        "real_profile_fixture_approved": {
+          "type": "boolean"
+        },
+        "owner_reviewed": {
+          "type": "boolean"
+        },
+        "current_scope": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "format_targets": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "schema_status",
+          "versioning_required",
+          "privacy_review_required",
+          "downgrade_behavior_required",
+          "repair_behavior_required",
+          "owner_review_required"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 3
+          },
+          "schema_status": {
+            "type": "string",
+            "enum": [
+              "template_only",
+              "executable",
+              "superseded"
+            ]
+          },
+          "versioning_required": {
+            "type": "boolean"
+          },
+          "privacy_review_required": {
+            "type": "boolean"
+          },
+          "downgrade_behavior_required": {
+            "type": "boolean"
+          },
+          "repair_behavior_required": {
+            "type": "boolean"
+          },
+          "owner_review_required": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "behavior_axes": {
+      "type": "array",
+      "minItems": 11,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "schema_record_requirements": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "migration_lifecycle": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "required_record"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_record": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "fixture_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "real_user_profile_data",
+        "fake_profile_required",
+        "fake_credentials_required",
+        "private_session_fixture_required",
+        "bounded_temp_roots_required",
+        "cleanup_required"
+      ],
+      "properties": {
+        "real_user_profile_data": {
+          "type": "string",
+          "minLength": 20
+        },
+        "fake_profile_required": {
+          "type": "boolean"
+        },
+        "fake_credentials_required": {
+          "type": "boolean"
+        },
+        "private_session_fixture_required": {
+          "type": "boolean"
+        },
+        "bounded_temp_roots_required": {
+          "type": "boolean"
+        },
+        "cleanup_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule",
+          "condition"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 3
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  }
+}

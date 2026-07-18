@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/research-package-update-lab-package-v1.json",
+  "title": "Turing Research Package Update Lab Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "package_status",
+    "manifest_fields",
+    "metadata_behavior_axes",
+    "lab_lifecycle",
+    "fixture_policy",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^REL\\.UPDATE_LAB_PACKAGE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_update_lab_package_template",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "package_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executable_package_manifest",
+        "update_metadata_parser",
+        "signature_threshold_tests",
+        "staged_install_tests",
+        "rollback_migration_tests",
+        "production_keys_present",
+        "owner_reviewed",
+        "current_scope"
+      ],
+      "properties": {
+        "executable_package_manifest": {
+          "type": "boolean"
+        },
+        "update_metadata_parser": {
+          "type": "boolean"
+        },
+        "signature_threshold_tests": {
+          "type": "boolean"
+        },
+        "staged_install_tests": {
+          "type": "boolean"
+        },
+        "rollback_migration_tests": {
+          "type": "boolean"
+        },
+        "production_keys_present": {
+          "type": "boolean"
+        },
+        "owner_reviewed": {
+          "type": "boolean"
+        },
+        "current_scope": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "manifest_fields": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "metadata_behavior_axes": {
+      "type": "array",
+      "minItems": 19,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "lab_lifecycle": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "required_record"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_record": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "fixture_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fake_signing_keys_required",
+        "offline_root_keys",
+        "stable_channel_prohibited",
+        "local_metadata_only",
+        "fake_profiles_required",
+        "bounded_temp_roots_required",
+        "cleanup_required"
+      ],
+      "properties": {
+        "fake_signing_keys_required": {
+          "type": "boolean"
+        },
+        "offline_root_keys": {
+          "type": "string",
+          "minLength": 10
+        },
+        "stable_channel_prohibited": {
+          "type": "boolean"
+        },
+        "local_metadata_only": {
+          "type": "boolean"
+        },
+        "fake_profiles_required": {
+          "type": "boolean"
+        },
+        "bounded_temp_roots_required": {
+          "type": "boolean"
+        },
+        "cleanup_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule",
+          "condition"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 3
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  }
+}

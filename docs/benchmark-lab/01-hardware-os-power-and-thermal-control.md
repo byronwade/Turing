@@ -59,6 +59,8 @@ Measurements report p50, p95, and p99 latency where interaction is involved; liv
 
 An optimization is not accepted from a microbenchmark alone. It must preserve conformance, security mitigations, accessibility paths, failure behavior, and a default-equivalent configuration. Tail regressions, extra process launches, larger working sets, or increased recovery cost remain visible.
 
+Current machine-readable benchmark lab seeds include the checked [current Windows high-end hardware candidate](../blueprint-v1/machine/benchmark-hardware/current-windows-high-end.candidate.json) and [current Windows high-end OS-control candidate](../blueprint-v1/machine/benchmark-os-controls/current-windows-high-end.candidate.json). They are current-host inventories only. They do not approve a clean image, update freeze, driver freeze, display normalization, thermal stability, network isolation, artifact storage, benchmark result, or performance claim.
+
 ## Security and privacy requirements
 
 - Validate untrusted sizes, counts, enums, offsets, recursion, nesting, handles, paths, versions, and identities before privileged work or large allocation.
@@ -94,6 +96,7 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 - structure-aware fuzzing and corpus minimization for parsers, protocols, state machines, and persisted formats;
 - semantic trace or full-recomputation/reference oracle;
 - fixed-hardware latency, memory, energy, and longevity baselines;
+- OS-control manifests validated by [`tools/validate_benchmark_os_controls.py`](../../tools/validate_benchmark_os_controls.py), with update policy, driver, firmware, power, display, thermal, clock, service, unsupported behavior, and missing-control evidence visible;
 - explicit residual risks, owner, revisit trigger, and unsupported matrix.
 
 ## Risks
@@ -104,7 +107,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 - https://browserbench.org/
 - https://browserbench.org/Speedometer3.1/
-- https://browserbench.org/MotionMark1.3/
+- https://browserbench.org/MotionMark/
 - https://perfetto.dev/
 - https://learn.microsoft.com/en-us/windows-hardware/test/wpt/
 

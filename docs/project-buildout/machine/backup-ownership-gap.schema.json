@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/backup-ownership-gap-v1.json",
+  "title": "Turing Backup Ownership Gap Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_registries",
+    "critical_scopes",
+    "qualification_evidence_required",
+    "reconciliation_evidence_required",
+    "two_person_control_required",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^OWN\\.BACKUP\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["blocked_gap_inventory", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_registries": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "critical_scopes": {
+      "type": "array",
+      "minItems": 22,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "scope",
+          "owner_record_status",
+          "current_primary",
+          "current_backup",
+          "next_review",
+          "gap_status",
+          "blocking_gap",
+          "required_evidence",
+          "safe_failure"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^OWN-SCOPE-[A-Z0-9_]+$"
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 3
+          },
+          "owner_record_status": {
+            "type": "string",
+            "minLength": 3
+          },
+          "current_primary": {
+            "type": "string",
+            "minLength": 3
+          },
+          "current_backup": {
+            "type": ["string", "null"]
+          },
+          "next_review": {
+            "type": "string",
+            "format": "date"
+          },
+          "gap_status": {
+            "type": "string",
+            "enum": ["blocked_missing_backup", "qualified_backup_recorded"]
+          },
+          "blocking_gap": {
+            "type": "string",
+            "minLength": 40
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 80
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 40
+          }
+        }
+      }
+    },
+    "qualification_evidence_required": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "reconciliation_evidence_required": {
+      "type": "array",
+      "minItems": 15,
+      "items": {
+        "type": "string",
+        "minLength": 2
+      }
+    },
+    "two_person_control_required": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

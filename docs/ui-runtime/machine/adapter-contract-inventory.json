@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "inventory_id": "UI.ADAPTER.NOCLAIM_CONTRACT.2026_07",
+  "status": "no_claim_contract_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim contract inventory only; no ADR-0013, no native adapter prototype, no UI toolkit selection, no trusted-chrome readiness, no accessibility readiness, no page-surface approval, no release-path UI approval, no production claim, and no implementation claim",
+  "source_records": [
+    "crates/turing-ui-model/src/lib.rs",
+    "docs/ui-runtime/README.md",
+    "docs/ui-runtime/03-rust-state-command-and-adapter-architecture.md",
+    "docs/ui-runtime/04-page-surface-compositor-and-process-integration.md",
+    "docs/ui-runtime/07-windowing-input-ime-accessibility-and-platform.md",
+    "docs/ui-runtime/09-testing-observability-recovery-and-release-gates.md",
+    "docs/blueprint-v1/11-product-ui-devtools.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
+    "docs/ui-runtime/machine/component-fixture-inventory.json",
+    "docs/ui-runtime/machine/page-surface-composition.json",
+    "docs/accessibility/machine/window-input-accessibility-spike.json"
+  ],
+  "contract_areas": [
+    {
+      "area_id": "UI-ADAPTER-AREA-STATE",
+      "area": "state",
+      "owner_scope": "ui-runtime",
+      "current_evidence": "`crates/turing-ui-model` exposes an immutable `ShellSnapshot`, typed IDs, tab summaries, tab lifecycle state, and validation for duplicate tabs, missing active tabs, and zero snapshot versions.",
+      "required_contract": "A versioned state contract must define snapshot identity, update ordering, stale-version rejection, coalescing behavior, thread ownership, and which fields are durable product state versus ephemeral toolkit presentation state.",
+      "missing_evidence": "No accepted ADR-0013, adapter trait, stale-version negative tests, snapshot-update trace schema, or native adapter run proves that toolkit-native state cannot become the product source of truth."
+    },
+    {
+      "area_id": "UI-ADAPTER-AREA-COMMAND",
+      "area": "command",
+      "owner_scope": "ui-runtime",
+      "current_evidence": "`ShellCommand` records typed intents for tab activation, close, navigation input, tab freeze, tab restore, and Space activation while the UI runtime book requires service-side revalidation.",
+      "required_contract": "A command contract must define typed command payloads, expected identity and epoch fields, cancellation, deadlines, rejection reasons, confirmation requirements, and service-side validation responsibilities.",
+      "missing_evidence": "Current commands do not yet carry complete epoch, deadline, cancellation, confirmation, rejection, or trace fields, and no native adapter prototype proves commands cannot bypass kernel or service validation."
+    },
+    {
+      "area_id": "UI-ADAPTER-AREA-SURFACE",
+      "area": "surface",
+      "owner_scope": "ui-runtime",
+      "current_evidence": "The checked page-surface inventory identifies page-surface fields, composition alternatives, failure cases, and blockers for future `UI-GATE-7` work.",
+      "required_contract": "A surface contract must bind view identity, document epoch, device generation, scale, damage, synchronization, brokered surface handles, fallback frames, and crash or device-loss replacement semantics without exposing toolkit object layouts.",
+      "missing_evidence": "No executable page-surface protocol, typed page-surface handle implementation, brokered handle proof, software fallback, latency trace, or `ADR-0016` exists."
+    },
+    {
+      "area_id": "UI-ADAPTER-AREA-ACCESSIBILITY",
+      "area": "accessibility",
+      "owner_scope": "accessibility",
+      "current_evidence": "The checked component fixture and window/input/accessibility inventories name required roles, names, states, page-tree composition, assistive-technology rows, and workflow blockers.",
+      "required_contract": "An accessibility contract must define native role mapping, names, states, values, focus, live updates, keyboard semantics, page-tree composition, screen-reader support expectations, and platform snapshot evidence.",
+      "missing_evidence": "No reference-platform accessibility tree snapshots, manual assistive-technology transcripts, page-tree diffs, screen-reader coverage, IME correctness evidence, or `UI-GATE-10` result exists."
+    },
+    {
+      "area_id": "UI-ADAPTER-AREA-DIAGNOSTIC",
+      "area": "diagnostic",
+      "owner_scope": "quality",
+      "current_evidence": "The UI runtime testing chapter requires screenshots, accessibility assertions, fault injection, traces, and recovery evidence, but the current M0 crate exposes no diagnostic adapter surface.",
+      "required_contract": "A diagnostic contract must define trace events, snapshot hashes, screenshot and accessibility capture points, command rejection records, adapter fault injection hooks, crash or GPU-loss observations, and redaction rules.",
+      "missing_evidence": "No diagnostic schema, adapter trace implementation, fault-injection harness, screenshot baseline, accessibility snapshot, or redaction-reviewed evidence bundle exists."
+    },
+    {
+      "area_id": "UI-ADAPTER-AREA-ADAPTER",
+      "area": "adapter",
+      "owner_scope": "ui-runtime",
+      "current_evidence": "The UI runtime book requires toolkit types to stay behind Turing-owned state, command, surface, accessibility, and diagnostic contracts, and the M0 model contains no toolkit dependency.",
+      "required_contract": "An adapter contract must define trait boundaries, event-loop ownership, toolkit object lifetime, update delivery, command emission, resource ownership, error propagation, replacement cost, and package/runtime exclusions.",
+      "missing_evidence": "No accepted adapter trait, equivalent native adapter prototype, replacement drill, package proof, owner review, or negative test proves that toolkit objects cannot own navigation, profile, permission, credential, agent, Plug-in, persistence, or update authority."
+    }
+  ],
+  "current_model_invariants": [
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-SHELL_SNAPSHOT",
+      "invariant": "immutable versioned ShellSnapshot",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "Adapter update delivery, stale-version rejection, coalescing, trace hashes, and native toolkit binding proof are missing."
+    },
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-TYPED_IDENTITIES",
+      "invariant": "typed window profile Space tab and view identities",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "Document epoch, process role, principal, origin, frame, and surface-handle identities remain outside the current shell model."
+    },
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-TAB_LIFECYCLE",
+      "invariant": "explicit tab lifecycle",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "No adapter evidence proves freeze, discard, restore, crash, protected-work, and resource-pressure states are represented consistently across toolkit candidates."
+    },
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-SHELL_COMMANDS",
+      "invariant": "typed shell commands",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "Commands still need epoch, cancellation, deadline, confirmation, rejection, trace, and service-side authority evidence."
+    },
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-SNAPSHOT_VALIDATION",
+      "invariant": "snapshot validation",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "Validation currently covers a small shell subset and does not prove adapter update ordering, stale state rejection, accessibility consistency, or surface identity safety."
+    },
+    {
+      "invariant_id": "UI-ADAPTER-INVARIANT-NO_TOOLKIT_TYPES",
+      "invariant": "no toolkit platform GPU page credential Plug-in or agent types",
+      "source": "crates/turing-ui-model/src/lib.rs",
+      "still_missing": "No native adapter package proof or trait boundary test yet proves that toolkit, page-surface, credential, Plug-in, or agent types stay outside durable product state."
+    }
+  ],
+  "adapter_authority_denials": [
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-NAVIGATION",
+      "authority": "navigation",
+      "denial_rule": "The adapter may emit navigation intent but cannot decide URL interpretation, history mutation, origin authority, document epoch, or renderer commit.",
+      "required_negative_evidence": [
+        "stale view navigation is rejected",
+        "adapter-supplied URL text is revalidated by the navigation service",
+        "page content cannot trigger trusted chrome navigation authority"
+      ],
+      "missing_evidence": "No native adapter negative tests or service-side command rejection trace exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-PROFILE",
+      "authority": "profile",
+      "denial_rule": "The adapter may display profile identity but cannot create, switch, migrate, export, delete, or merge profiles or Spaces directly.",
+      "required_negative_evidence": [
+        "cross-profile command is rejected",
+        "profile switch requires service validation",
+        "adapter state cannot persist profile data"
+      ],
+      "missing_evidence": "Profile, Space, session, and migration schemas are still planning evidence only."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-PERMISSION",
+      "authority": "permission",
+      "denial_rule": "The adapter may present permission prompts but cannot grant, persist, expand, or revoke permission authority without permission-service validation.",
+      "required_negative_evidence": [
+        "stale origin prompt is rejected",
+        "policy-blocked permission cannot be granted by UI state",
+        "default action does not silently allow"
+      ],
+      "missing_evidence": "No prompt adapter, origin epoch binding, policy-lock test, or accessibility transcript exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-CREDENTIAL",
+      "authority": "credential",
+      "denial_rule": "The adapter may request credential UI but cannot read, store, autofill, reveal, export, or transmit credentials directly.",
+      "required_negative_evidence": [
+        "credential values never enter adapter traces",
+        "autofill requires credential-service authorization",
+        "diagnostic capture redacts secret fields"
+      ],
+      "missing_evidence": "No credential UI contract, redaction test, diagnostic schema, or credential-service boundary proof exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-AGENT",
+      "authority": "agent",
+      "denial_rule": "The adapter may present agent observations and confirmations but cannot expand grants, approve consequential actions, or send page data to providers.",
+      "required_negative_evidence": [
+        "model output cannot mint authority",
+        "stale document confirmation is rejected",
+        "stop and revoke controls remain service-owned"
+      ],
+      "missing_evidence": "No agent confirmation adapter, provider-boundary trace, or consequential-action confirmation evidence exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-PLUGIN",
+      "authority": "Plug-in",
+      "denial_rule": "The adapter may display Plug-in state but cannot install, update, disable, authorize, or route Plug-in privileges directly.",
+      "required_negative_evidence": [
+        "Plug-in authority cannot be expanded from toolkit callbacks",
+        "revocation state is owned by the Plug-in service",
+        "untrusted Plug-in UI cannot spoof trusted chrome"
+      ],
+      "missing_evidence": "No Plug-in UI adapter contract, principal model proof, or trusted chrome spoofing test exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-PERSISTENCE",
+      "authority": "persistence",
+      "denial_rule": "The adapter may show save or restore status but cannot write durable browser state, profile data, session snapshots, settings, or migration outputs directly.",
+      "required_negative_evidence": [
+        "toolkit state is excluded from durable source of truth",
+        "settings writes route through owning services",
+        "crash restore rejects adapter-only state"
+      ],
+      "missing_evidence": "No persistence boundary test, profile/session schema implementation, or crash-recovery adapter evidence exists."
+    },
+    {
+      "denial_id": "UI-ADAPTER-DENIAL-UPDATE",
+      "authority": "update",
+      "denial_rule": "The adapter may display update state and commands but cannot choose channels, verify packages, roll back versions, write update metadata, or access signing material.",
+      "required_negative_evidence": [
+        "update command routes through release service",
+        "adapter cannot bypass signature or minimum-version checks",
+        "no signing or updater secret enters UI traces"
+      ],
+      "missing_evidence": "Research-package and updater-lab records remain planning only and no native update UI adapter evidence exists."
+    }
+  ],
+  "required_evidence": [
+    {
+      "evidence_id": "UI-ADAPTER-EV-ADR_0013",
+      "name": "ADR-0013",
+      "needed_for": [
+        "toolkit-neutral UI architecture approval",
+        "adapter contract acceptance"
+      ],
+      "current_status": "missing_adr",
+      "missing_evidence": "No accepted ADR-0013 records the UI model, command, state, surface, accessibility, diagnostic, adapter, replacement, and authority boundary decision."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-STATE_CONTRACT",
+      "name": "state contract",
+      "needed_for": [
+        "snapshot delivery",
+        "adapter replacement"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "A complete versioned snapshot/update contract, stale-version rejection behavior, and trace format are not implemented."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-COMMAND_CONTRACT",
+      "name": "command contract",
+      "needed_for": [
+        "service-side authority validation",
+        "negative command tests"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "Command epoch, deadline, cancellation, confirmation, rejection, and trace semantics are not complete."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-SURFACE_CONTRACT",
+      "name": "surface contract",
+      "needed_for": [
+        "page-surface composition",
+        "UI-GATE-7"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "Typed page-surface handle, brokered handle, document/device generation, fallback, and latency evidence are not implemented."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-ACCESSIBILITY_CONTRACT",
+      "name": "accessibility contract",
+      "needed_for": [
+        "native accessibility",
+        "UI-GATE-10"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "Native roles, names, states, focus, page-tree composition, platform snapshots, and manual assistive-technology evidence are missing."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-DIAGNOSTIC_CONTRACT",
+      "name": "diagnostic contract",
+      "needed_for": [
+        "debugging",
+        "independent verification"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "Trace events, snapshot hashes, screenshot capture, accessibility capture, fault injection, and redaction rules are missing."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-ADAPTER_TRAIT",
+      "name": "adapter trait contract",
+      "needed_for": [
+        "toolkit replacement",
+        "equivalent bake-off"
+      ],
+      "current_status": "missing_contract",
+      "missing_evidence": "No accepted Rust trait, FFI boundary, or equivalent binding shape exists for toolkit adapters."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-NATIVE_ADAPTER_PROTOTYPE",
+      "name": "native adapter prototype",
+      "needed_for": [
+        "TASK-000006",
+        "framework bake-off"
+      ],
+      "current_status": "missing_adapter",
+      "missing_evidence": "No Slint, Vizia, Floem, GPUI, or owner-approved reduced reference-shell adapter has run against the shared model."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-NO_TOOLKIT_AUTHORITY_TESTS",
+      "name": "no toolkit-owned authority negative tests",
+      "needed_for": [
+        "trusted chrome",
+        "adapter authority boundary"
+      ],
+      "current_status": "missing_negative_tests",
+      "missing_evidence": "No negative tests prove toolkit callbacks cannot own navigation, profile, permission, credential, agent, Plug-in, persistence, or update authority."
+    },
+    {
+      "evidence_id": "UI-ADAPTER-EV-OWNER_REVIEW",
+      "name": "owner review",
+      "needed_for": [
+        "readiness promotion",
+        "native shell approval"
+      ],
+      "current_status": "missing_owner_review",
+      "missing_evidence": "UI runtime, accessibility, security, product, release, and architecture owners have not reviewed or accepted this contract."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no ADR-0013",
+    "no native adapter prototype",
+    "no UI toolkit selection",
+    "no trusted-chrome readiness",
+    "no accessibility readiness",
+    "no page-surface approval",
+    "no release-path UI approval",
+    "no production claim",
+    "no implementation claim"
+  ]
+}

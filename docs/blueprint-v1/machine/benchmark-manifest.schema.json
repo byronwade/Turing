@@ -4,10 +4,11 @@
   "title": "Turing Benchmark Manifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version","benchmark_id","browser","environment","workload","security","lifecycle","samples"],
+  "required": ["schema_version","benchmark_id","resource_attribution_id","browser","environment","workload","security","lifecycle","samples"],
   "properties": {
     "schema_version": {"const": 1},
     "benchmark_id": {"type":"string","pattern":"^[A-Z0-9][A-Z0-9._-]+$"},
+    "resource_attribution_id":{"type":"string","pattern":"^TURING\\.BENCHMARK\\.RESOURCE_ATTRIBUTION\\.[A-Z0-9._-]+$"},
     "recorded_at": {"type":"string","format":"date-time"},
     "browser": {
       "type":"object","additionalProperties":false,
@@ -21,9 +22,10 @@
     },
     "environment": {
       "type":"object","additionalProperties":false,
-      "required":["hardware_id","cpu","logical_cores","memory_bytes","gpu","os","os_version","power_mode","thermal_state"],
+      "required":["hardware_id","os_control_id","cpu","logical_cores","memory_bytes","gpu","os","os_version","power_mode","thermal_state"],
       "properties": {
-        "hardware_id":{"type":"string"},"cpu":{"type":"string"},"logical_cores":{"type":"integer","minimum":1},
+        "hardware_id":{"type":"string","pattern":"^TURING\\.BENCHMARK\\.HARDWARE\\.[A-Z0-9._-]+$"},"cpu":{"type":"string"},"logical_cores":{"type":"integer","minimum":1},
+        "os_control_id":{"type":"string","pattern":"^TURING\\.BENCHMARK\\.OS_CONTROL\\.[A-Z0-9._-]+$"},
         "memory_bytes":{"type":"integer","minimum":1},"gpu":{"type":"string"},"os":{"type":"string"},
         "os_version":{"type":"string"},"power_mode":{"type":"string"},"thermal_state":{"type":"string"},
         "display_hz":{"type":"number","exclusiveMinimum":0},"scale_factor":{"type":"number","exclusiveMinimum":0}
@@ -65,7 +67,8 @@
         "properties":{"iteration":{"type":"integer","minimum":1},"metrics":{"type":"object","additionalProperties":{"type":"number"}},"notes":{"type":"array","items":{"type":"string"}}}}
     },
     "failures":{"type":"array","items":{"type":"object","required":["target","classification"],"properties":{"target":{"type":"string"},"classification":{"type":"string"},"detail":{"type":"string"}}}},
-    "raw_artifacts":{"type":"array","items":{"type":"object","required":["kind","sha256"],"properties":{"kind":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"path":{"type":"string"}}}}
+    "raw_artifacts":{"type":"array","items":{"type":"object","required":["kind","sha256"],"properties":{"kind":{"type":"string"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"path":{"type":"string"}}}},
+    "claim":{"type":"object","additionalProperties":false,"required":["status","text","owner","reviewer","supported_scope","unsupported_behavior","expires_at","rerun_triggers"],"properties":{"status":{"enum":["no_claim","draft","public_candidate","approved","expired"]},"text":{"type":"string"},"owner":{"type":"string"},"reviewer":{"type":"string"},"supported_scope":{"type":"array","items":{"type":"string"}},"unsupported_behavior":{"type":"array","items":{"type":"string"}},"expires_at":{"type":["string","null"]},"rerun_triggers":{"type":"array","items":{"type":"string"}}}}
   },
   "$defs": {
     "tab": {

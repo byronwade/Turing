@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/research-package-update-lab-v1.json",
+  "title": "Turing Research Package Update Lab Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "lab_id",
+    "status",
+    "updated",
+    "claim_status",
+    "package_identity_fields",
+    "update_behavior_matrix",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "lab_id": {
+      "type": "string",
+      "pattern": "^REL\\.UPDATE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_lab_inventory", "draft", "reviewed"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 80
+    },
+    "package_identity_fields": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "field", "requirement", "evidence_gap", "boundary"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^REL-PKG-[A-Z0-9._-]+$"
+          },
+          "field": {
+            "type": "string",
+            "minLength": 3
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 20
+          },
+          "evidence_gap": {
+            "type": "string",
+            "minLength": 20
+          },
+          "boundary": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "update_behavior_matrix": {
+      "type": "array",
+      "minItems": 19,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "behavior", "required_evidence", "negative_case", "safe_failure"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^REL-UPD-[A-Z0-9._-]+$"
+          },
+          "behavior": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "negative_case": {
+            "type": "string",
+            "minLength": 20
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

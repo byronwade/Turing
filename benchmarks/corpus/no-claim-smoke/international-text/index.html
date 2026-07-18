@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim International Text Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        max-width: 82ch;
+      }
+
+      article,
+      section {
+        border: 1px solid currentColor;
+        padding: 1rem;
+      }
+
+      .samples {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      [dir="rtl"] {
+        text-align: start;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Generated International Text Fixture</h1>
+      <p>
+        This generated local page exercises Unicode text, bidirectional
+        sections, CJK text, combining marks, emoji, and locale-sensitive
+        numeric presentation. It is no-claim corpus material only.
+      </p>
+
+      <section class="samples" aria-labelledby="samples-heading">
+        <h2 id="samples-heading">Text Samples</h2>
+        <article lang="ja">
+          <h3>Japanese</h3>
+          <p>こんにちは。レイアウト、改行、句読点、かな、カタカナ、漢字を含む短い文章です。</p>
+        </article>
+        <article lang="ar" dir="rtl">
+          <h3>Arabic</h3>
+          <p>مرحبا. هذا نص محلي لاختبار اتجاه الكتابة وتداخل الأرقام 12345.</p>
+        </article>
+        <article lang="he" dir="rtl">
+          <h3>Hebrew</h3>
+          <p>שלום. זהו משפט בדיקה קצר עם סימני פיסוק ומספרים 67890.</p>
+        </article>
+        <article lang="fr">
+          <h3>French</h3>
+          <p>café, façade, élève, déjà vu, coöperate, and naïve include marks.</p>
+        </article>
+        <article lang="hi">
+          <h3>Hindi</h3>
+          <p>नमस्ते। यह स्थानीय पाठ देवनागरी अक्षरों और मात्राओं का परीक्षण करता है।</p>
+        </article>
+        <article aria-label="Emoji and symbols">
+          <h3>Symbols</h3>
+          <p>Mode: draft ✓, blocked ✕, warning ⚠, sample emoji 😀.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

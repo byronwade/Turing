@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "profile_id": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+  "status": "self_test_only_no_benchmark_result",
+  "created_at": "2026-07-17T00:00:00Z",
+  "claim_status": "static server self-test profile evidence only; no browser run, no benchmark result, no latency result, no cache result, no TLS result, no DNS result, and no performance claim",
+  "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+  "server": {
+    "mode": "repository-owned-static-self-test-server",
+    "bind_host": "127.0.0.1",
+    "port_policy": "runner-assigned-ephemeral-port",
+    "document_root": "benchmarks/corpus/no-claim-smoke",
+    "external_network_allowed": false
+  },
+  "origin": {
+    "scheme": "http",
+    "host": "turing.invalid",
+    "port": "runner-assigned",
+    "base_url_template": "http://turing.invalid:{port}/corpus/no-claim-smoke/"
+  },
+  "dns": {
+    "mode": "runner-host-override-required",
+    "host": "turing.invalid",
+    "address": "127.0.0.1",
+    "external_dns_allowed": false
+  },
+  "protocols": {
+    "http1": true,
+    "http2": false,
+    "http3": false,
+    "tls": false
+  },
+  "cache": {
+    "default_state": "cold",
+    "reset_required": true,
+    "response_headers": {
+      "Cache-Control": "no-store",
+      "Cross-Origin-Resource-Policy": "same-origin",
+      "X-Content-Type-Options": "nosniff"
+    }
+  },
+  "network_conditions": {
+    "transport": "loopback",
+    "latency_ms": 0,
+    "loss_percent": 0,
+    "bandwidth": "unshaped-loopback",
+    "shaping": "not-implemented-in-sample-profile"
+  },
+  "authentication": {
+    "mode": "disabled",
+    "credentials": []
+  },
+  "routes": [
+    {
+      "case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+      "origin_path": "/corpus/no-claim-smoke/static-document/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/static-document/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-APP-LIKE-001",
+      "origin_path": "/corpus/no-claim-smoke/app-like/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/app-like/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-ACCESSIBILITY-FORM-001",
+      "origin_path": "/corpus/no-claim-smoke/accessibility-form/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/accessibility-form/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-INTERNATIONAL-TEXT-001",
+      "origin_path": "/corpus/no-claim-smoke/international-text/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/international-text/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-HOSTILE-MARKUP-001",
+      "origin_path": "/corpus/no-claim-smoke/hostile-markup/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/hostile-markup/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-MEDIA-DOCUMENT-001",
+      "origin_path": "/corpus/no-claim-smoke/media-document/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/media-document/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "case_id": "PB13-CORPUS-SERVICE-WORKER-CONTRACT-001",
+      "origin_path": "/corpus/no-claim-smoke/service-worker-contract/",
+      "entry_path": "benchmarks/corpus/no-claim-smoke/service-worker-contract/index.html",
+      "expected_status": 200,
+      "content_type": "text/html; charset=utf-8"
+    }
+  ],
+  "unsupported": [
+    "no browser-run server evidence or benchmark-run server artifact exists yet beyond the checked runner-managed lifecycle self-test",
+    "no HTTP/2 profile",
+    "no HTTP/3 or QUIC profile",
+    "no TLS certificate profile",
+    "no proxy profile",
+    "no authentication mock",
+    "no latency, loss, or bandwidth shaping",
+    "no active service-worker registration, fetch interception, cache storage, or cache-revalidation scenario",
+    "no browser run and no benchmark result"
+  ]
+}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim App-Like Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+        min-height: 100vh;
+        padding: 1rem;
+      }
+
+      nav,
+      section {
+        border: 1px solid currentColor;
+        padding: 1rem;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .tasks {
+        display: grid;
+        gap: 0.75rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .task {
+        border: 1px solid currentColor;
+        padding: 0.75rem;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav aria-label="Fixture sections">
+        <h1>Generated App Fixture</h1>
+        <p>
+          This local app-like page exercises controls, list filtering, live
+          text updates, and simple JavaScript without external resources.
+        </p>
+        <label for="status-filter">Status filter</label>
+        <select id="status-filter">
+          <option value="all">All</option>
+          <option value="ready">Ready</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </nav>
+
+      <section aria-labelledby="tasks-heading">
+        <h2 id="tasks-heading">Readiness Tasks</h2>
+        <p id="summary" aria-live="polite">Showing all tasks.</p>
+        <ul class="tasks" id="task-list">
+          <li class="task" data-status="ready">
+            <strong>Manifest validation</strong>
+            <p>No-claim JSON fixtures validate locally.</p>
+          </li>
+          <li class="task" data-status="blocked">
+            <strong>Reference hardware</strong>
+            <p>Tier L, Tier M, and Tier H machines are not selected.</p>
+          </li>
+          <li class="task" data-status="blocked">
+            <strong>Runner output</strong>
+            <p>No runner-generated benchmark result exists.</p>
+          </li>
+        </ul>
+        <button type="button" id="append-task">Append local task</button>
+      </section>
+    </main>
+
+    <script>
+      const filter = document.querySelector("#status-filter");
+      const list = document.querySelector("#task-list");
+      const summary = document.querySelector("#summary");
+      const append = document.querySelector("#append-task");
+
+      function updateFilter() {
+        const value = filter.value;
+        let shown = 0;
+        for (const item of list.querySelectorAll(".task")) {
+          const visible = value === "all" || item.dataset.status === value;
+          item.classList.toggle("hidden", !visible);
+          if (visible) {
+            shown += 1;
+          }
+        }
+        summary.textContent = `Showing ${shown} task${shown === 1 ? "" : "s"}.`;
+      }
+
+      filter.addEventListener("change", updateFilter);
+      append.addEventListener("click", () => {
+        const item = document.createElement("li");
+        item.className = "task";
+        item.dataset.status = "ready";
+        item.innerHTML = "<strong>Local interaction</strong><p>Button event handling changed the document.</p>";
+        list.append(item);
+        updateFilter();
+      });
+      updateFilter();
+    </script>
+  </body>
+</html>

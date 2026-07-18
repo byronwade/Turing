@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-os-control-v1.json",
+  "title": "Turing Benchmark OS and Update Control Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "os_control_id",
+    "hardware_id",
+    "status",
+    "claim_status",
+    "observed_at",
+    "os_identity",
+    "update_control",
+    "driver_firmware_control",
+    "power_display_thermal_control",
+    "clock_network_control",
+    "background_services",
+    "unsupported_behavior",
+    "evidence_required",
+    "sources",
+    "external_sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "os_control_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.OS_CONTROL\\.[A-Z0-9._-]+$"
+    },
+    "hardware_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.HARDWARE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate_current_host_uncontrolled",
+        "draft",
+        "reviewed",
+        "retired"
+      ]
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "os_identity": {
+      "type": "object"
+    },
+    "update_control": {
+      "type": "object"
+    },
+    "driver_firmware_control": {
+      "type": "object"
+    },
+    "power_display_thermal_control": {
+      "type": "object"
+    },
+    "clock_network_control": {
+      "type": "object"
+    },
+    "background_services": {
+      "type": "array",
+      "minItems": 1
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "external_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

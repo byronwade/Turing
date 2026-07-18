@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-tab-scenario-v1.json",
+  "title": "Turing Benchmark Tab Scenario Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scenario_set_id",
+    "status",
+    "created_at",
+    "claim_status",
+    "corpus_id",
+    "network_profile_id",
+    "resource_attribution_id",
+    "scenario_count",
+    "scenarios",
+    "unsupported_behavior"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "scenario_set_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.TAB_SCENARIOS\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "sample_only_no_benchmark_result",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "corpus_id": {
+      "type": "string",
+      "pattern": "^TURING\\.CORPUS\\.[A-Z0-9._-]+$"
+    },
+    "network_profile_id": {
+      "type": "string",
+      "pattern": "^TURING\\.NETWORK\\.[A-Z0-9._-]+$"
+    },
+    "resource_attribution_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.RESOURCE_ATTRIBUTION\\.[A-Z0-9._-]+$"
+    },
+    "scenario_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scenario"
+      }
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "name",
+        "scenario_kind",
+        "tab_count",
+        "cache_state",
+        "agent_mode",
+        "security_assumptions",
+        "lifecycle",
+        "tab_groups",
+        "expected_m0_status",
+        "measurement_claim_allowed"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^PB13-TABS-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "scenario_kind": {
+          "enum": [
+            "thirty_tab_mixed_state",
+            "thirty_tab_all_live"
+          ]
+        },
+        "tab_count": {
+          "const": 30
+        },
+        "cache_state": {
+          "enum": [
+            "cold",
+            "warm",
+            "mixed"
+          ]
+        },
+        "agent_mode": {
+          "enum": [
+            "disabled",
+            "idle",
+            "local",
+            "remote"
+          ]
+        },
+        "security_assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/lifecycle"
+        },
+        "tab_groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tab_group"
+          }
+        },
+        "expected_m0_status": {
+          "type": "string"
+        },
+        "measurement_claim_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all_live",
+        "state_counts",
+        "process_topology",
+        "revival_check_required",
+        "state_loss_policy"
+      ],
+      "properties": {
+        "all_live": {
+          "type": "boolean"
+        },
+        "state_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "active",
+            "background",
+            "throttled",
+            "frozen",
+            "serialized",
+            "discarded",
+            "crashed"
+          ],
+          "properties": {
+            "active": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "background": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "throttled": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "frozen": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "serialized": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "discarded": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "crashed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "process_topology": {
+          "type": "string"
+        },
+        "revival_check_required": {
+          "type": "boolean"
+        },
+        "state_loss_policy": {
+          "type": "string"
+        }
+      }
+    },
+    "tab_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "count",
+        "corpus_case_id",
+        "top_level_site",
+        "initial_state",
+        "protected",
+        "revival_expected",
+        "state_loss_allowed",
+        "notes"
+      ],
+      "properties": {
+        "group_id": {
+          "type": "string",
+          "pattern": "^PB13-TAB-GROUP-[A-Z0-9._-]+$"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "corpus_case_id": {
+          "type": "string",
+          "pattern": "^PB13-CORPUS-[A-Z0-9._-]+$"
+        },
+        "top_level_site": {
+          "type": "string"
+        },
+        "initial_state": {
+          "enum": [
+            "active",
+            "background",
+            "throttled",
+            "frozen",
+            "serialized",
+            "discarded",
+            "crashed"
+          ]
+        },
+        "protected": {
+          "type": "boolean"
+        },
+        "protection_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revival_expected": {
+          "type": "boolean"
+        },
+        "state_loss_allowed": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

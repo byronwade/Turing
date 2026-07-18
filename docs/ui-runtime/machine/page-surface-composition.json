@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "inventory_id": "UI.SURFACE.NOCLAIM_COMPOSITION.2026_07",
+  "status": "no_claim_surface_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim page-surface composition inventory only; no UI-GATE-7 claim, no page-surface approval, no compositor ownership decision, no UI toolkit selection, no renderer-texture composition proof, no typed page-surface handle implementation, no brokered surface handle proof, no resize scale or damage proof, no input IME or accessibility routing proof, no occlusion or capture proof, no renderer-crash or GPU device-loss proof, no software-fallback proof, no latency or frame-pacing proof, no release-path UI approval, and no production claim",
+  "source_records": [
+    "docs/blueprint-v1/04-system-architecture.md",
+    "docs/blueprint-v1/05-web-engine.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/11-product-ui-devtools.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/engine/05-paint-compositor-and-gpu.md",
+    "docs/ui-runtime/README.md",
+    "docs/ui-runtime/04-page-surface-compositor-and-process-integration.md",
+    "docs/ui-runtime/07-windowing-input-ime-accessibility-and-platform.md",
+    "docs/ui-runtime/09-testing-observability-recovery-and-release-gates.md",
+    "docs/ui-runtime/10-prototype-plan-decision-record-and-migration.md",
+    "docs/accessibility/README.md",
+    "docs/accessibility/machine/window-input-accessibility-spike.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+  ],
+  "surface_contract_fields": [
+    {
+      "field": "view_id",
+      "purpose": "Bind the page surface to the Turing view that owns presentation, input routing, accessibility composition, capture policy, and resource attribution.",
+      "missing_evidence": "No generated surface protocol, page-surface handle type, or stale-view rejection test exists."
+    },
+    {
+      "field": "document_epoch",
+      "purpose": "Reject stale renderer frames, hit-test state, accessibility subtrees, input targets, and release acknowledgements after navigation commit.",
+      "missing_evidence": "No document-epoch checked surface protocol or stale-epoch negative fixture exists."
+    },
+    {
+      "field": "device_generation",
+      "purpose": "Reject stale GPU resources and synchronize page-surface recreation after GPU device loss or backend reset.",
+      "missing_evidence": "No device-generation protocol, GPU-loss fixture, or resource-rebuild trace exists."
+    },
+    {
+      "field": "logical_size",
+      "purpose": "Describe CSS/layout-space bounds for hit testing, accessibility bounds, zoom, and chrome/page composition.",
+      "missing_evidence": "No resize or scale fixture records logical-size changes."
+    },
+    {
+      "field": "physical_size",
+      "purpose": "Describe device-pixel allocation size so textures, damage, capture, and presentation are bounded before GPU use.",
+      "missing_evidence": "No texture allocation or oversized-surface rejection evidence exists."
+    },
+    {
+      "field": "scale_factor",
+      "purpose": "Bind page textures, chrome geometry, input coordinates, and accessibility bounds to the platform scale factor.",
+      "missing_evidence": "No multi-scale fixture or scale-change trace exists."
+    },
+    {
+      "field": "color_space",
+      "purpose": "Keep page and chrome composition color-correct and auditable across software fallback and GPU paths.",
+      "missing_evidence": "No color-space fixture, metadata record, or fallback comparison exists."
+    },
+    {
+      "field": "alpha_mode",
+      "purpose": "Prevent transparent or premultiplied page content from confusing trusted chrome, capture, or hit-test regions.",
+      "missing_evidence": "No alpha-mode fixture or trusted-chrome overlay test exists."
+    },
+    {
+      "field": "damage_region",
+      "purpose": "Bound repaint and composite work while preferring conservative over missing damage.",
+      "missing_evidence": "No damage-region trace, damaged-frame replay, or missed-damage negative case exists."
+    },
+    {
+      "field": "synchronization_primitive",
+      "purpose": "Coordinate renderer frame readiness, GPU resource ownership, and release without exposing raw renderer or native handles to trusted UI.",
+      "missing_evidence": "No synchronization primitive decision, timeout behavior, or handle-broker evidence exists."
+    },
+    {
+      "field": "frame_sequence",
+      "purpose": "Order frames, release acknowledgements, input snapshots, and presentation deadlines without accepting stale or replayed frames.",
+      "missing_evidence": "No frame-sequence replay, drop, reorder, or late-frame fixture exists."
+    },
+    {
+      "field": "presentation_deadline",
+      "purpose": "Support bounded latency and frame pacing for page and chrome composition without hiding missed-frame attribution.",
+      "missing_evidence": "No input-to-present, deadline-miss, or frame-pacing trace exists."
+    },
+    {
+      "field": "release_acknowledgement",
+      "purpose": "Return GPU and shared resources deterministically without leaking resources or freeing live page textures too early.",
+      "missing_evidence": "No release-ack timeout, duplicate ack, or resource-leak fixture exists."
+    },
+    {
+      "field": "brokered_surface_handle",
+      "purpose": "Ensure the UI receives only a brokered page-surface handle instead of a renderer process pointer or unchecked native GPU handle.",
+      "missing_evidence": "No brokered surface handle implementation, privilege review, or raw-handle denial case exists."
+    }
+  ],
+  "composition_alternatives": [
+    {
+      "alternative_id": "UI-SURFACE-ALT-OWN_SWAPCHAIN",
+      "name": "Turing-Owned Window Swapchain",
+      "ownership_model": "Turing owns the window swapchain and composites toolkit chrome plus page textures through a Turing-owned compositor path.",
+      "required_evidence": [
+        "adapter hook for chrome drawing",
+        "page texture import path",
+        "software fallback",
+        "resize, scale, damage, and device-loss traces"
+      ],
+      "current_status": "planning_only",
+      "missing_evidence": "No toolkit adapter, swapchain prototype, external texture import, or fallback path exists."
+    },
+    {
+      "alternative_id": "UI-SURFACE-ALT-TOOLKIT_EXTERNAL_TEXTURE",
+      "name": "Toolkit External Texture Hook",
+      "ownership_model": "The selected toolkit owns the window surface and exposes a stable external-texture or custom-render hook behind a Turing-owned adapter.",
+      "required_evidence": [
+        "stable external texture API proof",
+        "license and dependency review",
+        "input, IME, accessibility, capture, and occlusion fixtures",
+        "toolkit upgrade and rollback plan"
+      ],
+      "current_status": "planning_only",
+      "missing_evidence": "No toolkit is selected and no external-texture hook has been proven stable enough for browser chrome."
+    },
+    {
+      "alternative_id": "UI-SURFACE-ALT-PLATFORM_CHILD_SURFACE",
+      "name": "Platform Child Surface",
+      "ownership_model": "Platform child surfaces are used only where unavoidable and kept behind a Turing-owned semantic contract.",
+      "required_evidence": [
+        "clipping and transform tests",
+        "focus and input tests",
+        "accessibility and capture tests",
+        "security review for cross-origin and trusted chrome boundaries"
+      ],
+      "current_status": "planning_only",
+      "missing_evidence": "No platform child-surface prototype or security exception record exists."
+    },
+    {
+      "alternative_id": "UI-SURFACE-ALT-DETERMINISTIC_SOFTWARE_FALLBACK",
+      "name": "Deterministic Software Fallback",
+      "ownership_model": "A software composition path preserves correctness, screenshots, tests, recovery, and reduced hardware assumptions when GPU presentation fails.",
+      "required_evidence": [
+        "software reference renderer",
+        "GPU versus software comparison",
+        "color and alpha metadata",
+        "device-loss fallback trace"
+      ],
+      "current_status": "planning_only",
+      "missing_evidence": "No software fallback compositor, comparison harness, or GPU-loss fallback result exists."
+    }
+  ],
+  "workflow_test_matrix": [
+    {
+      "test_id": "UI-SURFACE-TEST-RESIZE",
+      "workflow": "resize",
+      "required_observation": "Renderer-produced page textures and trusted chrome resize together without stale dimensions, missing damage, or authority confusion.",
+      "required_artifacts": [
+        "resize trace",
+        "logical and physical size samples",
+        "accessibility bounds diff"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-SCALE",
+      "workflow": "scale",
+      "required_observation": "Scale factor changes preserve page texture quality, chrome geometry, input coordinate mapping, and accessibility bounds.",
+      "required_artifacts": [
+        "scale-factor trace",
+        "multi-scale screenshots or semantic snapshots",
+        "input and accessibility coordinate diff"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-DAMAGE",
+      "workflow": "damage",
+      "required_observation": "Damage regions are conservative, bounded, sequenced, and never omit required page or chrome repaint.",
+      "required_artifacts": [
+        "damage-region trace",
+        "frame sequence log",
+        "missed-damage negative fixture"
+      ],
+      "current_status": "missing_simulated_renderer"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-INPUT_ROUTING",
+      "workflow": "input-routing",
+      "required_observation": "Hit testing selects trusted chrome or page surface before dispatch while preserving view, frame, document epoch, and user-activation identity.",
+      "required_artifacts": [
+        "hit-test trace",
+        "trusted chrome versus page target transcript",
+        "stale target rejection case"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-IME_ROUTING",
+      "workflow": "ime-routing",
+      "required_observation": "IME composition, candidate windows, selection, and committed text target the current focused document or trusted chrome field only.",
+      "required_artifacts": [
+        "IME composition trace",
+        "candidate-window placement record",
+        "stale document rejection case"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-ACCESSIBILITY_COMPOSITION",
+      "workflow": "accessibility-composition",
+      "required_observation": "Trusted chrome and renderer-produced accessibility subtrees compose without exposing hidden cross-origin or stale-document data.",
+      "required_artifacts": [
+        "composed accessibility tree snapshot",
+        "hidden cross-origin denial case",
+        "focus and live-region event trace"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-OCCLUSION",
+      "workflow": "occlusion",
+      "required_observation": "Occluded page surfaces reduce work only when trusted chrome, input, capture, and accessibility behavior remain correct.",
+      "required_artifacts": [
+        "occlusion state trace",
+        "hidden-window work evidence",
+        "accessibility and input continuity transcript"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-CAPTURE",
+      "workflow": "capture",
+      "required_observation": "Capture includes or excludes trusted chrome, page surfaces, protected content, and hidden regions according to explicit policy.",
+      "required_artifacts": [
+        "capture policy matrix",
+        "protected-region denial case",
+        "screenshot or capture manifest"
+      ],
+      "current_status": "missing_reference_shell"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-RENDERER_CRASH",
+      "workflow": "renderer-crash",
+      "required_observation": "Renderer crash replaces only the page surface with accessible recovery UI and does not corrupt trusted chrome or replay actions.",
+      "required_artifacts": [
+        "renderer crash trace",
+        "recovery UI snapshot",
+        "no automatic action replay evidence"
+      ],
+      "current_status": "missing_fault_injection"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-GPU_DEVICE_LOSS",
+      "workflow": "gpu-device-loss",
+      "required_observation": "GPU device loss rebuilds toolkit and page resources, increments device generation, and preserves session and accessibility state.",
+      "required_artifacts": [
+        "GPU device-loss trace",
+        "device-generation change log",
+        "software fallback or rebuild evidence"
+      ],
+      "current_status": "missing_fault_injection"
+    },
+    {
+      "test_id": "UI-SURFACE-TEST-LATENCY_FRAME_PACING",
+      "workflow": "latency-frame-pacing",
+      "required_observation": "Input-to-present latency, frame pacing, missed-frame attribution, and release acknowledgements remain bounded under page/chrome composition.",
+      "required_artifacts": [
+        "p50 p95 p99 latency trace",
+        "frame-pacing distribution",
+        "release-ack timing records"
+      ],
+      "current_status": "missing_latency_trace"
+    }
+  ],
+  "failure_recovery_cases": [
+    {
+      "case_id": "UI-SURFACE-FAILURE-STALE_DOCUMENT_EPOCH",
+      "case": "stale-document-epoch",
+      "safe_result": "reject stale frame, hit-test, input, accessibility, and release-ack data before presentation or dispatch",
+      "missing_evidence": "No stale-document-epoch negative test exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-STALE_VIEW_ID",
+      "case": "stale-view-id",
+      "safe_result": "reject stale or wrong-view surface handles and return a bounded error",
+      "missing_evidence": "No wrong-view or closed-view handle test exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-STALE_DEVICE_GENERATION",
+      "case": "stale-device-generation",
+      "safe_result": "reject stale GPU resources after device loss and require a rebuilt brokered surface handle",
+      "missing_evidence": "No stale-device-generation fixture exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-RENDERER_CRASH_RECOVERY_UI",
+      "case": "renderer-crash-recovery-ui",
+      "safe_result": "replace only the page surface with accessible recovery UI and keep trusted chrome responsive",
+      "missing_evidence": "No renderer-crash recovery fixture exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-GPU_DEVICE_LOSS_REBUILD",
+      "case": "gpu-device-loss-rebuild",
+      "safe_result": "rebuild GPU and toolkit resources or fall back to software without discarding the session model",
+      "missing_evidence": "No GPU device-loss rebuild or software-fallback fixture exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-TOOLKIT_FAILURE_NO_PROFILE_CORRUPTION",
+      "case": "toolkit-failure-no-profile-corruption",
+      "safe_result": "stop or restart the UI adapter without corrupting profile state or replaying consequential commands",
+      "missing_evidence": "No toolkit failure injection or session-protection evidence exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-RELEASE_ACK_TIMEOUT",
+      "case": "release-ack-timeout",
+      "safe_result": "cancel or reclaim bounded resources without freeing live surfaces or leaking GPU memory indefinitely",
+      "missing_evidence": "No release-ack timeout or duplicate-ack fixture exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-CROSS_ORIGIN_SURFACE_ISOLATION",
+      "case": "cross-origin-surface-isolation",
+      "safe_result": "deny pixel sampling, accessibility leakage, and metadata confusion across origin, site, frame, process, and document boundaries",
+      "missing_evidence": "No cross-origin hidden-surface or unauthorized sampling negative test exists."
+    },
+    {
+      "case_id": "UI-SURFACE-FAILURE-CAPTURE_POLICY_DENIAL",
+      "case": "capture-policy-denial",
+      "safe_result": "deny or redact capture of protected page, trusted chrome, and hidden surfaces according to policy",
+      "missing_evidence": "No capture policy denial matrix or redaction artifact exists."
+    }
+  ],
+  "security_identity_boundaries": [
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-PROFILE",
+      "boundary": "profile",
+      "enforced_identity": "ProfileId and private-session state",
+      "unsafe_if_missing": "A page surface or capture path could mix resources or recovery state across profiles.",
+      "missing_evidence": "No profile-aware surface or capture fixture exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-VIEW",
+      "boundary": "view",
+      "enforced_identity": "ViewId issued by the browser kernel for the active window, tab, split pane, or page view",
+      "unsafe_if_missing": "A stale or wrong page surface could present into another tab, split pane, or window.",
+      "missing_evidence": "No wrong-view surface handle test exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-DOCUMENT_EPOCH",
+      "boundary": "document epoch",
+      "enforced_identity": "DocumentEpoch assigned at navigation commit and checked on every frame, hit-test, input, accessibility, and release path",
+      "unsafe_if_missing": "Old frames, hit tests, accessibility nodes, or release acknowledgements could survive navigation.",
+      "missing_evidence": "No navigation-and-stale-frame test exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-PROCESS",
+      "boundary": "process",
+      "enforced_identity": "ProcessId and ProcessRole",
+      "unsafe_if_missing": "The UI could trust a renderer process pointer or unchecked native handle.",
+      "missing_evidence": "No brokered-surface-handle or raw-handle denial proof exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-ORIGIN_SITE_FRAME",
+      "boundary": "origin site frame",
+      "enforced_identity": "Origin, TopLevelSite, FrameId, and site-instance ownership",
+      "unsafe_if_missing": "Cross-origin or hidden frame content could leak through pixels, accessibility nodes, hit testing, or capture metadata.",
+      "missing_evidence": "No cross-origin hidden-surface fixture exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-DEVICE_GENERATION",
+      "boundary": "device generation",
+      "enforced_identity": "DeviceGeneration assigned when GPU or software composition resources are created or rebuilt",
+      "unsafe_if_missing": "Stale GPU resources could be reused after device loss or backend reset.",
+      "missing_evidence": "No device-generation rejection fixture exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-SURFACE_HANDLE",
+      "boundary": "surface handle",
+      "enforced_identity": "Brokered page-surface handle issued by the compositor or GPU service instead of raw renderer or native handles",
+      "unsafe_if_missing": "Renderer or toolkit code could pass raw native GPU handles around the broker.",
+      "missing_evidence": "No brokered handle protocol or denial case exists."
+    },
+    {
+      "boundary_id": "UI-SURFACE-BOUNDARY-RESOURCE_OWNER",
+      "boundary": "resource owner",
+      "enforced_identity": "semantic resource owner for CPU, memory, GPU, wakeups, energy, and frame work",
+      "unsafe_if_missing": "Page, chrome, GPU, and shared resources could become unaccounted or misattributed under pressure.",
+      "missing_evidence": "No page-surface resource-attribution trace exists."
+    }
+  ],
+  "evidence_blockers": [
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-PAGE_SURFACE_PROTOCOL",
+      "blocker": "page-surface protocol",
+      "needed_for": [
+        "typed page-surface handles",
+        "document and device generations",
+        "release acknowledgements"
+      ],
+      "missing_evidence": "No schema, generated type, or protocol decision defines the page-surface contract."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-BROKERED_HANDLE_MODEL",
+      "blocker": "brokered handle model",
+      "needed_for": [
+        "surface security",
+        "GPU resource ownership",
+        "raw handle denial"
+      ],
+      "missing_evidence": "No brokered surface handle, privilege review, or raw-handle denial fixture exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-REFERENCE_SHELL_ADAPTER",
+      "blocker": "reference shell adapter",
+      "needed_for": [
+        "composition alternatives",
+        "UI-GATE-7",
+        "toolkit comparison"
+      ],
+      "missing_evidence": "No Slint, Vizia, Floem, GPUI, or owner-approved reduced adapter executes the same page-surface tasks."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-SIMULATED_RENDERER_FRAMES",
+      "blocker": "simulated renderer frames",
+      "needed_for": [
+        "renderer-produced page textures",
+        "damage",
+        "frame sequencing"
+      ],
+      "missing_evidence": "No simulated renderer frame source, texture stream, or frame-sequence fixture exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-HIT_TEST_INPUT_IME_ACCESSIBILITY",
+      "blocker": "hit-test input IME accessibility routing",
+      "needed_for": [
+        "input routing",
+        "IME routing",
+        "accessibility composition",
+        "page-tree composition"
+      ],
+      "missing_evidence": "No combined hit-test, input, IME, accessibility, and page-tree composition fixture exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-RESIZE_SCALE_DAMAGE_OCCLUSION_CAPTURE",
+      "blocker": "resize scale damage occlusion capture fixtures",
+      "needed_for": [
+        "UI-GATE-7",
+        "visual correctness",
+        "capture policy",
+        "bounded work"
+      ],
+      "missing_evidence": "No resize, scale, damage, occlusion, or capture fixture output exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-CRASH_GPU_LOSS_FAULTS",
+      "blocker": "renderer crash and GPU-loss faults",
+      "needed_for": [
+        "recovery UI",
+        "device-generation proof",
+        "software fallback",
+        "session preservation"
+      ],
+      "missing_evidence": "No renderer crash, GPU device-loss, toolkit failure, or software-fallback fault fixture exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-LATENCY_FRAME_PACING_TRACES",
+      "blocker": "latency and frame-pacing traces",
+      "needed_for": [
+        "input-to-present latency",
+        "presentation deadlines",
+        "frame pacing",
+        "release acknowledgement"
+      ],
+      "missing_evidence": "No p50, p95, p99 latency trace, frame-pacing distribution, or deadline-miss artifact exists."
+    },
+    {
+      "blocker_id": "UI-SURFACE-BLOCKER-OWNER_REVIEW_ADR_0016",
+      "blocker": "owner review and ADR-0016",
+      "needed_for": [
+        "page-surface approval",
+        "compositor ownership decision",
+        "release-path UI approval"
+      ],
+      "missing_evidence": "No UI-runtime, compositor, GPU, platform, accessibility, security, performance, quality, release, or architecture owner has accepted page-surface evidence or ADR-0016."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no UI-GATE-7 claim",
+    "no page-surface approval",
+    "no compositor ownership decision",
+    "no UI toolkit selection",
+    "no renderer-texture composition proof",
+    "no typed page-surface handle implementation",
+    "no brokered surface handle proof",
+    "no resize scale or damage proof",
+    "no input IME or accessibility routing proof",
+    "no occlusion or capture proof",
+    "no renderer-crash or GPU device-loss proof",
+    "no software-fallback proof",
+    "no latency or frame-pacing proof",
+    "no release-path UI approval",
+    "no production claim"
+  ]
+}

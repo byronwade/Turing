@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-corpus-v1.json",
+  "title": "Turing Benchmark Corpus Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "status",
+    "created_at",
+    "license",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "sample_only_no_benchmark_result",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "name",
+        "category",
+        "entry_path",
+        "top_level_site",
+        "sha256",
+        "bytes",
+        "generated",
+        "license",
+        "expected_m0_status",
+        "external_network_allowed",
+        "measurement_claim_allowed"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^PB13-CORPUS-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "static_document",
+            "app_like",
+            "accessibility",
+            "international_text",
+            "hostile_markup",
+            "media_document",
+            "service_worker_contract"
+          ]
+        },
+        "entry_path": {
+          "type": "string"
+        },
+        "top_level_site": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "generated": {
+          "type": "boolean"
+        },
+        "license": {
+          "type": "string"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected_m0_status": {
+          "type": "string"
+        },
+        "external_network_allowed": {
+          "type": "boolean"
+        },
+        "measurement_claim_allowed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

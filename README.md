@@ -6,9 +6,35 @@ Turing is an independent, Rust-first browser and web-engine program focused on m
 
 Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operating-system webview, or remote rendering.
 
+## Current stop/resume path
+
+Start with [`docs/start-here.md`](docs/start-here.md). It is the first human entry point for the current build-preparation state.
+
+Before continuing implementation work:
+
+- confirm gate truth in the [Build Readiness Operating Board](docs/project-buildout/13-build-readiness-operating-board.md), [Pre-build Readiness Checklist](docs/project-buildout/11-pre-build-readiness-checklist.md), [Documentation Readiness Evidence Matrix](docs/project-buildout/18-documentation-readiness-evidence-matrix.md), and machine [`pre-build-readiness.json`](docs/blueprint-v1/machine/pre-build-readiness.json);
+- use the checked [Implementation Kickoff Review Inventory](docs/research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes; it is a no-claim stop/resume inventory, not task approval or readiness promotion;
+- use the checked [Build Readiness Dependency Graph](docs/research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing;
+- use the checked [Documentation Readiness Completion Audit](docs/research/documentation-readiness-completion-audit-2026-07.md) and checked no-claim [build-readiness closure-review template](docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json) before calling the documentation preparation complete; they prove contained-M0 continuation only and explicitly keep all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported;
+- use the [core program registries](docs/repository-map.md#core-program-registries) before changing requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas;
+- choose the next source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, or ownership evidence lane and `RQ-*` crosswalk from the [Research Index](docs/research/README.md#current-implementation-research-lanes);
+- use the proposed [Build Readiness Task Queue](docs/project-buildout/17-build-readiness-task-queue.md) and checked no-claim [task approval template](docs/agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests;
+- resolve the `ADR-0009` source-strategy blocker through the [source packet](docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md), [evidence matrix](docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md), [decision draft](docs/project-buildout/16-adr-0009-decision-draft.md), and checked no-claim [decision-review template](docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json);
+- continue fresh-host build confidence from the checked [Fresh Host Reproduction Inventory](docs/research/fresh-host-reproduction-inventory-2026-07.md), checked [fresh-host run-record template](docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), and checked no-claim [fresh-host readiness-review template](docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), but treat independent reproduction, owner-approved clean-VM equivalence, owner-reviewed fresh-host readiness, `PB-009` readiness, preview/beta/stable readiness, production readiness, release confidence, implementation, and Chrome-class claims as unproven;
+- continue IPC work from the checked [IPC Capability Boundary Inventory](docs/research/ipc-capability-boundary-inventory-2026-07.md), checked no-claim [IPC schema-source template](docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), and checked no-claim [IPC readiness-review template](docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), but keep no schema generator, canonical schema generation, wire encoding, timeout/cancellation behavior, stale-epoch rejection, owner-reviewed IPC readiness, `PB-011` readiness, renderer-security, agent-security, process-isolation, site-isolation, production IPC, and implementation claims as unproven;
+- continue sandbox work from the checked [Sandbox Probe Inventory](docs/research/sandbox-probe-inventory-2026-07.md), checked no-claim [sandbox probe-package template](docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), and checked no-claim [sandbox readiness-review template](docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), but treat packaged probes, effective platform policy, owner-reviewed sandbox readiness, sandbox readiness, renderer security, site isolation, hostile-browsing safety, SEC-GATE evidence, production safety, and implementation claims as unproven;
+- continue native-shell adapter-contract work from the checked [Toolkit-Neutral UI Adapter Contract Inventory](docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md), but treat `ADR-0013`, native adapter prototypes, complete state/command/surface/accessibility/diagnostic/adapter contracts, no-toolkit-owned-authority negative tests, trusted-chrome readiness, accessibility readiness, page-surface approval, toolkit selection, and release-path UI approval as unproven;
+- continue native-shell framework work from the checked [Native UI Framework Bake-Off Inventory](docs/research/native-ui-framework-bakeoff-inventory-2026-07.md), but treat `ADR-0014`, toolkit selection, equivalent adapter runs, accessibility, IME/keyboard, page-surface, crash/GPU-loss, performance, memory, energy, license/provenance, and release-path UI approval as unproven;
+- continue native-shell page-surface work from the checked [Page Surface Composition Inventory](docs/research/page-surface-composition-inventory-2026-07.md), but treat `UI-GATE-7`, `ADR-0016`, typed/brokered surface handles, renderer-texture composition, compositor ownership, resize/scale/damage, capture, crash/GPU-loss, software fallback, and latency/frame-pacing proof as unproven;
+- continue native-shell accessibility work from the checked [Window Input Accessibility Spike Inventory](docs/research/window-input-accessibility-spike-inventory-2026-07.md), but treat reference-platform workflows, manual assistive-technology coverage, page-tree composition, IME correctness, renderer-hang, crash, GPU-loss, and accessibility readiness as unproven;
+- continue profile/session schema work from the checked [Profile Session Format Inventory](docs/research/profile-session-format-inventory-2026-07.md) and checked no-claim [schema-package template](docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json), but treat executable profile, Space, session, snapshot, migration, real-profile migration, sync, credential storage, data-loss safety, user-data handling, and production profile-format behavior as unproven;
+- treat Chrome-class and extreme-performance work as no-claim evidence until the [Performance Benchmark Readiness Packet](docs/research/performance-benchmark-readiness-packet-2026-07.md), [Benchmark Corpus Expansion](docs/research/benchmark-corpus-expansion-2026-07.md), [Chrome-Class Performance Runbook](docs/research/chrome-class-performance-runbook-2026-07.md), benchmark manifests, server lifecycle evidence, browser-pin records, diagnostics, launch-runner contract and self-test evidence, raw artifacts, statistics, the checked no-claim [claim-bundle template](docs/blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json), checked no-claim [benchmark readiness-review template](docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json), owner-reviewed claim bundles, and owner-reviewed benchmark readiness exist.
+
+This path supports contained M0 and no-claim evidence work only. It does not approve broad M1 implementation, Servo adoption, benchmark-ready browser pins, Chrome-class comparison, speed, memory, energy, compatibility, security, accessibility, production, beta, stable, or daily-driver claims.
+
 ## Build status
 
-The repository is now ready for **contained M0 implementation tasks**. The documentation library grew from twenty-five detailed engineering and product books to twenty-seven as native UI, agent-execution, and production-readiness controls were added.
+The repository is now ready for **contained M0 implementation tasks**. The documentation library currently contains twenty-seven detailed engineering and product books, including native UI, agent-execution, production-readiness, build-readiness, research, and validation controls.
 
 Implemented build foundation:
 
@@ -19,14 +45,22 @@ Implemented build foundation:
 - an M0 `turing-shell` laboratory binary with no native UI or web runtime;
 - repository `xtask`, bootstrap, doctor, and full-check commands;
 - machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, and provenance records;
-- CI for documentation, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
+- CI for documentation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
 
-Run:
+Run on POSIX shells:
 
 ```bash
 sh tools/bootstrap.sh
 sh tools/doctor.sh
 sh tools/check.sh
+```
+
+Run on Windows PowerShell:
+
+```powershell
+.\tools\bootstrap.ps1
+.\tools\doctor.ps1
+.\tools\check.ps1
 ```
 
 Equivalent Cargo commands:
@@ -37,6 +71,10 @@ cargo run --locked -p xtask -- doctor
 cargo run --locked -p xtask -- check
 cargo run --locked -p turing-shell -- --self-test
 ```
+
+Use the wrappers for handoff validation when possible. Direct Cargo commands are behavior-equivalent, but they inherit the caller's `CARGO_TARGET_DIR`; set it outside the repository when source-tree cleanliness evidence matters.
+
+`xtask check` runs documentation validation, ADR-0009 evidence validation, build-foundation validation, local unstaged and staged diff whitespace checks, Rust formatting, Clippy with warnings denied, workspace tests, the shell self-test, and the architecture prototype smoke path.
 
 The current shell is a command-line laboratory only. It does not create native windows, render pages, connect to the network, persist profiles, run Plug-ins, or execute AI models.
 
@@ -139,30 +177,38 @@ The planned embedding surface uses an idiomatic Rust API, a minimal opaque C ABI
 
 ### Native shell
 
-Trusted chrome will not ship Electron, Tauri, a system webview, React, Node, a DOM, or a runtime browser CSS engine. Pure Rust owns state and commands; a replaceable native adapter owns presentation. Slint is the first candidate to prototype against Vizia and Floem or GPUI. No toolkit is selected.
+Trusted chrome will not ship Electron, Tauri, a system webview, React, Node, a DOM, or a runtime browser CSS engine. Pure Rust owns state and commands; a replaceable native adapter owns presentation. The checked [Toolkit-Neutral UI Adapter Contract Inventory](docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md) records the no-claim `PB-003` state, command, surface, accessibility, diagnostic, adapter, and denied-authority boundaries. Slint is the first candidate to prototype against Vizia and Floem or GPUI, and the checked [Native UI Framework Bake-Off Inventory](docs/research/native-ui-framework-bakeoff-inventory-2026-07.md) defines the no-claim evidence axes. No toolkit is selected.
 
 ## What remains before M1
 
 The M0 workspace does not resolve:
 
 - the Servo/source strategy;
-- production UI toolkit and page-surface composition;
+- toolkit-neutral adapter-contract proof beyond the checked no-claim inventory;
+- production UI toolkit selection beyond the checked no-claim framework bake-off inventory;
+- page-surface/compositor composition beyond the checked no-claim inventory;
 - a product support platform matrix;
 - canonical generated IPC wire schemas;
-- packaged sandbox probes;
+- packaged sandbox probes and owner-reviewed sandbox readiness beyond the checked no-claim Sandbox Probe Inventory, sandbox probe-package template, and sandbox readiness-review template;
 - fixed-hardware benchmark infrastructure;
-- design tokens and component fixtures;
-- profile, Space, session, and migration formats;
-- updater and signed package laboratories;
-- qualified backup maintainers;
+- rendered design-token/component fixtures beyond the checked no-claim inventory;
+- reference-platform window/input/IME/accessibility/page-tree workflows and manual assistive-technology coverage beyond the checked no-claim inventory;
+- executable profile, Space, session, snapshot, and migration schemas beyond the checked no-claim schema-package template;
+- executable updater and signed research-package laboratories beyond the checked no-claim update-lab package template;
+- executable incident-response and emergency patch rehearsal beyond the checked no-claim incident patch rehearsal template;
+- qualified backup maintainers beyond the checked [Backup Ownership Gap Inventory](docs/research/backup-ownership-gap-inventory-2026-07.md) and checked no-claim backup-owner qualification template;
 - beta or stable release gates.
 
 Contained tasks can proceed; broad parallel implementation and production claims remain blocked.
 
 ## Start here
 
+- [Start here](docs/start-here.md)
 - [Documentation index](docs/README.md)
+- [Research index](docs/research/README.md)
+- [Build readiness operating board](docs/project-buildout/13-build-readiness-operating-board.md)
 - [Pre-build readiness](docs/project-buildout/11-pre-build-readiness-checklist.md)
+- [Build readiness task queue](docs/project-buildout/17-build-readiness-task-queue.md)
 - [M0 build-foundation report](docs/research/m0-build-foundation-2026-07.md)
 - [Blueprint v1](docs/blueprint-v1/README.md)
 - [Roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md)

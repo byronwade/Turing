@@ -1,0 +1,85 @@
+# Benchmark Browser Launch Runner Contract - July 2026
+
+Status: `PB-013` sample-only launch-runner contract; no browser benchmark run, no benchmark result, no trace captured, no raw sample, no memory result, no energy result, no competitor result, no Chrome-class claim, and no performance claim
+Owner: performance measurement, benchmark operations, quality, security, privacy, release operations, and developer experience
+Research date: 2026-07-18
+Confidence: high for launch-runner contract shape and no-browser self-test coverage; low for measurement readiness until a browser-run launch implementation, real artifacts, and owner-reviewed browser pins exist
+
+## Question
+
+Which command, stage, timeout, cache/profile, failure, artifact, and no-claim controls must be machine-readable before Turing implements a browser benchmark launch runner?
+
+## Inputs
+
+- [Blueprint 09 - Performance, Memory, Energy, and the 30-Tab Contract](../blueprint-v1/09-performance-memory.md)
+- [Benchmark laboratory corpus, servers, and network-control chapter](../benchmark-lab/02-corpus-servers-and-network-control.md)
+- [Benchmark laboratory statistics, artifacts, regressions, and claims chapter](../benchmark-lab/07-statistics-artifacts-regressions-and-claims.md)
+- [Performance benchmark readiness packet](performance-benchmark-readiness-packet-2026-07.md)
+- [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md)
+- [Benchmark browser pin capture contract](benchmark-browser-pin-capture-contract-2026-07.md)
+- [Benchmark browser pin local diagnostic capture](benchmark-browser-pin-local-diagnostic-capture-2026-07.md)
+- [Benchmark 30-tab scenario contract](benchmark-30-tab-scenario-contract-2026-07.md)
+- [Benchmark trace/artifact package contract](benchmark-trace-artifact-package-contract-2026-07.md)
+- [Benchmark launch-runner schema](../blueprint-v1/machine/benchmark-launch-runner.schema.json)
+- [No-claim browser launch-runner plan](../blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json)
+- [Benchmark launch-runner validator](../../tools/validate_benchmark_launch_runners.py)
+- [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
+
+## Method
+
+Added a launch-runner schema and sample-only browser-launch plan for `PB13-EV-005`. The contract binds the current no-claim hardware, OS-control, corpus, network profile, semantic resource-attribution, 30-tab scenario, trace/artifact package, browser-pin capture, browser-pin diagnostic, competitor-version, and competitor local-install records.
+
+The validator checks that the plan remains contract-only, preserves no-claim wording, references the current no-claim registries, forbids real-profile and claim-producing arguments, requires future command arguments, requires all launch stages, and keeps timeout, cancellation, cache/profile reset, failure denominator, artifact finalization, trace capture, redaction, retention, and resource-attribution controls explicit.
+
+Added `tools/run_benchmark_browser_launch.py --self-test` as a no-browser launch-runner self-test. It validates command parsing, forbidden arguments, checked registry references, artifact-root behavior, and no-claim finalization, writes hashed JSON artifacts into a temporary or caller-provided artifact root, and emits `NOCLAIM.BENCHMARK_BROWSER_LAUNCH_SELF_TEST.2026_07` with `browser_launched=false` and `benchmark_result_generated=false`.
+
+## Current Evidence
+
+The following evidence now exists:
+
+- `benchmark-launch-runner.schema.json` defines the browser launch-runner contract shape;
+- `no-claim-browser-launch.plan.json` records the planned command, required and forbidden arguments, registry references, launch stages, sample controls, profile/cache policy, timeout/cancellation policy, failure finalization policy, trace/artifact policy, resource-attribution policy, unsupported behavior, and missing proof;
+- `validate_benchmark_launch_runners.py` validates stage coverage, no-claim wording, forbidden arguments, registry references, and failure/timeout/profile/artifact controls;
+- `run_benchmark_browser_launch.py --self-test` validates command parsing, forbidden argument rejection, registry reference binding, artifact-root handling, and no-claim finalization without launching a browser or generating a benchmark result;
+- `PB-013`, the benchmark research lane, and `TASK-000005` point to the launch-runner contract as planning evidence.
+
+This closes the previous contract and no-browser self-test gap where `PB13-EV-005` named a browser benchmark launch runner but had no checked machine-readable launch plan or checked launch-runner self-test.
+
+## Unsupported Conclusions
+
+This record does not support:
+
+- a browser-run benchmark runner implementation;
+- a browser launch, page load, trace capture, raw sample, timeout test, cancellation test, cache reset, warmup, measured sample, failure finalization, cleanup implementation, or artifact package generated by a browser run;
+- a benchmark-ready Chrome, Edge, Firefox, Safari, Servo, Ladybird, or Turing browser pin;
+- a comparison against Chrome, Edge, Firefox, Safari, Servo, Ladybird, or any other browser;
+- any faster, lower-memory, lower-energy, Chrome-class, daily-driver, production, beta, stable, accessibility, security, compatibility, benchmark-ready, or performance claim.
+
+## Remaining Proof For `PB13-EV-005`
+
+The launch-runner contract remains planning evidence until a runner produces:
+
+1. implemented browser-run launch runner that still fails closed for real-profile paths, hidden failures, missing no-claim metadata, and unequal workload settings;
+2. runner-managed local server artifact and DNS/cache/network evidence;
+3. owner-reviewed benchmark-ready browser pins with isolated profiles, settings, command lines, and cleanup evidence;
+4. timeout, cancellation, warmup, cache reset, sample-order, and result-finalization implementation;
+5. trace and artifact package generated by a real run with SHA-256 manifest, redaction review, retention decision, and failure denominator records;
+6. raw result manifest with tab lifecycle, process topology, resource-attribution IDs, and no-claim metadata;
+7. negative tests proving forbidden arguments, real profile paths, hidden failures, missing claim metadata, unequal workload settings, and disabled security mitigations fail closed.
+
+## Registry Impact
+
+This report advances `PB13-EV-005` from smoke-runner and browser-pin evidence to checked no-claim browser launch-runner contract evidence plus a checked no-browser browser launch-runner self-test. It does not move `PB-013` out of `documented_no_runner`.
+
+Synchronized records:
+
+- `pre-build-readiness.json` now lists the launch-runner schema, plan, validator, self-test, and report as `PB-013` evidence while keeping a real browser benchmark launch implementation as missing proof.
+- `research-readiness-crosswalk.json` and `build-readiness-task-queue.json` now route the benchmark lane and `TASK-000005` through the checked launch-runner plan and no-browser self-test.
+- The performance benchmark readiness packet, research index, repository map, benchmark laboratory, performance book, operating board, and documentation-readiness matrix now link the launch-runner contract.
+
+## Next Actions
+
+1. Extend the smoke runner into a reviewed local-browser diagnostic mode that can launch one isolated target without producing a performance claim.
+2. Connect the runner to the checked trace/artifact package contract, 30-tab scenario contract, and raw benchmark manifest schema.
+3. Add negative tests for real-profile paths, hidden failures, disabled security mitigations, missing no-claim metadata, timeouts, cancellation, and incomplete cleanup.
+4. Keep every output labeled no-claim until Level 3 owner review in the Chrome-class performance runbook passes.

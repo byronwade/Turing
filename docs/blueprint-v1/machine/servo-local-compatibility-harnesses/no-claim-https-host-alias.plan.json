@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "harness_id": "ADR9-EV-013.HTTPS_HOST_ALIAS.NOCLAIM.2026_07",
+  "status": "plan_only_no_browser_run",
+  "created_at": "2026-07-18T00:00:00Z",
+  "related_gate": "PB-002",
+  "evidence_id": "ADR9-EV-013",
+  "source_strategy_status": "no_source_strategy_decision",
+  "claim_status": "HTTPS host-alias harness plan only; no browser run, no Servo adoption, no Turing compatibility claim, no Chrome-class claim, no WPT/Test262 pass-rate claim, no HTTPS execution evidence, and no release-code authorization.",
+  "corpus_manifest": "docs/blueprint-v1/machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json",
+  "route_self_test_tool": "tools/serve_servo_local_compatibility_corpus.py",
+  "execution_status": "not_executed",
+  "tls_plan": {
+    "certificate_strategy": "future ephemeral local test certificate or local test CA generated outside source control for each retained run",
+    "certificate_private_key_committed": false,
+    "tls_version_min": "TLS 1.2 until TLS 1.3-only policy is reviewed for Servo and comparison browsers",
+    "sni_required": true,
+    "san_hosts": [
+      "a.turing.invalid",
+      "api.turing.invalid",
+      "b.turing.invalid",
+      "bindings.turing.invalid",
+      "dynamic.turing.invalid",
+      "fault.turing.invalid",
+      "fetch.turing.invalid",
+      "forms.turing.invalid",
+      "static.turing.invalid",
+      "webdriver.turing.invalid"
+    ],
+    "trust_store_modification_policy": "future browser runs must use an isolated profile trust store or a captured temporary OS trust change with before/after proof and cleanup; persistent trust-store changes are not allowed by this plan",
+    "certificate_artifacts_required": [
+      "certificate subject, issuer, SAN list, validity window, serial, fingerprint, and generation command",
+      "private-key non-commitment proof and artifact-location policy",
+      "trust-store or isolated-profile trust change before/after record",
+      "TLS protocol, cipher, SNI, certificate verification, and handshake failure logs",
+      "cleanup proof for every generated certificate, trust entry, and temporary profile"
+    ]
+  },
+  "host_alias_plan": {
+    "mode": "reviewed transient host alias required for browser execution; HTTP Host headers are acceptable only for the no-browser route self-test",
+    "external_dns_allowed": false,
+    "persistent_hosts_file_allowed": false,
+    "host_header_substitute_for_browser_allowed": false,
+    "cleanup_required": true,
+    "required_artifacts": [
+      "host-to-loopback mapping method, scope, timestamp, and owner",
+      "before/after resolver or hosts-file state when OS state is touched",
+      "browser-visible origin and address proof for every turing.invalid host",
+      "cleanup proof showing no persistent host alias, resolver, proxy, certificate, or profile mutation remains",
+      "failure record for every mapping, cleanup, permission, elevation, or resolver-cache error"
+    ]
+  },
+  "origin_bindings": [
+    {
+      "origin": "https://a.turing.invalid/",
+      "host": "a.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://api.turing.invalid/",
+      "host": "api.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://b.turing.invalid/",
+      "host": "b.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://bindings.turing.invalid/",
+      "host": "bindings.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://dynamic.turing.invalid/",
+      "host": "dynamic.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://fault.turing.invalid/",
+      "host": "fault.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://fetch.turing.invalid/",
+      "host": "fetch.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://forms.turing.invalid/",
+      "host": "forms.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://static.turing.invalid/",
+      "host": "static.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    },
+    {
+      "origin": "https://webdriver.turing.invalid/",
+      "host": "webdriver.turing.invalid",
+      "fixture_count": 1,
+      "route_paths": ["/"]
+    }
+  ],
+  "required_browser_run_record": [
+    "source baseline, Servo binary path, binary hash, build profile, feature flags, JavaScript runtime/JIT state, and selected ADR-0009 option",
+    "operating system, hardware, GPU, driver, display, power, thermal, sandbox, process-mode, profile, cache, and temporary directory metadata",
+    "HTTPS server command, bound port, certificate fingerprint, SAN list, trust-store state, host-alias state, SNI proof, and cleanup proof",
+    "per-origin route result, HTTP status, TLS state, console log, blocked-reason log, screenshot or semantic trace, and SHA-256 artifact hash",
+    "per-case pass, fail, timeout, crash, error, skip, expected-failure, unexpected-pass, subtest-failure, disabled-test, unsupported-API, flake, rerun, and failure-denominator accounting",
+    "statement of unsupported behavior and a no-claim result boundary approved before comparison or publication"
+  ],
+  "prohibited_claims": [
+    "Servo adoption",
+    "Turing compatibility",
+    "WPT pass rate",
+    "Test262 pass rate",
+    "Chrome-class compatibility",
+    "performance, memory, energy, accessibility, security, daily-driver, beta, stable, production, or release readiness"
+  ],
+  "unsupported": [
+    "no HTTPS server has been executed by this plan",
+    "no certificate, private key, host alias, trust-store entry, or browser profile is generated by this plan",
+    "no Servo, Turing, or competitor browser is launched by this plan",
+    "no WPT or Test262 command is run by this plan",
+    "no compatibility, security, performance, accessibility, Chrome-class, release, or production claim is allowed"
+  ]
+}

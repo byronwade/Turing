@@ -25,7 +25,7 @@ No Turing implementation, fixed-hardware competitor benchmark, penetration test,
 
 ## Resolution
 
-The detailed research library now contains nineteen books:
+At the time of this audit, the detailed research library contained nineteen books:
 
 - [Browser engine engineering](../engine/README.md)
 - [JavaScript runtime engineering](../javascript/README.md)
@@ -47,7 +47,11 @@ The detailed research library now contains nineteen books:
 - [Quality Assurance, Conformance, and Verification Engineering](../quality-assurance/README.md)
 - [Everyday Product Experience Engineering](../product-experience/README.md)
 
-The expansion adds 109 Markdown documents: eleven indexes, eighty-one chapters in the new books, sixteen advanced performance/security/developer chapters, and this audit. Combined with the previous 95-document baseline, the repository contains 204 Markdown documents.
+The expansion added 109 Markdown documents: eleven indexes, eighty-one chapters in the new books, sixteen advanced performance/security/developer chapters, and this audit. Combined with the previous 95-document baseline, the repository contained 204 Markdown documents at this audit point.
+
+## Post-audit status
+
+Later July 2026 work added operating, technology-stack, Plug-in, embedding, market-strategy, native-UI, agent-execution, and production-readiness books. The current documentation index lists twenty-seven detailed books. Current build-start status is governed by the [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), the [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), and machine-readable readiness records, not by the nineteen-book snapshot in this audit.
 
 ## Performance conclusions
 

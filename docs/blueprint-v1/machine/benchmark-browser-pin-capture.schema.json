@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-browser-pin-capture-v1.json",
+  "title": "Turing Benchmark Browser Pin Capture Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "capture_plan_id",
+    "status",
+    "claim_status",
+    "created_at",
+    "host_references",
+    "privacy_boundary",
+    "isolation_policy",
+    "browser_targets",
+    "artifact_contract",
+    "validation_contract",
+    "unsupported_behavior",
+    "evidence_required"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "capture_plan_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.BROWSER_PIN_CAPTURE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": ["plan_no_browser_run", "draft_capture", "reviewed", "retired"]
+    },
+    "claim_status": {"type": "string"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "host_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hardware_id",
+        "os_control_id",
+        "release_catalog_manifest_id",
+        "local_install_manifest_id"
+      ],
+      "properties": {
+        "hardware_id": {"type": "string"},
+        "os_control_id": {"type": "string"},
+        "release_catalog_manifest_id": {"type": "string"},
+        "local_install_manifest_id": {"type": "string"}
+      }
+    },
+    "privacy_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_reads",
+        "prohibited_reads",
+        "allowed_writes",
+        "prohibited_writes",
+        "retention_policy"
+      ],
+      "properties": {
+        "allowed_reads": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "prohibited_reads": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "allowed_writes": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "prohibited_writes": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "retention_policy": {"type": "string"}
+      }
+    },
+    "isolation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_root_policy",
+        "profile_lifecycle",
+        "network_policy",
+        "account_policy",
+        "extension_policy",
+        "update_policy",
+        "benchmark_argument_policy"
+      ],
+      "properties": {
+        "profile_root_policy": {"type": "string"},
+        "profile_lifecycle": {"type": "string"},
+        "network_policy": {"type": "string"},
+        "account_policy": {"type": "string"},
+        "extension_policy": {"type": "string"},
+        "update_policy": {"type": "string"},
+        "benchmark_argument_policy": {"type": "string"}
+      }
+    },
+    "browser_targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target_id",
+          "product_name",
+          "platform",
+          "release_catalog_browser_id",
+          "local_install_browser_id",
+          "status",
+          "planned_profile_mode",
+          "planned_version_capture",
+          "planned_capture_arguments",
+          "expected_artifacts",
+          "blocked_until"
+        ],
+        "properties": {
+          "target_id": {"type": "string"},
+          "product_name": {"type": "string"},
+          "platform": {"type": "string"},
+          "release_catalog_browser_id": {"type": "string"},
+          "local_install_browser_id": {"type": ["string", "null"]},
+          "status": {
+            "enum": [
+              "planned_from_local_executable",
+              "blocked_missing_local_install",
+              "blocked_requires_platform_host"
+            ]
+          },
+          "planned_profile_mode": {"type": "string"},
+          "planned_version_capture": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "planned_capture_arguments": {"type": "array", "items": {"type": "string"}},
+          "expected_artifacts": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "blocked_until": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "artifact_contract": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "validation_contract": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "unsupported_behavior": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_required": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

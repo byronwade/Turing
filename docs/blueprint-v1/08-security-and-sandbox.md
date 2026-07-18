@@ -78,6 +78,8 @@ Each release produces machine-readable sandbox evidence:
 
 Tests attempt prohibited file, socket, process, device, registry, IPC, and debug operations from compromised-process harnesses. A build is not called sandboxed on a platform until those negative tests pass.
 
+The checked [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md) and checked no-claim [sandbox probe-package template](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json) are current no-claim `PB-012` planning evidence for required role targets, access surfaces, platform artifacts, package handoff fields, and harness blockers. They do not provide packaged probes beyond the template, effective policy capture, platform containment proof, SEC-GATE-1, SEC-GATE-6, site-isolation evidence, hostile-browsing safety, or production-safety evidence.
+
 ## 7. Capability-secure IPC
 
 Privileged receivers authenticate the connection’s process identity and role. They ignore renderer claims that conflict with kernel state. Every capability handle encodes scope, operation set, expiry/epoch where relevant, and revocation.
@@ -92,6 +94,8 @@ High-risk messages undergo:
 - audit event for policy-sensitive operations;
 - rate and concurrency limits;
 - fuzzing on both decoder and state machine.
+
+The checked [IPC Capability Boundary Inventory](../research/ipc-capability-boundary-inventory-2026-07.md) and checked no-claim [IPC schema-source template](machine/ipc-schema-sources/no-claim-control-envelope-template.json) are current `PB-011` planning evidence only. They make the M0 bounded-envelope, oversized-message, typed-identity, role-capability, process-capability record, and future schema-source handoff fields visible, while preserving missing proof for the canonical schema generator, wire encoding, connection authentication, stale-epoch receiver rejection, timeout/cancellation behavior, malformed/duplicate/reordered/unauthorized/wrong-principal tests, renderer security, agent security, process isolation, site isolation, and production IPC.
 
 ## 8. Memory-safety strategy
 

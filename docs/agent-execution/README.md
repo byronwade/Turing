@@ -12,6 +12,8 @@ This book defines how software agents may contribute to Turing without becoming 
 
 An implementation agent cannot approve or merge its own production work. Independent review and the protected merge path remain mandatory even when an agent wrote the implementation, tests, documentation, and evidence bundle.
 
+The checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) is not agent authority. Agents may keep the template, validators, and handoff docs current, but only named human owners can accept backup ownership readiness, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation approval.
+
 ## Reading order
 
 1. [Agent trust model and authority](01-agent-trust-model-and-authority.md)
@@ -31,6 +33,8 @@ An implementation agent cannot approve or merge its own production work. Indepen
 - [Agent capability matrix](machine/agent-capability-matrix.json)
 - [Agent run manifest schema](machine/agent-run-manifest.schema.json)
 - [Execution task schema](machine/execution-task.schema.json)
+- [Task approval template schema](machine/task-approval-template.schema.json)
+- [Task approval template](machine/task-approval-templates/no-claim-task-approval-template.json)
 - [Evidence bundle schema](machine/evidence-bundle.schema.json)
 - [Escalation policy](machine/escalation-policy.json)
 - [Prohibited agent actions](machine/prohibited-agent-actions.json)

@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "launch_runner_id": "TURING.BENCHMARK.LAUNCH_RUNNER.NOCLAIM_BROWSER_LAUNCH.2026_07",
+  "status": "contract_only_no_browser_benchmark",
+  "created_at": "2026-07-18T00:00:00Z",
+  "claim_status": "Browser benchmark launch runner contract only; no browser benchmark run, no benchmark result, no trace captured, no raw sample, no memory result, no energy result, no competitor result, no Chrome-class claim, and no performance claim.",
+  "command_contract": {
+    "planned_runner_path": "tools/run_benchmark_browser_launch.py",
+    "planned_modes": [
+      "validate-contract",
+      "future-local-browser-pipeline",
+      "future-thirty-tab-scenario",
+      "future-competitor-diagnostic"
+    ],
+    "required_arguments": [
+      {
+        "name": "--hardware-id",
+        "required_for_real_run": true,
+        "purpose": "Bind the run to a checked benchmark hardware registry entry."
+      },
+      {
+        "name": "--os-control-id",
+        "required_for_real_run": true,
+        "purpose": "Bind the run to a checked OS-control registry entry."
+      },
+      {
+        "name": "--corpus-id",
+        "required_for_real_run": true,
+        "purpose": "Select the reviewed offline corpus manifest."
+      },
+      {
+        "name": "--network-profile-id",
+        "required_for_real_run": true,
+        "purpose": "Select the local server and network-control profile."
+      },
+      {
+        "name": "--browser-pin-id",
+        "required_for_real_run": true,
+        "purpose": "Select owner-reviewed isolated browser-reported version and settings evidence."
+      },
+      {
+        "name": "--tab-scenario-set-id",
+        "required_for_real_run": true,
+        "purpose": "Select the 30-tab mixed/all-live workload denominator contract."
+      },
+      {
+        "name": "--artifact-root",
+        "required_for_real_run": true,
+        "purpose": "Write all run artifacts to a runner-owned package root outside real user profiles."
+      },
+      {
+        "name": "--claim-mode",
+        "required_for_real_run": true,
+        "purpose": "Force no-claim output until owner-reviewed Level 3 claim evidence exists."
+      }
+    ],
+    "forbidden_arguments": [
+      "--use-default-profile",
+      "--allow-real-profile",
+      "--skip-failures",
+      "--ignore-timeouts",
+      "--disable-sandbox-for-benchmark",
+      "--allow-network-downloads",
+      "--claim"
+    ],
+    "self_test_status": "tools/run_benchmark_browser_launch.py --self-test validates command parsing, forbidden arguments, checked registry references, artifact-root handling, and no-claim finalization while launching no browser and producing no benchmark result."
+  },
+  "registry_references": {
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+    "network_profile_id": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+    "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+    "tab_scenario_set_id": "TURING.BENCHMARK.TAB_SCENARIOS.NOCLAIM_30_TAB_SMOKE.2026_07",
+    "artifact_package_id": "TURING.BENCHMARK.ARTIFACT_PACKAGE.NOCLAIM_TRACE_PACKAGE.2026_07",
+    "browser_pin_capture_plan_id": "TURING.BENCHMARK.BROWSER_PIN_CAPTURE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "browser_pin_diagnostic_id": "TURING.BENCHMARK.BROWSER_PIN_DIAGNOSTIC.CURRENT_WINDOWS_HIGH_END.CHROME_EDGE.2026_07",
+    "competitor_version_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
+    "competitor_local_install_manifest_id": "TURING.BENCHMARK.COMPETITOR_LOCAL_INSTALLS.CURRENT_WINDOWS_HIGH_END.2026_07"
+  },
+  "target_policy": {
+    "browser_launch_allowed_in_this_record": false,
+    "target_resolution": "Future real runs must resolve each target from owner-reviewed browser pins, not from ambient PATH lookup or real user profile state.",
+    "profile_boundary": "Future real runs must create runner-owned temporary profiles and must not read or write real user profiles, cookies, history, sync data, extensions, or account state.",
+    "network_boundary": "Future real runs must use checked local network profiles unless a reviewed benchmark explicitly profiles external network behavior.",
+    "comparison_boundary": "Competitor comparison remains blocked until browser pins, command lines, settings, caches, lifecycle, security, and workload are equivalent and reviewed."
+  },
+  "stage_contract": [
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-PREFLIGHT-REGISTRIES",
+      "name": "Validate registry references and no-claim mode",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["hardware_id", "os_control_id", "corpus_id", "network_profile_id", "resource_attribution_id"],
+      "outputs": ["preflight record", "unsupported behavior record"],
+      "failure_policy": "A missing or unreviewed registry blocks the run and writes a failure denominator record."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-SERVER-START",
+      "name": "Start checked local server profile",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["network_profile_id", "corpus_id"],
+      "outputs": ["server run artifact", "route map", "server cleanup handle"],
+      "failure_policy": "Server startup, route, Host-header, or fixture failure blocks measurement and remains in the denominator."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-BROWSER-PIN-RESOLVE",
+      "name": "Resolve browser target from reviewed pin",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["browser_pin_capture_plan_id", "browser_pin_diagnostic_id", "competitor_version_manifest_id", "competitor_local_install_manifest_id"],
+      "outputs": ["browser target record", "effective command line", "settings record"],
+      "failure_policy": "Unreviewed, stale, or mismatched browser pins block comparison and write a failure denominator record."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-TEMP-PROFILE-CREATE",
+      "name": "Create runner-owned temporary profile",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["artifact root", "browser target record"],
+      "outputs": ["temporary profile record", "prohibited path check"],
+      "failure_policy": "Any real-profile path or failed cleanup record blocks claim eligibility."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-CACHE-RESET",
+      "name": "Apply cache and storage reset policy",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["temporary profile record", "network_profile_id"],
+      "outputs": ["cache state record", "storage state record"],
+      "failure_policy": "Unknown cache or storage state remains in the denominator and blocks equal-workload comparison."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-TRACE-START",
+      "name": "Start trace and counter collectors",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["artifact_package_id", "resource_attribution_id"],
+      "outputs": ["trace start record", "counter collector record"],
+      "failure_policy": "Missing trace collection blocks Level 1 or higher performance evidence."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-BROWSER-LAUNCH",
+      "name": "Launch browser under test",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["browser target record", "temporary profile record", "command line"],
+      "outputs": ["process id", "browser stdout/stderr artifact", "launch timestamp"],
+      "failure_policy": "Launch failures, crashes, and wrong-target launches are recorded as denominator failures."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-WARMUP",
+      "name": "Run warmup sequence",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["browser process", "network_profile_id", "corpus_id"],
+      "outputs": ["warmup samples", "warmup failure records"],
+      "failure_policy": "Warmup failures do not disappear; they block or label the run according to the reviewed benchmark plan."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-MEASURED-SAMPLE",
+      "name": "Run measured sample sequence",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["browser process", "corpus_id", "tab_scenario_set_id"],
+      "outputs": ["raw samples", "tab lifecycle records", "failure records"],
+      "failure_policy": "Unsupported, timed-out, discarded, crashed, or cancelled samples remain in the denominator."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-ARTIFACT-FINALIZE",
+      "name": "Finalize artifact package and raw result manifest",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["artifact package root", "raw samples", "trace records", "failure records"],
+      "outputs": ["artifact index", "SHA-256 manifest", "raw benchmark manifest"],
+      "failure_policy": "Incomplete finalization marks the run invalid for claims while retaining diagnostic artifacts."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-CLEANUP",
+      "name": "Cleanup browser, server, traces, and temporary profiles",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["browser process", "server process", "temporary profile record", "trace collectors"],
+      "outputs": ["cleanup record", "residual artifact record"],
+      "failure_policy": "Cleanup failures are retained and block benchmark-ready status until reviewed."
+    },
+    {
+      "stage_id": "PB13-LAUNCH-STAGE-CLAIM-BLOCK",
+      "name": "Enforce no-claim result finalization",
+      "status": "contract_only_not_implemented",
+      "required_for_real_run": true,
+      "inputs": ["raw benchmark manifest", "artifact index", "claim mode"],
+      "outputs": ["no-claim result label", "missing proof list"],
+      "failure_policy": "The runner must fail closed if claim metadata is absent or attempts to promote sample data."
+    }
+  ],
+  "sample_control": {
+    "minimum_repetitions_for_real_run": 5,
+    "warmup_policy": "Warmup count, excluded warmup samples, cache state, and ordering must be recorded before measured samples can be interpreted.",
+    "randomization_policy": "Target, scenario, and sample order must be recorded and reviewed before any competitor comparison.",
+    "denominator_policy": "All failed, unsupported, timed-out, cancelled, crashed, discarded, and state-loss cases remain in the denominator.",
+    "result_label": "harness smoke evidence only until owner-reviewed Level 3 claim evidence exists",
+    "measurement_claim_allowed": false
+  },
+  "cache_profile_policy": {
+    "temporary_profile_required": true,
+    "real_profile_access_allowed": false,
+    "cache_reset_required": true,
+    "cookie_storage_policy": "No real cookies or account state; generated corpus cookies only when a reviewed benchmark case requires them.",
+    "extension_policy": "Extensions disabled unless the workload explicitly measures extension overhead and includes equivalent competitor settings.",
+    "account_sync_policy": "No account or sync attachment in benchmark runs.",
+    "cleanup_required": true
+  },
+  "timeout_cancellation_policy": {
+    "global_timeout_seconds": 3600,
+    "per_stage_timeout_seconds": 300,
+    "cancellation_records_required": true,
+    "cleanup_on_timeout_required": true
+  },
+  "failure_finalization_policy": {
+    "failures_in_denominator": true,
+    "unsupported_in_denominator": true,
+    "crash_records_required": true,
+    "partial_artifact_required": true,
+    "result_finalization_required": true
+  },
+  "trace_artifact_policy": {
+    "artifact_package_required": true,
+    "trace_capture_required": true,
+    "sha256_manifest_required": true,
+    "redaction_review_required": true,
+    "retention_decision_required": true
+  },
+  "resource_attribution_policy": {
+    "semantic_owner_required": true,
+    "unknown_bucket_policy": "Unknown resource buckets must remain visible and block owner-reviewed claims above the configured threshold.",
+    "shared_resource_policy": "Shared browser, network, storage, GPU, and agent costs must be charged using the semantic resource-attribution taxonomy.",
+    "gpu_accounting_required": true
+  },
+  "unsupported_behavior": [
+    "no browser benchmark launch implementation exists beyond the checked no-browser self-test",
+    "no browser benchmark run was executed",
+    "no browser was launched by this contract",
+    "no trace, raw sample, memory snapshot, power sample, or artifact package was generated by this contract",
+    "no timeout, cancellation, cache reset, warmup, sample, failure, cleanup, or result-finalization implementation exists beyond self-test validations",
+    "no competitor comparison, browser-ready pin, Chrome-class, faster, lower-memory, lower-energy, daily-driver, production, beta, stable, accessibility, security, compatibility, or performance claim is supported"
+  ],
+  "evidence_required": [
+    "implemented browser benchmark launch runner beyond the checked no-browser self-test and reviewed command contract",
+    "runner-managed local server artifact and DNS/cache/network evidence",
+    "owner-reviewed benchmark-ready browser pins with isolated profiles, settings, command lines, and cleanup evidence",
+    "trace and artifact package generated by a real run with SHA-256 manifest, redaction review, and retention decision",
+    "raw result manifest with sample order, warmup, timeouts, cancellations, failures, unsupported cases, tab lifecycle, process topology, and resource-attribution IDs",
+    "negative tests proving forbidden arguments, real profile paths, hidden failures, missing claim metadata, unequal workload settings, and disabled security mitigations fail closed"
+  ]
+}

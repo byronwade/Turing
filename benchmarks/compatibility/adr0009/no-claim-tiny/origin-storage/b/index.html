@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Origin Storage Fixture B</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-ORIGIN-STORAGE-001" data-origin-label="b">
+    <main>
+      <h1>Origin B Storage Fixture</h1>
+      <p>
+        This page is mapped to https://b.turing.invalid/ by the future local
+        compatibility harness and exists only to prove route coverage.
+      </p>
+      <pre id="storage-log">pending</pre>
+    </main>
+    <script>
+      const key = "adr9-origin-storage-fixture";
+      localStorage.setItem(key, "b-local");
+      sessionStorage.setItem(key, "b-session");
+      document.querySelector("#storage-log").textContent = JSON.stringify({
+        claim: "no compatibility claim",
+        origin: "https://b.turing.invalid/",
+        local: localStorage.getItem(key),
+        session: sessionStorage.getItem(key),
+      });
+    </script>
+  </body>
+</html>

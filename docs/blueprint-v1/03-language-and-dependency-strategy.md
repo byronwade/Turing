@@ -178,3 +178,5 @@ The [Technology Stack](../technology-stack/README.md) documents candidates and a
 ## Native browser-chrome toolkit research
 
 The release shell uses Rust for durable state, commands, policy, recovery, and diagnostics. A compiled native toolkit may be used behind a replaceable adapter. Slint is the initial candidate; Vizia and Floem or GPUI are required comparisons. React/TypeScript may support a separate design lab, but React, JavaScript, Node, Electron, Tauri, and system webviews are excluded from trusted release chrome.
+
+The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) records `PB-004` no-claim planning evidence for candidate summaries, equivalent adapter scope, evidence axes, disqualifiers, and runtime exclusions. It does not approve a dependency, select a toolkit, accept `ADR-0014`, approve licensing/provenance, or prove trusted release chrome.

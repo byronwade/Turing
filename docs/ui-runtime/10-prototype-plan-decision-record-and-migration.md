@@ -11,6 +11,8 @@ Build `turing-ui-model`, `turing-ui-contracts`, fixture services, component-stat
 
 Implement the reference shell in Slint, Vizia, and Floem or GPUI. Use the same state, commands, fixtures, assets, benchmark harness, platform tasks, and failure tests.
 
+The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) is the current `PB-004` planning evidence for this phase. It does not satisfy Phase B by itself and does not accept `ADR-0014`; equivalent adapter runs, raw artifacts, legal/provenance review, package/runtime-exclusion proof, and owner review remain required.
+
 ## Phase C — browser-specific spike
 
 Compose simulated renderer textures, route input and IME, combine accessibility, survive renderer and GPU failures, restore state, run 100 tabs, and package the result on the reference platform.

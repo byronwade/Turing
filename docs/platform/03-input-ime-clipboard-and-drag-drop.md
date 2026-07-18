@@ -96,6 +96,8 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 - fixed-hardware latency, memory, energy, and longevity baselines;
 - explicit residual risks, owner, revisit trigger, and unsupported matrix.
 
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) turns the `PB-015` input, IME, clipboard, drag/drop, localization, zoom, contrast, motion, page-tree, crash, renderer-hang, and GPU-loss workflow list into planning evidence only. It does not execute a platform fixture or prove input, IME, clipboard, drag/drop, or accessibility behavior.
+
 ## Risks
 
 Primary risks are semantic divergence, confused-deputy behavior, stale identity, unbounded work, memory retention, cross-profile or cross-origin leakage, native or platform compromise, hidden performance cliffs, inaccessible failure UI, unreliable recovery, and documentation becoming more certain than the evidence.

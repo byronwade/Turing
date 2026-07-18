@@ -63,6 +63,8 @@ Browser chrome uses a Turing-owned retained UI scene graph and command model. Te
 
 The UI never depends on the web engine to render essential browser controls. A renderer crash cannot remove the address bar, permission UI, agent stop control, or crash recovery.
 
+The native toolkit remains unselected. The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) records `PB-004` no-claim planning evidence for candidate summaries, equivalent reference-shell scope, evidence axes, disqualifiers, and unsupported runtime boundaries. It does not accept `ADR-0014`, approve Slint or any other toolkit, prove accessibility or IME/keyboard behavior, approve page-surface composition, approve license/provenance, or approve release-path UI.
+
 ## 6. Motion
 
 Motion communicates spatial continuity and state changes. It is short, interruptible, and omitted when it delays input. Tab opening/closing, panel transitions, downloads, permission indicators, agent actions, and lifecycle changes have reduced-motion variants.
@@ -199,3 +201,9 @@ Research targets project-native Spaces, Workspace Time Machine, Research Canvas,
 Browser state, typed commands, policy, persistence, recovery, tracing, and resource accounting remain pure Rust. A compiled native toolkit is isolated behind a Turing-owned adapter. Slint is evaluated first against Vizia and Floem or GPUI. React is permitted only in a separate design lab consuming shared tokens and fixtures; it does not ship in trusted chrome.
 
 The decisive prototype composes renderer-produced page textures with chrome across resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, and GPU device loss. `UI-GATE-7` through `UI-GATE-12` in the [Native UI Runtime book](../ui-runtime/README.md) govern selection.
+
+The checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md) records `PB-005` planning evidence for page-surface contract fields, composition alternatives, `UI-GATE-7` workflow rows, failure cases, identity boundaries, and evidence blockers. It does not prove renderer-produced page texture composition, typed page-surface handles, brokered surface handles, software fallback, `ADR-0016`, `UI-GATE-7`, compositor ownership, toolkit selection, page-surface approval, or release-path UI approval.
+
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) records `PB-015` planning evidence for windowing, input, IME, accessibility-tree, page-tree composition, clipboard, drag/drop, localization, zoom, high contrast, forced colors, reduced motion, crash recovery, renderer hang, and GPU loss. It does not prove accessibility readiness, screen-reader coverage, page-tree composition, IME correctness, `UI-GATE-7`, `UI-GATE-10`, or release-path UI approval.
+
+The current checked `PB-014` fixture inventory is the [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md). It records planning surfaces, semantic token groups, fixture axes, accessibility contracts, and authority boundaries only; it does not render fixtures, select a toolkit, prove accessibility readiness, or approve trusted chrome.

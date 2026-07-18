@@ -96,6 +96,8 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 - fixed-hardware latency, memory, energy, and longevity baselines;
 - explicit residual risks, owner, revisit trigger, and unsupported matrix.
 
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) is the current `PB-015` planning inventory for this chapter. It lists required workflow axes, platform assistive-technology rows, and blockers, but it is not a manual assistive-technology transcript, screen-reader coverage result, accessibility conformance result, page-tree composition proof, `UI-GATE-10` result, or release gate.
+
 ## Risks
 
 Primary risks are semantic divergence, confused-deputy behavior, stale identity, unbounded work, memory retention, cross-profile or cross-origin leakage, native or platform compromise, hidden performance cliffs, inaccessible failure UI, unreliable recovery, and documentation becoming more certain than the evidence.

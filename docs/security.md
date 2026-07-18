@@ -6,6 +6,10 @@ Turing is an early research and architecture program. It is not currently a prod
 
 The project will not claim supported security versions until sandbox, site-isolation, update, release, vulnerability-response, fuzzing, and independent-review gates are operational.
 
+Servo/source-strategy security and maintenance implications are tracked separately in the dated [Servo Security and Maintenance Implications - July 2026](research/servo-security-maintenance-implications-2026-07.md) report. That report is evidence preparation only; it does not approve Servo sandboxing, release code, security posture, or support obligations for Turing.
+
+The checked [Incident Patch Rehearsal Inventory - July 2026](research/incident-patch-rehearsal-inventory-2026-07.md), checked no-claim [incident patch rehearsal template](security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), and checked no-claim [incident/patch readiness-review template](security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json) are `PB-018` planning evidence only. They do not provide executed private-intake tabletop output, emergency patch dry-run records, role review, backup-owner coverage, owner-reviewed incident/patch readiness beyond the template, incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, signing authority, stable promotion authority, incident closure authority, implementation, or production-safe browsing evidence.
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected exploitable vulnerability, sandbox escape, cross-origin or cross-profile data leak, credential exposure, update or signing weakness, unsafe agent action, or private-data disclosure.

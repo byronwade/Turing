@@ -62,3 +62,5 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## UI runtime relationship
 
 The [Native UI Runtime book](../ui-runtime/README.md) owns toolkit selection and toolkit-neutral state/command contracts. This platform book continues to own windows, displays, menus, input, IME, clipboard, drag/drop, accessibility bridges, notifications, power, packaging, and OS behavior. Toolkit APIs cannot become the public platform contract.
+
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) records `PB-015` planning evidence for platform workflow axes, but no platform workflow matrix, manual assistive-technology coverage, IME correctness, clipboard/drag-drop safety, page-tree proof, renderer-hang, crash, GPU-loss, or accessibility readiness exists yet.

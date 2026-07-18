@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-competitor-local-install-v1.json",
+  "title": "Turing Benchmark Competitor Local Install Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "local_install_manifest_id",
+    "status",
+    "claim_status",
+    "captured_at",
+    "host_references",
+    "capture_scope",
+    "observed_browsers",
+    "absent_or_unsupported_browsers",
+    "unsupported_behavior",
+    "evidence_required"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "local_install_manifest_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.COMPETITOR_LOCAL_INSTALLS\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate_current_host_unreviewed",
+        "local_pins_draft",
+        "reviewed",
+        "retired"
+      ]
+    },
+    "claim_status": {"type": "string"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "host_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hardware_id",
+        "os_control_id",
+        "release_catalog_manifest_id"
+      ],
+      "properties": {
+        "hardware_id": {"type": "string"},
+        "os_control_id": {"type": "string"},
+        "release_catalog_manifest_id": {"type": "string"}
+      }
+    },
+    "capture_scope": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "observed_browsers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "browser_id",
+          "release_catalog_browser_id",
+          "product_name",
+          "channel_claim",
+          "engine_family",
+          "platform",
+          "executable_path",
+          "file_version",
+          "product_version",
+          "browser_reported_version",
+          "file_size_bytes",
+          "last_write_time_utc",
+          "sha256",
+          "signature",
+          "registry_observations",
+          "version_state",
+          "release_catalog_relation",
+          "local_pin_status",
+          "benchmark_eligible",
+          "missing_pin_evidence"
+        ],
+        "properties": {
+          "browser_id": {"type": "string"},
+          "release_catalog_browser_id": {"type": "string"},
+          "product_name": {"type": "string"},
+          "channel_claim": {"type": "string"},
+          "engine_family": {"type": "string"},
+          "platform": {"type": "string"},
+          "executable_path": {"type": "string"},
+          "file_version": {"type": "string"},
+          "product_version": {"type": "string"},
+          "browser_reported_version": {"type": ["string", "null"]},
+          "file_size_bytes": {"type": "integer", "minimum": 1},
+          "last_write_time_utc": {"type": "string", "format": "date-time"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "signature": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "signer_subject", "signer_thumbprint"],
+            "properties": {
+              "status": {"type": "string"},
+              "signer_subject": {"type": "string"},
+              "signer_thumbprint": {"type": "string"}
+            }
+          },
+          "registry_observations": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "version_state": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "details"],
+            "properties": {
+              "status": {"type": "string"},
+              "details": {"type": "string"}
+            }
+          },
+          "release_catalog_relation": {"type": "string"},
+          "local_pin_status": {"type": "string"},
+          "benchmark_eligible": {"type": "boolean"},
+          "missing_pin_evidence": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "absent_or_unsupported_browsers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["browser_id", "status", "checked_evidence"],
+        "properties": {
+          "browser_id": {"type": "string"},
+          "status": {"type": "string"},
+          "checked_evidence": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "unsupported_behavior": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_required": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

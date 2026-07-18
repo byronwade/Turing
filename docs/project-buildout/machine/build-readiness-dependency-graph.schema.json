@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/build-readiness-dependency-graph-v1.json",
+  "title": "Turing Build Readiness Dependency Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "nodes",
+    "edges",
+    "parallel_no_claim_lanes",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "graph_id": {
+      "type": "string",
+      "pattern": "^PB020\\.DEPENDENCY_GRAPH\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_dependency_graph", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "status",
+          "owner_scope",
+          "source_ref",
+          "summary",
+          "claim_boundary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "type": {
+            "type": "string",
+            "enum": ["gate", "readiness_item", "task", "decision", "evidence_gate"]
+          },
+          "status": {
+            "type": "string",
+            "minLength": 3
+          },
+          "owner_scope": {
+            "type": "string",
+            "minLength": 3
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 3
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 20
+          },
+          "claim_boundary": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "type",
+          "reason",
+          "no_claim_boundary"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "minLength": 3
+          },
+          "to": {
+            "type": "string",
+            "minLength": 3
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "contained_m0_authorization",
+              "readiness_to_task",
+              "task_dependency",
+              "decision_required",
+              "kickoff_dependency",
+              "claim_blocker"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 20
+          },
+          "no_claim_boundary": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "parallel_no_claim_lanes": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "allowed_parallel_work",
+          "must_stop_before"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "allowed_parallel_work": {
+            "type": "string",
+            "minLength": 20
+          },
+          "must_stop_before": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

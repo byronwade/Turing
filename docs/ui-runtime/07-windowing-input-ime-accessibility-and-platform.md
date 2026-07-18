@@ -20,6 +20,8 @@ Select one M1 reference desktop platform before implementing three full adapters
 
 A toolkit’s generic accessibility claim is insufficient. Turing tests VoiceOver, UI Automation with Narrator/NVDA, and AT-SPI/Orca as appropriate. IME is tested with representative East Asian, Indic, bidirectional, dead-key, emoji, and composition workflows.
 
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) records the no-claim `PB-015` workflow matrix shape for windowing, input, IME, accessibility, page-tree composition, clipboard, drag/drop, localization, zoom, high contrast, forced colors, reduced motion, crash recovery, renderer hang, and GPU loss. It does not replace executable reference-platform runs or manual assistive-technology transcripts.
+
 ## Trusted surfaces
 
 Origin, profile, private mode, credential, permission, capture, agent confirmation, update, and crash-recovery UI cannot be rendered inside page content or styled by pages. Toolkit popovers and overlays must remain inside trusted stacking and input regions.

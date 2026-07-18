@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "claim_bundle_id": "TURING.BENCHMARK.CLAIM_BUNDLE.NOCLAIM_PUBLIC_TEMPLATE.2026_07",
+  "status": "template_only_no_public_claim",
+  "created_at": "2026-07-18T00:00:00Z",
+  "claim_status": "Benchmark public-claim bundle template only; no browser benchmark run, no benchmark result, no competitor result, no trace captured, no raw sample, no memory result, no energy result, no Chrome-class claim, no faster claim, no lower-memory claim, no lower-energy claim, no public performance claim, no compatibility claim, no security claim, no accessibility claim, no production claim, and no daily-driver claim.",
+  "claim_level": "Level 3 public claim candidate template only",
+  "claim_text": "No public claim is approved by this template.",
+  "claim_owner_scope": "performance",
+  "independent_reviewer_scope": "quality",
+  "registry_references": {
+    "benchmark_manifest_id": "NOCLAIM.RUNNER_SMOKE.2026_07",
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+    "network_profile_id": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+    "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+    "tab_scenario_set_id": "TURING.BENCHMARK.TAB_SCENARIOS.NOCLAIM_30_TAB_SMOKE.2026_07",
+    "artifact_package_id": "TURING.BENCHMARK.ARTIFACT_PACKAGE.NOCLAIM_TRACE_PACKAGE.2026_07",
+    "launch_runner_id": "TURING.BENCHMARK.LAUNCH_RUNNER.NOCLAIM_BROWSER_LAUNCH.2026_07",
+    "browser_pin_capture_plan_id": "TURING.BENCHMARK.BROWSER_PIN_CAPTURE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "browser_pin_diagnostic_id": "TURING.BENCHMARK.BROWSER_PIN_DIAGNOSTIC.CURRENT_WINDOWS_HIGH_END.CHROME_EDGE.2026_07",
+    "competitor_version_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
+    "competitor_local_install_manifest_id": "TURING.BENCHMARK.COMPETITOR_LOCAL_INSTALLS.CURRENT_WINDOWS_HIGH_END.2026_07"
+  },
+  "evidence_inputs": [
+    {
+      "input": "approved hardware tiers",
+      "required_for_public_claim": true,
+      "current_status": "not_approved_current_host_candidate_only",
+      "missing_proof": "No owner-approved Tier L, Tier M, and Tier H hardware set exists for a public claim."
+    },
+    {
+      "input": "approved clean OS and update controls",
+      "required_for_public_claim": true,
+      "current_status": "not_approved_current_host_candidate_only",
+      "missing_proof": "No clean image, update freeze, driver freeze, thermal stability, network isolation, or owner-approved OS-control proof exists."
+    },
+    {
+      "input": "reviewed representative corpus",
+      "required_for_public_claim": true,
+      "current_status": "generated_no_claim_smoke_seed_only",
+      "missing_proof": "No reviewed representative offline corpus, live/replay corpus policy, or workload denominator approval exists."
+    },
+    {
+      "input": "implemented browser launch runner",
+      "required_for_public_claim": true,
+      "current_status": "contract_and_no_browser_self_test_only",
+      "missing_proof": "No implemented browser launch runner has launched Turing or a competitor browser and produced raw samples."
+    },
+    {
+      "input": "owner-reviewed browser pins",
+      "required_for_public_claim": true,
+      "current_status": "capture_plan_and_current_host_diagnostic_only",
+      "missing_proof": "No benchmark-ready browser pins with owner-reviewed versions, command lines, profiles, settings, update state, sandbox, site isolation, and lifecycle settings exist."
+    },
+    {
+      "input": "runner-generated trace and artifact package",
+      "required_for_public_claim": true,
+      "current_status": "artifact_package_contract_only",
+      "missing_proof": "No ETW, WPR, Perfetto, runner log, browser stdout/stderr, memory, energy, screenshot, video, raw-sample, or artifact-index package exists."
+    },
+    {
+      "input": "runner-generated 30-tab artifacts",
+      "required_for_public_claim": true,
+      "current_status": "scenario_contract_only",
+      "missing_proof": "No mixed-state or all-live 30-tab browser run, process topology, tab lifecycle log, discard/revival record, or state-loss record exists."
+    },
+    {
+      "input": "raw samples and statistics",
+      "required_for_public_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No raw sample set, sample count, warmup record, confidence interval, uncertainty statement, outlier policy, or statistical summary exists."
+    },
+    {
+      "input": "equal-workload and equal-security review",
+      "required_for_public_claim": true,
+      "current_status": "not_reviewed",
+      "missing_proof": "No owner-reviewed equivalence statement covers workload, cache, lifecycle, security, sandbox, site isolation, extension, profile, process model, and power settings."
+    },
+    {
+      "input": "publication review",
+      "required_for_public_claim": true,
+      "current_status": "not_reviewed",
+      "missing_proof": "No owner-approved exact claim text, expiry, rerun trigger, unsupported behavior, failure denominator, or public copy diff exists."
+    }
+  ],
+  "statistical_controls": [
+    "record raw sample count for every target and scenario",
+    "record warmup policy, excluded warmup samples, and measured sample order",
+    "record repetitions, randomization, cold/warm/repeat-view policy, and cache state",
+    "record confidence intervals or explicit uncertainty statements before summary language",
+    "record outlier policy before the run and retain rejected samples in the artifact bundle",
+    "record failed, unsupported, timed-out, cancelled, crashed, discarded, and revived cases in the denominator",
+    "record effect size, variance, and practical significance instead of ranking by one synthetic score",
+    "record hardware, OS, driver, firmware, power, thermal, display, and network control IDs beside every statistic"
+  ],
+  "equivalence_controls": [
+    "compare only equivalent workload versions, fixture hashes, routes, viewports, DPR, refresh rate, and input scripts",
+    "compare only equivalent browser channel, profile, cache, extension, account, sync, and update-state controls",
+    "compare only equivalent sandbox, site-isolation, certificate, JIT, memory-saver, energy-saver, background-throttling, and security settings",
+    "label any unsupported or disabled feature in the denominator instead of excluding it",
+    "label local lab metrics separately from CrUX, field telemetry, or public web measurements",
+    "preserve process topology, tab lifecycle, profile, origin, site, frame, and document-epoch identity for interpretation",
+    "keep Turing, Chrome, Edge, Firefox, Safari, Servo, and Ladybird settings documented separately when included",
+    "block public comparison when competitor versions, benchmark suites, OS images, drivers, or hardware differ outside the reviewed claim scope"
+  ],
+  "denominator_controls": [
+    "retain every failed, unsupported, timed-out, cancelled, crashed, discarded, revived, and state-loss case",
+    "retain unsupported APIs, disabled suites, missing subtests, and incompatible pages in the denominator",
+    "retain browser launch failures and wrong-target launches as denominator failures",
+    "retain trace, artifact-finalization, cleanup, and profile-isolation failures as denominator failures",
+    "retain tab discard, memory saver, energy saver, background throttling, and lifecycle policy effects",
+    "retain security mitigation differences as blockers or explicit invalidators for public claims",
+    "retain accessibility, DevTools, extension, profile, and agent overhead when the claim touches those workflows",
+    "publish denominator size, exclusions, unsupported behavior, and residual risk with any approved claim"
+  ],
+  "overhead_controls": [
+    "include accessibility tree, screen-reader, high-contrast, reduced-motion, and keyboard overhead when claiming everyday or accessible performance",
+    "include crash recovery and state restoration overhead when claiming stability or recovery performance",
+    "include DevTools, tracing, diagnostics, source maps, protocol, and debugger overhead when claiming developer performance",
+    "include extension, Plug-in, automation, and agent overhead when claiming those workflows",
+    "include profile, session, storage, credential, and privacy-boundary overhead when claiming daily-driver behavior",
+    "include updater, package, and incident-response overhead only after those systems exist and are in scope"
+  ],
+  "expiry_policy": [
+    "expire competitor comparison claims after 30 days by default",
+    "expire nightly, dev, canary, or technology-preview comparison claims after 14 days by default",
+    "expire immediately when a competitor stable channel updates",
+    "expire immediately when benchmark suite versions, corpus hashes, route maps, or input scripts change",
+    "expire immediately when hardware, OS image, driver, firmware, power, thermal, display, network, sandbox, lifecycle, or browser-version inputs change",
+    "expire immediately when an omitted failure, unsupported case, security difference, or denominator error is discovered",
+    "remove expired claims from public docs, release notes, website copy, README files, issue templates, benchmark dashboards, and market material until rerun evidence exists"
+  ],
+  "publication_controls": [
+    "publish only exact owner-approved claim text",
+    "publish supported hardware, operating systems, browser versions, workload versions, sample counts, and expiration date",
+    "publish raw artifact bundle hash, trace package hash, redaction status, retention decision, and reviewer identity",
+    "publish unsupported behavior, residual risk, denominator size, failed cases, and excluded cases",
+    "publish rerun triggers and removal policy beside the claim",
+    "block fastest, lower-memory, lower-energy, Chrome-class, daily-driver, production, beta, stable, security, compatibility, or accessibility language unless the approved claim explicitly and narrowly supports it"
+  ],
+  "rejection_rules": [
+    "reject any claim bundle without runner-generated browser-run raw samples",
+    "reject any claim bundle without trace and artifact package hashes",
+    "reject any claim bundle without benchmark-ready browser pins and competitor version evidence",
+    "reject any claim bundle without denominator records for failures, unsupported cases, crashes, timeouts, cancellations, discards, revivals, and state loss",
+    "reject any claim bundle that hides security, sandbox, site-isolation, cache, lifecycle, profile, extension, or account differences",
+    "reject any claim bundle that uses different benchmark suite versions, corpus hashes, viewport classes, refresh rates, OS images, drivers, or hardware outside the approved scope",
+    "reject any claim bundle with missing sample count, uncertainty, outlier policy, warmup policy, or raw artifact hash",
+    "reject any claim bundle with public text broader than the approved evidence",
+    "reject any claim bundle without owner and independent reviewer approval after the latest artifact change",
+    "reject any expired claim bundle"
+  ],
+  "unsupported_behavior": [
+    "no browser benchmark run exists",
+    "no benchmark result exists",
+    "no competitor result exists",
+    "no raw sample exists",
+    "no trace package exists",
+    "no memory result exists",
+    "no energy result exists",
+    "no Chrome-class claim is supported",
+    "no faster claim is supported",
+    "no lower-memory claim is supported",
+    "no lower-energy claim is supported",
+    "no compatibility claim is supported",
+    "no security claim is supported",
+    "no accessibility claim is supported",
+    "no production, beta, stable, release, or daily-driver claim is supported"
+  ],
+  "missing_proof": [
+    "approved Tier L, Tier M, and Tier H hardware manifests or narrower owner-approved claim scope",
+    "approved clean OS image and update-control manifests",
+    "reviewed representative offline corpus and any selected live/replay corpus policy",
+    "implemented browser launch runner and runner-managed local server artifacts",
+    "owner-reviewed benchmark-ready browser pins and complete competitor local/version evidence",
+    "runner-generated raw samples, trace package, memory snapshots, power/energy samples, failure records, and artifact hashes",
+    "runner-generated 30-tab mixed-state and all-live artifacts",
+    "statistics, sample count, uncertainty, outlier policy, warmup policy, and failure denominator",
+    "equal-workload and equal-security review",
+    "owner-approved exact public claim text, expiry, rerun triggers, and public copy diff"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_benchmark_claim_bundles.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/build-readiness-closure-review-v1.json",
+  "title": "Turing Build Readiness Closure Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "closure_review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "closure_status",
+    "gate_axes",
+    "owner_review_axes",
+    "release_authority_axes",
+    "readiness_lifecycle",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "closure_review_id": {
+      "type": "string",
+      "pattern": "^PB020\\.BUILD_READINESS_CLOSURE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_build_readiness_closure_template",
+        "draft",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "owner_reviewer",
+        "independent_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "scope": {
+          "type": ["string", "null"]
+        },
+        "owner_reviewer": {
+          "type": ["string", "null"]
+        },
+        "independent_reviewer": {
+          "type": ["string", "null"]
+        },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "closure_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "independent_reviewed",
+        "all_pb_gates_closed",
+        "all_tasks_approved",
+        "all_information_ready_for_building",
+        "broad_m1_authorized",
+        "release_authority_granted",
+        "production_authority_granted",
+        "security_claim_supported",
+        "performance_claim_supported",
+        "compatibility_claim_supported",
+        "accessibility_claim_supported",
+        "daily_driver_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "independent_reviewed": { "type": "boolean" },
+        "all_pb_gates_closed": { "type": "boolean" },
+        "all_tasks_approved": { "type": "boolean" },
+        "all_information_ready_for_building": { "type": "boolean" },
+        "broad_m1_authorized": { "type": "boolean" },
+        "release_authority_granted": { "type": "boolean" },
+        "production_authority_granted": { "type": "boolean" },
+        "security_claim_supported": { "type": "boolean" },
+        "performance_claim_supported": { "type": "boolean" },
+        "compatibility_claim_supported": { "type": "boolean" },
+        "accessibility_claim_supported": { "type": "boolean" },
+        "daily_driver_claim_supported": { "type": "boolean" }
+      }
+    },
+    "gate_axes": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "release_authority_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "readiness_lifecycle": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 16,
+      "items": {
+        "$ref": "#/$defs/rejection_rule"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "minLength": 3
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "template_status": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 20
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

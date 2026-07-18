@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "corpus_id": "ADR9-EV-013.LOCAL_COMPATIBILITY.NOCLAIM.2026_07",
+  "status": "draft_no_claim",
+  "created_at": "2026-07-18T00:00:00Z",
+  "related_gate": "PB-002",
+  "evidence_id": "ADR9-EV-013",
+  "claim_status": "Generated local fixture manifest only; no browser run, no Servo adoption, no Turing compatibility claim, no Chrome-class claim, no WPT/Test262 pass-rate claim, and no release-code authorization.",
+  "source_strategy_status": "no_source_strategy_decision",
+  "run_status": "not_executed",
+  "fixture_status": "materialized_no_browser_run",
+  "fixture_root": "benchmarks/compatibility/adr0009/no-claim-tiny",
+  "required_run_record": [
+    "source baseline, binary path, binary hash, build profile, feature flags, and JavaScript runtime/JIT state",
+    "operating system, hardware, GPU, driver, display, power, thermal, sandbox, and process-mode metadata",
+    "local server root, host aliases, TLS/certificate state, ports, selected routes, timeout policy, and profile/cache cleanup policy",
+    "per-case pass, fail, timeout, crash, error, skip, expected-failure, unexpected-pass, and subtest-failure counts",
+    "raw logs, machine-readable result files, screenshot or semantic-trace artifacts where applicable, and SHA-256 hashes",
+    "disabled-test, unsupported-API, flakiness, rerun, and failure-denominator accounting"
+  ],
+  "cases": [
+    {
+      "case_id": "ADR9-COMPAT-STATIC-DOCUMENT-001",
+      "category": "static_document",
+      "name": "Static document, style, layout, and accessibility smoke",
+      "purpose": "Exercise parser, DOM construction, CSS cascade, layout, paint readiness, font fallback, landmarks, labels, and accessible names without network nondeterminism.",
+      "primary_risk": "A source-strategy option may render simple pages while hiding layout, style, or accessibility-tree gaps.",
+      "local_origins": [
+        "https://static.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "load-status",
+        "dom-structure",
+        "computed-style-shape",
+        "layout-box-shape",
+        "accessibility-names",
+        "console-error-denominator"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "console-log",
+        "semantic-dom-snapshot",
+        "accessibility-snapshot",
+        "screenshot-or-render-trace"
+      ],
+      "failure_denominator": [
+        "parse-error",
+        "style-mismatch",
+        "layout-mismatch",
+        "accessibility-mismatch",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "html",
+        "css",
+        "dom",
+        "accname",
+        "html-aam"
+      ],
+      "test262_relevance": "none",
+      "fixtures": [
+        {
+          "origin": "https://static.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/static-document/index.html",
+          "sha256": "3f79b34dd6ccdbc25f3bced48ad5950b2c90608b82625d56d2f130f4fc3d9caf",
+          "bytes": 2298,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-DYNAMIC-DOM-001",
+      "category": "dynamic_dom_events",
+      "name": "Dynamic DOM, events, and task ordering smoke",
+      "purpose": "Exercise script execution, event dispatch, microtask ordering, mutation observation, style invalidation, and layout invalidation.",
+      "primary_risk": "A source-strategy option may load static pages while failing event-loop, mutation, or invalidation behavior needed by applications.",
+      "local_origins": [
+        "https://dynamic.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "script-execution",
+        "event-order",
+        "microtask-order",
+        "mutation-observer-order",
+        "style-invalidation",
+        "layout-invalidation"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "event-log",
+        "console-log",
+        "dom-snapshot-before-after"
+      ],
+      "failure_denominator": [
+        "script-error",
+        "event-order-mismatch",
+        "mutation-mismatch",
+        "invalidation-missing",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "dom",
+        "html",
+        "webidl",
+        "js"
+      ],
+      "test262_relevance": "Requires labeling the JavaScript runtime that produced the result; SpiderMonkey-derived behavior cannot be attributed to Turing's ADR-0004 runtime.",
+      "fixtures": [
+        {
+          "origin": "https://dynamic.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/dynamic-dom-events/index.html",
+          "sha256": "8dac9da55c262204f5120ab26de716f91676ec9f480a0bb70aeb2549248013bc",
+          "bytes": 1668,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-ORIGIN-STORAGE-001",
+      "category": "origin_storage",
+      "name": "Origin, site, cookie, and storage partition smoke",
+      "purpose": "Exercise same-origin checks, site identity, cookies, local storage, session storage, and blocked cross-origin access across two local test origins.",
+      "primary_risk": "A source-strategy option may collapse origins, leak storage, or hide partitioning behavior behind a simple local-host test.",
+      "local_origins": [
+        "https://a.turing.invalid/",
+        "https://b.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "origin-identity",
+        "site-identity",
+        "cookie-visibility",
+        "local-storage-visibility",
+        "session-storage-visibility",
+        "blocked-cross-origin-access"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "request-log",
+        "storage-snapshot",
+        "console-security-log"
+      ],
+      "failure_denominator": [
+        "origin-leak",
+        "cookie-leak",
+        "storage-leak",
+        "blocked-access-missing",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "cookies",
+        "storage",
+        "webstorage",
+        "html",
+        "dom"
+      ],
+      "test262_relevance": "none",
+      "fixtures": [
+        {
+          "origin": "https://a.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/origin-storage/a/index.html",
+          "sha256": "c98c6ebfd733006728bd2d4d9f66c0d625e8ed23d2c1d55d874e6043c19c53a2",
+          "bytes": 1152,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        },
+        {
+          "origin": "https://b.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/origin-storage/b/index.html",
+          "sha256": "c62868dd72c605a97b5d5d9b5d315703cc79f73aa754d0416835613ea174bcb5",
+          "bytes": 1004,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-FETCH-CSP-001",
+      "category": "fetch_cors_csp",
+      "name": "Fetch, CORS, CSP, redirect, and mixed-content smoke",
+      "purpose": "Exercise request policy, preflight handling, redirect handling, blocked reasons, CSP reporting shape, and mixed-content blocking on local routes.",
+      "primary_risk": "A source-strategy option may fetch local resources while failing security policy and network-denial paths.",
+      "local_origins": [
+        "https://fetch.turing.invalid/",
+        "https://api.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "fetch-success",
+        "cors-preflight",
+        "cors-denial",
+        "redirect-policy",
+        "csp-blocked-reason",
+        "mixed-content-denial"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "request-log",
+        "response-log",
+        "console-security-log",
+        "blocked-reason-map"
+      ],
+      "failure_denominator": [
+        "request-error",
+        "unexpected-network-success",
+        "missing-blocked-reason",
+        "policy-mismatch",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "fetch",
+        "cors",
+        "content-security-policy",
+        "mixed-content",
+        "referrer-policy"
+      ],
+      "test262_relevance": "Promise timing and exception names must be labeled by JavaScript runtime.",
+      "fixtures": [
+        {
+          "origin": "https://fetch.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/fetch-cors-csp/page/index.html",
+          "sha256": "9e7f9b5d166f1f411f4bf2a0171b372258a880da62df163f8e3047072af9806b",
+          "bytes": 1334,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        },
+        {
+          "origin": "https://api.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/fetch-cors-csp/api-contract/index.html",
+          "sha256": "da38d11fe569f5cb0aaad1a47e1b2a42aea05561a5caa360a974fb0f7ba43337",
+          "bytes": 761,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-WEBIDL-JS-001",
+      "category": "webidl_js_binding",
+      "name": "Web IDL, wrapper identity, exceptions, and promises smoke",
+      "purpose": "Exercise host bindings, brand checks, exception names, promise resolution timing, wrapper identity, and realm boundaries.",
+      "primary_risk": "Servo component evidence can be misleading if SpiderMonkey and generated Web IDL binding behavior are not separated from Turing-owned JavaScript obligations.",
+      "local_origins": [
+        "https://bindings.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "brand-checks",
+        "exception-names",
+        "promise-order",
+        "wrapper-identity",
+        "realm-identity",
+        "host-object-lifetime"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "assertion-log",
+        "console-log",
+        "runtime-attribution-record"
+      ],
+      "failure_denominator": [
+        "wrong-exception",
+        "promise-order-mismatch",
+        "wrapper-identity-mismatch",
+        "realm-mismatch",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "webidl",
+        "interfaces",
+        "js",
+        "html",
+        "dom"
+      ],
+      "test262_relevance": "Requires a separate ADR-0004 Test262 harness plan before any result can influence Turing JavaScript-runtime claims.",
+      "fixtures": [
+        {
+          "origin": "https://bindings.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/webidl-js-binding/index.html",
+          "sha256": "3ebd40d91fc183b3441ed3b40ff71768d6c1bb7ef4feeffbe31c0a1fa15ae780",
+          "bytes": 1344,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-FORM-A11Y-001",
+      "category": "form_editing_accessibility",
+      "name": "Form, editing, focus, selection, and accessibility smoke",
+      "purpose": "Exercise keyboard editing, labels, roles, names, states, focus order, selection state, and live-region behavior.",
+      "primary_risk": "A source-strategy option may render controls while failing editing, focus, selection, or accessibility semantics required for product readiness.",
+      "local_origins": [
+        "https://forms.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "label-association",
+        "focus-order",
+        "keyboard-editing",
+        "selection-state",
+        "role-name-state",
+        "aria-live-update"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "input-event-log",
+        "focus-log",
+        "accessibility-snapshot",
+        "console-log"
+      ],
+      "failure_denominator": [
+        "input-event-mismatch",
+        "selection-mismatch",
+        "focus-mismatch",
+        "accessibility-mismatch",
+        "timeout",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "html",
+        "editing",
+        "accname",
+        "core-aam",
+        "html-aam"
+      ],
+      "test262_relevance": "Event and promise timing must be labeled by JavaScript runtime.",
+      "fixtures": [
+        {
+          "origin": "https://forms.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/form-editing-accessibility/index.html",
+          "sha256": "dcb1a717bef22cb5eaf4b6a51ce369b291e2a0110d50d79d3da53347072e99d8",
+          "bytes": 1619,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-WEBDRIVER-001",
+      "category": "webdriver_headless_smoke",
+      "name": "WebDriver and headless automation smoke",
+      "purpose": "Exercise navigation, element resolution, command errors, timeout behavior, and artifact capture through an automation path.",
+      "primary_risk": "A source-strategy option may be inspectable manually while failing automation and DevTools-adjacent protocol behavior required for testing.",
+      "local_origins": [
+        "https://webdriver.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "navigation-command",
+        "element-resolution",
+        "command-error-shape",
+        "timeout-behavior",
+        "artifact-capture",
+        "profile-cleanup"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "webdriver-command-log",
+        "browser-log",
+        "screenshot-or-dom-snapshot",
+        "profile-cleanup-record"
+      ],
+      "failure_denominator": [
+        "protocol-error",
+        "wrong-error-shape",
+        "timeout-mismatch",
+        "artifact-missing",
+        "cleanup-failure",
+        "crash"
+      ],
+      "wpt_focus_areas": [
+        "webdriver",
+        "html",
+        "dom"
+      ],
+      "test262_relevance": "none",
+      "fixtures": [
+        {
+          "origin": "https://webdriver.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/webdriver-headless-smoke/index.html",
+          "sha256": "51b6b41c8f7ee02c5161cc3279bc27f06f251bbbbbc82f18d00fe3d33c896e59",
+          "bytes": 968,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    },
+    {
+      "case_id": "ADR9-COMPAT-CRASH-TIMEOUT-001",
+      "category": "crash_timeout_resource",
+      "name": "Crash, timeout, and resource-denominator smoke",
+      "purpose": "Exercise timeout handling, crash classification, recovery record shape, and artifact hashing without hiding failures as skips.",
+      "primary_risk": "A source-strategy option may report a clean pass count while excluding crashes, timeouts, hangs, or resource exhaustion from the denominator.",
+      "local_origins": [
+        "https://fault.turing.invalid/"
+      ],
+      "required_assertion_groups": [
+        "timeout-classification",
+        "crash-classification",
+        "hang-classification",
+        "recovery-record",
+        "artifact-hash",
+        "failure-denominator"
+      ],
+      "required_artifacts": [
+        "result-json",
+        "timeout-log",
+        "crash-or-hang-record",
+        "recovery-log",
+        "artifact-hash-manifest"
+      ],
+      "failure_denominator": [
+        "timeout",
+        "hang",
+        "crash",
+        "recovery-failure",
+        "artifact-missing",
+        "classification-missing"
+      ],
+      "wpt_focus_areas": [
+        "html",
+        "dom",
+        "workers"
+      ],
+      "test262_relevance": "Long-running JavaScript cases must be labeled by JavaScript runtime and timeout policy.",
+      "fixtures": [
+        {
+          "origin": "https://fault.turing.invalid/",
+          "route_path": "/",
+          "fixture_path": "benchmarks/compatibility/adr0009/no-claim-tiny/crash-timeout-resource/index.html",
+          "sha256": "257d8593fcf43edf819c5219ac91bff8b6b4eec6b7d6682b5bcd72b71b8ced32",
+          "bytes": 1212,
+          "generated": true,
+          "license": "Project-generated fixture content under repository license."
+        }
+      ],
+      "execution_status": "not_executed",
+      "external_network_allowed": false,
+      "compatibility_claim_allowed": false
+    }
+  ]
+}

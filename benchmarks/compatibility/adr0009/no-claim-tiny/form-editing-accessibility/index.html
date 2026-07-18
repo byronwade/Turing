@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Form Editing Accessibility Fixture</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-FORM-A11Y-001">
+    <main>
+      <h1>Form Editing Accessibility Fixture</h1>
+      <form action="#local-only" method="get">
+        <fieldset>
+          <legend>Profile label contract</legend>
+          <label for="display-name">Display name</label>
+          <input id="display-name" name="display-name" autocomplete="off" value="Turing">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="4">selection target</textarea>
+        </fieldset>
+        <button id="submit-button" type="submit">Submit locally</button>
+      </form>
+      <p id="live-region" aria-live="polite">pending</p>
+      <pre id="focus-log">pending</pre>
+    </main>
+    <script>
+      const log = [];
+      for (const id of ["display-name", "notes", "submit-button"]) {
+        const element = document.getElementById(id);
+        element.addEventListener("focus", () => log.push(id));
+      }
+      const notes = document.querySelector("#notes");
+      notes.focus();
+      notes.setSelectionRange(0, 9);
+      document.querySelector("#live-region").textContent = "selection changed";
+      document.querySelector("#focus-log").textContent = JSON.stringify({
+        claim: "no compatibility claim",
+        selectionStart: notes.selectionStart,
+        selectionEnd: notes.selectionEnd,
+        focusLog: log,
+      });
+    </script>
+  </body>
+</html>

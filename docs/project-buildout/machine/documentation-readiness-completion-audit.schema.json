@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/documentation-readiness-completion-audit-v1.json",
+  "title": "Turing Documentation Readiness Completion Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit_id",
+    "status",
+    "updated",
+    "overall_status",
+    "claim_status",
+    "source_records",
+    "criteria",
+    "unresolved_blocker_groups",
+    "next_required_proofs",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "audit_id": {
+      "type": "string",
+      "pattern": "^PB020\\.DOCUMENTATION_READINESS_COMPLETION_AUDIT\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_completion_audit", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "overall_status": {
+      "type": "string",
+      "minLength": 20
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "current_evidence",
+          "missing_for_full_goal",
+          "next_audit_action",
+          "claim_boundary",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^DOC-READY-[A-Z0-9_]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ready_for_contained_m0", "partial", "blocked_for_full_goal"]
+          },
+          "current_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "missing_for_full_goal": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 10
+            }
+          },
+          "next_audit_action": {
+            "type": "string",
+            "minLength": 20
+          },
+          "claim_boundary": {
+            "type": "string",
+            "minLength": 30
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          }
+        }
+      }
+    },
+    "unresolved_blocker_groups": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "blockers",
+          "missing_before_full_goal",
+          "source_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "blockers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "missing_before_full_goal": {
+            "type": "string",
+            "minLength": 30
+          },
+          "source_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          }
+        }
+      }
+    },
+    "next_required_proofs": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "string",
+        "minLength": 20
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

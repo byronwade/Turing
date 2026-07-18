@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "record_id": "BUILD.FRESH_HOST.RUN_RECORD.NOCLAIM_TEMPLATE.2026_07",
+  "status": "template_no_execution",
+  "updated": "2026-07-18",
+  "related_gate": "PB-009",
+  "related_task": "TASK-000002",
+  "source_inventory": "docs/project-buildout/machine/fresh-host-reproduction.json",
+  "claim_status": "fresh-host run-record template only; no independent fresh-host reproduction, no owner-approved clean-VM equivalent, no command execution evidence, no retained bootstrap/doctor/check/xtask logs, no PB-009 readiness promotion, no broad implementation readiness, no preview readiness, no beta readiness, no stable readiness, no production readiness, and no Chrome-class claim",
+  "run_class": "template_only",
+  "execution_status": "not_executed",
+  "host_identity": {
+    "required_fields": [
+      "run host is an independent fresh reference host or owner-approved clean VM equivalent",
+      "operating system edition, version, architecture, patch level, locale, timezone, shell, terminal, CPU, memory, disk, virtualization state, network posture, and privilege level are recorded",
+      "prior Turing build outputs, Cargo target directories, Rustup toolchain cache, package cache, downloaded installers, local profiles, and generated files are declared absent or covered by an owner-approved waiver",
+      "waiver records include owner, reason, scope, expiry, and cleanup evidence"
+    ],
+    "evidence_artifacts": [
+      "host fact record with timestamp",
+      "environment variable snapshot with redaction",
+      "cache and prior-state statement",
+      "waiver record when a clean VM is used"
+    ]
+  },
+  "source_checkout": {
+    "required_fields": [
+      "remote URL, branch, commit hash, checkout command, Git version, line-ending configuration, and ignored-output policy are recorded",
+      "source-tree status is captured before bootstrap, after doctor, after check, and after xtask commands",
+      "the record distinguishes source-controlled changes from generated build output and local caches",
+      "untracked installers, archives, credentials, local profiles, and generated junk are rejected"
+    ],
+    "evidence_artifacts": [
+      "git status before and after commands",
+      "git rev-parse HEAD",
+      "git remote -v",
+      "git config line-ending output",
+      "ignored-output policy excerpt"
+    ]
+  },
+  "commands": [
+    {
+      "command_id": "FRESH-HOST-CMD-BOOTSTRAP",
+      "command_family": "bootstrap",
+      "required_commands": [
+        "sh tools/bootstrap.sh",
+        ".\\tools\\bootstrap.ps1"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "start timestamp",
+        "end timestamp",
+        "exit code",
+        "Rust, Cargo, Git, and host-tool observations",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output"
+      ],
+      "success_evidence": [
+        "bootstrap completed with exit code 0",
+        "environment prerequisites are printed or linked",
+        "no installer, downloaded archive, or generated build output is committed"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "environmental, source-controlled, network-dependent, or nondeterministic classification",
+        "cleanup or rollback note"
+      ]
+    },
+    {
+      "command_id": "FRESH-HOST-CMD-DOCTOR",
+      "command_family": "doctor",
+      "required_commands": [
+        "sh tools/doctor.sh",
+        ".\\tools\\doctor.ps1"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "start timestamp",
+        "end timestamp",
+        "exit code",
+        "Rust version",
+        "Cargo version",
+        "Git version",
+        "rustup component state",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output"
+      ],
+      "success_evidence": [
+        "doctor completed with exit code 0",
+        "read-only diagnostic behavior is preserved",
+        "no host configuration is silently changed"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "missing prerequisite or host mismatch classification",
+        "cleanup or rollback note"
+      ]
+    },
+    {
+      "command_id": "FRESH-HOST-CMD-CHECK",
+      "command_family": "check",
+      "required_commands": [
+        "sh tools/check.sh",
+        ".\\tools\\check.ps1"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "start timestamp",
+        "end timestamp",
+        "exit code",
+        "aggregate validation output",
+        "cargo fmt output",
+        "clippy output",
+        "workspace test output",
+        "shell self-test output",
+        "prototype output",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output"
+      ],
+      "success_evidence": [
+        "check completed with exit code 0",
+        "CARGO_TARGET_DIR stayed outside durable source when unset",
+        "no source-tree junk remains after the run"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "failing stage classification",
+        "cleanup or rollback note"
+      ]
+    },
+    {
+      "command_id": "FRESH-HOST-CMD-XTASK_BOOTSTRAP",
+      "command_family": "xtask-bootstrap",
+      "required_commands": [
+        "cargo run --locked -p xtask -- bootstrap"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "exit code",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output",
+        "reason if wrapper execution is the owner-approved equivalent"
+      ],
+      "success_evidence": [
+        "xtask bootstrap path matches wrapper behavior or an owner-approved equivalence reason is recorded"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "equivalence gap classification",
+        "cleanup or rollback note"
+      ]
+    },
+    {
+      "command_id": "FRESH-HOST-CMD-XTASK_DOCTOR",
+      "command_family": "xtask-doctor",
+      "required_commands": [
+        "cargo run --locked -p xtask -- doctor --ci"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "exit code",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output",
+        "reason if wrapper execution is the owner-approved equivalent"
+      ],
+      "success_evidence": [
+        "xtask doctor --ci path matches wrapper behavior or an owner-approved equivalence reason is recorded"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "equivalence gap classification",
+        "cleanup or rollback note"
+      ]
+    },
+    {
+      "command_id": "FRESH-HOST-CMD-XTASK_CHECK",
+      "command_family": "xtask-check",
+      "required_commands": [
+        "cargo run --locked -p xtask -- check"
+      ],
+      "required_fields": [
+        "command line",
+        "shell",
+        "exit code",
+        "stdout/stderr retention path",
+        "SHA-256 of retained output",
+        "reason if wrapper execution is the owner-approved equivalent"
+      ],
+      "success_evidence": [
+        "xtask check path matches wrapper behavior or an owner-approved equivalence reason is recorded"
+      ],
+      "failure_evidence": [
+        "exit code and retained log",
+        "equivalence gap classification",
+        "cleanup or rollback note"
+      ]
+    }
+  ],
+  "cache_and_artifact_controls": [
+    "record CARGO_TARGET_DIR, Cargo cache root, Rustup toolchain cache, temp directory, and repository root before command execution",
+    "hash retained bootstrap, doctor, check, and xtask logs without committing generated build output",
+    "confirm build output, logs, temporary archives, and generated caches stay outside durable source or are explicitly ignored",
+    "record cleanup evidence for temporary directories and failed partial runs"
+  ],
+  "source_tree_cleanliness": [
+    "capture source-tree status before command execution",
+    "capture source-tree status after bootstrap, doctor, check, and xtask commands",
+    "classify every changed, untracked, ignored, or generated path",
+    "reject records that hide dirty-state output or omit generated-output cleanup"
+  ],
+  "failure_denominator": [
+    "record all attempted commands, not only successful commands",
+    "classify failures as environmental, source-controlled, network-dependent, nondeterministic, or owner-waived",
+    "preserve timeout, cancellation, interrupted-run, disk-full, permission, cache, and toolchain failures",
+    "keep failed runs in the denominator until an owner accepts a rerun policy"
+  ],
+  "prohibited_evidence": [
+    "same-host reruns are prohibited as independent fresh-host reproduction evidence",
+    "current-host diagnostics are prohibited from promoting PB-009",
+    "owner-approved clean-VM equivalence is prohibited without owner, reason, scope, expiry, and cleanup proof",
+    "records that omit exit codes, source-tree status, retained logs, cache roots, target directory, or failure classification are prohibited",
+    "committed installers, downloaded archives, credentials, local profiles, generated build output, or temporary junk are prohibited"
+  ],
+  "unsupported_boundaries": [
+    "no independent fresh-host reproduction",
+    "no owner-approved clean-VM equivalent",
+    "no command execution evidence",
+    "no retained bootstrap/doctor/check/xtask logs",
+    "no PB-009 readiness promotion",
+    "no broad implementation readiness",
+    "no preview readiness",
+    "no beta readiness",
+    "no stable readiness",
+    "no production readiness",
+    "no Chrome-class claim",
+    "no release packaging claim",
+    "no source-strategy approval"
+  ]
+}

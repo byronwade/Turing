@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/sandbox-readiness-review-v1.json",
+  "title": "Turing Sandbox Readiness Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "readiness_status",
+    "probe_package_axes",
+    "platform_policy_axes",
+    "role_surface_axes",
+    "host_safety_axes",
+    "broker_compromised_axes",
+    "owner_review_axes",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "review_id": {
+      "type": "string",
+      "pattern": "^SANDBOX\\.READINESS_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_sandbox_readiness_template",
+        "draft",
+        "reviewed",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "updated": { "type": "string", "format": "date" },
+    "claim_status": { "type": "string", "minLength": 160 },
+    "source_records": {
+      "type": "array",
+      "minItems": 20,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_inventory",
+        "probe_package",
+        "owner_reviewer",
+        "security_reviewer",
+        "platform_reviewer",
+        "quality_reviewer",
+        "release_operations_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "probe_inventory": { "type": ["string", "null"] },
+        "probe_package": { "type": ["string", "null"] },
+        "owner_reviewer": { "type": ["string", "null"] },
+        "security_reviewer": { "type": ["string", "null"] },
+        "platform_reviewer": { "type": ["string", "null"] },
+        "quality_reviewer": { "type": ["string", "null"] },
+        "release_operations_reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": { "type": "string", "minLength": 80 }
+      }
+    },
+    "readiness_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "security_reviewed",
+        "platform_reviewed",
+        "quality_reviewed",
+        "release_operations_reviewed",
+        "probe_inventory_reviewed",
+        "probe_package_reviewed",
+        "packaged_expected_deny_probes_reviewed",
+        "effective_policy_reviewed",
+        "host_safe_fixtures_reviewed",
+        "broker_fixtures_reviewed",
+        "compromised_client_harnesses_reviewed",
+        "platform_matrix_reviewed",
+        "result_records_reviewed",
+        "failure_denominator_reviewed",
+        "cleanup_reviewed",
+        "sandbox_readiness_supported",
+        "renderer_security_supported",
+        "site_isolation_supported",
+        "hostile_browsing_safety_supported",
+        "platform_containment_supported",
+        "sec_gate_1_supported",
+        "sec_gate_6_supported",
+        "production_safety_supported",
+        "implementation_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "security_reviewed": { "type": "boolean" },
+        "platform_reviewed": { "type": "boolean" },
+        "quality_reviewed": { "type": "boolean" },
+        "release_operations_reviewed": { "type": "boolean" },
+        "probe_inventory_reviewed": { "type": "boolean" },
+        "probe_package_reviewed": { "type": "boolean" },
+        "packaged_expected_deny_probes_reviewed": { "type": "boolean" },
+        "effective_policy_reviewed": { "type": "boolean" },
+        "host_safe_fixtures_reviewed": { "type": "boolean" },
+        "broker_fixtures_reviewed": { "type": "boolean" },
+        "compromised_client_harnesses_reviewed": { "type": "boolean" },
+        "platform_matrix_reviewed": { "type": "boolean" },
+        "result_records_reviewed": { "type": "boolean" },
+        "failure_denominator_reviewed": { "type": "boolean" },
+        "cleanup_reviewed": { "type": "boolean" },
+        "sandbox_readiness_supported": { "type": "boolean" },
+        "renderer_security_supported": { "type": "boolean" },
+        "site_isolation_supported": { "type": "boolean" },
+        "hostile_browsing_safety_supported": { "type": "boolean" },
+        "platform_containment_supported": { "type": "boolean" },
+        "sec_gate_1_supported": { "type": "boolean" },
+        "sec_gate_6_supported": { "type": "boolean" },
+        "production_safety_supported": { "type": "boolean" },
+        "implementation_claim_supported": { "type": "boolean" }
+      }
+    },
+    "probe_package_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "platform_policy_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "role_surface_axes": {
+      "type": "array",
+      "minItems": 18,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "host_safety_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "broker_compromised_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "$ref": "#/$defs/rejection_rule" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "type": "string", "minLength": 3 }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": { "type": "string", "minLength": 3 },
+        "required_evidence": { "type": "string", "minLength": 20 },
+        "template_status": { "type": "string", "minLength": 10 }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": { "type": "string", "minLength": 20 },
+        "outcome": { "type": "string", "minLength": 20 }
+      }
+    }
+  }
+}

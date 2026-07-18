@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "inventory_id": "PB020.KICKOFF.NO_CLAIM_INVENTORY.2026_07",
+  "status": "no_claim_kickoff_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "Implementation kickoff inventory only; no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no faster/lower-memory/lower-energy claim, no compatibility claim, no security claim, no accessibility claim, no daily-driver claim, no release readiness claim, no task approval claim, and no readiness promotion claim.",
+  "source_records": [
+    "docs/project-buildout/11-pre-build-readiness-checklist.md",
+    "docs/project-buildout/13-build-readiness-operating-board.md",
+    "docs/project-buildout/17-build-readiness-task-queue.md",
+    "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/research/pre-build-readiness-gap-audit-2026-07.md",
+    "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
+    "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/agent-execution/README.md",
+    "docs/production-readiness/README.md",
+    "docs/blueprint-v1/20-definition-of-done.md"
+  ],
+  "readiness_items": [
+    {
+      "id": "PB-002",
+      "name": "Engine source strategy and Servo relationship",
+      "status": "blocked",
+      "owner_scope": "architecture",
+      "current_evidence": [
+        "ADR-0009 source-strategy packet, decision draft, evidence matrix, Servo source, provenance, license, generated-output, unsafe, build-reproduction, compatibility, performance, security, and maintenance reports exist as no-claim research."
+      ],
+      "required_before_m1": [
+        "Accepted ADR-0009 with owner-selected source baseline, accepted provenance/equivalence policy, license/advisory/SBOM decisions, clean-target reproduction, component-boundary review, JavaScript-runtime decision, compatibility denominator, performance baseline, security implications, maintenance model, and public-claim diff."
+      ],
+      "first_next_actions": [
+        "Complete the ADR-0009 decision packet and evidence registry gaps before any release-path source import or source-strategy-dependent implementation expands."
+      ],
+      "owner_only_decisions": [
+        "Select or reject the source baseline, accept equivalence/provenance policy, approve component boundaries, and decide whether any Servo-derived release path is allowed."
+      ],
+      "prohibited_claims": [
+        "No Servo adoption, dependency approval, component approval, compatibility, security, performance, memory, support, release, production, or implementation claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+        "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
+        "docs/project-buildout/16-adr-0009-decision-draft.md",
+        "docs/blueprint-v1/machine/adr-0009-evidence.json",
+        "tools/validate_adr_0009_evidence.py"
+      ]
+    },
+    {
+      "id": "PB-003",
+      "name": "Toolkit-neutral UI model and adapter contract",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "current_evidence": [
+        "Checked toolkit-neutral UI adapter contract inventory exists for state, command, surface, accessibility, diagnostic, adapter, M0 model invariants, and denied toolkit-owned authority."
+      ],
+      "required_before_m1": [
+        "Accepted ADR-0013, complete toolkit-neutral state/command/surface/accessibility/diagnostic/adapter contracts, native adapter prototype evidence, no-toolkit-owned-authority negative tests, and owner review before native-shell or release-path UI claims."
+      ],
+      "first_next_actions": [
+        "Draft the ADR-0013 contract decision and first native adapter trait prototype with command-only toolkit callbacks and denied-authority tests."
+      ],
+      "owner_only_decisions": [
+        "Accept ADR-0013, approve the adapter contract, and accept any trusted-chrome, accessibility, page-surface, or release-path UI exception."
+      ],
+      "prohibited_claims": [
+        "No ADR-0013 acceptance, native-shell readiness, native adapter prototype claim, toolkit selection, trusted-chrome readiness, accessibility readiness, page-surface approval, or release-path UI approval."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+        "docs/ui-runtime/machine/adapter-contract-inventory.json",
+        "tools/validate_ui_adapter_contract.py"
+      ]
+    },
+    {
+      "id": "PB-004",
+      "name": "Native UI framework selection",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "current_evidence": [
+        "Checked native UI framework bake-off inventory exists for candidate summaries, external observations, equivalent adapter scope, evidence axes, disqualifiers, and unsupported boundaries."
+      ],
+      "required_before_m1": [
+        "Equivalent Slint, Vizia, and Floem or GPUI adapter runs or owner-approved reduced scope, accepted ADR-0014, accessibility, IME, keyboard, crash/GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, replacement, package, and runtime-exclusion evidence."
+      ],
+      "first_next_actions": [
+        "Create the first reference-shell adapter execution manifest and artifact contract before narrowing the production toolkit set."
+      ],
+      "owner_only_decisions": [
+        "Accept ADR-0014, select the UI toolkit or adapter strategy, and approve any reduced bake-off scope or package/runtime exclusion exception."
+      ],
+      "prohibited_claims": [
+        "No UI toolkit selection, ADR-0014 acceptance, equivalent adapter evidence claim, accessibility readiness, IME/keyboard proof, license/provenance approval, page-surface approval, trusted-chrome readiness, or release-path UI approval."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
+        "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
+        "tools/validate_framework_bakeoff.py"
+      ]
+    },
+    {
+      "id": "PB-005",
+      "name": "Page-surface and compositor composition",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "current_evidence": [
+        "Checked page-surface composition inventory exists for surface contract fields, composition alternatives, UI-GATE-7 workflow rows, failure cases, identity boundaries, and blockers."
+      ],
+      "required_before_m1": [
+        "Executable UI-GATE-7 prototype, accepted ADR-0016, typed page-surface handles, brokered surface handles, document/device generations, renderer-texture composition, software fallback, stale-handle negative tests, resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, GPU-loss, latency, frame-pacing, and owner review."
+      ],
+      "first_next_actions": [
+        "Implement the smallest no-release page-surface protocol spike and record handle-generation, stale-handle, and renderer-fault behavior."
+      ],
+      "owner_only_decisions": [
+        "Accept ADR-0016, decide compositor ownership, accept UI-GATE-7, and approve page-surface release-path evidence."
+      ],
+      "prohibited_claims": [
+        "No page-surface approval, compositor ownership decision, UI-GATE-7 approval, ADR-0016 acceptance, renderer-texture composition proof, software fallback claim, latency/frame-pacing claim, or release-path UI approval."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/page-surface-composition-inventory-2026-07.md",
+        "docs/ui-runtime/machine/page-surface-composition.json",
+        "tools/validate_page_surface_composition.py"
+      ]
+    },
+    {
+      "id": "PB-009",
+      "name": "Bootstrap and read-only doctor commands",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "current_evidence": [
+        "Checked fresh-host reproduction inventory, run-record template, and fresh-host readiness-review template exist for clean-host facts, source identity, bootstrap/doctor/check/xtask output, cache and target-directory behavior, source-tree cleanliness, failure classification, owner-review handoff, and rejection rules."
+      ],
+      "required_before_m1": [
+        "Independent fresh-host reproduction or owner-approved clean-VM equivalent with exact OS, shell, Rust, Cargo, Git, cache, target directory, temp directory, source-tree cleanliness, retained bootstrap/doctor/check/xtask logs, failure classification, rollback notes, and owner-reviewed fresh-host readiness beyond the checked no-claim fresh-host readiness-review template."
+      ],
+      "first_next_actions": [
+        "Run the reproduction protocol on the designated fresh host or clean VM, attach retained logs and cache/target/source-cleanliness evidence, and replace the checked no-claim fresh-host readiness-review template with owner-reviewed evidence."
+      ],
+      "owner_only_decisions": [
+        "Designate the reference host, accept or reject clean-VM equivalence, accept environmental waivers, accept or reject the fresh-host readiness review, and promote PB-009 only after retained evidence is reviewed."
+      ],
+      "prohibited_claims": [
+        "No owner-reviewed fresh-host readiness, independent reproducibility, PB-009 readiness, broad M1 readiness, preview readiness, beta readiness, stable readiness, production readiness, release confidence, implementation, or Chrome-class claim from same-host reruns or no-claim templates."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/project-buildout/machine/fresh-host-reproduction.json",
+        "docs/project-buildout/machine/fresh-host-readiness-review.schema.json",
+        "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json",
+        "tools/validate_fresh_host_reproduction.py",
+        "tools/validate_fresh_host_readiness_review.py",
+        "tools/check.ps1"
+      ]
+    },
+    {
+      "id": "PB-011",
+      "name": "Canonical IPC schema and process capability generation",
+      "status": "partial",
+      "owner_scope": "architecture",
+      "current_evidence": [
+        "Checked IPC capability boundary inventory, no-claim schema-source template, and no-claim IPC readiness-review template exist for M0 ControlEnvelope evidence, oversized-message rejection, typed identities, process-role capability models, process-capability records, future generator handoff fields, and future owner-review handoff fields."
+      ],
+      "required_before_m1": [
+        "Implemented IPC schema generator evidence beyond the checked no-claim schema-source template, reviewed wire encoding decision, connection authentication, bounded queues/backpressure, stale-epoch rejection, timeout/cancellation behavior, malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, fuzz, and model tests, plus owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template."
+      ],
+      "first_next_actions": [
+        "Draft schema-generator and wire-encoding experiments with negative-test fixtures for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases, then replace the checked no-claim IPC readiness-review template with owner-reviewed evidence."
+      ],
+      "owner_only_decisions": [
+        "Accept wire format, authority model, trust-boundary policy, schema-generator source, owner-reviewed IPC readiness, and production-facing process topology."
+      ],
+      "prohibited_claims": [
+        "No schema-generator approval, wire-encoding approval, owner-reviewed IPC readiness, renderer-security claim, agent-security claim, process-isolation readiness, site-isolation claim, timeout/cancellation implementation claim, production IPC claim, or implementation claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/blueprint-v1/machine/ipc-capability-boundary.json",
+        "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
+        "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+        "tools/validate_ipc_capability_boundaries.py",
+        "tools/validate_ipc_readiness_review.py"
+      ]
+    },
+    {
+      "id": "PB-012",
+      "name": "Reference sandbox probe harness",
+      "status": "partial",
+      "owner_scope": "security",
+      "current_evidence": [
+        "Checked sandbox probe inventory, no-claim probe-package template, and no-claim sandbox readiness-review template exist for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater probe targets across file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC surfaces plus future owner-review handoff fields."
+      ],
+      "required_before_m1": [
+        "Packaged expected-deny probes beyond the checked no-claim probe-package template, effective platform policy capture, host-safe fixtures, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template before sandbox or security-gate claims."
+      ],
+      "first_next_actions": [
+        "Package the first expected-deny probe set from the checked no-claim probe-package template with host-safe fixtures and platform-policy capture for renderer and network roles, then replace the checked no-claim sandbox readiness-review template with owner-reviewed evidence."
+      ],
+      "owner_only_decisions": [
+        "Accept platform sandbox policy, waiver scope, site-isolation posture, security-gate status, owner-reviewed sandbox readiness, and release blocker disposition."
+      ],
+      "prohibited_claims": [
+        "No owner-reviewed sandbox readiness, sandbox readiness, renderer security, site-isolation safety, hostile-browsing safety, platform containment, SEC-GATE-1, SEC-GATE-6, production safety, implementation, or weakened security policy claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/security-engine/machine/sandbox-probe-inventory.json",
+        "docs/security-engine/machine/sandbox-probe-package.schema.json",
+        "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
+        "docs/security-engine/machine/sandbox-readiness-review.schema.json",
+        "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+        "tools/validate_sandbox_probe_inventory.py",
+        "tools/validate_sandbox_readiness_review.py"
+      ]
+    },
+    {
+      "id": "PB-013",
+      "name": "Reference hardware corpus and benchmark runner",
+      "status": "documented_no_runner",
+      "owner_scope": "performance",
+      "current_evidence": [
+        "No-claim benchmark manifests, hardware and OS-control candidates, corpus fixtures, network profile, server lifecycle self-test, 30-tab scenario contract, trace/artifact package contract, browser launch-runner contract, browser-pin capture and diagnostics, resource-attribution taxonomy, checked no-claim benchmark readiness-review template, and validators exist."
+      ],
+      "required_before_m1": [
+        "Owner-approved fixed hardware tiers, clean OS image and update controls, reviewed representative corpus, browser-run server evidence, implemented browser launch runner, runner-generated raw results, trace package, 30-tab artifacts, complete local competitor pins, equal-workload runs, statistics, benchmark claim-expiry bundle, owner-reviewed claim bundle, and owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template."
+      ],
+      "first_next_actions": [
+        "Move from no-browser contracts to an implemented browser launch runner and retained raw-artifact package on owner-approved benchmark hardware."
+      ],
+      "owner_only_decisions": [
+        "Approve hardware tiers, OS/update controls, browser pins, equal-workload claim bundles, owner-reviewed benchmark readiness beyond the checked no-claim benchmark readiness-review template, and any public speed, memory, energy, or Chrome-class statement."
+      ],
+      "prohibited_claims": [
+        "No benchmark-ready status, browser benchmark result, competitor result, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, daily-driver claim, or public performance claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+        "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
+        "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+        "tools/validate_benchmark_launch_runners.py",
+        "tools/validate_benchmark_readiness_review.py",
+        "tools/run_benchmark_browser_launch.py"
+      ]
+    },
+    {
+      "id": "PB-014",
+      "name": "Design tokens component inventory and fixtures",
+      "status": "partial",
+      "owner_scope": "product",
+      "current_evidence": [
+        "Checked native UI component fixture inventory exists for semantic token groups, required shell surfaces, fixture axes, accessibility contracts, and authority boundaries."
+      ],
+      "required_before_m1": [
+        "Rendered fixture pack generated from semantic design tokens with adapter-specific browser chrome, tabs, Spaces, command field, permission prompts, agent confirmations, resource manager, settings, recovery UI, keyboard, focus, screen-reader, forced-color, high-contrast, reduced-motion, density, localization, error-state, and owner-review evidence."
+      ],
+      "first_next_actions": [
+        "Generate the first no-release rendered fixture pack and compare it against the semantic token registry and shell-surface list."
+      ],
+      "owner_only_decisions": [
+        "Approve fixture evidence for toolkit selection, trusted-chrome readiness, accessibility readiness, page-surface approval, and release-path UI work."
+      ],
+      "prohibited_claims": [
+        "No rendered fixture claim, toolkit selection, accessibility readiness, trusted-chrome readiness, page-surface approval, or release-path UI approval."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/native-ui-component-fixture-inventory-2026-07.md",
+        "docs/ui-runtime/machine/component-fixture-inventory.json",
+        "tools/validate_ui_component_fixtures.py"
+      ]
+    },
+    {
+      "id": "PB-015",
+      "name": "Window input IME accessibility and page-tree spike",
+      "status": "partial",
+      "owner_scope": "accessibility",
+      "current_evidence": [
+        "Checked window/input/accessibility spike inventory exists for windowing, input, IME, accessibility tree, page-tree composition, clipboard, drag-drop, localization, zoom, high contrast, forced colors, reduced motion, crash recovery, renderer hang, GPU-loss, platform assistive-technology rows, and blockers."
+      ],
+      "required_before_m1": [
+        "Executable reference-platform workflow matrix, manual assistive-technology transcripts, screen-reader coverage, platform accessibility tree snapshots, page-tree composition diffs, input/IME/clipboard/drag-drop/localization/zoom/appearance fixture outputs, renderer-hang/crash/GPU-loss fault evidence, p50/p95/p99 latency and resource traces, and owner review."
+      ],
+      "first_next_actions": [
+        "Run the first reference-platform window/input/IME/accessibility workflow set and retain page-tree and assistive-technology evidence."
+      ],
+      "owner_only_decisions": [
+        "Approve accessibility readiness, UI-GATE-7, UI-GATE-10, page-tree behavior, screen-reader coverage, and release-path UI evidence."
+      ],
+      "prohibited_claims": [
+        "No reference-platform workflow claim, manual assistive-technology coverage, screen-reader coverage, page-tree proof, IME correctness, accessibility readiness, UI-GATE-7, UI-GATE-10, or release-path UI approval."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+        "docs/accessibility/machine/window-input-accessibility-spike.json",
+        "tools/validate_window_input_accessibility_spike.py"
+      ]
+    },
+    {
+      "id": "PB-016",
+      "name": "Profile Space session and migration formats",
+      "status": "partial",
+      "owner_scope": "storage",
+      "current_evidence": [
+        "Checked profile/session format inventory and checked no-claim schema-package template exist for profile, Space, session, snapshot, migration, privacy, data-loss, authority, and safe-failure planning terms."
+      ],
+      "required_before_m1": [
+        "Executable versioned profile, Space, session, snapshot, and migration schemas beyond the checked no-claim schema-package template plus disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, data-loss, malformed-input, interruption, rollback, repair, real-profile fixture policy, migration rehearsal, privacy review, data-loss review, and release-operations compatibility review."
+      ],
+      "first_next_actions": [
+        "Draft executable schema fixtures and fault tests from the checked no-claim schema-package template without touching real user profiles."
+      ],
+      "owner_only_decisions": [
+        "Accept privacy, migration, data-loss, credential-storage, sync, real-profile, user-data, and production profile-format behavior."
+      ],
+      "prohibited_claims": [
+        "No real-profile migration, sync, credential safety, data-loss safety, user-data handling readiness, production profile-format readiness, or implementation claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/storage/machine/profile-session-format-inventory.json",
+        "docs/storage/machine/profile-session-schema-package.schema.json",
+        "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
+        "tools/validate_profile_session_formats.py"
+      ]
+    },
+    {
+      "id": "PB-017",
+      "name": "Research package identity and updater laboratory",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "current_evidence": [
+        "Checked research-package update lab inventory and checked no-claim update-lab package template exist for research-package identity, update metadata, rollback, migration, crash-loop, privacy-preserving local events, and no-production-key boundaries."
+      ],
+      "required_before_m1": [
+        "Executable signed research-package manifest, update metadata laboratory, role separation, signature threshold, expiry, minimum secure version, channel/platform/architecture targeting, rollout, mirrors, staged install, tamper, replay, wrong-target, partial-write, disk-full, power-loss, authorized rollback, revoked/vulnerable version refusal, migration, downgrade, crash-loop, privacy-preserving events, and production-key separation review beyond the checked no-claim update-lab package template."
+      ],
+      "first_next_actions": [
+        "Build the no-stable-support research-package manifest parser and update metadata lab fixtures from the checked no-claim update-lab package template with fake keys only."
+      ],
+      "owner_only_decisions": [
+        "Approve update trust model, production signing policy, offline root/key ceremony, stable-channel update service, public binary distribution, rollback safety, migration safety, supported security, and release readiness."
+      ],
+      "prohibited_claims": [
+        "No production signing keys, offline root keys, stable channel, real updater, public binary distribution, rollback safety, migration safety, release readiness, supported security, production updater, or public distribution claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/research-package-update-lab-inventory-2026-07.md",
+        "docs/release-operations/machine/research-package-update-lab.json",
+        "docs/release-operations/machine/research-package-update-lab-package.schema.json",
+        "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
+        "tools/validate_research_package_update_lab.py"
+      ]
+    },
+    {
+      "id": "PB-018",
+      "name": "Security incident and patch rehearsal",
+      "status": "partial",
+      "owner_scope": "security",
+      "current_evidence": [
+        "Checked incident patch rehearsal inventory and checked no-claim incident patch rehearsal template exist for private intake, emergency patch, incident classes, roles, timing, escalation, secret rotation, backup coverage, and authority boundaries."
+      ],
+      "required_before_m1": [
+        "Executed private-intake tabletop, emergency patch rehearsal, access control, acknowledgement, reproduction, severity, asset analysis, affected-version statement, embargo handling, sanitized evidence, protected patch branch, embargoed CI, regression, backport, signing/update dry run, staged rollout, minimum secure version, revocation, release notes, communication, CVE/credit handling, coordinated disclosure, postmortem, incident-class workflow, role matrix, timing targets, escalation, secret rotation, backup coverage, and owner review beyond the checked no-claim incident patch rehearsal template."
+      ],
+      "first_next_actions": [
+        "Instantiate the checked no-claim incident patch rehearsal template with fake vulnerability data, private-channel records, and no production signing authority."
+      ],
+      "owner_only_decisions": [
+        "Decide vulnerability severity, disclosure timing, incident closure, stable promotion, emergency patch capacity, supported-security targets, signing authority, and production incident authority."
+      ],
+      "prohibited_claims": [
+        "No incident-response readiness, emergency patch capacity, disclosure authority, incident closure authority, signing authority, stable promotion, supported security versions, production-safe browsing, or production incident claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+        "docs/security-engine/machine/incident-patch-rehearsal.json",
+        "docs/security-engine/machine/incident-patch-rehearsal-record.schema.json",
+        "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
+        "tools/validate_incident_patch_rehearsal.py"
+      ]
+    },
+    {
+      "id": "PB-019",
+      "name": "Backup ownership for build-critical scopes",
+      "status": "blocked",
+      "owner_scope": "program",
+      "current_evidence": [
+        "Checked blocked backup ownership gap inventory, checked no-claim backup-owner qualification template, and checked no-claim backup-ownership readiness-review template exist for build-critical scopes, provisional primary-only ownership, null backups, CODEOWNERS routing, review-rule linkage, qualification handoff fields, readiness-review handoff fields, and unsupported authority boundaries."
+      ],
+      "required_before_m1": [
+        "Named qualified backup owners beyond the checked no-claim backup-owner qualification template for program, architecture, security, release-operations, human-release-authority, incident-response, legal-community, support, quality, supply-chain, documentation-research, product, platform, engine, JavaScript, networking, storage, performance, accessibility, UI-runtime, agent-operations, and privacy-data scopes, plus qualification, reconciliation, two-person control, and owner-reviewed backup ownership readiness evidence beyond the checked no-claim readiness-review template."
+      ],
+      "first_next_actions": [
+        "Instantiate the checked no-claim backup-owner qualification template with real named candidate evidence, then reconcile CODEOWNERS, review rules, escalation policy, stale access, ownerless paths, and primary-only protected paths before replacing the checked no-claim backup-ownership readiness-review template with owner-reviewed evidence."
+      ],
+      "owner_only_decisions": [
+        "Name qualified backup owners and accept release, release promotion, security, legal, support, disclosure, stable signing, update trust, supported-version, migration, incident-closure, legal-approval, owner-coverage, and production-authority decisions."
+      ],
+      "prohibited_claims": [
+        "No named backup coverage, owner-reviewed backup ownership readiness, two-person control, owner coverage, production authority, release authority, stable signing authority, update trust, supported-version changes, security-disclosure authority, legal approval, incident closure, or production claim."
+      ],
+      "validation_or_evidence_refs": [
+        "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/project-buildout/machine/backup-ownership-gap.json",
+        "docs/project-buildout/machine/backup-owner-qualification-record.schema.json",
+        "docs/project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json",
+        "tools/validate_backup_ownership_gap.py"
+      ]
+    }
+  ],
+  "kickoff_gates": [
+    {
+      "id": "KICKOFF-GATE-SOURCE_STRATEGY",
+      "related_readiness_items": ["PB-002"],
+      "gate": "source-strategy",
+      "blocked_until": "ADR-0009 is accepted with source baseline, provenance, equivalence, legal, component, compatibility, performance, security, and maintenance evidence.",
+      "owner_only_decision": "Owner accepts the source strategy and release-path source boundary.",
+      "no_claim_boundary": "No source adoption, compatibility, security, performance, support, release, or implementation claim."
+    },
+    {
+      "id": "KICKOFF-GATE-FRESH_HOST_REPRODUCTION",
+      "related_readiness_items": ["PB-009"],
+      "gate": "fresh-host-reproduction",
+      "blocked_until": "Independent fresh-host or owner-approved clean-VM evidence exists with retained bootstrap, doctor, check, xtask, cache, target-directory, source-cleanliness records, and owner-reviewed fresh-host readiness beyond the checked no-claim template.",
+      "owner_only_decision": "Owner approves the host, waivers, retained evidence, fresh-host readiness review, and PB-009 promotion.",
+      "no_claim_boundary": "No independent reproducibility, owner-reviewed fresh-host readiness, production, implementation, release confidence, or Chrome-class claim."
+    },
+    {
+      "id": "KICKOFF-GATE-IPC_BOUNDARY",
+      "related_readiness_items": ["PB-011"],
+      "gate": "ipc-boundary",
+      "blocked_until": "Implemented schema generator evidence beyond the checked no-claim schema-source template, wire encoding, authentication, bounded queues, timeout/cancellation, stale-epoch rejection, negative tests, and owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template exist.",
+      "owner_only_decision": "Owner accepts wire format, authority model, owner-reviewed IPC readiness, and production-facing process topology.",
+      "no_claim_boundary": "No owner-reviewed IPC readiness, production IPC, renderer-security, agent-security, process-isolation, site-isolation, or implementation claim."
+    },
+    {
+      "id": "KICKOFF-GATE-SANDBOX_PROBES",
+      "related_readiness_items": ["PB-012"],
+      "gate": "sandbox-probes",
+      "blocked_until": "Packaged expected-deny probes, platform policy capture, host-safe fixtures, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template exist.",
+      "owner_only_decision": "Owner accepts sandbox policy, waivers, site-isolation posture, security-gate status, and owner-reviewed sandbox readiness.",
+      "no_claim_boundary": "No owner-reviewed sandbox readiness, sandbox readiness, renderer security, hostile-browsing safety, SEC-GATE, production-safety, or implementation claim."
+    },
+    {
+      "id": "KICKOFF-GATE-BENCHMARK_CLAIMS",
+      "related_readiness_items": ["PB-013"],
+      "gate": "benchmark-claims",
+      "blocked_until": "Fixed hardware tiers, clean OS controls, representative corpus, browser runner, raw artifacts, trace package, competitor pins, equal-workload runs, statistics, claim bundles, and owner-reviewed benchmark readiness beyond the checked no-claim benchmark readiness-review template exist.",
+      "owner_only_decision": "Owner approves hardware, browser pins, update controls, equal-workload claim bundles, owner-reviewed benchmark readiness, and public performance statements.",
+      "no_claim_boundary": "No faster, lower-memory, lower-energy, Chrome-class, benchmark-ready, competitor-result, or daily-driver claim."
+    },
+    {
+      "id": "KICKOFF-GATE-NATIVE_SHELL",
+      "related_readiness_items": ["PB-003", "PB-004", "PB-005", "PB-014", "PB-015"],
+      "gate": "native-shell",
+      "blocked_until": "ADR-0013, ADR-0014, ADR-0016, UI-GATE-7, adapter-contract proof, framework bake-off evidence, page-surface proof, component fixtures, accessibility workflow evidence, and package/runtime exclusion evidence exist.",
+      "owner_only_decision": "Owner accepts toolkit, adapter, compositor, page-surface, trusted-chrome, accessibility, and release-path UI decisions.",
+      "no_claim_boundary": "No toolkit selection, trusted-chrome readiness, accessibility readiness, page-surface approval, UI-GATE-7, or release-path UI claim."
+    },
+    {
+      "id": "KICKOFF-GATE-PROFILE_SESSION",
+      "related_readiness_items": ["PB-016"],
+      "gate": "profile-session",
+      "blocked_until": "Executable profile, Space, session, snapshot, migration, fault, privacy, data-loss, rollback, and repair schema evidence exists.",
+      "owner_only_decision": "Owner accepts privacy, migration, credential, sync, real-profile, user-data, and production profile-format behavior.",
+      "no_claim_boundary": "No real-profile migration, sync, credential safety, data-loss safety, user-data handling, or production profile-format claim."
+    },
+    {
+      "id": "KICKOFF-GATE-PACKAGE_UPDATE",
+      "related_readiness_items": ["PB-017"],
+      "gate": "package-update",
+      "blocked_until": "Executable research-package identity, update metadata, signature, rollback, migration, crash-loop, privacy-event, and production-key separation evidence exists.",
+      "owner_only_decision": "Owner accepts update trust model, signing policy, offline root ceremony, stable channel, public distribution, and release readiness.",
+      "no_claim_boundary": "No production updater, production signing, offline root, stable channel, public distribution, rollback safety, migration safety, release readiness, or supported-security claim."
+    },
+    {
+      "id": "KICKOFF-GATE-INCIDENT_RESPONSE",
+      "related_readiness_items": ["PB-018"],
+      "gate": "incident-response",
+      "blocked_until": "Private intake tabletop, emergency patch rehearsal, disclosure, backport, dry-run signing/update, staged rollout, role, timing, escalation, secret rotation, and backup coverage evidence exists.",
+      "owner_only_decision": "Owner decides severity, disclosure timing, incident closure, stable promotion, emergency patch capacity, supported security, and signing authority.",
+      "no_claim_boundary": "No incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, signing authority, incident closure, or production-safe browsing claim."
+    },
+    {
+      "id": "KICKOFF-GATE-BACKUP_OWNERSHIP",
+      "related_readiness_items": ["PB-019"],
+      "gate": "backup-ownership",
+      "blocked_until": "Named qualified backup owners, qualification evidence, CODEOWNERS/review/escalation reconciliation, stale-access review, ownerless-path review, primary-only-path review, and two-person control exist.",
+      "owner_only_decision": "Owner names qualified backups and accepts owner coverage, release, legal, disclosure, migration, incident, and production-authority decisions.",
+      "no_claim_boundary": "No owner coverage, backup coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, or production authority claim."
+    },
+    {
+      "id": "KICKOFF-GATE-OWNER_REVIEW_RELEASE_AUTHORITY",
+      "related_readiness_items": ["PB-002", "PB-009", "PB-011", "PB-012", "PB-013", "PB-019"],
+      "gate": "owner-review-release-authority",
+      "blocked_until": "Owner review records, a build-readiness closure review beyond the checked no-claim template, and protected authority controls prove no agent or single-owner shortcut can promote readiness, release, disclosure, signing, or production status.",
+      "owner_only_decision": "Owner accepts readiness promotions, release authority, signing authority, disclosure authority, incident closure, legal approval, and production authority.",
+      "no_claim_boundary": "No task approval, readiness promotion, release readiness, stable promotion, production authority, or owner-only authority claim."
+    }
+  ],
+  "unsupported_boundaries": [
+    "No broad M1 implementation claim.",
+    "No developer preview claim.",
+    "No beta claim.",
+    "No stable claim.",
+    "No production claim.",
+    "No Chrome-class claim.",
+    "No faster/lower-memory/lower-energy claim.",
+    "No compatibility claim.",
+    "No security claim.",
+    "No accessibility claim.",
+    "No daily-driver claim.",
+    "No release readiness claim.",
+    "No task approval claim.",
+    "No readiness promotion claim."
+  ]
+}

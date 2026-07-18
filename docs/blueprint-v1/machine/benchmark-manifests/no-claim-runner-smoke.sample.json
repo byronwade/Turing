@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "NOCLAIM.RUNNER_SMOKE.2026_07",
+  "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+  "recorded_at": "2026-07-17T00:00:00Z",
+  "browser": {
+    "name": "Turing architecture prototype",
+    "version": "m0-no-browser",
+    "commit": "sample-only",
+    "channel": "research",
+    "build_profile": "debug",
+    "arguments": [
+      "cargo",
+      "run",
+      "--locked",
+      "-p",
+      "turing-architecture-prototype",
+      "--quiet"
+    ],
+    "features": {
+      "html_parser": false,
+      "javascript_runtime": false,
+      "native_window": false,
+      "network": false,
+      "claim_status": "harness smoke evidence only"
+    }
+  },
+  "environment": {
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "cpu": "AMD Ryzen 9 5950X 16-Core Processor",
+    "logical_cores": 32,
+    "memory_bytes": 68625825792,
+    "gpu": "AMD Radeon RX 7900 XTX",
+    "os": "Microsoft Windows 11 Pro Insider Preview",
+    "os_version": "10.0.26220",
+    "power_mode": "Ultimate Performance",
+    "thermal_state": "unmeasured",
+    "display_hz": 165,
+    "scale_factor": 1
+  },
+  "workload": {
+    "corpus_version": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+    "scenario": "no-claim runner-smoke manifest shape validation only",
+    "cache_state": "cold",
+    "network_profile": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+    "extensions": [],
+    "agent_mode": "disabled",
+    "tabs": [
+      {
+        "tab_id": "sample-tab-001",
+        "corpus_case": "PB13-CORPUS-STATIC-DOCUMENT-001",
+        "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+        "state": "active",
+        "site_instances": 0,
+        "renderer_process": null,
+        "protected": false,
+        "protection_reason": null,
+        "revival_ms": null,
+        "lost_state": []
+      },
+      {
+        "tab_id": "sample-tab-002",
+        "corpus_case": "PB13-CORPUS-APP-LIKE-001",
+        "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+        "state": "background",
+        "site_instances": 0,
+        "renderer_process": null,
+        "protected": false,
+        "protection_reason": null,
+        "revival_ms": null,
+        "lost_state": []
+      }
+    ]
+  },
+  "security": {
+    "sandbox": false,
+    "site_isolation": false,
+    "jit": "not-applicable-no-js-runtime",
+    "mitigations": [
+      "no-release-path",
+      "no-hostile-browsing",
+      "harness-smoke-evidence-only"
+    ],
+    "exceptions": [
+      "sample manifest only; not a benchmark run"
+    ]
+  },
+  "lifecycle": {
+    "process_count": 1,
+    "renderer_count": 0,
+    "state_counts": {
+      "active": 1,
+      "background": 1,
+      "throttled": 0,
+      "frozen": 0,
+      "serialized": 0,
+      "discarded": 0,
+      "crashed": 0
+    },
+    "protected_tabs": []
+  },
+  "samples": [
+    {
+      "iteration": 1,
+      "metrics": {
+        "validator_manifest_fields_present": 1,
+        "benchmark_score": 0
+      },
+      "notes": [
+        "harness smoke evidence only",
+        "no browser capability, competitor comparison, or product result"
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "target": "web-rendering",
+      "classification": "unsupported_m0",
+      "detail": "The current prototype does not parse, execute, render, or navigate web content."
+    }
+  ],
+  "raw_artifacts": [
+    {
+      "kind": "raw-artifact-index",
+      "sha256": "299da7a247f639779e79c9ffd4336d0d8d64841521eafe06b9a4eecb6342aca7",
+      "path": "docs/blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.raw-artifacts.json"
+    }
+  ],
+  "claim": {
+    "status": "no_claim",
+    "text": "Harness smoke evidence only; no browser performance, compatibility, memory, energy, or competitor claim.",
+    "owner": "performance measurement",
+    "reviewer": "not-applicable-no-claim",
+    "supported_scope": [
+      "benchmark manifest shape validation",
+      "raw artifact index hash validation"
+    ],
+    "unsupported_behavior": [
+      "no browser launch",
+      "no web rendering",
+      "no competitor run",
+      "no public performance claim"
+    ],
+    "expires_at": null,
+    "rerun_triggers": [
+      "benchmark manifest schema changes",
+      "raw artifact index changes",
+      "validator behavior changes"
+    ]
+  }
+}

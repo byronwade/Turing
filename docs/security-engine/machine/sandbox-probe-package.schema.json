@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/sandbox-probe-package-v1.json",
+  "title": "Turing Sandbox Probe Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "package_status",
+    "role_targets",
+    "access_surfaces",
+    "platform_evidence_requirements",
+    "probe_lifecycle",
+    "result_record_requirements",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^SANDBOX\\.PROBE_PACKAGE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_probe_package_template",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "package_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packaged_probe_harness",
+        "effective_policy_captured",
+        "platform_matrix_executed",
+        "owner_reviewed",
+        "current_scope"
+      ],
+      "properties": {
+        "packaged_probe_harness": {
+          "type": "boolean"
+        },
+        "effective_policy_captured": {
+          "type": "boolean"
+        },
+        "platform_matrix_executed": {
+          "type": "boolean"
+        },
+        "owner_reviewed": {
+          "type": "boolean"
+        },
+        "current_scope": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "role_targets": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "process_capability_role",
+          "probe_target_status",
+          "host_safe_fixture_required",
+          "broker_fixture_required",
+          "compromised_client_harness_required",
+          "effective_policy_capture_required",
+          "platform_matrix_required"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 3
+          },
+          "process_capability_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "probe_target_status": {
+            "type": "string",
+            "enum": [
+              "template_only",
+              "executed",
+              "superseded"
+            ]
+          },
+          "host_safe_fixture_required": {
+            "type": "boolean"
+          },
+          "broker_fixture_required": {
+            "type": "boolean"
+          },
+          "compromised_client_harness_required": {
+            "type": "boolean"
+          },
+          "effective_policy_capture_required": {
+            "type": "boolean"
+          },
+          "platform_matrix_required": {
+            "type": "array",
+            "minItems": 3,
+            "items": {
+              "type": "string",
+              "enum": [
+                "macos",
+                "windows",
+                "linux"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "access_surfaces": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "platform_evidence_requirements": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "required_artifacts",
+          "missing_evidence"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "windows",
+              "macos",
+              "linux"
+            ]
+          },
+          "required_artifacts": {
+            "type": "array",
+            "minItems": 4,
+            "items": {
+              "type": "string",
+              "minLength": 10
+            }
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "probe_lifecycle": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "required_record"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_record": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "result_record_requirements": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule",
+          "condition"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 3
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  }
+}

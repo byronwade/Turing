@@ -1,0 +1,188 @@
+{
+  "$schema": "../research-package-update-lab-package.schema.json",
+  "schema_version": 1,
+  "package_id": "REL.UPDATE_LAB_PACKAGE.NOCLAIM_TEMPLATE.2026_07",
+  "status": "no_claim_update_lab_package_template",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim research package/update lab package template only; no executable package manifest, no update metadata parser, no signature threshold tests, no staged install tests, no rollback migration tests, no production signing keys, no offline root keys, no stable channel, no real updater, no public binary distribution, no real user profile migration, no rollback safety claim, no migration safety claim, no release readiness claim, no supported security claim, and no production updater claim.",
+  "source_records": [
+    "docs/research/research-package-update-lab-inventory-2026-07.md",
+    "docs/release-operations/machine/research-package-update-lab.schema.json",
+    "docs/release-operations/machine/research-package-update-lab.json",
+    "docs/release-operations/machine/research-package-update-lab-package.schema.json",
+    "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/13-build-release-operations.md",
+    "docs/release-operations/README.md",
+    "docs/security-engine/05-update-supply-chain-and-vulnerability-response.md"
+  ],
+  "package_status": {
+    "executable_package_manifest": false,
+    "update_metadata_parser": false,
+    "signature_threshold_tests": false,
+    "staged_install_tests": false,
+    "rollback_migration_tests": false,
+    "production_keys_present": false,
+    "owner_reviewed": false,
+    "current_scope": "Template and rejection rules for a future fake-key local research package/update lab package only; it records no executable package manifest, no update metadata parser, no signature threshold test, no staged install test, no rollback migration test, no production keys, and no owner-approved updater evidence."
+  },
+  "manifest_fields": [
+    "source commit",
+    "build ID",
+    "channel",
+    "platform",
+    "architecture",
+    "toolchain",
+    "feature set",
+    "SBOM",
+    "provenance",
+    "symbols",
+    "notices",
+    "artifact hashes",
+    "artifact sizes",
+    "no-stable-support label"
+  ],
+  "metadata_behavior_axes": [
+    "role separation",
+    "signature threshold",
+    "expiry",
+    "minimum secure version",
+    "rollout",
+    "mirrors",
+    "staged install",
+    "tamper",
+    "replay",
+    "wrong-target",
+    "partial-write",
+    "disk-full",
+    "power-loss",
+    "rollback",
+    "vulnerable version refusal",
+    "migration",
+    "downgrade",
+    "crash-loop",
+    "privacy-preserving local event"
+  ],
+  "lab_lifecycle": [
+    {
+      "stage": "collect_source_identity",
+      "required_record": "Record source commit, tree status, build ID, toolchain, platform, architecture, feature set, SBOM, provenance, symbols, notices, artifact hashes, and artifact sizes."
+    },
+    {
+      "stage": "generate_research_manifest",
+      "required_record": "Generate a research-only no-stable-support package manifest in a bounded temporary root using fake profile data and local artifact paths."
+    },
+    {
+      "stage": "sign_with_fake_keys",
+      "required_record": "Sign local lab metadata only with fake signing keys, record role separation, threshold, expiry, and key identity, and reject production signing keys or offline root keys."
+    },
+    {
+      "stage": "publish_local_metadata",
+      "required_record": "Publish local metadata and target records in a non-networked lab directory with hashes, sizes, channel, platform, architecture, and rollout cohort bindings."
+    },
+    {
+      "stage": "stage_install",
+      "required_record": "Stage install into a bounded temporary root, verify metadata and target identity, and preserve active state before any switch."
+    },
+    {
+      "stage": "verify_or_reject",
+      "required_record": "Reject tamper, replay, wrong-target, expiry, mirror, partial-write, disk-full, power-loss, under-signed, wrong-key, and vulnerable-version cases without activating the staged build."
+    },
+    {
+      "stage": "rollback_or_hold",
+      "required_record": "Rollback only to an authorized known-good fake-key target, hold crash-looping or migration-failed versions, and preserve profile compatibility boundaries."
+    },
+    {
+      "stage": "record_privacy_event",
+      "required_record": "Record only privacy-preserving local events with IDs, hashes, reason codes, no profile contents, no credentials, no private-session data, and no secrets."
+    },
+    {
+      "stage": "cleanup",
+      "required_record": "Run cleanup for bounded temporary roots, fake profiles, fake keys, staged artifacts, and local metadata while preserving retained hashes and rejection evidence."
+    }
+  ],
+  "fixture_policy": {
+    "fake_signing_keys_required": true,
+    "offline_root_keys": "prohibited",
+    "stable_channel_prohibited": true,
+    "local_metadata_only": true,
+    "fake_profiles_required": true,
+    "bounded_temp_roots_required": true,
+    "cleanup_required": true
+  },
+  "rejection_rules": [
+    {
+      "rule": "reject_production_signing_keys",
+      "condition": "Reject any package or lab run that uses production signing keys, offline root keys, hardware-backed release keys, or real update trust roots."
+    },
+    {
+      "rule": "reject_stable_channel",
+      "condition": "Reject stable channel, beta promotion, public distribution, real updater, or release-readiness behavior based on this template."
+    },
+    {
+      "rule": "reject_real_user_profile",
+      "condition": "Reject real user profile data, real credentials, private-session data, or production profile roots in package, migration, rollback, or event fixtures."
+    },
+    {
+      "rule": "reject_missing_manifest",
+      "condition": "Reject promotion when executable package manifest generation and validation are absent or based only on this template."
+    },
+    {
+      "rule": "reject_missing_metadata_parser",
+      "condition": "Reject promotion when the update metadata parser, signature threshold verification, expiry checks, rollout checks, and target binding tests are missing."
+    },
+    {
+      "rule": "reject_tamper_or_replay_success",
+      "condition": "Reject tamper, replay, wrong-target, expired, mirror-mismatched, under-signed, wrong-key, or vulnerable-version cases reported as successful updates."
+    },
+    {
+      "rule": "reject_partial_write_success",
+      "condition": "Reject partial-write, disk-full, or power-loss cases that activate staged artifacts, corrupt active state, hide cleanup failure, or report success."
+    },
+    {
+      "rule": "reject_rollback_safety_claim",
+      "condition": "Reject rollback safety, migration safety, or data-loss safety claims without authorized known-good rollback, vulnerable-version refusal, migration, downgrade, crash-loop, and profile compatibility evidence."
+    },
+    {
+      "rule": "reject_supported_security_claim",
+      "condition": "Reject supported security, release readiness, stable support, production updater, or public binary distribution claims based only on fake-key local lab evidence."
+    },
+    {
+      "rule": "reject_privacy_event_leak",
+      "condition": "Reject local event records that include profile contents, credentials, private-session data, secrets, raw user paths, or unredacted diagnostics."
+    },
+    {
+      "rule": "reject_unbounded_lab",
+      "condition": "Reject lab packages that mutate host state outside bounded temporary roots, fake profiles, fake keys, local metadata directories, and cleanup checks."
+    },
+    {
+      "rule": "reject_missing_owner_review",
+      "condition": "Reject promotion when release-operations, security, storage, privacy-data, quality, and program owner review is absent or stale."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no executable package manifest",
+    "no update metadata parser",
+    "no signature threshold tests",
+    "no staged install tests",
+    "no rollback migration tests",
+    "no production signing keys",
+    "no offline root keys",
+    "no stable channel",
+    "no real updater",
+    "no public binary distribution",
+    "no real user profile migration",
+    "no rollback safety claim",
+    "no migration safety claim",
+    "no release readiness claim",
+    "no supported security claim",
+    "no production updater claim"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_research_package_update_lab.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

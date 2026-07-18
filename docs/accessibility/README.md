@@ -67,6 +67,10 @@ Spaces, split panes, Time Machine, resource controls, research citations, privac
 
 A framework’s generic accessibility feature is not sufficient. The UI selection must prove browser chrome, tabs, Spaces, split panes, trees, tables, text fields, permission and agent prompts, recovery, and composed web subtrees with the reference platform’s real assistive technologies and measured event latency.
 
+The checked [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md) records required accessibility contracts and fixture axes for planning. The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) records the `PB-015` workflow axes, core shell workflows, platform assistive-technology rows, and blockers for windowing, input, IME, accessibility-tree, page-tree composition, clipboard, drag/drop, localization, zoom, high contrast, forced colors, reduced motion, crash recovery, renderer hang, and GPU loss.
+
+These records do not prove screen-reader, forced-color, high-contrast, reduced-motion, keyboard, focus, density, localization, error-state, manual assistive-technology, page-tree composition, IME, crash, GPU-loss, or accessibility readiness until rendered or equivalent adapter-specific fixtures are tested with real platform assistive technologies and owner-reviewed evidence.
+
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Stable-release accessibility evidence
 

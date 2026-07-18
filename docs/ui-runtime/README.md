@@ -2,7 +2,7 @@
 
 Status: architecture research plus buildable toolkit-neutral M0 model; no UI framework adopted  
 Owner: UI runtime, product, platform, accessibility, performance, security, and build engineering  
-Last reviewed: 2026-07-17
+Last reviewed: 2026-07-18
 
 This book defines a small native browser shell without Electron, Tauri, a system webview, a second browser engine, or a JavaScript runtime in trusted chrome.
 
@@ -26,6 +26,16 @@ Slint is not selected. Licensing, page-surface composition, accessibility, IME, 
 `apps/turing-shell` exercises the model through a command-line self-test. It is not a native UI and must not be presented as one.
 
 The component boundary is recorded in [`workspace-components.json`](../blueprint-v1/machine/workspace-components.json).
+
+`PB-003` toolkit-neutral adapter-contract planning evidence is recorded in [`adapter-contract-inventory.json`](machine/adapter-contract-inventory.json), checked by [`validate_ui_adapter_contract.py`](../../tools/validate_ui_adapter_contract.py), and summarized in the [Toolkit-Neutral UI Adapter Contract Inventory](../research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md). This is not `ADR-0013`, a native adapter prototype, toolkit selection, trusted-chrome readiness, accessibility readiness, page-surface approval, release-path UI approval, production approval, or implementation proof.
+
+`PB-004` framework-selection planning evidence is recorded in [`framework-bakeoff-inventory.json`](machine/framework-bakeoff-inventory.json), checked by [`validate_framework_bakeoff.py`](../../tools/validate_framework_bakeoff.py), and summarized in the [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md). This is not `ADR-0014`, toolkit selection, equivalent adapter evidence, accessibility readiness, IME or keyboard proof, page-surface approval, trusted-chrome readiness, release-path UI approval, performance/memory/energy proof, license/provenance approval, or production approval.
+
+`PB-014` design-token and component-fixture planning evidence is recorded in [`component-fixture-inventory.json`](machine/component-fixture-inventory.json), checked by [`validate_ui_component_fixtures.py`](../../tools/validate_ui_component_fixtures.py), and summarized in the [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md). This is not a rendered fixture pack, toolkit selection, accessibility-readiness claim, trusted-chrome-readiness claim, or release-path UI approval.
+
+`PB-005` page-surface/compositor planning evidence is recorded in [`page-surface-composition.json`](machine/page-surface-composition.json), checked by [`validate_page_surface_composition.py`](../../tools/validate_page_surface_composition.py), and summarized in the [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md). This is not `UI-GATE-7`, page-surface approval, compositor ownership, typed page-surface handle implementation, brokered handle proof, renderer-texture composition proof, software-fallback proof, latency/frame-pacing proof, toolkit selection, or release-path UI approval.
+
+`PB-015` window/input/IME/accessibility/page-tree planning evidence is recorded in [`window-input-accessibility-spike.json`](../accessibility/machine/window-input-accessibility-spike.json), checked by [`validate_window_input_accessibility_spike.py`](../../tools/validate_window_input_accessibility_spike.py), and summarized in the [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md). This is not an executable reference-platform workflow matrix, manual assistive-technology coverage, page-tree proof, IME correctness proof, accessibility-readiness claim, `UI-GATE-7` or `UI-GATE-10` result, toolkit selection, or release-path UI approval.
 
 ## Reading order
 

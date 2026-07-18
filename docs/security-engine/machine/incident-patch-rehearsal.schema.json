@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/incident-patch-rehearsal-v1.json",
+  "title": "Turing Incident Patch Rehearsal Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "exercise_id",
+    "status",
+    "updated",
+    "claim_status",
+    "private_intake_steps",
+    "emergency_patch_steps",
+    "incident_classes",
+    "role_matrix",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "exercise_id": {
+      "type": "string",
+      "pattern": "^SEC\\.INCIDENT\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_rehearsal_inventory", "draft", "reviewed"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 80
+    },
+    "private_intake_steps": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "step", "required_evidence", "authority_boundary", "safe_failure"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SEC-INTAKE-[A-Z0-9._-]+$"
+          },
+          "step": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "authority_boundary": {
+            "type": "string",
+            "minLength": 20
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "emergency_patch_steps": {
+      "type": "array",
+      "minItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "step", "required_evidence", "authority_boundary", "safe_failure"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SEC-PATCH-[A-Z0-9._-]+$"
+          },
+          "step": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "authority_boundary": {
+            "type": "string",
+            "minLength": 20
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "incident_classes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "incident_class", "tabletop_scope", "blocking_gap", "safe_failure"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SEC-INCIDENT-[A-Z0-9._-]+$"
+          },
+          "incident_class": {
+            "type": "string",
+            "minLength": 3
+          },
+          "tabletop_scope": {
+            "type": "string",
+            "minLength": 20
+          },
+          "blocking_gap": {
+            "type": "string",
+            "minLength": 20
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "role_matrix": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "responsibility", "authority_boundary", "missing_evidence"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SEC-ROLE-[A-Z0-9._-]+$"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "responsibility": {
+            "type": "string",
+            "minLength": 20
+          },
+          "authority_boundary": {
+            "type": "string",
+            "minLength": 20
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

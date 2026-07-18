@@ -1,0 +1,224 @@
+{
+  "$schema": "../incident-patch-rehearsal-record.schema.json",
+  "schema_version": 1,
+  "rehearsal_id": "SEC.INCIDENT_REHEARSAL.NOCLAIM_TEMPLATE.2026_07",
+  "status": "no_claim_incident_patch_rehearsal_template",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim security incident and patch rehearsal record template only; no executed private-intake tabletop, no emergency patch dry run, no regression or backport evidence, no signing or update dry-run evidence, no coordinated disclosure rehearsal, no postmortem evidence, no role matrix review, no backup-owner coverage, no owner review, no production-safe browsing claim, no supported security versions claim, no incident-response readiness claim, no emergency patch capacity claim, no disclosure authority claim, no stable promotion authority claim, no signing authority claim, no incident closure authority claim, and no implementation claim.",
+  "source_records": [
+    "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+    "docs/security-engine/machine/incident-patch-rehearsal.schema.json",
+    "docs/security-engine/machine/incident-patch-rehearsal.json",
+    "docs/security-engine/machine/incident-patch-rehearsal-record.schema.json",
+    "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/security.md",
+    "docs/security-engine/06-security-verification-and-release-gates.md",
+    "docs/release-operations/08-vulnerability-response-and-supported-lifecycle.md",
+    "docs/production-readiness/README.md"
+  ],
+  "rehearsal_status": {
+    "private_intake_tabletop": false,
+    "emergency_patch_dry_run": false,
+    "regression_backport_evidence": false,
+    "signing_update_dry_run": false,
+    "disclosure_rehearsal": false,
+    "role_matrix_review": false,
+    "backup_owner_coverage": false,
+    "owner_reviewed": false,
+    "current_scope": "Template and rejection rules for a future private incident tabletop and fake emergency patch rehearsal record only; it records no executed tabletop, no patch dry run, no signing or update dry run, no disclosure rehearsal, no postmortem, no role review, no backup coverage, and no owner approval."
+  },
+  "private_intake_axes": [
+    "report access control",
+    "acknowledgement",
+    "reproduction",
+    "severity",
+    "asset analysis",
+    "affected-version statement",
+    "embargo handling",
+    "sanitized evidence preservation"
+  ],
+  "emergency_patch_axes": [
+    "protected patch branch",
+    "embargoed CI",
+    "regression test",
+    "backport decision",
+    "signing and update dry run",
+    "staged rollout",
+    "minimum secure version",
+    "revocation",
+    "release notes",
+    "user and admin communication",
+    "CVE and credit handling",
+    "coordinated disclosure",
+    "postmortem remediation"
+  ],
+  "incident_class_axes": [
+    "active exploitation",
+    "update or signing compromise",
+    "dependency vulnerability",
+    "data loss",
+    "privacy leak",
+    "sandbox regression",
+    "malicious extension or provider",
+    "service outage"
+  ],
+  "authority_role_axes": [
+    "owner",
+    "reviewer",
+    "release",
+    "security",
+    "legal",
+    "support",
+    "on-call"
+  ],
+  "rehearsal_lifecycle": [
+    {
+      "stage": "restrict_private_channel",
+      "required_record": "Record the private report channel, named access roles, audit location, and restriction proof before any exploit details are handled."
+    },
+    {
+      "stage": "acknowledge_report",
+      "required_record": "Record the acknowledgement timestamp, private-channel preservation, minimal response text, and unsupported public promise boundaries."
+    },
+    {
+      "stage": "reproduce_privately",
+      "required_record": "Record fake vulnerability reproduction facts, affected commit or build candidate, platform, configuration, and sanitized artifact references."
+    },
+    {
+      "stage": "triage_severity",
+      "required_record": "Record asset impact, boundary crossed, reachability, prerequisites, confidence, and the owner who must review severity."
+    },
+    {
+      "stage": "analyze_assets_versions",
+      "required_record": "Record affected origin, profile, credential, update, signing, file, network, extension, DevTools, agent, commit, package, and channel scope."
+    },
+    {
+      "stage": "set_embargo",
+      "required_record": "Record embargo participants, evidence locations, expiry triggers, escalation path, and disclosure authority boundary."
+    },
+    {
+      "stage": "open_protected_patch_branch",
+      "required_record": "Record protected branch settings, reviewer requirements, restricted visibility, and no self-approval policy."
+    },
+    {
+      "stage": "run_embargoed_ci",
+      "required_record": "Record embargoed CI commands, private logs, redaction checks, and failure handling without publishing exploit details."
+    },
+    {
+      "stage": "verify_regression_backport",
+      "required_record": "Record regression evidence, backport decision, supported and unsupported branches, residual risk, and owner review status."
+    },
+    {
+      "stage": "dry_run_signing_update",
+      "required_record": "Record fake-key signing and update dry-run evidence, update metadata linkage, and explicit rejection of production keys or stable channels."
+    },
+    {
+      "stage": "rehearse_rollout_revocation",
+      "required_record": "Record staged rollout cohort, pause and rollback decisions, minimum secure version, revocation behavior, and blocked public distribution."
+    },
+    {
+      "stage": "draft_communications_disclosure",
+      "required_record": "Record draft release notes, user and admin communication, CVE and credit handling, coordinated disclosure timing, and legal/security review needs."
+    },
+    {
+      "stage": "complete_postmortem",
+      "required_record": "Record postmortem root cause, systemic fixes, tests, documentation updates, owners, follow-up deadlines, and closure blockers."
+    },
+    {
+      "stage": "review_roles_backups_close_or_hold",
+      "required_record": "Record owner, reviewer, release, security, legal, support, on-call, backup coverage, timing targets, escalation, secret rotation, and hold or closure decision boundary."
+    }
+  ],
+  "fixture_policy": {
+    "private_channel_required": true,
+    "exploit_details_public_prohibited": true,
+    "production_signing_keys_prohibited": true,
+    "stable_promotion_prohibited": true,
+    "fake_vulnerability_required": true,
+    "fake_update_dry_run_only": true,
+    "sanitized_evidence_required": true,
+    "backup_owner_review_required": true
+  },
+  "rejection_rules": [
+    {
+      "rule": "reject_public_exploit_details",
+      "condition": "Reject any rehearsal record that places exploitable vulnerability details, exploit payloads, credentials, secrets, or private-session data in public issue flow or public logs."
+    },
+    {
+      "rule": "reject_agent_authority",
+      "condition": "Reject records where an implementation agent decides vulnerability severity, disclosure timing, incident closure, stable promotion, signing authority, or supported security status."
+    },
+    {
+      "rule": "reject_missing_access_control",
+      "condition": "Reject promotion when private report channel, access control, named access roles, audit trail, and confidential evidence location are missing."
+    },
+    {
+      "rule": "reject_missing_reproduction",
+      "condition": "Reject closure when private reproduction facts, affected commit or build, affected platform, configuration, and sanitized artifacts are missing."
+    },
+    {
+      "rule": "reject_missing_patch_dry_run",
+      "condition": "Reject emergency patch capacity claims when protected branch, embargoed CI, regression, backport, signing/update dry run, staged rollout, minimum secure version, revocation, communication, coordinated disclosure, or postmortem evidence is missing."
+    },
+    {
+      "rule": "reject_production_signing_keys",
+      "condition": "Reject any rehearsal that uses production signing keys, offline root keys, stable channels, public update services, or public binary distribution."
+    },
+    {
+      "rule": "reject_missing_regression_backport",
+      "condition": "Reject closure when regression evidence, backport decision, supported and unsupported branch scope, affected-version statement, or residual risk is absent."
+    },
+    {
+      "rule": "reject_unsupported_communication",
+      "condition": "Reject public notes or user and admin communication when security, legal, release, support, affected-version, mitigation, or disclosure approval is unresolved."
+    },
+    {
+      "rule": "reject_missing_role_matrix",
+      "condition": "Reject promotion when owner, reviewer, release, security, legal, support, and on-call responsibilities, timing targets, escalation, and secret rotation are missing."
+    },
+    {
+      "rule": "reject_missing_backup_coverage",
+      "condition": "Reject incident-response readiness claims when backup-owner coverage, two-person control, or primary-only-path risk remains unresolved."
+    },
+    {
+      "rule": "reject_incident_closure_claim",
+      "condition": "Reject incident closure authority, stable promotion authority, disclosure authority, signing authority, or emergency patch capacity based only on this template."
+    },
+    {
+      "rule": "reject_supported_security_claim",
+      "condition": "Reject supported security versions, production-safe browsing, incident-response readiness, release readiness, or production incident claims based only on fake tabletop records."
+    },
+    {
+      "rule": "reject_unredacted_evidence",
+      "condition": "Reject evidence records that include unredacted exploit details, secrets, credentials, private-session data, raw user paths, or unsafe diagnostics."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no executed private-intake tabletop",
+    "no emergency patch dry run",
+    "no regression or backport evidence",
+    "no signing or update dry-run evidence",
+    "no coordinated disclosure rehearsal",
+    "no postmortem evidence",
+    "no role matrix review",
+    "no backup-owner coverage",
+    "no owner review",
+    "no production-safe browsing claim",
+    "no supported security versions claim",
+    "no incident-response readiness claim",
+    "no emergency patch capacity claim",
+    "no disclosure authority claim",
+    "no stable promotion authority claim",
+    "no signing authority claim",
+    "no incident closure authority claim",
+    "no implementation claim"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_incident_patch_rehearsal.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

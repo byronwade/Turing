@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/adr-0009-evidence-v1.json",
+  "title": "Turing ADR-0009 Evidence Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "updated",
+    "adr_id",
+    "readiness_gate",
+    "decision_status",
+    "claim_status",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "updated": {
+      "type": "string"
+    },
+    "adr_id": {
+      "const": "ADR-0009"
+    },
+    "readiness_gate": {
+      "const": "PB-002"
+    },
+    "decision_status": {
+      "enum": [
+        "no_source_strategy_decision",
+        "ready_for_owner_review",
+        "accepted",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 18,
+      "maxItems": 18,
+      "items": {
+        "$ref": "#/$defs/evidence_item"
+      }
+    }
+  },
+  "$defs": {
+    "evidence_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "decision_area",
+        "status",
+        "owner_scopes",
+        "existing_evidence",
+        "missing_outputs",
+        "next_action"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ADR9-EV-[0-9]{3}$"
+        },
+        "decision_area": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "partial",
+            "missing",
+            "captured",
+            "owner_review_required",
+            "owner_reviewed",
+            "blocked"
+          ]
+        },
+        "owner_scopes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "existing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked_by": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^ADR9-EV-[0-9]{3}$"
+          }
+        },
+        "next_action": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

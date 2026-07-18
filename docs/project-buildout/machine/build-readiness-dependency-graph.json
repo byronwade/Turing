@@ -1,0 +1,705 @@
+{
+  "schema_version": 1,
+  "graph_id": "PB020.DEPENDENCY_GRAPH.NO_CLAIM.2026_07",
+  "status": "no_claim_dependency_graph",
+  "updated": "2026-07-18",
+  "claim_status": "Build-readiness dependency graph only; no task approval, no readiness promotion, no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no performance claim, no compatibility claim, no security claim, no accessibility claim, no release readiness claim, and no daily-driver claim.",
+  "source_records": [
+    "docs/project-buildout/11-pre-build-readiness-checklist.md",
+    "docs/project-buildout/13-build-readiness-operating-board.md",
+    "docs/project-buildout/17-build-readiness-task-queue.md",
+    "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/research/implementation-kickoff-review-inventory-2026-07.md",
+    "docs/project-buildout/machine/implementation-kickoff-review.json",
+    "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
+    "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/machine/backlog.json",
+    "docs/agent-execution/README.md",
+    "docs/production-readiness/README.md",
+    "docs/blueprint-v1/20-definition-of-done.md"
+  ],
+  "nodes": [
+    {
+      "id": "PB-GATE-0",
+      "type": "gate",
+      "status": "contained_m0_authorization",
+      "owner_scope": "program",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Contained M0 and no-claim evidence work are authorized while broad implementation remains blocked.",
+      "claim_boundary": "No broad M1, preview, beta, stable, production, Chrome-class, performance, compatibility, security, accessibility, release, or daily-driver claim."
+    },
+    {
+      "id": "PB-002",
+      "type": "readiness_item",
+      "status": "blocked",
+      "owner_scope": "architecture",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Source strategy and Servo relationship remain blocked until ADR-0009 evidence and owner decisions close.",
+      "claim_boundary": "No Servo adoption, dependency approval, source approval, compatibility, security, performance, memory, support, release, or implementation claim."
+    },
+    {
+      "id": "PB-003",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Toolkit-neutral UI model has checked adapter-contract planning evidence but no accepted ADR-0013 or native adapter proof.",
+      "claim_boundary": "No native-shell, trusted-chrome, accessibility, page-surface, toolkit-selection, release-path UI, production, or implementation claim."
+    },
+    {
+      "id": "PB-004",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Native UI framework selection has checked bake-off planning evidence but no accepted ADR-0014 or equivalent adapter evidence.",
+      "claim_boundary": "No toolkit selection, accessibility readiness, license/provenance approval, page-surface approval, trusted-chrome readiness, or release-path UI claim."
+    },
+    {
+      "id": "PB-005",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Page-surface and compositor composition have checked planning evidence but no UI-GATE-7 execution or ADR-0016 decision.",
+      "claim_boundary": "No page-surface approval, compositor ownership decision, UI-GATE-7 approval, ADR-0016 acceptance, or release-path UI claim."
+    },
+    {
+      "id": "PB-009",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Bootstrap and doctor commands exist with checked no-claim reproduction, run-record, and readiness-review templates, but independent fresh-host reproduction and owner-reviewed fresh-host readiness remain missing.",
+      "claim_boundary": "No owner-reviewed fresh-host readiness, independent reproducibility, PB-009 readiness, broad M1 readiness, preview, beta, stable, production, release-confidence, implementation, or Chrome-class claim."
+    },
+    {
+      "id": "PB-011",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "architecture",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "IPC and process capability have M0 boundary evidence, a checked no-claim schema-source template, and a checked no-claim IPC readiness-review template, but no implemented schema generator, owner-reviewed IPC readiness, or full negative-test coverage.",
+      "claim_boundary": "No owner-reviewed IPC readiness, schema-generator approval, wire-encoding approval, renderer-security, agent-security, process-isolation, site-isolation, timeout/cancellation, production IPC, or implementation claim."
+    },
+    {
+      "id": "PB-012",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "security",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Sandbox probe targets, a no-claim probe-package template, and a no-claim sandbox readiness-review template are checked as planning evidence, but packaged expected-deny probes, platform policy capture, and owner-reviewed sandbox readiness are missing.",
+      "claim_boundary": "No owner-reviewed sandbox readiness, sandbox readiness, renderer security, site-isolation safety, hostile-browsing safety, SEC-GATE, production safety, implementation, or weakened security policy claim."
+    },
+    {
+      "id": "PB-013",
+      "type": "readiness_item",
+      "status": "documented_no_runner",
+      "owner_scope": "performance",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Benchmark lab has no-claim manifests, self-tests, and a checked no-claim benchmark readiness-review template, but no browser runner, raw results, competitor pins, owner-reviewed claim bundle, or owner-reviewed benchmark readiness.",
+      "claim_boundary": "No benchmark-ready status, browser benchmark result, competitor result, faster, lower-memory, lower-energy, Chrome-class, daily-driver, public performance claim, or owner-reviewed benchmark readiness from the checked no-claim benchmark readiness-review template."
+    },
+    {
+      "id": "PB-014",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "product",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Design-token and component-fixture inventory is checked planning evidence, but rendered and adapter-specific fixtures remain missing.",
+      "claim_boundary": "No rendered fixture claim, toolkit selection, accessibility readiness, trusted-chrome readiness, page-surface approval, or release-path UI claim."
+    },
+    {
+      "id": "PB-015",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "accessibility",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Window/input/IME/accessibility workflow inventory is checked planning evidence, but reference-platform workflow runs remain missing.",
+      "claim_boundary": "No reference-platform workflow, assistive-technology coverage, screen-reader coverage, page-tree proof, IME correctness, accessibility readiness, UI-GATE-7, UI-GATE-10, or release-path UI claim."
+    },
+    {
+      "id": "PB-016",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "storage",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Profile/session format planning evidence and a checked no-claim schema-package template exist, but executable schemas and fault behavior remain missing.",
+      "claim_boundary": "No real-profile migration, sync, credential safety, data-loss safety, user-data handling, production profile-format, or implementation claim."
+    },
+    {
+      "id": "PB-017",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Research package/update lab planning evidence and a checked no-claim update-lab package template exist, but executable manifests, metadata parsers, signature verification, rollback, and migration labs remain missing.",
+      "claim_boundary": "No production signing, offline root, stable channel, real updater, public distribution, rollback safety, migration safety, release readiness, or supported-security claim."
+    },
+    {
+      "id": "PB-018",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "security",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Incident patch rehearsal planning evidence and a checked no-claim incident patch rehearsal template exist, but executed tabletop and emergency patch evidence remain missing.",
+      "claim_boundary": "No incident-response readiness, emergency patch capacity, disclosure authority, incident closure, signing authority, stable promotion, supported security, or production-safe browsing claim."
+    },
+    {
+      "id": "PB-019",
+      "type": "readiness_item",
+      "status": "blocked",
+      "owner_scope": "program",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Backup ownership is blocked while build-critical scopes have provisional primary-only owners, null backups, a checked no-claim backup-owner qualification template, and a checked no-claim backup-ownership readiness-review template.",
+      "claim_boundary": "No owner coverage, backup coverage, two-person control, production authority, release authority, signing authority, disclosure authority, legal approval, or incident closure claim."
+    },
+    {
+      "id": "PB-020",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "program",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Implementation kickoff review has no-claim inventory, dependency graph, documentation audit, and build-readiness closure-review template evidence but still requires owner-reviewed closure of remaining P0 lanes beyond the checked no-claim template.",
+      "claim_boundary": "No task approval, readiness promotion, broad M1 implementation, preview, beta, stable, production, Chrome-class, performance, compatibility, security, accessibility, release, or daily-driver claim."
+    },
+    {
+      "id": "TASK-000001",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "architecture",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Source-strategy closure packet is proposed only and shapes ADR-0009 evidence work.",
+      "claim_boundary": "No task execution approval, source adoption, source approval, broad engine readiness, or Chrome-class claim."
+    },
+    {
+      "id": "TASK-000002",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "release-operations",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Fresh-host bootstrap reproduction is proposed only, must run on an independent host or owner-approved clean VM, and must finish with owner-reviewed fresh-host readiness beyond the checked no-claim template.",
+      "claim_boundary": "No owner-reviewed fresh-host readiness, PB-009 readiness promotion, independent reproducibility claim, release confidence, production, implementation, or Chrome-class claim."
+    },
+    {
+      "id": "TASK-000003",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "architecture",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "IPC schema and capability negative tests are proposed only, depend on fresh-host reproduction, and must produce owner-reviewed IPC readiness beyond the checked no-claim template before readiness or security claims.",
+      "claim_boundary": "No owner-reviewed IPC readiness, renderer security, agent security, process-isolation, site-isolation, schema-generator, wire-encoding, timeout/cancellation, production IPC, or implementation claim."
+    },
+    {
+      "id": "TASK-000004",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "security",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Sandbox probe harness is proposed only, depends on reviewed authority and IPC boundaries, and must produce owner-reviewed sandbox readiness beyond the checked no-claim template before readiness or security claims.",
+      "claim_boundary": "No owner-reviewed sandbox readiness, sandbox, renderer security, site isolation, hostile-browsing, platform containment, SEC-GATE, production-safety, or implementation claim."
+    },
+    {
+      "id": "TASK-000005",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "performance",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Browser-launch benchmark runner contract and benchmark readiness-review template are proposed/no-claim only and depend on fresh-host and IPC foundations.",
+      "claim_boundary": "No faster, lower-memory, lower-energy, Chrome-class, compatibility, benchmark-ready, competitor-result, or owner-reviewed benchmark readiness claim."
+    },
+    {
+      "id": "TASK-000006",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Native shell adapter bake-off is proposed only and depends on IPC foundations plus UI planning inventories.",
+      "claim_boundary": "No toolkit selection, native-shell readiness, accessibility readiness, trusted-chrome readiness, page-surface approval, or release-path UI claim."
+    },
+    {
+      "id": "TASK-000007",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "storage",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Profile/session schema task is proposed only, starts from the checked no-claim schema-package template, and depends on IPC foundations.",
+      "claim_boundary": "No real-profile migration, sync, credential safety, data-loss safety, user-data handling, or production profile-format claim."
+    },
+    {
+      "id": "TASK-000008",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "program",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Backup ownership closure is proposed only, starts from the checked no-claim backup-owner qualification template and checked no-claim backup-ownership readiness-review template, and cannot rely on placeholders or provisional owners.",
+      "claim_boundary": "No owner coverage, release authority, signing authority, disclosure authority, legal approval, incident closure, or production authority claim."
+    },
+    {
+      "id": "TASK-000009",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "release-operations",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Research package identity and updater lab is proposed only, starts from the checked no-claim update-lab package template, and depends on fresh-host, IPC, and profile/session work.",
+      "claim_boundary": "No production signing, offline root, stable channel, real updater, public distribution, rollback safety, migration safety, release readiness, or supported-security claim."
+    },
+    {
+      "id": "TASK-000010",
+      "type": "task",
+      "status": "proposed",
+      "owner_scope": "incident-response",
+      "source_ref": "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+      "summary": "Security incident and patch rehearsal is proposed only, starts from the checked no-claim incident patch rehearsal template, and depends on backup ownership and package/update lab work.",
+      "claim_boundary": "No incident-response readiness, emergency patch capacity, supported security, disclosure authority, incident closure, signing authority, stable promotion, or production-safe browsing claim."
+    },
+    {
+      "id": "ADR-0009",
+      "type": "decision",
+      "status": "required_not_accepted",
+      "owner_scope": "architecture",
+      "source_ref": "docs/project-buildout/16-adr-0009-decision-draft.md",
+      "summary": "Source strategy decision is required before source-strategy-dependent implementation expands.",
+      "claim_boundary": "No source adoption, source approval, dependency approval, release-path import, or support claim."
+    },
+    {
+      "id": "ADR-0013",
+      "type": "decision",
+      "status": "required_not_accepted",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+      "summary": "Toolkit-neutral UI adapter contract decision is required before native-shell adapter claims.",
+      "claim_boundary": "No adapter contract approval, native adapter prototype claim, or release-path UI claim."
+    },
+    {
+      "id": "ADR-0014",
+      "type": "decision",
+      "status": "required_not_accepted",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
+      "summary": "Native UI framework selection decision is required before toolkit selection.",
+      "claim_boundary": "No toolkit selection, accessibility readiness, trusted-chrome readiness, or release-path UI claim."
+    },
+    {
+      "id": "ADR-0016",
+      "type": "decision",
+      "status": "required_not_accepted",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/research/page-surface-composition-inventory-2026-07.md",
+      "summary": "Page-surface and compositor ownership decision is required before page-surface approval.",
+      "claim_boundary": "No compositor ownership, page-surface approval, UI-GATE-7 approval, or release-path UI claim."
+    },
+    {
+      "id": "UI-GATE-7",
+      "type": "evidence_gate",
+      "status": "required_not_executed",
+      "owner_scope": "ui-runtime",
+      "source_ref": "docs/research/page-surface-composition-inventory-2026-07.md",
+      "summary": "Executable page-surface workflow evidence is required before page-surface or toolkit claims.",
+      "claim_boundary": "No page-surface approval, accessibility readiness, toolkit selection, or release-path UI claim."
+    }
+  ],
+  "edges": [
+    {
+      "from": "PB-GATE-0",
+      "to": "TASK-000001",
+      "type": "contained_m0_authorization",
+      "reason": "Contained no-claim documentation and research work can shape the source-strategy closure packet.",
+      "no_claim_boundary": "Proposed task only; no execution approval claim or source decision claim."
+    },
+    {
+      "from": "PB-GATE-0",
+      "to": "TASK-000002",
+      "type": "contained_m0_authorization",
+      "reason": "Contained no-claim evidence work can execute a scoped fresh-host reproduction task after owner task approval and must keep the checked no-claim readiness-review template separate from owner-reviewed evidence.",
+      "no_claim_boundary": "No fresh-host readiness promotion, production, implementation, or Chrome-class claim."
+    },
+    {
+      "from": "PB-002",
+      "to": "TASK-000001",
+      "type": "readiness_to_task",
+      "reason": "The source-strategy blocker maps to the source-strategy closure packet.",
+      "no_claim_boundary": "No source adoption claim or dependency approval claim."
+    },
+    {
+      "from": "PB-009",
+      "to": "TASK-000002",
+      "type": "readiness_to_task",
+      "reason": "Fresh-host reproduction and owner-reviewed fresh-host readiness must close the bootstrap and doctor command blocker.",
+      "no_claim_boundary": "No independent reproducibility or owner-reviewed fresh-host readiness claim from current-host runs or no-claim templates."
+    },
+    {
+      "from": "PB-011",
+      "to": "TASK-000003",
+      "type": "readiness_to_task",
+      "reason": "IPC schema, negative-test, and owner-reviewed IPC readiness work advances the canonical IPC blocker beyond the checked no-claim readiness-review template.",
+      "no_claim_boundary": "No owner-reviewed IPC readiness, production IPC, renderer-security, agent-security, process-isolation, site-isolation, or implementation claim."
+    },
+    {
+      "from": "PB-012",
+      "to": "TASK-000004",
+      "type": "readiness_to_task",
+      "reason": "Sandbox probe harness and owner-reviewed sandbox readiness work advances the reference sandbox probe blocker beyond the checked no-claim readiness-review template.",
+      "no_claim_boundary": "No owner-reviewed sandbox readiness, sandbox readiness, renderer-security, site-isolation, SEC-GATE, production-safety, or implementation claim."
+    },
+    {
+      "from": "PB-013",
+      "to": "TASK-000005",
+      "type": "readiness_to_task",
+      "reason": "Benchmark runner work advances the documented-no-runner benchmark blocker.",
+      "no_claim_boundary": "No benchmark-ready, performance, or owner-reviewed benchmark readiness claim."
+    },
+    {
+      "from": "PB-003",
+      "to": "TASK-000006",
+      "type": "readiness_to_task",
+      "reason": "Native shell adapter bake-off depends on toolkit-neutral adapter contract evidence.",
+      "no_claim_boundary": "No adapter approval or native-shell readiness claim."
+    },
+    {
+      "from": "PB-004",
+      "to": "TASK-000006",
+      "type": "readiness_to_task",
+      "reason": "Native shell adapter bake-off depends on framework selection evidence.",
+      "no_claim_boundary": "No toolkit selection claim."
+    },
+    {
+      "from": "PB-005",
+      "to": "TASK-000006",
+      "type": "readiness_to_task",
+      "reason": "Native shell adapter bake-off depends on page-surface and compositor composition evidence.",
+      "no_claim_boundary": "No page-surface approval claim."
+    },
+    {
+      "from": "PB-014",
+      "to": "TASK-000006",
+      "type": "readiness_to_task",
+      "reason": "Native shell adapter bake-off depends on rendered component and design-token fixture evidence.",
+      "no_claim_boundary": "No trusted-chrome readiness claim."
+    },
+    {
+      "from": "PB-015",
+      "to": "TASK-000006",
+      "type": "readiness_to_task",
+      "reason": "Native shell adapter bake-off depends on window, input, IME, accessibility, and page-tree evidence.",
+      "no_claim_boundary": "No accessibility readiness claim."
+    },
+    {
+      "from": "PB-016",
+      "to": "TASK-000007",
+      "type": "readiness_to_task",
+      "reason": "Profile/session schema work advances the profile, Space, session, snapshot, and migration blocker.",
+      "no_claim_boundary": "No production profile-format or data-loss safety claim."
+    },
+    {
+      "from": "PB-019",
+      "to": "TASK-000008",
+      "type": "readiness_to_task",
+      "reason": "Backup ownership closure advances the blocked ownership capacity blocker.",
+      "no_claim_boundary": "No owner coverage or release authority claim."
+    },
+    {
+      "from": "PB-017",
+      "to": "TASK-000009",
+      "type": "readiness_to_task",
+      "reason": "Research package/update lab work advances the package identity and updater laboratory blocker.",
+      "no_claim_boundary": "No production updater or release readiness claim."
+    },
+    {
+      "from": "PB-018",
+      "to": "TASK-000010",
+      "type": "readiness_to_task",
+      "reason": "Incident patch rehearsal work advances the security incident and patch rehearsal blocker.",
+      "no_claim_boundary": "No incident-response readiness or production-safe browsing claim."
+    },
+    {
+      "from": "TASK-000002",
+      "to": "TASK-000003",
+      "type": "task_dependency",
+      "reason": "The task queue requires fresh-host reproduction before IPC schema and capability negative tests.",
+      "no_claim_boundary": "Dependency does not approve either task or create a task approval claim."
+    },
+    {
+      "from": "TASK-000003",
+      "to": "TASK-000004",
+      "type": "task_dependency",
+      "reason": "The task queue requires IPC authority boundaries before sandbox probe harness execution.",
+      "no_claim_boundary": "Dependency does not approve sandbox readiness or create a sandbox claim."
+    },
+    {
+      "from": "TASK-000002",
+      "to": "TASK-000005",
+      "type": "task_dependency",
+      "reason": "The task queue requires fresh-host evidence before browser-launch benchmark runner work.",
+      "no_claim_boundary": "Dependency does not approve benchmark claims."
+    },
+    {
+      "from": "TASK-000003",
+      "to": "TASK-000005",
+      "type": "task_dependency",
+      "reason": "The task queue requires IPC foundations before browser-launch benchmark runner work.",
+      "no_claim_boundary": "Dependency does not approve benchmark claims."
+    },
+    {
+      "from": "TASK-000003",
+      "to": "TASK-000006",
+      "type": "task_dependency",
+      "reason": "The task queue requires IPC foundations before native shell adapter bake-off work.",
+      "no_claim_boundary": "Dependency does not approve toolkit selection or create a toolkit-selection claim."
+    },
+    {
+      "from": "TASK-000003",
+      "to": "TASK-000007",
+      "type": "task_dependency",
+      "reason": "The task queue requires IPC foundations before profile/session schema work.",
+      "no_claim_boundary": "Dependency does not approve production profile behavior or create a profile-readiness claim."
+    },
+    {
+      "from": "TASK-000002",
+      "to": "TASK-000009",
+      "type": "task_dependency",
+      "reason": "The task queue requires fresh-host evidence before package/update lab work.",
+      "no_claim_boundary": "Dependency does not approve release readiness or create a release-readiness claim."
+    },
+    {
+      "from": "TASK-000003",
+      "to": "TASK-000009",
+      "type": "task_dependency",
+      "reason": "The task queue requires IPC foundations before package/update lab work.",
+      "no_claim_boundary": "Dependency does not approve production updater behavior or create an updater-readiness claim."
+    },
+    {
+      "from": "TASK-000007",
+      "to": "TASK-000009",
+      "type": "task_dependency",
+      "reason": "The task queue requires profile/session schema work before package/update migration lab work.",
+      "no_claim_boundary": "Dependency does not approve migration safety or create a migration-safety claim."
+    },
+    {
+      "from": "TASK-000008",
+      "to": "TASK-000010",
+      "type": "task_dependency",
+      "reason": "The task queue requires backup ownership closure before incident patch rehearsal work.",
+      "no_claim_boundary": "Dependency does not approve incident-response readiness or create an incident-response claim."
+    },
+    {
+      "from": "TASK-000009",
+      "to": "TASK-000010",
+      "type": "task_dependency",
+      "reason": "The task queue requires package/update lab work before incident patch rehearsal work.",
+      "no_claim_boundary": "Dependency does not approve emergency patch capacity or create an emergency-patch claim."
+    },
+    {
+      "from": "ADR-0009",
+      "to": "PB-002",
+      "type": "decision_required",
+      "reason": "ADR-0009 acceptance or explicit rejection is required to close the source-strategy blocker.",
+      "no_claim_boundary": "Draft decision text is not source approval and creates no source-strategy claim."
+    },
+    {
+      "from": "ADR-0013",
+      "to": "PB-003",
+      "type": "decision_required",
+      "reason": "ADR-0013 acceptance is required before toolkit-neutral adapter contract readiness.",
+      "no_claim_boundary": "Planning inventory is not adapter approval and creates no native-adapter claim."
+    },
+    {
+      "from": "ADR-0014",
+      "to": "PB-004",
+      "type": "decision_required",
+      "reason": "ADR-0014 acceptance is required before native UI framework selection readiness.",
+      "no_claim_boundary": "Framework research is not toolkit selection and creates no toolkit-selection claim."
+    },
+    {
+      "from": "ADR-0016",
+      "to": "PB-005",
+      "type": "decision_required",
+      "reason": "ADR-0016 acceptance is required before page-surface and compositor composition readiness.",
+      "no_claim_boundary": "Composition inventory is not compositor ownership approval and creates no page-surface claim."
+    },
+    {
+      "from": "UI-GATE-7",
+      "to": "PB-005",
+      "type": "decision_required",
+      "reason": "Executable UI-GATE-7 evidence is required before page-surface readiness.",
+      "no_claim_boundary": "Workflow rows are not executable page-surface proof and create no page-surface claim."
+    },
+    {
+      "from": "UI-GATE-7",
+      "to": "PB-015",
+      "type": "decision_required",
+      "reason": "Window/input/accessibility evidence remains tied to UI-GATE-7 page-tree and page-surface behavior.",
+      "no_claim_boundary": "Planning inventory is not accessibility readiness and creates no accessibility claim."
+    },
+    {
+      "from": "PB-002",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while the source-strategy blocker is unresolved.",
+      "no_claim_boundary": "No broad implementation readiness claim."
+    },
+    {
+      "from": "PB-003",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while adapter-contract evidence is partial.",
+      "no_claim_boundary": "No native-shell readiness claim."
+    },
+    {
+      "from": "PB-004",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while UI framework selection evidence is partial.",
+      "no_claim_boundary": "No toolkit selection claim."
+    },
+    {
+      "from": "PB-005",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while page-surface composition evidence is partial.",
+      "no_claim_boundary": "No page-surface approval claim."
+    },
+    {
+      "from": "PB-009",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while independent fresh-host reproduction and owner-reviewed fresh-host readiness are missing.",
+      "no_claim_boundary": "No broad build confidence, release-confidence, implementation, or Chrome-class claim."
+    },
+    {
+      "from": "PB-011",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while IPC schema, negative-test proof, and owner-reviewed IPC readiness beyond the checked no-claim template are partial.",
+      "no_claim_boundary": "No owner-reviewed IPC readiness, production IPC, renderer-security, agent-security, process-isolation, site-isolation, or implementation claim."
+    },
+    {
+      "from": "PB-012",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while sandbox probe proof and owner-reviewed sandbox readiness beyond the checked no-claim template are partial.",
+      "no_claim_boundary": "No owner-reviewed sandbox readiness, sandbox readiness, renderer-security, site-isolation, SEC-GATE, production-safety, or implementation claim."
+    },
+    {
+      "from": "PB-013",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while benchmark runner proof is documented as no-runner.",
+      "no_claim_boundary": "No performance or Chrome-class claim."
+    },
+    {
+      "from": "PB-014",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while component fixture evidence is partial.",
+      "no_claim_boundary": "No trusted-chrome readiness claim."
+    },
+    {
+      "from": "PB-015",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while accessibility workflow evidence is partial.",
+      "no_claim_boundary": "No accessibility readiness claim."
+    },
+    {
+      "from": "PB-016",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while profile/session schema evidence is partial.",
+      "no_claim_boundary": "No production profile-format claim."
+    },
+    {
+      "from": "PB-017",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while package/update lab evidence is partial.",
+      "no_claim_boundary": "No release readiness claim."
+    },
+    {
+      "from": "PB-018",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while incident patch rehearsal evidence is partial.",
+      "no_claim_boundary": "No incident-response readiness claim."
+    },
+    {
+      "from": "PB-019",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while backup ownership is blocked.",
+      "no_claim_boundary": "No owner coverage or production authority claim."
+    },
+    {
+      "from": "PB-002",
+      "to": "PB-GATE-0",
+      "type": "claim_blocker",
+      "reason": "Source-strategy blockage prevents treating contained M0 as broad implementation readiness.",
+      "no_claim_boundary": "PB-GATE-0 is contained M0 only and creates no broad-readiness claim."
+    },
+    {
+      "from": "PB-013",
+      "to": "PB-GATE-0",
+      "type": "claim_blocker",
+      "reason": "Benchmark runner blockage prevents Chrome-class, performance, memory, and energy claims.",
+      "no_claim_boundary": "PB-GATE-0 is not a benchmark claim gate."
+    },
+    {
+      "from": "PB-019",
+      "to": "PB-GATE-0",
+      "type": "claim_blocker",
+      "reason": "Backup ownership blockage prevents release, signing, disclosure, legal, incident, and production authority claims.",
+      "no_claim_boundary": "PB-GATE-0 is not production authority and creates no production-authority claim."
+    }
+  ],
+  "parallel_no_claim_lanes": [
+    {
+      "id": "source-strategy-research",
+      "allowed_parallel_work": "Documentation and research may continue on ADR-0009 evidence, source provenance, legal, compatibility, performance, security, and maintenance records.",
+      "must_stop_before": "Stop before importing release-path browser-engine code, approving source adoption, changing source-strategy status, or making a source-approval claim."
+    },
+    {
+      "id": "fresh-host-reproduction",
+      "allowed_parallel_work": "Task-scoped reproduction evidence may run after owner task approval while preserving source-tree cleanliness, retained logs, and no-claim readiness-review boundaries.",
+      "must_stop_before": "Stop before calling same-host runs independent, treating the checked no-claim readiness-review template as owner-reviewed evidence, promoting PB-009, or claiming release confidence, implementation, production, or Chrome-class status."
+    },
+    {
+      "id": "ipc-and-sandbox-prototypes",
+      "allowed_parallel_work": "Bounded IPC, authority-model, and expected-deny sandbox probe prototypes may proceed as contained M0 evidence.",
+      "must_stop_before": "Stop before production IPC, renderer-security, site-isolation, sandbox-readiness, or security-gate claims."
+    },
+    {
+      "id": "benchmark-lab-contracts",
+      "allowed_parallel_work": "No-claim benchmark corpus, runner, trace, artifact, browser-pin, resource-attribution, and benchmark readiness-review contracts may continue.",
+      "must_stop_before": "Stop before benchmark-ready pins, equal-workload public comparisons, raw result claims, owner-reviewed benchmark readiness, speed, memory, energy, or Chrome-class language."
+    },
+    {
+      "id": "native-shell-research",
+      "allowed_parallel_work": "Toolkit-neutral UI, framework bake-off, page-surface, component fixture, input, IME, and accessibility prototypes may continue as isolated reference evidence.",
+      "must_stop_before": "Stop before selecting a toolkit, accepting ADR-0013, ADR-0014, or ADR-0016, approving UI-GATE-7, or claiming release-path UI readiness."
+    },
+    {
+      "id": "profile-package-incident-ownership",
+      "allowed_parallel_work": "Profile/session schemas, research-package labs, incident tabletop records, and backup ownership candidates may proceed as no-claim evidence.",
+      "must_stop_before": "Stop before real profile migration, production signing, real updater, disclosure authority, incident closure, legal approval, owner coverage, production authority, or any production-authority claim."
+    }
+  ],
+  "unsupported_boundaries": [
+    "No task approval claim.",
+    "No readiness promotion claim.",
+    "No broad M1 implementation claim.",
+    "No developer preview claim.",
+    "No beta claim.",
+    "No stable claim.",
+    "No production claim.",
+    "No Chrome-class claim.",
+    "No performance claim.",
+    "No compatibility claim.",
+    "No security claim.",
+    "No accessibility claim.",
+    "No release readiness claim.",
+    "No daily-driver claim."
+  ]
+}

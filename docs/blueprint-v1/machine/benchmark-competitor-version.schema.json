@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/benchmark-competitor-version-v1.json",
+  "title": "Turing Benchmark Competitor Version Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "competitor_version_manifest_id",
+    "status",
+    "claim_status",
+    "retrieved_at",
+    "source_policy",
+    "required_local_pin_fields",
+    "browsers",
+    "benchmark_suite_notes",
+    "unsupported_behavior",
+    "evidence_required"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "competitor_version_manifest_id": {"type": "string", "pattern": "^TURING\\.BENCHMARK\\.COMPETITOR_VERSIONS\\.[A-Z0-9._-]+$"},
+    "status": {"enum": ["release_catalog_no_local_install_pins", "local_pins_draft", "reviewed", "retired"]},
+    "claim_status": {"type": "string"},
+    "retrieved_at": {"type": "string", "format": "date-time"},
+    "source_policy": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "required_local_pin_fields": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "browsers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "product_name",
+          "channel",
+          "engine_family",
+          "platform_scope",
+          "version",
+          "release_date",
+          "source_url",
+          "source_observation",
+          "local_pin_status",
+          "benchmark_eligible",
+          "missing_pin_evidence"
+        ],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+          "product_name": {"type": "string"},
+          "channel": {"type": "string"},
+          "engine_family": {"type": "string"},
+          "platform_scope": {"type": "string"},
+          "version": {"type": "string"},
+          "release_date": {"type": ["string", "null"]},
+          "source_url": {"type": "string"},
+          "source_observation": {"type": "string"},
+          "local_pin_status": {"enum": ["not_installed_or_observed_by_manifest", "local_pin_draft", "reviewed_local_pin"]},
+          "benchmark_eligible": {"type": "boolean"},
+          "missing_pin_evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+        }
+      }
+    },
+    "benchmark_suite_notes": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "unsupported_behavior": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_required": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

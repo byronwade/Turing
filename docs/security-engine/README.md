@@ -1,7 +1,7 @@
 # Browser Security Engineering Book
 
-Status: detailed research and design baseline  
-Owner: browser security architecture  
+Status: detailed research and design baseline
+Owner: browser security architecture
 Canonical overview: [Blueprint 08 — security, privacy, and sandbox](../blueprint-v1/08-security-and-sandbox.md)
 
 This book expands the threat model into subsystem contracts, platform evidence, exploit mitigations, trusted UI, release security, and verification. It does not claim that Turing is safe for arbitrary hostile browsing. No general-use security claim is permitted until the documented gates pass on every supported platform and the project can sustain emergency updates.
@@ -64,6 +64,13 @@ Security leadership means measurable containment and response, not absence of pu
 - [AI engineering book](../ai/README.md)
 - [Build and release operations](../blueprint-v1/13-build-release-operations.md)
 - [Security policy](../security.md)
+- [Servo security and maintenance implications](../research/servo-security-maintenance-implications-2026-07.md)
+- [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md)
+- [Incident Patch Rehearsal Inventory](../research/incident-patch-rehearsal-inventory-2026-07.md)
+
+## Incident and patch readiness boundary
+
+The checked no-claim [incident patch rehearsal template](machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), checked no-claim [incident/patch readiness-review template](machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json), and focused [`validate_incident_patch_readiness_review.py`](../../tools/validate_incident_patch_readiness_review.py) provide `PB-018` owner-review handoff shape only. They do not approve executed private-intake tabletop output, emergency patch dry-run records, owner-reviewed incident/patch readiness, incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, stable promotion, signing authority, incident closure authority, implementation, or production-safe browsing.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-driven trust boundaries

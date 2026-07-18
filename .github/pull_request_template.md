@@ -9,6 +9,8 @@ Describe the change, why it belongs in Turing, and whether it is research, speci
 - ADRs/design notes:
 - Work packages/milestones:
 - Research questions/experiments:
+- Proposed task or readiness records:
+- Core program registries reviewed:
 
 ## Behavior and architecture
 
@@ -45,6 +47,7 @@ List dependency, license, generated-code, native-code, schema, toolchain, model/
 - Documents reviewed but unchanged, with reason:
 - Requirements/risks/ADRs/backlog/registries updated:
 - `docs/repository-map.md` updated for additions, removals, or renames:
+- [Core program registries](../docs/repository-map.md#core-program-registries) reviewed before changing requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas:
 - `docs/README.md`, affected book indexes, and inbound links updated for documentation topology changes:
 - Stale claims and obsolete paths removed:
 
@@ -53,11 +56,18 @@ A non-documentation change without affected canonical documentation is incomplet
 ## Validation
 
 ```bash
-python3 tools/validate_blueprint.py
+python3 -B tools/validate_blueprint.py
+python3 -B tools/validate_adr_0009_evidence.py
+git diff --check
+git diff --cached --check
+cargo fmt --all -- --check
 cargo fmt --manifest-path prototype/Cargo.toml -- --check
 cargo test --manifest-path prototype/Cargo.toml --all-targets
 cargo run --manifest-path prototype/Cargo.toml --quiet
+cargo run --locked -p xtask -- check
 ```
+
+On Windows PowerShell, `.\tools\check.ps1` runs the aggregate check and sets `CARGO_TARGET_DIR` outside the repository when unset.
 
 ## Release impact
 

@@ -80,6 +80,8 @@ Compare generated bounded binary formats and compact structured formats for IPC,
 
 Decision output: one or more domain-specific encodings with consistent identity/limit conventions.
 
+The [IPC Capability Boundary Inventory - July 2026](../research/ipc-capability-boundary-inventory-2026-07.md) is current `PB-011` no-claim planning evidence for this question. It records current M0 bounded-envelope, oversized-message, typed-identity, role-capability, process-capability, checked IPC schema-source template, and checked IPC readiness-review template evidence while keeping canonical schema generation, wire encoding, connection authentication, owner-reviewed IPC readiness, timeout/cancellation behavior, stale-epoch receiver rejection, malformed/duplicate/reordered/unauthorized/wrong-principal tests, fuzz/model tests, renderer security, agent security, process isolation, site isolation, production IPC, and implementation outside the proof.
+
 ## RQ-14 — Storage engine and process model
 
 Evaluate SQLite-backed and custom append/log approaches for cookies, history, bookmarks, session journal, IndexedDB metadata, and settings. Test transactions, concurrency, corruption, migrations, disk full, power loss, profile size, encryption boundary, and repair.
@@ -91,6 +93,8 @@ Decision output: store-specific backends and shared transaction/recovery policy.
 Analyze WPT/Test262 taxonomy and a controlled application corpus to identify dependencies that unlock the greatest useful surface without embedding site-specific hacks. Track normative prerequisites and security interactions.
 
 Decision output: milestone feature ordering and explicit unsupported map.
+
+The [Servo local compatibility corpus and WPT/Test262 evidence report](../research/servo-local-compatibility-corpus-2026-07.md) is a first-pass denominator and corpus-planning input for this question; it is not a compatibility result.
 
 ## RQ-16 — Which competitive engine patterns survive equivalent measurement?
 
@@ -129,6 +133,8 @@ Decision output: runtime tier responsibilities, GC baseline, code-generation bou
 Generate role-specific capability manifests and effective sandbox policies for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater processes. Compare App Sandbox/seatbelt and hardened runtime, AppContainer/tokens/jobs/mitigations, and namespaces/seccomp/Landlock/portals.
 
 Run packaged-build negative tests for files, sockets, processes, debugging, devices, credentials, platform IPC, dynamic code, shared memory, and other profiles. Measure process launch, broker latency, compatibility, and policy complexity.
+
+The [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md), checked no-claim [sandbox probe-package template](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), and checked no-claim [sandbox readiness-review template](../security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json) are the current `PB-012` no-claim planning evidence for these targets, surfaces, platform artifacts, package handoff fields, readiness-review handoff fields, and blockers. They must be followed by packaged expected-deny execution beyond the template, effective platform-policy capture, host-safe fixtures, and owner-reviewed sandbox readiness review beyond the checked no-claim sandbox readiness-review template before `RQ-20` can support sandbox or security-gate claims.
 
 Decision output: supported platform/process matrix, broker interfaces, effective evidence format, degraded/unsupported modes, and SEC-GATE-1 criteria.
 
@@ -192,6 +198,8 @@ Prototype retained browser chrome plus macOS, Windows, and Linux adapters. Measu
 
 Prototype semantic epochs, remote frame trees, platform bridges, text ranges, browser UI, DevTools, automation, and agent snapshots. Decision output: tree schema, process composition, event/coalescing policy, platform mappings, latency budgets, and release matrix.
 
+The [Window Input Accessibility Spike Inventory - July 2026](../research/window-input-accessibility-spike-inventory-2026-07.md) is the current checked no-claim `PB-015` handoff for windowing, input, IME, accessibility-tree, page-tree composition, clipboard, drag-drop, localization, zoom, contrast, motion, crash recovery, renderer hang, GPU-loss, platform assistive-technology rows, and evidence blockers. It does not provide manual assistive-technology transcripts, screen-reader coverage, page-tree proof, latency samples, accessibility readiness, `UI-GATE-7`, `UI-GATE-10`, or release-path UI approval.
+
 ## RQ-31 — Which reproducible-build, signing, update, migration, and incident process can meet browser emergency timelines?
 
 Run clean rebuilds, provenance/SBOM verification, key-compromise drills, update tamper/replay/rollback tests, migration interruption, crash-report redaction, and emergency patch exercises. Decision output: release trust, packaging, update metadata, rollout, support lifecycle, and staffing gates.
@@ -208,6 +216,19 @@ Build dependency graphs from specifications, WPT, Interop, application needs, se
 
 Version machines, OS images, corpora, servers, power/thermal controls, adapters, raw result formats, statistics, and publication. Decision output: lab inventory, benchmark manifests, acceptance thresholds, regression policy, and claim-expiry rules.
 
+The [Performance Benchmark Readiness Packet - July 2026](../research/performance-benchmark-readiness-packet-2026-07.md) and checked no-claim [benchmark readiness-review template](machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json) are the current `PB-013` handoff for this question. They keep the work at evidence-queue status until fixed hardware, corpus, runner, raw artifacts, pinned competitor versions, owner-reviewed result bundles, and owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template exist.
+The [Chrome-Class Performance Runbook - July 2026](../research/chrome-class-performance-runbook-2026-07.md) is the current `PB13-EV-009` and `PB13-EV-010` handoff for competitor comparison controls, suite usage, no-claim manifest claim metadata, and claim-expiry policy. It does not provide a benchmark result or public performance claim.
+The [Benchmark Hardware and OS Manifest - July 2026](../research/benchmark-hardware-os-manifest-2026-07.md) is the current `PB13-EV-001` and `PB13-EV-002` handoff for a checked Tier H current-host candidate. It does not provide a clean lab image, Tier L/Tier M denominator, benchmark result, or performance claim.
+The [Benchmark OS and Update-Control Manifest - July 2026](../research/benchmark-os-update-control-manifest-2026-07.md) is the current `PB13-EV-002` handoff for current-host Windows update policy, Insider channel, service, driver, firmware, power, display, clock, and unsupported-control evidence. It does not provide a clean image, approved update freeze, driver freeze, thermal control, network isolation, benchmark result, or performance claim.
+The [Semantic Resource Attribution Taxonomy - July 2026](../research/semantic-resource-attribution-taxonomy-2026-07.md) is the current `PB13-EV-011` handoff for checked semantic owner classes, metric names, shared-resource policy, collection-plan fields, and UI/reporting disclosures. It does not provide browser trace instrumentation, per-tab resource measurements, GPU accounting output, raw runner artifacts, UI fixtures, or a performance claim.
+The [Benchmark Competitor Version Manifest - July 2026](../research/benchmark-competitor-version-manifest-2026-07.md) is the current `PB13-EV-009` handoff for official release-catalog candidate versions of Chrome Stable, Edge Stable, Firefox Stable, Safari Stable, and Safari Technology Preview. It does not provide local executable pins, binary hashes, profiles, settings, command lines, benchmark output, comparison evidence, or a performance claim.
+The [Benchmark Competitor Local Install Inventory - July 2026](../research/benchmark-competitor-local-install-inventory-2026-07.md) is the current `PB13-EV-009` handoff for current Windows high-end host executable paths, hashes, signatures, and version-state caveats for Chrome and Edge. It does not provide owner-reviewed browser pins, channel proof, profiles, settings, command lines, Firefox/Safari local install evidence, benchmark output, comparison evidence, or a performance claim.
+The [Benchmark Browser Pin Capture Contract - July 2026](../research/benchmark-browser-pin-capture-contract-2026-07.md) is the current `PB13-EV-005` and `PB13-EV-009` handoff for no-real-profile browser-reported version and settings capture. `tools/capture_benchmark_browser_pins.py --self-test` exercises the no-browser temp-profile, prohibited-path, and artifact-hash path only. The [Benchmark Browser Pin Local Diagnostic Capture - July 2026](../research/benchmark-browser-pin-local-diagnostic-capture-2026-07.md) records current-host Chrome `Chrome/150.0.7871.115` and Edge `Edg/151.0.4129.21` diagnostic browser-reported versions from isolated temporary profiles. These artifacts do not provide owner-reviewed benchmark-ready pins, benchmark output, comparison evidence, or a performance claim.
+The [Servo Performance Baseline Preparation - July 2026](../research/servo-performance-baseline-2026-07.md) is the current `ADR9-EV-014` source-strategy handoff. It records reference-host, artifact, command-surface, fixture-inventory, and run-record requirements only; it does not replace runner-generated raw performance, memory, energy, process, lifecycle, or failure-denominator evidence.
+The no-claim benchmark manifest sample and `tools/validate_benchmark_manifests.py` provide schema-shape, current Tier H hardware-registry cross-check, current OS-control registry cross-check, resource-attribution registry cross-check, and no-claim claim-metadata evidence only; they do not replace runner-generated raw results or fixed-hardware measurements.
+The no-claim corpus manifest, [Benchmark Corpus Expansion - July 2026](../research/benchmark-corpus-expansion-2026-07.md), and `tools/validate_benchmark_corpus.py` provide expanded generated local fixture contracts across static, app-like, accessibility, international-text, hostile-markup, media-document, and service-worker-contract shapes only; they do not replace a reviewed representative offline corpus.
+The no-claim local static network profile, `tools/validate_benchmark_network_profile.py`, `tools/serve_benchmark_profile.py --self-test`, `tools/run_benchmark_server_profile.py --self-test`, and `tools/run_benchmark_smoke.py --self-test` provide a loopback HTTP/1.1 route, Host-header DNS behavior, cache contract, static-server self-test, checked runner-managed server lifecycle self-test, and hardware/OS-control/resource-attribution-linked smoke runner artifact package only; they do not replace browser-run server evidence, browser runs, TLS, HTTP/2, HTTP/3, proxy, authentication, or network-shaping evidence.
+
 ## RQ-35 — Which data-layout, allocator, virtual-memory, and reclamation strategies minimize sustained working set and latency?
 
 Compare compact handles, field splitting, arrays, arenas, slabs, general allocators, page release, huge/guard pages, frozen-tab trimming, cache locality, and hardware tiers. Decision output: representation budgets, allocator classes, page policy, and unsafe boundaries.
@@ -215,6 +236,8 @@ Compare compact handles, field splitting, arrays, arenas, slabs, general allocat
 ## RQ-36 — Which IPC, shared-memory, serialization, copy, batching, and backpressure choices dominate isolation-adjusted performance?
 
 Measure message sizes, copies, mappings, validation, cache coherency, priorities, batching delay, queue pressure, cancellation, crash cleanup, and semantic attribution. Decision output: domain encodings, shared-buffer contracts, queue budgets, and overload policy.
+
+Use the [IPC Capability Boundary Inventory - July 2026](../research/ipc-capability-boundary-inventory-2026-07.md) as the current boundary inventory before measuring or implementing IPC performance choices. The inventory is not a performance, wire-format, schema-generator, or production IPC claim.
 
 ## RQ-37 — Which PGO, LTO, binary-layout, process-launch, and preinitialization techniques improve startup without harming reproducibility or memory?
 
@@ -265,6 +288,13 @@ Which Rust/C/generated-SDK contract remains simple without freezing internals?
 
 Which clean, selective, upstream, derived, or charter-change option best serves Turing?
 
+The [Servo unsafe and FFI contract review](../research/servo-unsafe-ffi-contract-review-2026-07.md) is the current first-pass evidence for `ADR9-EV-009` and `ADR9-EV-010`; it does not approve any unsafe block, C API, ABI contract, component boundary, source, dependency, or release code.
+The [Servo component boundary and JavaScript conflict analysis](../research/servo-component-boundary-analysis-2026-07.md) is the current first-pass evidence for `ADR9-EV-011` and `ADR9-EV-012`; it does not approve a component boundary or supersede `ADR-0004`.
+The [Servo local compatibility corpus and WPT/Test262 evidence report](../research/servo-local-compatibility-corpus-2026-07.md), checked [local compatibility corpus manifest](machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json), generated no-claim fixture root, HTTP route self-test, and checked [HTTPS host-alias harness plan](machine/servo-local-compatibility-harnesses/no-claim-https-host-alias.plan.json) are the current first-pass evidence for `ADR9-EV-013`; they do not support a Servo, Turing, WPT/Test262 pass-rate, or Chrome-class compatibility claim.
+The [Servo performance baseline preparation report](../research/servo-performance-baseline-2026-07.md) is the current first-pass evidence for `ADR9-EV-014`; it does not support a performance, memory, energy, or speed claim.
+The [Servo security and maintenance implications report](../research/servo-security-maintenance-implications-2026-07.md) is the current first-pass evidence for `ADR9-EV-015` and `ADR9-EV-016`; it does not approve Servo sandboxing, security posture, release code, support obligations, or an upstream relationship.
+The [ADR-0009 decision draft and public-claim impact template](../project-buildout/16-adr-0009-decision-draft.md) is the current first-pass evidence for `ADR9-EV-017`; it does not select an option, accept source, or approve public claims.
+
 ## RQ-45 — Project controls
 
 Which ownership, review, traceability, phase, and evidence controls reduce defects without blocking work?
@@ -272,6 +302,8 @@ Which ownership, review, traceability, phase, and evidence controls reduce defec
 ## RQ-46 — Reproducible environment
 
 Which bootstrap, cache, linker, test runner, and host matrix is fast and maintainable?
+
+Current `PB-009` planning evidence starts with the checked [Fresh Host Reproduction Inventory](../research/fresh-host-reproduction-inventory-2026-07.md), checked run-record template, and checked no-claim [fresh-host readiness-review template](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json). It must become an independent fresh-host run or owner-approved clean-VM equivalent with retained bootstrap, doctor, check, and `xtask` logs, exact OS, shell, Rust, Cargo, Git, cache, target-directory, temp-directory, source-tree cleanliness, failure classification, rollback notes, and owner-reviewed fresh-host readiness beyond the checked no-claim template before the research question can support reproducibility, `PB-009` readiness, release confidence, preview, beta, stable, production, implementation, or Chrome-class claims.
 
 ## RQ-47 — Traceability at browser scale
 
@@ -304,6 +336,8 @@ Does isolated capability-scoped Agent Mode reduce harmful actions and improve tr
 
 What migration and open-export coverage materially reduces browser switching cost while protecting credentials and profile integrity?
 
+Current `PB-016` planning evidence starts with the checked [Profile Session Format Inventory](../research/profile-session-format-inventory-2026-07.md), checked no-claim [schema-package template](../storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json), and checked no-claim [readiness-review template](../storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json). It must become executable profile, Space, session, snapshot, and migration schemas beyond the schema-package template plus owner-reviewed profile/session readiness review beyond the readiness-review template with disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, data-loss, unsupported sync, credential-storage, real-profile migration, user-data handling, release-path, and production profile-format boundaries before the research question can support product or release claims.
+
 ## RQ-54 — Research, causality, receipts, sync, and collaboration
 
 Do the Research Canvas, causal diagnostics, privacy receipts, selective sync, and collaboration improve task accuracy and continuity enough to justify their complexity?
@@ -315,17 +349,29 @@ Each study records cohort, task, comparator version, configuration, raw outcomes
 
 Which Slint, Vizia, Floem/GPUI, or alternative configuration gives the best complete browser-shell result across accessibility, page composition, startup, memory, binary, input latency, frame pacing, energy, development speed, licensing, maintenance, and replacement?
 
+Current `PB-003` planning evidence starts with the checked [Toolkit-Neutral UI Adapter Contract Inventory](../research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md). It must become accepted `ADR-0013`, complete toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contracts, native adapter prototype evidence, no-toolkit-owned navigation/profile/permission/credential/agent/Plug-in/persistence/update authority negative tests, and owner review before this research question can support native-shell, trusted-chrome, accessibility, page-surface, toolkit-selection, or release-path UI approval.
+
+Current `PB-004` planning evidence starts with the checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md). It must become executable equivalent reference-shell adapter evidence for Slint, Vizia, and Floem or GPUI or owner-approved reduced scope, plus accepted `ADR-0014`, accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, replacement, package, runtime-exclusion, and owner-review evidence before this research question can support toolkit selection or release-path UI approval.
+
+The checked no-claim [native UI readiness-review template](../ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json) now ties `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `TASK-000006` into one future review shape. It must become an owner-reviewed native UI readiness review beyond the template before any toolkit selection, trusted-chrome readiness, accessibility readiness, page-surface approval, release-path UI approval, production claim, or implementation claim.
+
 ## RQ-56 — Browser page-surface composition
 
 Should Turing own the window swapchain and compose toolkit chrome with page textures, use a stable toolkit custom-render hook, or use constrained platform child surfaces? Measure damage, scale, input, accessibility, capture, device loss, security, and portability.
+
+Current `PB-005` planning evidence starts with the checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md). It must become executable `UI-GATE-7` evidence for typed page-surface handles, brokered surface handles, renderer-produced page frames, resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, GPU device loss, software fallback, latency, frame pacing, stale-handle negative tests, `ADR-0016`, compositor ownership, and owner review before the research question can support page-surface approval or toolkit selection.
 
 ## RQ-57 — React design workflow without a shipped React runtime
 
 Can shared tokens, components, fixtures, and generated bindings provide React-speed design exploration while native components remain authoritative and drift is machine-detected? Compare against native live-preview workflows.
 
+Current planning evidence starts with the checked [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md); rendered or adapter-specific fixtures remain unproven.
+
 ## RQ-58 — Pre-build readiness control
 
 Does `PB-001` through `PB-020` prevent unresolved interfaces and operational claims from hardening prematurely without blocking useful contained prototypes?
+
+Current `PB-020` planning evidence starts with the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md), checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md), checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md), and checked no-claim [build-readiness closure-review template](../project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json). They must become owner-reviewed closure of remaining P0 source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, owner-review, release-authority, task-dependency, decision-gate, documentation-completion, and build-readiness closure records before this research question can support broad M1 implementation, task approval, readiness promotion, preview, beta, stable, production, Chrome-class, performance, compatibility, security, accessibility, release, all-information-ready-for-building, or daily-driver claims.
 
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## RQ-59 — Agent task and authority model
@@ -348,6 +394,8 @@ Which numeric reliability, performance, energy, compatibility, accessibility, mi
 
 Which TUF-style role, key, delegation, threshold, expiration, rollback, and emergency-recovery architecture best fits Turing channels and platforms?
 
+Current `PB-017` planning evidence starts with the checked [Research Package Update Lab Inventory](../research/research-package-update-lab-inventory-2026-07.md), checked no-claim [update-lab package template](../release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json), and checked no-claim [readiness-review template](../release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json). It must become executable package manifests and update metadata parsers beyond the update-lab package template, no-production-key signature/threshold fixtures, tamper, replay, wrong-target, expiry, mirror, partial-write, disk-full, power-loss, rollback, vulnerable-version refusal, migration, downgrade, crash-loop, privacy-preserving event tests, and owner-reviewed package/update readiness beyond the readiness-review template before the research question can support update-trust, release-readiness, supported-security, production-updater, signing, stable-channel, public-distribution, or implementation claims.
+
 ## RQ-64 — Secure-development and provenance level
 
 Which NIST SSDF, SP 800-218A, SLSA Source/Build, SBOM, review-attestation, and reproducibility controls are achievable and useful at each maturity?
@@ -359,3 +407,7 @@ Which optional services materially improve safety or continuity, and how should 
 ## RQ-66 — Human release, legal, and incident capacity
 
 What staffing, separation of duties, legal approval, signing ceremony, support term, on-call, and incident-rehearsal evidence is necessary before beta and stable?
+
+Current `PB-018` planning evidence starts with the checked [Incident Patch Rehearsal Inventory](../research/incident-patch-rehearsal-inventory-2026-07.md), checked no-claim [incident patch rehearsal template](../security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), and checked no-claim [incident/patch readiness-review template](../security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json). It must become executed private-intake tabletop records beyond the rehearsal template, emergency patch dry-run evidence, incident-class workflow exercises, timing/escalation/secret-rotation drills, role review, backup-owner coverage, coordinated disclosure rehearsal, and owner-reviewed incident/patch readiness beyond the readiness-review template before the research question can support incident-response readiness, emergency patch capacity, supported-security, stable-promotion, signing-authority, disclosure authority, incident-closure authority, implementation, or production-safe browsing claims.
+
+Current `PB-019` blocked evidence starts with the checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json). It must become named qualified backup owners beyond the qualification template, role-level and subsystem-competence evidence, representative path coverage, review records, availability, succession, recusal, inactivity, removal, emergency replacement, CODEOWNERS and access reconciliation, two-person-control evidence, and owner-reviewed backup ownership readiness beyond the readiness-review template before this research question can support owner coverage, release authority, signing authority, update trust, supported-version changes, security-disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation claims.

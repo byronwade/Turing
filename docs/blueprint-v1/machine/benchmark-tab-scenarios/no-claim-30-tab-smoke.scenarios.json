@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "scenario_set_id": "TURING.BENCHMARK.TAB_SCENARIOS.NOCLAIM_30_TAB_SMOKE.2026_07",
+  "status": "sample_only_no_benchmark_result",
+  "created_at": "2026-07-18T00:00:00Z",
+  "claim_status": "30-tab scenario manifest evidence only; no browser run, no benchmark result, no memory result, no energy result, no Chrome-class claim, and no performance claim.",
+  "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+  "network_profile_id": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+  "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+  "scenario_count": 2,
+  "scenarios": [
+    {
+      "scenario_id": "PB13-TABS-30-MIXED-STATE-SMOKE-001",
+      "name": "No-claim 30-tab mixed lifecycle smoke scenario",
+      "scenario_kind": "thirty_tab_mixed_state",
+      "tab_count": 30,
+      "cache_state": "cold",
+      "agent_mode": "disabled",
+      "security_assumptions": [
+        "sample scenario only; no browser sandbox or site-isolation behavior is measured",
+        "every failed, discarded, serialized, or unsupported tab remains in the denominator",
+        "the current corpus is generated local content and does not represent Chrome-class page coverage"
+      ],
+      "lifecycle": {
+        "all_live": false,
+        "state_counts": {
+          "active": 1,
+          "background": 9,
+          "throttled": 8,
+          "frozen": 6,
+          "serialized": 3,
+          "discarded": 3,
+          "crashed": 0
+        },
+        "process_topology": "sample-only topology; runner must later record actual process, renderer, site-instance, and profile ownership instead of using these groups as process evidence",
+        "revival_check_required": true,
+        "state_loss_policy": "serialized and discarded tabs must report revival latency, lost state, and user-visible recovery behavior before any result can be interpreted"
+      },
+      "tab_groups": [
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-ACTIVE-STATIC",
+          "count": 1,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "active",
+          "protected": true,
+          "protection_reason": "foreground tab",
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["foreground denominator tab"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-BACKGROUND-STATIC",
+          "count": 5,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "background",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["background static-document denominator tabs"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-BACKGROUND-APP",
+          "count": 4,
+          "corpus_case_id": "PB13-CORPUS-APP-LIKE-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+          "initial_state": "background",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["background app-like denominator tabs"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-THROTTLED-APP",
+          "count": 8,
+          "corpus_case_id": "PB13-CORPUS-APP-LIKE-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+          "initial_state": "throttled",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["throttled app-like denominator tabs"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-FROZEN-STATIC",
+          "count": 6,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "frozen",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": true,
+          "state_loss_allowed": false,
+          "notes": ["frozen static-document denominator tabs"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-SERIALIZED-APP",
+          "count": 3,
+          "corpus_case_id": "PB13-CORPUS-APP-LIKE-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+          "initial_state": "serialized",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": true,
+          "state_loss_allowed": true,
+          "notes": ["serialized tabs require explicit state-loss reporting"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-MIXED-DISCARDED-STATIC",
+          "count": 3,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "discarded",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": true,
+          "state_loss_allowed": true,
+          "notes": ["discarded tabs must never be counted as equivalent to all-live tabs"]
+        }
+      ],
+      "expected_m0_status": "scenario_contract_only_no_browser_tabs",
+      "measurement_claim_allowed": false
+    },
+    {
+      "scenario_id": "PB13-TABS-30-ALL-LIVE-SMOKE-001",
+      "name": "No-claim 30-tab all-live smoke scenario",
+      "scenario_kind": "thirty_tab_all_live",
+      "tab_count": 30,
+      "cache_state": "cold",
+      "agent_mode": "disabled",
+      "security_assumptions": [
+        "sample scenario only; no browser sandbox or site-isolation behavior is measured",
+        "all thirty tabs remain live in the denominator",
+        "the current corpus is generated local content and does not represent Chrome-class page coverage"
+      ],
+      "lifecycle": {
+        "all_live": true,
+        "state_counts": {
+          "active": 1,
+          "background": 29,
+          "throttled": 0,
+          "frozen": 0,
+          "serialized": 0,
+          "discarded": 0,
+          "crashed": 0
+        },
+        "process_topology": "sample-only topology; runner must later record actual process, renderer, site-instance, and profile ownership for all live tabs",
+        "revival_check_required": false,
+        "state_loss_policy": "all-live scenario forbids serialized, discarded, or crashed denominator tabs"
+      },
+      "tab_groups": [
+        {
+          "group_id": "PB13-TAB-GROUP-ALLLIVE-ACTIVE-STATIC",
+          "count": 1,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "active",
+          "protected": true,
+          "protection_reason": "foreground tab",
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["foreground all-live denominator tab"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-ALLLIVE-BACKGROUND-STATIC",
+          "count": 14,
+          "corpus_case_id": "PB13-CORPUS-STATIC-DOCUMENT-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/static-document/",
+          "initial_state": "background",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["background static-document all-live denominator tabs"]
+        },
+        {
+          "group_id": "PB13-TAB-GROUP-ALLLIVE-BACKGROUND-APP",
+          "count": 15,
+          "corpus_case_id": "PB13-CORPUS-APP-LIKE-001",
+          "top_level_site": "https://turing.invalid/corpus/no-claim-smoke/app-like/",
+          "initial_state": "background",
+          "protected": false,
+          "protection_reason": null,
+          "revival_expected": false,
+          "state_loss_allowed": false,
+          "notes": ["background app-like all-live denominator tabs"]
+        }
+      ],
+      "expected_m0_status": "scenario_contract_only_no_browser_tabs",
+      "measurement_claim_allowed": false
+    }
+  ],
+  "unsupported_behavior": [
+    "no browser was launched",
+    "no benchmark result exists",
+    "no memory, energy, latency, startup, recovery, or compatibility result exists",
+    "no process topology, site-isolation, sandbox, or renderer-count evidence exists",
+    "no runner-generated 30-tab raw artifacts exist",
+    "no Chrome-class, faster, lower-memory, lower-energy, daily-driver, or production claim is supported"
+  ]
+}

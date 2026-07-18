@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "status": "candidate_current_host_uncontrolled",
+  "claim_status": "Candidate OS/update-control inventory only; no clean image, no approved update freeze, no browser run, no benchmark result, no competitor result, and no performance claim.",
+  "observed_at": "2026-07-17T23:56:58Z",
+  "os_identity": {
+    "caption": "Microsoft Windows 11 Pro Insider Preview",
+    "version": "10.0.26220",
+    "build_number": "26220",
+    "display_version": "25H2",
+    "ubr": 8491,
+    "edition_id": "Professional",
+    "installation_type": "Client",
+    "build_branch": "ge_release_flt",
+    "lcu_version": "10.0.26100.8491",
+    "pending_install": 0,
+    "install_date": "2026-04-19T22:50:13-04:00",
+    "last_boot_time": "2026-07-12T09:40:24.010488-04:00",
+    "insider_preview": true,
+    "insider_channel": "Beta",
+    "insider_ring": "External",
+    "insider_content_type": "Mainline",
+    "clean_image_status": "not a clean benchmark image; current owner workstation install"
+  },
+  "update_control": {
+    "windows_update_access_policy": "DisableWindowsUpdateAccess=1 observed under HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+    "os_upgrade_policy": "DisableOSUpgrade=1 observed under HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+    "automatic_update_policy": "NoAutoUpdate=1 observed under HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+    "feature_update_policy": "target release version policy not observed",
+    "quality_update_policy": "quality update deferral and pause policy not observed",
+    "driver_update_policy": "driver exclusion policy not observed",
+    "preview_build_policy": "preview builds enabled; Beta/External Insider channel observed",
+    "active_hours": "07:00-01:00 local time observed in Windows Update UX settings",
+    "metered_download_policy": "AllowAutoWindowsUpdateDownloadOverMeteredNetwork=1 observed",
+    "policy_status": "partial local policy inventory only; not owner-reviewed and not sufficient for benchmark freeze"
+  },
+  "driver_firmware_control": {
+    "gpu_name": "AMD Radeon RX 7900 XTX",
+    "gpu_driver_version": "32.0.22029.1019",
+    "bios_vendor": "American Megatrends Inc.",
+    "bios_version": "5302",
+    "bios_release_date": "2025-10-02T20:00:00-04:00",
+    "baseboard": "ASUSTeK COMPUTER INC. ROG CROSSHAIR VIII DARK HERO Rev X.0x",
+    "driver_inventory_status": "single GPU driver observed through Win32_VideoController; full PnPUtil driver store inventory not captured",
+    "firmware_freeze_status": "BIOS identity observed; firmware and BIOS update freeze not approved"
+  },
+  "power_display_thermal_control": {
+    "active_power_scheme": "7014fddf-3752-44e8-8d1d-2471c13cd271 Ultimate Performance",
+    "processor_minimum_ac_percent": 100,
+    "processor_maximum_ac_percent": 100,
+    "display_resolution": "2560x1440",
+    "display_refresh_hz": 165,
+    "display_refresh_status": "not normalized to 60 Hz or any approved benchmark refresh rate",
+    "thermal_state": "unmeasured",
+    "thermal_capture_status": "no thermal soak, fan curve, room condition, or sensor log captured"
+  },
+  "clock_network_control": {
+    "timezone_id": "Eastern Standard Time",
+    "timezone_display": "(UTC-05:00) Eastern Time (US & Canada)",
+    "supports_daylight_saving_time": true,
+    "w32time_status": "w32tm /query /status failed because the time service was not started",
+    "network_isolation_status": "not isolated for benchmark use",
+    "artifact_storage_status": "approved benchmark artifact storage location not defined"
+  },
+  "background_services": [
+    {
+      "name": "bits",
+      "status": "Running",
+      "start_type": "Automatic"
+    },
+    {
+      "name": "usosvc",
+      "status": "Running",
+      "start_type": "Automatic"
+    },
+    {
+      "name": "WaaSMedicSvc",
+      "status": "Stopped",
+      "start_type": "Manual",
+      "query_note": "service query returned PermissionDenied while also reporting stopped/manual"
+    },
+    {
+      "name": "wuauserv",
+      "status": "Stopped",
+      "start_type": "Manual"
+    }
+  ],
+  "unsupported_behavior": [
+    "not a clean OS image",
+    "Windows Insider Preview channel is enabled",
+    "target feature update version is not pinned",
+    "quality update pause and deferral policy is not captured",
+    "driver update exclusion policy is not captured",
+    "full PnPUtil driver inventory is not captured",
+    "firmware and BIOS update freeze is not approved",
+    "display refresh rate is not normalized",
+    "thermal state and fan curve are not measured",
+    "time service status is not healthy",
+    "network isolation and artifact storage policy are not approved",
+    "no browser-run benchmark manifest has used this OS-control manifest"
+  ],
+  "evidence_required": [
+    "owner-approved clean image or restore procedure",
+    "target release version, feature update, quality update, driver update, and preview-build policies",
+    "full installed driver package inventory and driver freeze policy",
+    "BIOS and firmware freeze policy",
+    "display refresh-rate and scale-factor control procedure",
+    "thermal soak, sensor logging, fan, and room-condition procedure",
+    "time synchronization and timezone control procedure",
+    "network isolation and approved artifact storage procedure",
+    "browser-run benchmark manifest that references this os_control_id",
+    "independent review before treating this as a decision-grade OS-control manifest"
+  ],
+  "sources": [
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\WindowsSelfHost\\Applicability",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\WindowsSelfHost\\UI\\Selection",
+    "Get-Service wuauserv,bits,usosvc,WaaSMedicSvc",
+    "Get-CimInstance Win32_OperatingSystem",
+    "Get-CimInstance Win32_VideoController",
+    "Get-CimInstance Win32_BIOS",
+    "Get-CimInstance Win32_BaseBoard",
+    "powercfg /getactivescheme",
+    "powercfg /query SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN",
+    "powercfg /query SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX",
+    "Get-TimeZone",
+    "w32tm /query /status"
+  ],
+  "external_sources": [
+    "https://learn.microsoft.com/en-us/windows/deployment/update/waas-wufb-group-policy",
+    "https://learn.microsoft.com/en-us/windows/deployment/update/waas-wu-settings",
+    "https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options",
+    "https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/pnputil-command-syntax",
+    "https://learn.microsoft.com/en-us/windows-hardware/test/wpt/windows-performance-recorder"
+  ]
+}

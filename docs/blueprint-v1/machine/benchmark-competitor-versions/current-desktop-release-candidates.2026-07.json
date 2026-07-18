@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "competitor_version_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
+  "status": "release_catalog_no_local_install_pins",
+  "claim_status": "Official release-catalog candidate only; no installed browser path, no executable hash, no local profile, no benchmark run, no competitor result, no comparison result, and no performance claim.",
+  "retrieved_at": "2026-07-18T00:00:00-04:00",
+  "source_policy": [
+    "Use official browser vendor release notes or release pages before any competitor comparison.",
+    "Treat release-catalog entries as candidates only until a local benchmark manifest records executable path, executable hash, channel, command line, profile, settings, update state, and security posture.",
+    "Expire comparison evidence immediately when a tested competitor channel receives a stable update or when the benchmark suite, OS image, driver, hardware, or security settings change."
+  ],
+  "required_local_pin_fields": [
+    "product_name",
+    "channel",
+    "exact_version_reported_by_browser",
+    "platform",
+    "architecture",
+    "executable_path",
+    "executable_sha256",
+    "release_source_url",
+    "command_line",
+    "profile_source",
+    "extension_state",
+    "sync_account_state",
+    "update_state_before_run",
+    "update_state_after_run",
+    "sandbox_and_site_isolation_settings",
+    "memory_or_energy_saver_settings",
+    "cache_state",
+    "user_agent_policy",
+    "failure_denominator_policy"
+  ],
+  "browsers": [
+    {
+      "id": "chrome-stable-desktop",
+      "product_name": "Google Chrome",
+      "channel": "stable",
+      "engine_family": "Chromium/Blink/V8",
+      "platform_scope": "Windows, macOS, Linux desktop",
+      "version": "150.0.7871.128/.129 for Windows and macOS; 150.0.7871.128 for Linux",
+      "release_date": "2026-07-16",
+      "source_url": "https://chromereleases.googleblog.com/",
+      "source_observation": "Chrome Releases reported Stable Channel Update for Desktop on 2026-07-16 with version 150.0.7871.128/.129 for Windows and Mac and 150.0.7871.128 for Linux.",
+      "local_pin_status": "not_installed_or_observed_by_manifest",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "local executable path",
+        "local executable SHA-256",
+        "chrome://version or command-line version capture",
+        "profile, extension, sync, update, sandbox, site-isolation, memory-saver, cache, and command-line settings"
+      ]
+    },
+    {
+      "id": "edge-stable-desktop",
+      "product_name": "Microsoft Edge",
+      "channel": "stable",
+      "engine_family": "Chromium/Blink/V8",
+      "platform_scope": "Windows, macOS, Linux desktop where Edge Stable is supported",
+      "version": "150.0.4078.83",
+      "release_date": "2026-07-17",
+      "source_url": "https://learn.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+      "source_observation": "Microsoft Edge Stable release notes listed latest major version 150 and latest minor version 150.0.4078.83 on 2026-07-17.",
+      "local_pin_status": "not_installed_or_observed_by_manifest",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "local executable path",
+        "local executable SHA-256",
+        "edge://version or command-line version capture",
+        "profile, extension, sync, update, sidebar/workspaces, WebView2, sandbox, site-isolation, memory-saver, cache, and command-line settings"
+      ]
+    },
+    {
+      "id": "firefox-stable-desktop",
+      "product_name": "Mozilla Firefox",
+      "channel": "stable",
+      "engine_family": "Gecko/SpiderMonkey",
+      "platform_scope": "Windows, macOS, Linux desktop",
+      "version": "152.0.6",
+      "release_date": null,
+      "source_url": "https://www.firefox.com/en-US/releases/",
+      "source_observation": "Firefox release notes listed Firefox 152.0.0 with patch releases through 152.0.6 at retrieval time.",
+      "local_pin_status": "not_installed_or_observed_by_manifest",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "local executable path",
+        "local executable SHA-256",
+        "about:support or command-line version capture",
+        "profile, extension, sync, update, ETP, site-isolation/Fission, cache, JIT, memory, and command-line settings"
+      ]
+    },
+    {
+      "id": "safari-stable-desktop",
+      "product_name": "Apple Safari",
+      "channel": "stable",
+      "engine_family": "WebKit/JavaScriptCore",
+      "platform_scope": "macOS desktop only",
+      "version": "26.5 (20624.2.5)",
+      "release_date": "2026-05-11",
+      "source_url": "https://developer.apple.com/documentation/safari-release-notes/safari-26_5-release-notes",
+      "source_observation": "Apple Developer Safari release notes search result reported Safari 26.5 Release Notes, released 2026-05-11, version 26.5 (20624.2.5).",
+      "local_pin_status": "not_installed_or_observed_by_manifest",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "macOS host manifest",
+        "Safari application path and code signature",
+        "local executable or application bundle hash strategy",
+        "Safari version capture from the application",
+        "profile, extension, iCloud, cache, privacy, WebDriver, power, and process settings"
+      ]
+    },
+    {
+      "id": "safari-technology-preview",
+      "product_name": "Safari Technology Preview",
+      "channel": "technology-preview",
+      "engine_family": "WebKit/JavaScriptCore",
+      "platform_scope": "macOS desktop preview only",
+      "version": "Release 247",
+      "release_date": "2026-07-01",
+      "source_url": "https://developer.apple.com/safari/resources/",
+      "source_observation": "Apple Safari Resources listed Safari Technology Preview Release 247 posted 2026-07-01.",
+      "local_pin_status": "not_installed_or_observed_by_manifest",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "preview build download and signature evidence",
+        "local application path and hash strategy",
+        "version capture from the preview application",
+        "profile, extension, cache, WebDriver, power, and process settings",
+        "explicit preview-channel comparison label"
+      ]
+    }
+  ],
+  "benchmark_suite_notes": [
+    "BrowserBench currently identifies Speedometer 3.1 as the responsiveness benchmark that supersedes Speedometer 3.0.",
+    "BrowserBench identifies JetStream 3.0 as the current JavaScript and WebAssembly benchmark for advanced workloads.",
+    "BrowserBench identifies MotionMark as the graphics benchmark for animation capacity, with current generic MotionMark page serving version 1.3.2 at retrieval time.",
+    "Scores from different benchmark suite versions, viewport classes, display refresh rates, security settings, lifecycle states, or browser channels are not interchangeable."
+  ],
+  "unsupported_behavior": [
+    "No local browser executable was inspected by this manifest.",
+    "No browser command line, profile, extension state, cache state, update state, site-isolation state, sandbox state, or memory/energy-saver setting was captured.",
+    "No benchmark suite was run.",
+    "No competitor result or ranking exists.",
+    "No Chrome-class, fastest, lower-memory, lower-energy, compatibility, security, or production claim is supported."
+  ],
+  "evidence_required": [
+    "local installed browser version capture for every compared product",
+    "executable path and executable SHA-256 or documented platform-specific hash strategy",
+    "profile, extension, sync/account, cache, command-line, update, sandbox, site-isolation, lifecycle, memory-saver, energy-saver, and feature-flag disclosure",
+    "runner-generated benchmark manifest linking hardware, OS-control, resource-attribution, corpus, network-profile, and competitor-version IDs",
+    "raw artifacts, traces, failure denominator, statistical summary, and owner review before any comparison claim"
+  ]
+}

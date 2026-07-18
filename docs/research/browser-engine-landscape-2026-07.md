@@ -470,7 +470,7 @@ Before a new architecture decision is accepted:
 - Interop 2026 — https://web.dev/blog/interop-2026
 - BrowserBench — https://browserbench.org/
 - Speedometer — https://browserbench.org/Speedometer3.1/
-- MotionMark — https://browserbench.org/MotionMark1.3/
+- MotionMark — https://browserbench.org/MotionMark/
 
 ## 15. Unresolved questions
 

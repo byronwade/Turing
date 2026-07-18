@@ -78,11 +78,13 @@ The Blueprint remains the normative owner. These books expand implementation res
 - [Agent Execution and Autonomous Engineering](../agent-execution/README.md)
 - [Production Readiness and Stable Release Engineering](../production-readiness/README.md)
 
-The [performance, security, developer, and missing-systems audit](../research/performance-security-developer-expansion-audit-2026-07.md) records this expansion and its limitations.
+The [performance, security, developer, and missing-systems audit](../research/performance-security-developer-expansion-audit-2026-07.md) records the second detailed-book expansion and its limitations. Later operating, market, UI-runtime, Plug-in, embedding, agent-execution, and production-readiness books are indexed above and remain subject to the same status discipline.
 
 ## Machine-readable companions
 
-The `machine/` directory contains requirements, risks, work packages, process capabilities, benchmark-manifest schemas, and agent-action schemas. These files are not secondary exports: they must remain consistent with the prose in the same change.
+The `machine/` directory contains the program-control registries that must stay synchronized with the Blueprint, detailed books, research reports, and operating handoffs in the same change. Use the [repository map core program registries](../repository-map.md#core-program-registries) table before changing scope, authority, or readiness.
+
+Core machine companions include [`requirements.json`](machine/requirements.json), [`risks.json`](machine/risks.json), [`backlog.json`](machine/backlog.json), [`pre-build-readiness.json`](machine/pre-build-readiness.json), [`build-readiness-task-queue.json`](machine/build-readiness-task-queue.json), [`process-capabilities.json`](machine/process-capabilities.json), [`workspace-components.json`](machine/workspace-components.json), [`toolchains.json`](machine/toolchains.json), [`professional-owners.json`](machine/professional-owners.json), [`professional-traceability.json`](machine/professional-traceability.json), [`professional-phase-gates.json`](machine/professional-phase-gates.json), [`professional-review-rules.json`](machine/professional-review-rules.json), [`professional-exceptions.json`](machine/professional-exceptions.json), and [`agent-action.schema.json`](machine/agent-action.schema.json). Evidence companions such as [`research-readiness-crosswalk.json`](machine/research-readiness-crosswalk.json), [`adr-0009-evidence.json`](machine/adr-0009-evidence.json), and benchmark registries remain no-claim controls unless the owning review records promote them.
 
 ## Supporting research
 
@@ -96,7 +98,18 @@ Current reports:
 - [Professional buildout gap audit — July 2026](../research/professional-buildout-gap-audit-2026-07.md)
 - [Browser market gap and differentiation research — July 2026](../research/browser-market-gap-2026-07.md)
 - [Native UI framework evaluation — July 2026](../research/native-ui-framework-evaluation-2026-07.md)
+- [Native UI Framework Bake-Off Inventory — July 2026](../research/native-ui-framework-bakeoff-inventory-2026-07.md)
+- [Page Surface Composition Inventory — July 2026](../research/page-surface-composition-inventory-2026-07.md)
+- [Window Input Accessibility Spike Inventory — July 2026](../research/window-input-accessibility-spike-inventory-2026-07.md)
 - [Pre-build readiness gap audit — July 2026](../research/pre-build-readiness-gap-audit-2026-07.md)
+- [Performance benchmark readiness packet — July 2026](../research/performance-benchmark-readiness-packet-2026-07.md)
+- [Chrome-class performance runbook — July 2026](../research/chrome-class-performance-runbook-2026-07.md)
+- [Benchmark competitor version manifest — July 2026](../research/benchmark-competitor-version-manifest-2026-07.md)
+- [Benchmark competitor local install inventory — July 2026](../research/benchmark-competitor-local-install-inventory-2026-07.md)
+- [Benchmark browser pin capture contract — July 2026](../research/benchmark-browser-pin-capture-contract-2026-07.md)
+- [Benchmark browser pin local diagnostic capture — July 2026](../research/benchmark-browser-pin-local-diagnostic-capture-2026-07.md)
+- [Documentation Readiness Completion Audit — July 2026](../research/documentation-readiness-completion-audit-2026-07.md)
+- [Servo unsafe and FFI contract review — July 2026](../research/servo-unsafe-ffi-contract-review-2026-07.md)
 
 Recommendations from a report or detailed book become normative only when the owning Blueprint chapters, ADRs, requirements, risks, work packages, and machine registries are updated with the required evidence.
 
@@ -138,4 +151,4 @@ Production readiness is a later claim requiring sustained compatibility, securit
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI and pre-build machine companions
 
-UI framework candidates and footprint contracts live under [`docs/ui-runtime/machine/`](../ui-runtime/README.md). The canonical implementation-kickoff status is [`pre-build-readiness.json`](machine/pre-build-readiness.json). These records remain research controls and do not promote a toolkit, reference platform, dependency, performance target, or implementation status.
+UI framework candidates, footprint contracts, checked no-claim framework bake-off inventory, and checked no-claim component-fixture inventory live under [`docs/ui-runtime/machine/`](../ui-runtime/README.md). The canonical implementation-kickoff status is [`pre-build-readiness.json`](machine/pre-build-readiness.json), with the checked `PB-020` stop/resume inventory in [`implementation-kickoff-review.json`](../project-buildout/machine/implementation-kickoff-review.json), checked sequencing graph in [`build-readiness-dependency-graph.json`](../project-buildout/machine/build-readiness-dependency-graph.json), and checked documentation-readiness completion audit in [`documentation-readiness-completion-audit.json`](../project-buildout/machine/documentation-readiness-completion-audit.json). These records remain research controls and do not promote a toolkit, reference platform, dependency, performance target, accessibility readiness, trusted-chrome readiness, task approval, readiness promotion, all-information-ready-for-building status, or implementation status.

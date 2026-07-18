@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "lab_id": "REL.UPDATE.NOCLAIM_RESEARCH_PACKAGE.2026_07",
+  "status": "no_claim_lab_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim planning inventory only; no production signing keys, no offline root keys, no stable channel, no real updater, no public binary distribution, no real user profile migration, no rollback safety claim, no migration safety claim, no release readiness claim, no supported security claim, and no production updater claim.",
+  "package_identity_fields": [
+    {
+      "id": "REL-PKG-SOURCE_COMMIT",
+      "field": "source commit",
+      "requirement": "A research package manifest must bind the exact source commit used for a no-claim build.",
+      "evidence_gap": "Needs an executable manifest generator and clean-source verification before any package identity claim.",
+      "boundary": "Research identity only; no production signing, stable channel, or public distribution approval."
+    },
+    {
+      "id": "REL-PKG-BUILD_ID",
+      "field": "build ID",
+      "requirement": "A build ID must bind the package, metadata, logs, and diagnostics to one research build identity.",
+      "evidence_gap": "Needs generated build identity, collision checks, and trace linkage before any release claim.",
+      "boundary": "Research identity only; no production updater, supported security, or release readiness claim."
+    },
+    {
+      "id": "REL-PKG-CHANNEL",
+      "field": "channel",
+      "requirement": "The manifest must label the build as a research channel with no stable support.",
+      "evidence_gap": "Needs channel parsing, invalid-channel rejection, and no-stable-support display tests.",
+      "boundary": "No stable channel, public binary distribution, production updater, or supported security claim."
+    },
+    {
+      "id": "REL-PKG-PLATFORM",
+      "field": "platform",
+      "requirement": "The manifest must bind package identity to a specific platform target.",
+      "evidence_gap": "Needs platform-target validation and wrong-platform rejection tests.",
+      "boundary": "Research target only; no supported platform or release compatibility claim."
+    },
+    {
+      "id": "REL-PKG-ARCHITECTURE",
+      "field": "architecture",
+      "requirement": "The manifest must bind package identity to a specific CPU architecture.",
+      "evidence_gap": "Needs architecture validation and wrong-architecture rejection tests.",
+      "boundary": "Research target only; no production update, public distribution, or support claim."
+    },
+    {
+      "id": "REL-PKG-TOOLCHAIN",
+      "field": "toolchain",
+      "requirement": "The manifest must record compiler, SDK, and package-toolchain identity.",
+      "evidence_gap": "Needs hermetic toolchain capture and independent replay evidence before release use.",
+      "boundary": "Toolchain planning only; no reproducible-build, release readiness, or signing claim."
+    },
+    {
+      "id": "REL-PKG-FEATURE_SET",
+      "field": "feature set",
+      "requirement": "The manifest must bind enabled features, experiments, and unsupported capabilities to the package identity.",
+      "evidence_gap": "Needs generated feature manifests and unsupported-feature diff checks.",
+      "boundary": "Research feature labels only; no compatibility, security, or production support claim."
+    },
+    {
+      "id": "REL-PKG-SBOM",
+      "field": "SBOM",
+      "requirement": "The manifest must point to SBOM evidence for runtime, build, native, and generated inputs.",
+      "evidence_gap": "Needs generated SBOM output, license/advisory review, and hash linkage.",
+      "boundary": "SBOM planning only; no dependency approval, legal approval, or release claim."
+    },
+    {
+      "id": "REL-PKG-PROVENANCE",
+      "field": "provenance",
+      "requirement": "The manifest must bind source, build host, toolchain, and artifact provenance records.",
+      "evidence_gap": "Needs provenance generation, verification, and independent replay evidence.",
+      "boundary": "Provenance planning only; no production signing, source approval, or support claim."
+    },
+    {
+      "id": "REL-PKG-SYMBOLS",
+      "field": "symbols",
+      "requirement": "The manifest must record symbol package identity and redaction boundaries.",
+      "evidence_gap": "Needs symbol-generation, upload, access-control, and redaction tests.",
+      "boundary": "Research diagnostics only; no crash-reporting service, support, or public symbol claim."
+    },
+    {
+      "id": "REL-PKG-NOTICES",
+      "field": "notices",
+      "requirement": "The manifest must bind license and third-party notices to the package identity.",
+      "evidence_gap": "Needs notice generation and legal-owner review before public distribution.",
+      "boundary": "Notice planning only; no legal approval, public distribution, or release claim."
+    },
+    {
+      "id": "REL-PKG-ARTIFACT_HASHES",
+      "field": "artifact hashes",
+      "requirement": "The manifest must bind every package artifact to a cryptographic hash.",
+      "evidence_gap": "Needs artifact generation, hashing, verification, and tamper tests.",
+      "boundary": "Hash planning only; no production signing, update trust, or release claim."
+    },
+    {
+      "id": "REL-PKG-ARTIFACT_SIZES",
+      "field": "artifact sizes",
+      "requirement": "The manifest must record expected artifact sizes and reject mismatched targets.",
+      "evidence_gap": "Needs size verification and truncated/oversized artifact tests.",
+      "boundary": "Size-contract planning only; no production updater or public package claim."
+    },
+    {
+      "id": "REL-PKG-NO_STABLE_SUPPORT",
+      "field": "no-stable-support label",
+      "requirement": "The manifest must carry a visible no-stable-support label for every research package.",
+      "evidence_gap": "Needs package UI, CLI, metadata, and diagnostics checks that preserve the label.",
+      "boundary": "Research label only; no stable support, supported security, or release readiness claim."
+    }
+  ],
+  "update_behavior_matrix": [
+    {
+      "id": "REL-UPD-ROLE_SEPARATION",
+      "behavior": "role separation",
+      "required_evidence": "Document metadata roles, signing roles, review roles, and installer roles with separate authority.",
+      "negative_case": "A single actor, key, or agent cannot approve, sign, publish, and install an update.",
+      "safe_failure": "Block the update plan and require owner review when role separation is missing."
+    },
+    {
+      "id": "REL-UPD-SIGNATURE_THRESHOLD",
+      "behavior": "signature threshold",
+      "required_evidence": "Record threshold requirements for research metadata and targets without production keys.",
+      "negative_case": "Unsigned, under-signed, wrong-key, or wrong-role metadata must not verify.",
+      "safe_failure": "Reject the metadata and preserve the previous known state."
+    },
+    {
+      "id": "REL-UPD-EXPIRY",
+      "behavior": "expiry",
+      "required_evidence": "Record metadata expiry policy and stale-metadata tests.",
+      "negative_case": "Expired metadata must not produce a successful update.",
+      "safe_failure": "Reject expired metadata and report a stale update state without install."
+    },
+    {
+      "id": "REL-UPD-MINIMUM_SECURE_VERSION",
+      "behavior": "minimum secure version",
+      "required_evidence": "Record version-floor policy and tests for blocked vulnerable versions.",
+      "negative_case": "A version below the minimum secure version must not install or rollback.",
+      "safe_failure": "Block install or rollback and keep the current accepted version."
+    },
+    {
+      "id": "REL-UPD-ROLLOUT",
+      "behavior": "rollout",
+      "required_evidence": "Record staged rollout policy, cohort identity, pause, and cancellation behavior.",
+      "negative_case": "A paused, unauthorized, or wrong-cohort rollout must not install.",
+      "safe_failure": "Abort the update and keep the current version unchanged."
+    },
+    {
+      "id": "REL-UPD-MIRRORS",
+      "behavior": "mirrors",
+      "required_evidence": "Record mirror distrust policy and hash/signature verification.",
+      "negative_case": "Mirror content with wrong hash, size, target, or metadata must not install.",
+      "safe_failure": "Reject the mirror target and preserve the previous verified state."
+    },
+    {
+      "id": "REL-UPD-STAGED_INSTALL",
+      "behavior": "staged install",
+      "required_evidence": "Record staged download, verify, install, switch, and cleanup phases.",
+      "negative_case": "A phase skip or unverified staged payload must not become active.",
+      "safe_failure": "Abort staged install and keep the active version unchanged."
+    },
+    {
+      "id": "REL-UPD-TAMPER",
+      "behavior": "tamper",
+      "required_evidence": "Record tampered metadata and payload rejection tests.",
+      "negative_case": "Tampered bytes must not verify, stage, install, or report success.",
+      "safe_failure": "Reject the tampered artifact and keep prior metadata and package state."
+    },
+    {
+      "id": "REL-UPD-REPLAY",
+      "behavior": "replay",
+      "required_evidence": "Record replayed metadata and stale target rejection tests.",
+      "negative_case": "Replayed metadata must not bypass expiry, version floor, or rollout policy.",
+      "safe_failure": "Reject replayed metadata and keep the current accepted state."
+    },
+    {
+      "id": "REL-UPD-WRONG_TARGET",
+      "behavior": "wrong-target",
+      "required_evidence": "Record wrong channel, platform, architecture, build ID, and artifact identity tests.",
+      "negative_case": "Wrong-target metadata or artifacts must not install.",
+      "safe_failure": "Reject the target and report the target-binding mismatch."
+    },
+    {
+      "id": "REL-UPD-PARTIAL_WRITE",
+      "behavior": "partial-write",
+      "required_evidence": "Record partial download, partial metadata, partial staging, and interrupted-write tests.",
+      "negative_case": "Partially written data must not become active or report success.",
+      "safe_failure": "Abort and clean or quarantine partial state before retry."
+    },
+    {
+      "id": "REL-UPD-DISK_FULL",
+      "behavior": "disk-full",
+      "required_evidence": "Record disk-full behavior for download, staging, install, rollback, and cleanup phases.",
+      "negative_case": "Disk-full conditions must not corrupt the active version or user profile state.",
+      "safe_failure": "Stop the operation and keep active state recoverable."
+    },
+    {
+      "id": "REL-UPD-POWER_LOSS",
+      "behavior": "power-loss",
+      "required_evidence": "Record power-loss and restart recovery for every update phase.",
+      "negative_case": "Power loss must not create an ambiguous installed version or successful update record.",
+      "safe_failure": "Recover to the previous known-good or explicitly staged state."
+    },
+    {
+      "id": "REL-UPD-ROLLBACK",
+      "behavior": "rollback",
+      "required_evidence": "Record authorized known-good rollback targets and rollback decision rules.",
+      "negative_case": "Unauthorized rollback must not restore a revoked or incompatible version.",
+      "safe_failure": "Reject rollback and preserve the current safe version."
+    },
+    {
+      "id": "REL-UPD-VULNERABLE_VERSION",
+      "behavior": "vulnerable version refusal",
+      "required_evidence": "Record vulnerable-version blocklist, minimum secure version, and refusal tests.",
+      "negative_case": "A known vulnerable version must not install through update or rollback.",
+      "safe_failure": "Block the version and surface a local refusal record."
+    },
+    {
+      "id": "REL-UPD-MIGRATION",
+      "behavior": "migration",
+      "required_evidence": "Record migration compatibility and rollback interaction without real user profiles.",
+      "negative_case": "Migration failure must not be reported as successful update or rollback.",
+      "safe_failure": "Abort the update path and preserve or restore the prior compatible state."
+    },
+    {
+      "id": "REL-UPD-DOWNGRADE",
+      "behavior": "downgrade",
+      "required_evidence": "Record downgrade compatibility windows and refusal policy.",
+      "negative_case": "Unsupported downgrade must not run migrations, hide data loss, or report success.",
+      "safe_failure": "Block downgrade and preserve the current version and profile state."
+    },
+    {
+      "id": "REL-UPD-CRASH_LOOP",
+      "behavior": "crash-loop",
+      "required_evidence": "Record health-gate and repeated-crash behavior for research packages.",
+      "negative_case": "A crash-looping version must not remain promoted as successful.",
+      "safe_failure": "Hold or rollback only to an authorized known-good version."
+    },
+    {
+      "id": "REL-UPD-PRIVACY_EVENT",
+      "behavior": "privacy-preserving local event",
+      "required_evidence": "Record local update events using IDs, hashes, reason codes, and no secrets.",
+      "negative_case": "Events must not include profile contents, credentials, private session data, or secrets.",
+      "safe_failure": "Discard or redact unsafe event payloads before persistence."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no production signing keys",
+    "no offline root keys",
+    "no stable channel",
+    "no real updater",
+    "no public binary distribution",
+    "no real user profile migration",
+    "no rollback safety claim",
+    "no migration safety claim",
+    "no release readiness claim",
+    "no supported security claim",
+    "no production updater claim"
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/incident-patch-readiness-review-v1.json",
+  "title": "Turing Incident Patch Readiness Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "readiness_status",
+    "private_intake_axes",
+    "emergency_patch_axes",
+    "incident_class_axes",
+    "role_authority_axes",
+    "evidence_control_axes",
+    "owner_review_axes",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "review_id": {
+      "type": "string",
+      "pattern": "^SEC\\.INCIDENT_READINESS_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_incident_patch_readiness_template",
+        "draft",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 180
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 16,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rehearsal_record",
+        "reference_platform",
+        "private_channel",
+        "owner_reviewer",
+        "independent_reviewer",
+        "security_reviewer",
+        "release_operations_reviewer",
+        "legal_reviewer",
+        "support_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "rehearsal_record": { "type": ["string", "null"] },
+        "reference_platform": { "type": ["string", "null"] },
+        "private_channel": { "type": ["string", "null"] },
+        "owner_reviewer": { "type": ["string", "null"] },
+        "independent_reviewer": { "type": ["string", "null"] },
+        "security_reviewer": { "type": ["string", "null"] },
+        "release_operations_reviewer": { "type": ["string", "null"] },
+        "legal_reviewer": { "type": ["string", "null"] },
+        "support_reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "readiness_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "independent_reviewed",
+        "security_reviewed",
+        "release_operations_reviewed",
+        "legal_reviewed",
+        "support_reviewed",
+        "private_intake_tabletop_reviewed",
+        "emergency_patch_dry_run_reviewed",
+        "regression_backport_reviewed",
+        "signing_update_dry_run_reviewed",
+        "disclosure_rehearsal_reviewed",
+        "postmortem_reviewed",
+        "role_matrix_reviewed",
+        "backup_owner_coverage_reviewed",
+        "incident_response_readiness_approved",
+        "emergency_patch_capacity_approved",
+        "supported_security_versions_approved",
+        "production_safe_browsing_approved",
+        "disclosure_authority_approved",
+        "stable_promotion_approved",
+        "signing_authority_approved",
+        "incident_closure_authority_approved",
+        "implementation_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "independent_reviewed": { "type": "boolean" },
+        "security_reviewed": { "type": "boolean" },
+        "release_operations_reviewed": { "type": "boolean" },
+        "legal_reviewed": { "type": "boolean" },
+        "support_reviewed": { "type": "boolean" },
+        "private_intake_tabletop_reviewed": { "type": "boolean" },
+        "emergency_patch_dry_run_reviewed": { "type": "boolean" },
+        "regression_backport_reviewed": { "type": "boolean" },
+        "signing_update_dry_run_reviewed": { "type": "boolean" },
+        "disclosure_rehearsal_reviewed": { "type": "boolean" },
+        "postmortem_reviewed": { "type": "boolean" },
+        "role_matrix_reviewed": { "type": "boolean" },
+        "backup_owner_coverage_reviewed": { "type": "boolean" },
+        "incident_response_readiness_approved": { "type": "boolean" },
+        "emergency_patch_capacity_approved": { "type": "boolean" },
+        "supported_security_versions_approved": { "type": "boolean" },
+        "production_safe_browsing_approved": { "type": "boolean" },
+        "disclosure_authority_approved": { "type": "boolean" },
+        "stable_promotion_approved": { "type": "boolean" },
+        "signing_authority_approved": { "type": "boolean" },
+        "incident_closure_authority_approved": { "type": "boolean" },
+        "implementation_claim_supported": { "type": "boolean" }
+      }
+    },
+    "private_intake_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "emergency_patch_axes": {
+      "type": "array",
+      "minItems": 13,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "incident_class_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "role_authority_axes": {
+      "type": "array",
+      "minItems": 7,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "evidence_control_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 14,
+      "items": { "$ref": "#/$defs/rejection_rule" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 18,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "minLength": 3
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "template_status": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 20
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

@@ -29,6 +29,10 @@ Development builds expose component source, toolkit node, Turing component ID, l
 - **UI-GATE-11:** normal packages contain no webview, React/JavaScript runtime, runtime UI interpreter, or unused renderer backend.
 - **UI-GATE-12:** toolkit upgrade and rollback procedures reproduce from clean source and preserve session/profile compatibility.
 
+The checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md) is a planning inventory for `PB-005`; it does not satisfy `UI-GATE-7`. That gate still requires executable typed page-surface protocol evidence, brokered surface handles, renderer frame sources, resize/scale/damage/input/IME/accessibility/occlusion/capture/fault fixtures, software fallback, latency/frame-pacing traces, `ADR-0016`, compositor ownership review, and owner approval.
+
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) is a planning inventory for `PB-015`; it does not satisfy `UI-GATE-7` or `UI-GATE-10`. Those gates still require executable page-surface/page-tree, input, IME, keyboard, clipboard, drag/drop, localization, zoom, high-contrast, reduced-motion, assistive-technology, renderer-hang, crash, GPU-loss, latency, and owner-reviewed evidence.
+
 ## Claim rule
 
 No framework is described as selected, fastest, smallest, native-quality, or accessible until the corresponding gate has current evidence.

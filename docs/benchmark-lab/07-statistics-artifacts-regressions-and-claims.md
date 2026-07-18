@@ -94,7 +94,15 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 - structure-aware fuzzing and corpus minimization for parsers, protocols, state machines, and persisted formats;
 - semantic trace or full-recomputation/reference oracle;
 - fixed-hardware latency, memory, energy, and longevity baselines;
+- benchmark manifests validated by [`tools/validate_benchmark_manifests.py`](../../tools/validate_benchmark_manifests.py), with raw-artifact hashes that fail closed when checked-in fixture bytes drift;
+- trace/artifact package contracts validated by [`tools/validate_benchmark_artifact_packages.py`](../../tools/validate_benchmark_artifact_packages.py), with runner-owned roots, required trace classes, required artifact classes, redaction/retention fields, prohibited-content rules, and SHA-256 manifest records;
 - explicit residual risks, owner, revisit trigger, and unsupported matrix.
+
+## Current No-Claim Artifact Package Contract
+
+The checked [Benchmark trace/artifact package contract](../research/benchmark-trace-artifact-package-contract-2026-07.md) and [no-claim trace/artifact package plan](../blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json) define the current `PB13-EV-007` package shape. This is not a captured trace bundle, not a benchmark result, and not a memory, energy, Chrome-class, or performance result.
+
+The contract exists so a future runner cannot treat partial files as evidence. A real package still needs ETW or equivalent host traces, Perfetto-compatible traces where applicable, logs, screenshots when relevant, raw samples, memory snapshots, power or energy samples, failure denominator records, redaction review, retention decisions, and SHA-256 hashes.
 
 ## Risks
 
@@ -104,9 +112,12 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 - https://browserbench.org/
 - https://browserbench.org/Speedometer3.1/
-- https://browserbench.org/MotionMark1.3/
+- https://browserbench.org/JetStream3.0/
+- https://browserbench.org/MotionMark/
 - https://perfetto.dev/
 - https://learn.microsoft.com/en-us/windows-hardware/test/wpt/
+- https://learn.microsoft.com/en-us/windows-hardware/test/wpt/windows-performance-recorder
+- https://learn.microsoft.com/en-us/windows-hardware/test/wpt/windows-performance-analyzer
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
 

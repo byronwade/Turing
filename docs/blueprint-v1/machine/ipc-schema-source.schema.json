@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/ipc-schema-source-v1.json",
+  "title": "Turing IPC Schema Source Template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "schema_source_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "generator_status",
+    "wire_encoding_status",
+    "schema_scope",
+    "required_message_metadata",
+    "role_authority_links",
+    "generator_output_plan",
+    "negative_fixture_plan",
+    "review_gates",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "schema_source_id": {
+      "type": "string",
+      "pattern": "^IPC\\.SCHEMA_SOURCE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_schema_source_template", "proposed", "accepted", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "generator_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implemented",
+        "approved_generator_source",
+        "regeneration_command",
+        "current_scope"
+      ],
+      "properties": {
+        "implemented": {
+          "const": false
+        },
+        "approved_generator_source": {
+          "const": false
+        },
+        "regeneration_command": {
+          "type": "string",
+          "pattern": "^none "
+        },
+        "current_scope": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "wire_encoding_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "approved",
+        "bounded_decode_evidence",
+        "unknown_variant_policy"
+      ],
+      "properties": {
+        "decision": {
+          "const": "not_decided"
+        },
+        "approved": {
+          "const": false
+        },
+        "bounded_decode_evidence": {
+          "const": "missing"
+        },
+        "unknown_variant_policy": {
+          "type": "string",
+          "minLength": 30
+        }
+      }
+    },
+    "schema_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "maturity",
+        "linked_process_capabilities",
+        "message_definition_status",
+        "persistent_format_status"
+      ],
+      "properties": {
+        "family": {
+          "type": "string",
+          "minLength": 3
+        },
+        "maturity": {
+          "const": "template_only"
+        },
+        "linked_process_capabilities": {
+          "const": "docs/blueprint-v1/machine/process-capabilities.json"
+        },
+        "message_definition_status": {
+          "type": "string",
+          "minLength": 40
+        },
+        "persistent_format_status": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "required_message_metadata": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "role_authority_links": {
+      "type": "array",
+      "minItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "process_capability_role",
+          "capabilities_checked",
+          "forbidden_authority_checked",
+          "schema_source_status"
+        ],
+        "properties": {
+          "process_capability_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "capabilities_checked": {
+            "type": "boolean"
+          },
+          "forbidden_authority_checked": {
+            "type": "boolean"
+          },
+          "schema_source_status": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "generator_output_plan": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "negative_fixture_plan": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case",
+          "required_fixture",
+          "current_status",
+          "safe_failure"
+        ],
+        "properties": {
+          "case": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_fixture": {
+            "type": "string",
+            "minLength": 40
+          },
+          "current_status": {
+            "enum": ["missing", "not_executable_without_generator"]
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "review_gates": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  }
+}

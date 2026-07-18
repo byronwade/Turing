@@ -1,0 +1,266 @@
+{
+  "$schema": "../sandbox-probe-package.schema.json",
+  "schema_version": 1,
+  "package_id": "SANDBOX.PROBE_PACKAGE.NOCLAIM_EXPECTED_DENY_TEMPLATE.2026_07",
+  "status": "no_claim_probe_package_template",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim sandbox probe-package template only; no sandbox-readiness claim, no renderer-security claim, no site-isolation claim, no hostile-browsing safety claim, no platform containment claim, no packaged-build probe claim, no effective-policy claim, no SEC-GATE-1 claim, no SEC-GATE-6 claim, and no production-safety claim.",
+  "source_records": [
+    "docs/security-engine/machine/sandbox-probe-inventory.json",
+    "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
+    "docs/security-engine/machine/sandbox-probe-package.schema.json",
+    "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
+    "docs/security-engine/machine/sandbox-readiness-review.schema.json",
+    "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+    "docs/blueprint-v1/machine/process-capabilities.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/security-engine/02-sandbox-brokers-and-platform-containment.md",
+    "docs/security-engine/06-security-verification-and-release-gates.md",
+    "docs/research/sandbox-probe-inventory-2026-07.md",
+    "tools/validate_sandbox_readiness_review.py"
+  ],
+  "package_status": {
+    "packaged_probe_harness": false,
+    "effective_policy_captured": false,
+    "platform_matrix_executed": false,
+    "owner_reviewed": false,
+    "current_scope": "Template and rejection rules for a future host-safe expected-deny probe package; it records no executed probe, no effective platform policy, and no owner-approved sandbox evidence."
+  },
+  "role_targets": [
+    {
+      "target": "renderer",
+      "process_capability_role": "renderer",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "network",
+      "process_capability_role": "network",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "storage",
+      "process_capability_role": "storage",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "gpu",
+      "process_capability_role": "gpu",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "decoder",
+      "process_capability_role": "media_utility",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "extension",
+      "process_capability_role": "extension_host",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "devtools",
+      "process_capability_role": "devtools",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "agent",
+      "process_capability_role": "agent_host",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    },
+    {
+      "target": "updater",
+      "process_capability_role": "updater",
+      "probe_target_status": "template_only",
+      "host_safe_fixture_required": true,
+      "broker_fixture_required": true,
+      "compromised_client_harness_required": true,
+      "effective_policy_capture_required": true,
+      "platform_matrix_required": ["macos", "windows", "linux"]
+    }
+  ],
+  "access_surfaces": [
+    "file",
+    "socket",
+    "process",
+    "registry",
+    "device",
+    "shared-memory",
+    "credential",
+    "debug",
+    "profile",
+    "ipc"
+  ],
+  "platform_evidence_requirements": [
+    {
+      "platform": "windows",
+      "required_artifacts": [
+        "AppContainer or token identity, package SID, and capability list captured from the launched role",
+        "integrity level and restricted token state captured from the launched role",
+        "job limits and child-process restrictions captured from the launched role",
+        "process mitigations including dynamic-code policy and Win32k or equivalent restrictions",
+        "handle allowlist and inherited-handle inspection for brokered handles only"
+      ],
+      "missing_evidence": "No Windows packaged role, AppContainer/token capture, integrity capture, job/mitigation capture, handle allowlist, dynamic-code policy, or expected-deny result has run."
+    },
+    {
+      "platform": "macos",
+      "required_artifacts": [
+        "seatbelt or app sandbox profile captured for the launched role",
+        "entitlements and hardened runtime state captured from the signed artifact",
+        "JIT entitlement state and executable-memory exceptions captured from the launched role",
+        "code signing status, team identity, and notarization or local test-signing state",
+        "broker descriptors and sandbox extensions granted to the launched role"
+      ],
+      "missing_evidence": "No macOS packaged role, seatbelt/app sandbox profile, entitlement capture, hardened runtime capture, JIT state, code signing state, or expected-deny result has run."
+    },
+    {
+      "platform": "linux",
+      "required_artifacts": [
+        "namespace map for pid, mount, user, network, ipc, and cgroup isolation",
+        "seccomp filter and syscall disposition captured from the launched role",
+        "Landlock or portal policy and broker descriptor list captured from the launched role",
+        "mount table and read/write path map captured from the launched role",
+        "capabilities bounding set and ambient capability state captured from the launched role"
+      ],
+      "missing_evidence": "No Linux packaged role, namespace map, seccomp filter, Landlock/portal policy, mount table, capabilities capture, broker descriptors, or expected-deny result has run."
+    }
+  ],
+  "probe_lifecycle": [
+    {
+      "stage": "build_package",
+      "required_record": "Build the sandbox-probe package from reviewed source and record artifact build ID, compiler profile, command line, and source revision."
+    },
+    {
+      "stage": "launch_isolated_role",
+      "required_record": "Launch each role through the same role runner, handle set, sandbox primitive, and broker policy used by the evaluated configuration."
+    },
+    {
+      "stage": "attempt_expected_deny",
+      "required_record": "Attempt the expected-deny file, socket, process, registry, device, shared-memory, credential, debug, profile, or IPC operation from inside the launched role."
+    },
+    {
+      "stage": "capture_effective_policy",
+      "required_record": "Capture effective platform policy, process identity, broker descriptors, capability state, and policy artifact hashes before classifying the result."
+    },
+    {
+      "stage": "record_broker_exception",
+      "required_record": "Record any brokered exception, authorized handle, unsupported platform case, degraded mode, or waiver without counting it as a denial pass."
+    },
+    {
+      "stage": "cleanup_and_classify",
+      "required_record": "Run cleanup for temporary roots, fake profiles, fake credentials, and loopback fixtures, then classify pass, fail, unsupported, skipped, or blocked with owner-review status."
+    }
+  ],
+  "result_record_requirements": [
+    "role",
+    "platform",
+    "artifact build ID",
+    "command line",
+    "process identity",
+    "surface",
+    "expected denied operation",
+    "actual result",
+    "exit code",
+    "policy artifact hash",
+    "stdout hash",
+    "stderr hash",
+    "cleanup status",
+    "owner review",
+    "failure denominator"
+  ],
+  "rejection_rules": [
+    {
+      "rule": "reject_missing_host_safe_fixture",
+      "condition": "Reject the package before execution if host-safe temporary roots, fake credentials, fake profiles, loopback fixtures, and cleanup checks are absent."
+    },
+    {
+      "rule": "reject_missing_effective_policy",
+      "condition": "Reject any sandbox or SEC-GATE evidence if effective policy capture, process identity, and policy artifact hash are absent."
+    },
+    {
+      "rule": "reject_success_path_only",
+      "condition": "Reject packages that record success paths only or omit expected-deny attempts for required roles and access surfaces."
+    },
+    {
+      "rule": "reject_hidden_failures",
+      "condition": "Reject hidden failures, swallowed errors, ambiguous unsupported cases, skipped probes, or pass records without a failure denominator."
+    },
+    {
+      "rule": "reject_real_secrets",
+      "condition": "Reject packages that touch real secrets, real credential stores, real signing keys, real profile data, or a production profile."
+    },
+    {
+      "rule": "reject_unbounded_probe",
+      "condition": "Reject unbounded or unaudited probes that can mutate the host outside reviewed temporary roots, fake stores, and broker fixtures."
+    },
+    {
+      "rule": "reject_absent_owner_review",
+      "condition": "Reject promotion when security and platform owner review is absent, stale, or based only on this no-claim template."
+    },
+    {
+      "rule": "reject_readiness_claim",
+      "condition": "Reject any sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, SEC-GATE, platform-containment, production-safety, or weakened-policy claim based only on this template."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no sandbox-readiness claim",
+    "no renderer-security claim",
+    "no site-isolation claim",
+    "no hostile-browsing safety claim",
+    "no platform containment claim",
+    "no packaged-build probe claim",
+    "no effective-policy claim",
+    "no SEC-GATE-1 claim",
+    "no SEC-GATE-6 claim",
+    "no production-safety claim"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_sandbox_probe_inventory.py",
+    "python3 -B tools/validate_sandbox_readiness_review.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

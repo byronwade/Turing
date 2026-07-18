@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/incident-patch-rehearsal-record-v1.json",
+  "title": "Turing Incident Patch Rehearsal Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "rehearsal_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "rehearsal_status",
+    "private_intake_axes",
+    "emergency_patch_axes",
+    "incident_class_axes",
+    "authority_role_axes",
+    "rehearsal_lifecycle",
+    "fixture_policy",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "rehearsal_id": {
+      "type": "string",
+      "pattern": "^SEC\\.INCIDENT_REHEARSAL\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_incident_patch_rehearsal_template",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 180
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "rehearsal_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "private_intake_tabletop",
+        "emergency_patch_dry_run",
+        "regression_backport_evidence",
+        "signing_update_dry_run",
+        "disclosure_rehearsal",
+        "role_matrix_review",
+        "backup_owner_coverage",
+        "owner_reviewed",
+        "current_scope"
+      ],
+      "properties": {
+        "private_intake_tabletop": {
+          "type": "boolean"
+        },
+        "emergency_patch_dry_run": {
+          "type": "boolean"
+        },
+        "regression_backport_evidence": {
+          "type": "boolean"
+        },
+        "signing_update_dry_run": {
+          "type": "boolean"
+        },
+        "disclosure_rehearsal": {
+          "type": "boolean"
+        },
+        "role_matrix_review": {
+          "type": "boolean"
+        },
+        "backup_owner_coverage": {
+          "type": "boolean"
+        },
+        "owner_reviewed": {
+          "type": "boolean"
+        },
+        "current_scope": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "private_intake_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "emergency_patch_axes": {
+      "type": "array",
+      "minItems": 13,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "incident_class_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "authority_role_axes": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "rehearsal_lifecycle": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "required_record"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "minLength": 3
+          },
+          "required_record": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "fixture_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "private_channel_required",
+        "exploit_details_public_prohibited",
+        "production_signing_keys_prohibited",
+        "stable_promotion_prohibited",
+        "fake_vulnerability_required",
+        "fake_update_dry_run_only",
+        "sanitized_evidence_required",
+        "backup_owner_review_required"
+      ],
+      "properties": {
+        "private_channel_required": {
+          "type": "boolean"
+        },
+        "exploit_details_public_prohibited": {
+          "type": "boolean"
+        },
+        "production_signing_keys_prohibited": {
+          "type": "boolean"
+        },
+        "stable_promotion_prohibited": {
+          "type": "boolean"
+        },
+        "fake_vulnerability_required": {
+          "type": "boolean"
+        },
+        "fake_update_dry_run_only": {
+          "type": "boolean"
+        },
+        "sanitized_evidence_required": {
+          "type": "boolean"
+        },
+        "backup_owner_review_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule",
+          "condition"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 3
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  }
+}

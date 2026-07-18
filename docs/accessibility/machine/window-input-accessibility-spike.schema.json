@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/window-input-accessibility-spike-v1.json",
+  "title": "Turing Window Input Accessibility Spike Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "workflow_axes",
+    "core_workflows",
+    "platform_assistive_technology_matrix",
+    "evidence_blockers",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^WIN\\.INPUT\\.A11Y\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "no_claim_workflow_inventory",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "workflow_axes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/workflow_axis"
+      }
+    },
+    "core_workflows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/core_workflow"
+      }
+    },
+    "platform_assistive_technology_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/platform_matrix"
+      }
+    },
+    "evidence_blockers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidence_blocker"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "workflow_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis_id",
+        "name",
+        "purpose",
+        "required_evidence",
+        "current_status"
+      ],
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^WIN-A11Y-AXIS-[A-Z0-9_-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "required_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "current_status": {
+          "enum": [
+            "planning_only",
+            "missing_reference_platform",
+            "missing_executable_fixture",
+            "missing_manual_assistive_technology",
+            "missing_fault_injection"
+          ]
+        }
+      }
+    },
+    "core_workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow_id",
+        "workflow",
+        "name",
+        "covers_axes",
+        "page_tree_contract",
+        "missing_evidence"
+      ],
+      "properties": {
+        "workflow_id": {
+          "type": "string",
+          "pattern": "^WIN-A11Y-WORKFLOW-[A-Z0-9_-]+$"
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "covers_axes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "page_tree_contract": {
+          "type": "string"
+        },
+        "missing_evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "platform_matrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform",
+        "accessibility_api",
+        "assistive_technologies",
+        "input_coverage",
+        "required_artifacts",
+        "missing_evidence"
+      ],
+      "properties": {
+        "platform": {
+          "enum": [
+            "macos",
+            "windows",
+            "linux"
+          ]
+        },
+        "accessibility_api": {
+          "type": "string"
+        },
+        "assistive_technologies": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "input_coverage": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence_blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocker_id",
+        "blocker",
+        "needed_for",
+        "missing_evidence"
+      ],
+      "properties": {
+        "blocker_id": {
+          "type": "string",
+          "pattern": "^WIN-A11Y-BLOCKER-[A-Z0-9_-]+$"
+        },
+        "blocker": {
+          "type": "string"
+        },
+        "needed_for": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_evidence": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,599 @@
+{
+  "schema_version": 1,
+  "inventory_id": "WIN.INPUT.A11Y.NOCLAIM_WORKFLOW_SPIKE.2026_07",
+  "status": "no_claim_workflow_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim workflow inventory only; no native UI implementation claim, no UI toolkit selection, no accessibility readiness claim, no screen-reader coverage claim, no manual assistive-technology coverage claim, no page-tree composition proof, no IME correctness claim, no keyboard completeness claim, no clipboard or drag-drop safety claim, no localization readiness claim, no zoom high-contrast reduced-motion readiness claim, no crash-recovery renderer-hang or GPU-loss readiness claim, no UI-GATE-7 claim, no UI-GATE-10 claim, no release-path UI approval, and no production claim",
+  "source_records": [
+    "docs/blueprint-v1/11-product-ui-devtools.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/accessibility/README.md",
+    "docs/accessibility/04-platform-accessibility-bridges.md",
+    "docs/accessibility/05-browser-ui-devtools-automation-and-agents.md",
+    "docs/accessibility/07-testing-assistive-technology-matrices-and-release-gates.md",
+    "docs/platform/README.md",
+    "docs/platform/02-windows-surfaces-displays-and-lifecycle.md",
+    "docs/platform/03-input-ime-clipboard-and-drag-drop.md",
+    "docs/ui-runtime/README.md",
+    "docs/ui-runtime/04-page-surface-compositor-and-process-integration.md",
+    "docs/ui-runtime/07-windowing-input-ime-accessibility-and-platform.md",
+    "docs/ui-runtime/09-testing-observability-recovery-and-release-gates.md",
+    "docs/ui-runtime/10-prototype-plan-decision-record-and-migration.md",
+    "docs/ui-runtime/machine/component-fixture-inventory.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+  ],
+  "workflow_axes": [
+    {
+      "axis_id": "WIN-A11Y-AXIS-WINDOWING",
+      "name": "Windowing",
+      "purpose": "Prove window identity, ownership, visibility, occlusion, scale, display, full-screen, close negotiation, focus return, and lifecycle recovery across trusted chrome and page surfaces.",
+      "required_evidence": [
+        "reference-platform window lifecycle fixture",
+        "focus and ownership trace",
+        "resize, scale, occlusion, and close-negotiation output"
+      ],
+      "current_status": "missing_reference_platform"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-INPUT",
+      "name": "Input",
+      "purpose": "Prove pointer, wheel, keyboard, shortcut, command, gesture, and capture routing with explicit chrome-versus-page target identity and stale-epoch rejection.",
+      "required_evidence": [
+        "input routing trace",
+        "keyboard-only workflow transcript",
+        "trusted chrome and page-surface target split"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-IME",
+      "name": "Input Method Editor",
+      "purpose": "Prove composition, candidate-window, selection, dead-key, emoji, East Asian, Indic, bidirectional, and committed-text behavior without cross-profile or stale-document confusion.",
+      "required_evidence": [
+        "IME composition fixture",
+        "selection and committed-text trace",
+        "representative script coverage"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+      "name": "Accessibility Tree",
+      "purpose": "Prove roles, names, values, states, relationships, actions, focus, bounds, live regions, tables, trees, and text ranges through platform accessibility APIs.",
+      "required_evidence": [
+        "platform accessibility tree snapshot",
+        "role and state diff",
+        "live-region and focus-event trace"
+      ],
+      "current_status": "missing_manual_assistive_technology"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-PAGE-TREE-COMPOSITION",
+      "name": "Page-Tree Composition",
+      "purpose": "Prove trusted browser chrome and renderer-produced web subtrees compose into one assistive-technology navigation model without leaking hidden cross-origin or stale-document data.",
+      "required_evidence": [
+        "composed chrome and web subtree snapshot",
+        "cross-origin hidden-node denial case",
+        "renderer crash subtree replacement trace"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-CLIPBOARD",
+      "name": "Clipboard",
+      "purpose": "Prove clipboard data types, activation, profile-aware policy, sanitization, denial, and page-versus-chrome authority boundaries.",
+      "required_evidence": [
+        "clipboard fixture with allowed and denied formats",
+        "profile boundary trace",
+        "activation and permission transcript"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-DRAG-DROP",
+      "name": "Drag-Drop",
+      "purpose": "Prove drag/drop offers, file handles, drop targets, trusted overlays, cancellation, and profile-aware authority boundaries.",
+      "required_evidence": [
+        "drag/drop offer fixture",
+        "file-handle denial and approval trace",
+        "cancel and stale-target transcript"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-LOCALIZATION",
+      "name": "Localization",
+      "purpose": "Prove long labels, bidi labels, CJK labels, locale-sensitive formatting, shortcut text, and translated trusted-state copy without truncation or authority ambiguity.",
+      "required_evidence": [
+        "localized shell fixture set",
+        "text-fit and bidi snapshot",
+        "accessible-name locale diff"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-ZOOM",
+      "name": "Zoom And Text Scaling",
+      "purpose": "Prove platform zoom, browser zoom, text scaling, magnification, layout stability, and page-surface composition at supported scale factors.",
+      "required_evidence": [
+        "zoom and text-scaling fixture",
+        "layout and bounds snapshot",
+        "screen-reader focus bounds trace"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-HIGH-CONTRAST",
+      "name": "High Contrast",
+      "purpose": "Prove trusted chrome, prompts, recovery UI, and page-surface boundaries remain legible and non-color-only under high-contrast appearance.",
+      "required_evidence": [
+        "high-contrast screenshot or semantic snapshot",
+        "non-color state indicator review",
+        "focus and selection visibility transcript"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-FORCED-COLORS",
+      "name": "Forced Colors",
+      "purpose": "Prove system color substitution preserves trust, permission, warning, focus, selected, disabled, and recovery states.",
+      "required_evidence": [
+        "forced-colors fixture",
+        "system color mapping record",
+        "state differentiation transcript"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-REDUCED-MOTION",
+      "name": "Reduced Motion",
+      "purpose": "Prove shell transitions, alerts, lifecycle indicators, and agent status remain understandable without required animation.",
+      "required_evidence": [
+        "reduced-motion fixture",
+        "motion-disabled trace",
+        "state persistence transcript"
+      ],
+      "current_status": "missing_executable_fixture"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-CRASH-RECOVERY",
+      "name": "Crash Recovery",
+      "purpose": "Prove renderer, UI, and browser crash paths keep trusted recovery UI accessible, restore focus safely, and do not replay consequential actions.",
+      "required_evidence": [
+        "renderer crash recovery fixture",
+        "focus fallback trace",
+        "no automatic action replay evidence"
+      ],
+      "current_status": "missing_fault_injection"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-RENDERER-HANG",
+      "name": "Renderer Hang",
+      "purpose": "Prove trusted browser chrome, stop/reload, recovery, resource manager, and assistive-technology navigation stay responsive while a renderer hangs.",
+      "required_evidence": [
+        "renderer hang fixture",
+        "chrome responsiveness trace",
+        "assistive-technology command transcript"
+      ],
+      "current_status": "missing_fault_injection"
+    },
+    {
+      "axis_id": "WIN-A11Y-AXIS-GPU-LOSS",
+      "name": "GPU Loss",
+      "purpose": "Prove GPU device loss rebuilds toolkit and page resources without corrupting the session model or losing accessibility state.",
+      "required_evidence": [
+        "GPU-loss fixture",
+        "resource rebuild trace",
+        "accessibility tree continuity diff"
+      ],
+      "current_status": "missing_fault_injection"
+    }
+  ],
+  "core_workflows": [
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-BROWSER_WINDOW_LIFECYCLE",
+      "workflow": "browser_window_lifecycle",
+      "name": "Browser Window Lifecycle",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-CRASH-RECOVERY",
+        "WIN-A11Y-AXIS-RENDERER-HANG",
+        "WIN-A11Y-AXIS-GPU-LOSS"
+      ],
+      "page_tree_contract": "The window owns trusted chrome and page-surface generations; stale page-tree nodes must be rejected when a window closes, restores, or recovers.",
+      "missing_evidence": "No rendered reference shell, platform window trace, assistive-technology transcript, fault injection, or owner review exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-TAB_STRIP_AND_GROUPS",
+      "workflow": "tab_strip_and_groups",
+      "name": "Tab Strip And Groups",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-IME",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-RENDERER-HANG"
+      ],
+      "page_tree_contract": "Tab page-tree accessibility nodes must preserve tab, Space, profile, document-epoch, and selected-state identity before exposing any page subtree.",
+      "missing_evidence": "No tab overflow, keyboard, screen-reader, localization, density, 100-tab, or renderer-hang fixture has been executed."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-SPACES_SIDE_PANEL",
+      "workflow": "spaces_side_panel",
+      "name": "Spaces Side Panel",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-DRAG-DROP",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION"
+      ],
+      "page_tree_contract": "Space switching must update page-tree roots only after profile and Space authority are revalidated.",
+      "missing_evidence": "No profile-aware Space switching, drag/drop, clipboard, or composed accessibility subtree evidence exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-ADDRESS_COMMAND_FIELD",
+      "workflow": "address_command_field",
+      "name": "Address And Command Field",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-IME",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-RENDERER-HANG"
+      ],
+      "page_tree_contract": "The command field must remain a trusted chrome text field whose suggestions cannot inherit page authority or expose hidden page-tree data.",
+      "missing_evidence": "No IME, clipboard, shortcut conflict, accessible-name, suggestion, or renderer-hang command fixture exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-PERMISSION_AGENT_CONFIRMATION",
+      "workflow": "permission_agent_confirmation",
+      "name": "Permission And Agent Confirmation",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-CRASH-RECOVERY"
+      ],
+      "page_tree_contract": "Permission and agent confirmation page-tree-adjacent nodes must announce origin, profile, action, consequence, and denial paths without allowing page or model output to expand authority.",
+      "missing_evidence": "No manual screen-reader, keyboard, reduced-motion, high-contrast, or crash-recovery confirmation transcript exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-PAGE_SURFACE_COMPOSITION",
+      "workflow": "page_surface_composition",
+      "name": "Page Surface Composition",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-IME",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-PAGE-TREE-COMPOSITION",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-DRAG-DROP",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-CRASH-RECOVERY",
+        "WIN-A11Y-AXIS-RENDERER-HANG",
+        "WIN-A11Y-AXIS-GPU-LOSS"
+      ],
+      "page_tree_contract": "Trusted chrome and renderer-produced page-tree subtrees must compose through typed surface, frame, origin, process, and document-epoch identities, with hidden cross-origin data excluded.",
+      "missing_evidence": "No page-surface stub, composed accessibility tree, hidden-cross-origin case, renderer crash replacement, or GPU-loss recovery evidence exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-DEVTOOLS_DOCKING",
+      "workflow": "devtools_docking",
+      "name": "DevTools Docking",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-PAGE-TREE-COMPOSITION",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-DRAG-DROP",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-RENDERER-HANG"
+      ],
+      "page_tree_contract": "DevTools docking must expose tool panes, inspected page-tree state, and live diagnostics without granting page content DevTools or chrome authority.",
+      "missing_evidence": "No dock/undock, tree/table, clipboard, focus, or live diagnostic assistive-technology evidence exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-RESOURCE_MANAGER",
+      "workflow": "resource_manager",
+      "name": "Resource Manager",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-RENDERER-HANG",
+        "WIN-A11Y-AXIS-GPU-LOSS"
+      ],
+      "page_tree_contract": "Resource rows must charge window, tab, and shared page-tree owners without exposing hidden page content, widening authority, or confusing physical totals with inferred causes.",
+      "missing_evidence": "No accessible table/tree, update latency, memory-pressure, renderer-hang, GPU-loss, or localization evidence exists."
+    },
+    {
+      "workflow_id": "WIN-A11Y-WORKFLOW-SETTINGS_RECOVERY",
+      "workflow": "settings_recovery",
+      "name": "Settings And Recovery",
+      "covers_axes": [
+        "WIN-A11Y-AXIS-WINDOWING",
+        "WIN-A11Y-AXIS-INPUT",
+        "WIN-A11Y-AXIS-IME",
+        "WIN-A11Y-AXIS-ACCESSIBILITY-TREE",
+        "WIN-A11Y-AXIS-CLIPBOARD",
+        "WIN-A11Y-AXIS-LOCALIZATION",
+        "WIN-A11Y-AXIS-ZOOM",
+        "WIN-A11Y-AXIS-HIGH-CONTRAST",
+        "WIN-A11Y-AXIS-FORCED-COLORS",
+        "WIN-A11Y-AXIS-REDUCED-MOTION",
+        "WIN-A11Y-AXIS-CRASH-RECOVERY",
+        "WIN-A11Y-AXIS-GPU-LOSS"
+      ],
+      "page_tree_contract": "Settings and recovery must keep profile, session, migration, update, page-tree, and crash-recovery authority in trusted chrome and never replay page or agent actions automatically.",
+      "missing_evidence": "No settings form, recovery dialog, crash-loop, text input, screen-reader, or GPU-loss recovery transcript exists."
+    }
+  ],
+  "platform_assistive_technology_matrix": [
+    {
+      "platform": "macos",
+      "accessibility_api": "AX",
+      "assistive_technologies": [
+        "VoiceOver"
+      ],
+      "input_coverage": [
+        "keyboard navigation",
+        "dead-key input",
+        "IME composition",
+        "clipboard",
+        "drag/drop",
+        "zoom",
+        "increase contrast",
+        "reduced motion"
+      ],
+      "required_artifacts": [
+        "AX tree snapshot for trusted chrome plus composed page subtree",
+        "VoiceOver manual transcript for core workflows",
+        "input, IME, clipboard, drag/drop, zoom, contrast, and reduced-motion fixture output",
+        "latency trace for focus, live-region, and tree-update events"
+      ],
+      "missing_evidence": "No macOS reference shell, AX snapshot, VoiceOver transcript, IME trace, or latency artifact exists."
+    },
+    {
+      "platform": "windows",
+      "accessibility_api": "UI Automation",
+      "assistive_technologies": [
+        "Narrator",
+        "NVDA"
+      ],
+      "input_coverage": [
+        "keyboard navigation",
+        "dead-key input",
+        "IME composition",
+        "clipboard",
+        "drag/drop",
+        "text scaling",
+        "high contrast",
+        "reduced motion"
+      ],
+      "required_artifacts": [
+        "UI Automation tree snapshot for trusted chrome plus composed page subtree",
+        "Narrator and NVDA manual transcripts for core workflows",
+        "input, IME, clipboard, drag/drop, text-scale, high-contrast, and reduced-motion fixture output",
+        "latency trace for focus, live-region, and tree-update events"
+      ],
+      "missing_evidence": "No Windows reference shell, UI Automation snapshot, Narrator transcript, NVDA transcript, IME trace, or latency artifact exists."
+    },
+    {
+      "platform": "linux",
+      "accessibility_api": "AT-SPI",
+      "assistive_technologies": [
+        "Orca"
+      ],
+      "input_coverage": [
+        "keyboard navigation",
+        "dead-key input",
+        "IME composition",
+        "clipboard",
+        "drag/drop",
+        "zoom",
+        "high contrast",
+        "reduced motion"
+      ],
+      "required_artifacts": [
+        "AT-SPI tree snapshot for trusted chrome plus composed page subtree",
+        "Orca manual transcript for core workflows",
+        "input, IME, clipboard, drag/drop, zoom, high-contrast, and reduced-motion fixture output",
+        "latency trace for focus, live-region, and tree-update events"
+      ],
+      "missing_evidence": "No Linux reference shell, AT-SPI snapshot, Orca transcript, IME trace, compositor-mode note, or latency artifact exists."
+    }
+  ],
+  "evidence_blockers": [
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-REFERENCE_PLATFORM",
+      "blocker": "reference platform selected",
+      "needed_for": [
+        "PB-015 workflow matrix",
+        "manual assistive-technology coverage"
+      ],
+      "missing_evidence": "No owner-selected reference platform or platform waiver exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-ISOLATED_ADAPTER_RUNNER",
+      "blocker": "isolated adapter runner",
+      "needed_for": [
+        "equivalent toolkit bake-off",
+        "repeatable workflow execution"
+      ],
+      "missing_evidence": "No adapter runner exists for Slint, Vizia, Floem, GPUI, or an owner-approved reduced scope."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-RENDERED_REFERENCE_SHELL",
+      "blocker": "rendered reference shell",
+      "needed_for": [
+        "windowing",
+        "input",
+        "accessibility",
+        "localization",
+        "zoom",
+        "appearance"
+      ],
+      "missing_evidence": "No rendered reference shell or equivalent adapter-specific shell fixture exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-PAGE_SURFACE_STUB",
+      "blocker": "page-surface stub",
+      "needed_for": [
+        "page-tree composition",
+        "input routing",
+        "renderer crash",
+        "GPU loss"
+      ],
+      "missing_evidence": "No renderer-produced page texture stub, damage stream, or composed web subtree fixture exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-ACCESSIBILITY_TREE_SNAPSHOT_SCHEMA",
+      "blocker": "accessibility tree snapshot schema",
+      "needed_for": [
+        "roles",
+        "names",
+        "states",
+        "relationships",
+        "page-tree composition",
+        "latency review"
+      ],
+      "missing_evidence": "No schema defines platform tree snapshots, stable node identifiers, event timestamps, or hidden-node exclusions."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-MANUAL_ASSISTIVE_TECHNOLOGY_MATRIX",
+      "blocker": "manual assistive technology matrix",
+      "needed_for": [
+        "VoiceOver",
+        "Narrator",
+        "NVDA",
+        "Orca",
+        "accessibility readiness"
+      ],
+      "missing_evidence": "No qualified manual assistive-technology transcript exists for any supported platform."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-INPUT_IME_FIXTURE_HARNESS",
+      "blocker": "input and IME fixture harness",
+      "needed_for": [
+        "keyboard",
+        "dead-key",
+        "IME",
+        "composition",
+        "selection",
+        "shortcut conflict"
+      ],
+      "missing_evidence": "No repeatable keyboard, dead-key, IME, composition, selection, or shortcut fixture harness exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-CLIPBOARD_DRAG_DROP_SECURITY_FIXTURES",
+      "blocker": "clipboard drag-drop security fixtures",
+      "needed_for": [
+        "clipboard",
+        "drag/drop",
+        "file handles",
+        "profile-aware policy"
+      ],
+      "missing_evidence": "No allowed/denied clipboard, drag/drop, file-handle, or profile-boundary fixture exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-LOCALIZATION_ZOOM_APPEARANCE_FIXTURES",
+      "blocker": "localization zoom appearance fixtures",
+      "needed_for": [
+        "localization",
+        "zoom",
+        "high contrast",
+        "forced colors",
+        "reduced motion"
+      ],
+      "missing_evidence": "No localized, text-scale, zoom, high-contrast, forced-colors, or reduced-motion fixture output exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-CRASH_HANG_GPU_LOSS_FIXTURES",
+      "blocker": "crash hang GPU-loss fault fixtures",
+      "needed_for": [
+        "crash recovery",
+        "renderer hang",
+        "GPU-loss behavior",
+        "accessible recovery UI"
+      ],
+      "missing_evidence": "No renderer crash, renderer hang, UI crash, browser crash, or GPU-loss fixture has run."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-LATENCY_RESOURCE_CAPTURE",
+      "blocker": "latency and resource capture",
+      "needed_for": [
+        "assistive-technology latency",
+        "input latency",
+        "tree update latency",
+        "resource ownership"
+      ],
+      "missing_evidence": "No p50, p95, p99 event-latency, queue, memory, CPU, wakeup, or energy trace exists."
+    },
+    {
+      "blocker_id": "WIN-A11Y-BLOCKER-OWNER_REVIEW",
+      "blocker": "owner review",
+      "needed_for": [
+        "PB-015 status promotion",
+        "accessibility readiness",
+        "page-surface approval",
+        "UI toolkit selection"
+      ],
+      "missing_evidence": "No accessibility, platform, UI-runtime, product, security, performance, quality, or release owner has accepted PB-015 evidence."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no native UI implementation claim",
+    "no UI toolkit selection",
+    "no accessibility readiness claim",
+    "no screen-reader coverage claim",
+    "no manual assistive-technology coverage claim",
+    "no page-tree composition proof",
+    "no IME correctness claim",
+    "no keyboard completeness claim",
+    "no clipboard or drag-drop safety claim",
+    "no localization readiness claim",
+    "no zoom high-contrast reduced-motion readiness claim",
+    "no crash-recovery renderer-hang or GPU-loss readiness claim",
+    "no UI-GATE-7 claim",
+    "no UI-GATE-10 claim",
+    "no release-path UI approval",
+    "no production claim"
+  ]
+}

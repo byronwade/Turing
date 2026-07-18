@@ -1,0 +1,783 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-18",
+  "status": "proposed_queue_not_execution_authority",
+  "source": "docs/project-buildout/17-build-readiness-task-queue.md",
+  "task_schema": "docs/agent-execution/machine/execution-task.schema.json",
+  "claim_status": "Task queue and handoff organization only; no task is approved, running, accepted, release-gated, or allowed to make compatibility, security, performance, memory, energy, Chrome-class, or production claims.",
+  "tasks": [
+    {
+      "schema_version": 1,
+      "id": "TASK-000001",
+      "status": "proposed",
+      "owner": "architecture",
+      "independent_reviewer": "program",
+      "requirements": ["REQ-ENG-007", "REQ-OPS-001"],
+      "risks": ["R-003", "R-026", "R-035", "R-038"],
+      "adrs": ["ADR-0009"],
+      "allowed_paths": [
+        "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+        "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
+        "docs/project-buildout/16-adr-0009-decision-draft.md",
+        "docs/blueprint-v1/machine/adr-0009-evidence.json",
+        "docs/blueprint-v1/machine/adr-0009-decision-review.schema.json",
+        "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-corpus.schema.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-https-harness.schema.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json",
+        "docs/blueprint-v1/machine/servo-local-compatibility-corpora/",
+        "docs/blueprint-v1/machine/servo-local-compatibility-harnesses/no-claim-https-host-alias.plan.json",
+        "benchmarks/compatibility/adr0009/no-claim-tiny",
+        "tools/validate_servo_local_compatibility_corpus.py",
+        "tools/validate_servo_local_compatibility_https_harness.py",
+        "tools/serve_servo_local_compatibility_corpus.py",
+        "docs/research/"
+      ],
+      "prohibited_paths": [
+        "apps/",
+        "crates/",
+        "prototype/",
+        "security/dependencies.json",
+        "third-party browser-engine source imports",
+        "release packaging or signing material"
+      ],
+      "preconditions": [
+        "PB-002 remains blocked and ADR-0009 remains unresolved",
+        "source-strategy owner identifies candidate source baselines or explicitly records that no baseline is selected",
+        "no Servo-derived or other browser-engine code enters a release path"
+      ],
+      "acceptance_criteria": [
+        "ADR9-EV-001 through ADR9-EV-018 each have owner-reviewed evidence, an explicit missing output, or a recorded blocker",
+        "first real ADR-0009 decision review starts from the checked no-claim decision-review template and replaces null selected option, source baseline, feature profile, owner reviewer, independent reviewer, and false decision status flags with owner-reviewed evidence or explicit blocked status",
+        "selected source baseline and provenance policy are recorded or the lack of selection is explicitly retained",
+        "license, advisory, SBOM, native package, generated-output, unsafe, FFI, local compatibility corpus HTTPS/browser execution beyond the checked harness plan and WPT/Test262 denominator, performance, security, maintenance, and public-claim impacts are synchronized",
+        "ADR-0009 decision draft states accepted, rejected, or still-blocked status without promoting unsupported claims",
+        "validation passes without weakening any source-strategy gate"
+      ],
+      "negative_tests": [
+        "no release code imports Chromium, WebKit, Gecko, Servo, Electron, CEF, system webview, or remote-rendering code",
+        "do not cite the checked no-claim decision-review template as an accepted ADR, source baseline, source adoption, component approval, release-code authorization, PB-002 readiness promotion, or implementation evidence",
+        "no dependency, component, compatibility, security, performance, memory, or release claim is introduced by evidence presence alone"
+      ],
+      "resource_budget": {
+        "wall_seconds": 28800,
+        "cpu_seconds": 7200,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 21474836480,
+        "network_bytes": 2147483648,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Revert only the task-specific documentation and registry diffs if owner review rejects the source-strategy packet.",
+        "evidence_required": ["validation output", "owner review note", "diff of reverted records"]
+      },
+      "dependencies": [],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000002",
+      "status": "proposed",
+      "owner": "release-operations",
+      "independent_reviewer": "quality",
+      "requirements": ["REQ-OPS-001"],
+      "risks": ["R-026", "R-034", "R-039"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/research/",
+        "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/project-buildout/11-pre-build-readiness-checklist.md",
+        "docs/project-buildout/13-build-readiness-operating-board.md",
+        "docs/project-buildout/machine/fresh-host-reproduction.schema.json",
+        "docs/project-buildout/machine/fresh-host-reproduction.json",
+        "docs/project-buildout/machine/fresh-host-run-record.schema.json",
+        "docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json",
+        "docs/project-buildout/machine/fresh-host-readiness-review.schema.json",
+        "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "tools/validate_fresh_host_reproduction.py",
+        "tools/validate_fresh_host_run_records.py",
+        "tools/validate_fresh_host_readiness_review.py",
+        "tools/bootstrap.sh",
+        "tools/bootstrap.ps1",
+        "tools/doctor.sh",
+        "tools/doctor.ps1",
+        "tools/check.sh",
+        "tools/check.ps1",
+        "tools/xtask/"
+      ],
+      "prohibited_paths": [
+        "release packaging or signing material",
+        "production credentials",
+        "unreviewed toolchain installers committed to the repository"
+      ],
+      "preconditions": [
+        "checked no-claim fresh-host reproduction inventory, run-record template, and fresh-host readiness-review template remain current",
+        "fresh reference host or owner-approved clean VM is available",
+        "task records exact OS, shell, Rust, Cargo, Git, cache, target directory, source-tree cleanliness, and environment facts",
+        "all generated caches and build outputs stay outside durable source",
+        "checked no-claim fresh-host readiness-review template cannot be cited as owner-reviewed fresh-host readiness review, PB-009 readiness, release confidence, production readiness, implementation, or Chrome-class evidence"
+      ],
+      "acceptance_criteria": [
+        "fresh-host reproduction inventory, run-record template, and fresh-host readiness-review record are updated with the accepted evidence location and no-claim boundary",
+        "fresh-host bootstrap, doctor, check, and xtask output are recorded with dates, exact OS, shell, Rust, Cargo, Git, and host configuration",
+        "cache and target-directory behavior is documented and source-tree cleanliness is verified",
+        "owner-reviewed fresh-host readiness review beyond the checked no-claim fresh-host readiness-review template accepts or rejects PB-009 readiness promotion",
+        "pre-build readiness and operating board distinguish reproduced evidence from current-host assumptions",
+        "validation passes on the repository after the evidence is linked"
+      ],
+      "negative_tests": [
+        "do not install untracked dependencies into the repository",
+        "do not treat same-host reruns as fresh-host reproduction",
+        "do not accept an owner-approved clean VM without explicit waiver and expiry",
+        "do not promote PB-009 to ready without independent reproduction evidence",
+        "do not cite the checked no-claim fresh-host readiness-review template as owner-reviewed fresh-host readiness review, PB-009 readiness, release confidence, production readiness, implementation, or Chrome-class evidence"
+      ],
+      "resource_budget": {
+        "wall_seconds": 14400,
+        "cpu_seconds": 5400,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 21474836480,
+        "network_bytes": 1073741824,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Remove the reproduction report and revert readiness wording if the run cannot be reproduced.",
+        "evidence_required": ["failing command output", "source-tree status", "updated readiness registry"]
+      },
+      "dependencies": [],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000003",
+      "status": "proposed",
+      "owner": "architecture",
+      "independent_reviewer": "security",
+      "requirements": ["REQ-SEC-003", "REQ-PERF-004"],
+      "risks": ["R-006", "R-018", "R-032"],
+      "adrs": [],
+      "allowed_paths": [
+        "crates/turing-ipc/",
+        "crates/turing-kernel/",
+        "docs/api-design/",
+        "docs/security-engine/",
+        "docs/blueprint-v1/machine/process-capabilities.json",
+        "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
+      "docs/blueprint-v1/machine/ipc-capability-boundary.json",
+      "docs/blueprint-v1/machine/ipc-schema-source.schema.json",
+      "docs/blueprint-v1/machine/ipc-schema-sources/",
+      "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
+      "docs/blueprint-v1/machine/ipc-readiness-reviews/",
+      "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+      "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+      "tools/validate_ipc_capability_boundaries.py",
+      "tools/validate_ipc_readiness_review.py",
+      "tools/validate_build_foundation.py"
+      ],
+      "prohibited_paths": [
+        "renderer HTML, CSS, DOM, or JavaScript implementation",
+        "external runtime dependencies",
+        "unsafe code without ledger and review"
+      ],
+      "preconditions": [
+      "PB-009 fresh-host reproduction is complete or explicitly waived by an owner",
+      "checked no-claim IPC capability boundary inventory remains current",
+      "checked no-claim IPC schema-source template remains current",
+      "checked no-claim IPC readiness-review template remains current but cannot be cited as owner-reviewed IPC readiness",
+      "process roles and IPC invariants remain deny-by-default",
+      "malformed and oversized messages remain hostile input"
+      ],
+      "acceptance_criteria": [
+      "canonical IPC schema or generator proposal is linked to process-capability records and starts from the checked no-claim IPC schema-source template",
+      "negative tests cover malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases",
+      "bounded queue and backpressure behavior is specified and tested",
+      "owner-reviewed IPC readiness review exists beyond the checked no-claim IPC readiness-review template before PB-011 readiness, renderer-security, agent-security, process-isolation, site-isolation, production IPC, or implementation claims",
+      "documentation and machine records agree on role authority and failure behavior"
+      ],
+      "negative_tests": [
+      "message parsing cannot silently accept unknown authority expansion",
+      "checked IPC schema-source template cannot be cited as schema-generator approval",
+      "checked no-claim IPC readiness-review template cannot be cited as owner-reviewed IPC readiness, PB-011 readiness, renderer-security, agent-security, process-isolation, site-isolation, production IPC, or implementation evidence",
+      "page content, DevTools, extension, or agent input cannot mint capabilities",
+      "test coverage must include rejection paths, not only successful messages",
+        "timeout and cancellation behavior cannot hang, leak authority, or hide resource ownership"
+      ],
+      "resource_budget": {
+        "wall_seconds": 21600,
+        "cpu_seconds": 7200,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 10737418240,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Revert task-scoped crate and document changes if IPC authority or compatibility assumptions are rejected.",
+        "evidence_required": ["test output", "validation output", "security review note"]
+      },
+      "dependencies": ["TASK-000002"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000004",
+      "status": "proposed",
+      "owner": "security",
+      "independent_reviewer": "architecture",
+      "requirements": ["REQ-SEC-001", "REQ-NET-001"],
+      "risks": ["R-004", "R-005", "R-007", "R-026"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/security-engine/",
+        "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
+        "docs/security-engine/machine/sandbox-probe-inventory.json",
+    "docs/security-engine/machine/sandbox-probe-package.schema.json",
+    "docs/security-engine/machine/sandbox-probe-packages/",
+    "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
+    "docs/security-engine/machine/sandbox-readiness-review.schema.json",
+    "docs/security-engine/machine/sandbox-readiness-reviews/",
+    "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+    "docs/platform/",
+        "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "tools/validate_sandbox_probe_inventory.py",
+    "tools/validate_sandbox_readiness_review.py",
+    "tools/",
+        "security/"
+      ],
+      "prohibited_paths": [
+        "sandbox weakening for demonstrations",
+        "certificate validation exceptions",
+        "production signing or update keys",
+        "browser engine release code"
+      ],
+      "preconditions": [
+    "TASK-000003 authority and IPC boundaries are reviewed or explicitly scoped out",
+    "checked no-claim sandbox probe inventory remains current",
+    "checked no-claim sandbox probe-package template remains current",
+    "checked no-claim sandbox readiness-review template remains current but cannot be cited as owner-reviewed sandbox readiness",
+    "target platform and sandbox primitive are named",
+        "negative probes are safe to run on the host"
+      ],
+      "acceptance_criteria": [
+        "checked no-claim sandbox probe inventory remains synchronized with process-capability roles, required surfaces, and unsupported boundaries",
+        "first executable package starts from the checked no-claim sandbox probe-package template and replaces template-only fields with real run evidence",
+        "packaged probe harness records expected-deny file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC access cases",
+        "renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles have explicit probe coverage or unsupported notes",
+    "sandbox evidence distinguishes design from actual platform-enforced behavior and includes effective platform policy capture",
+    "host-safe fixtures, fake credentials, fake profiles, bounded temporary roots, and cleanup checks prevent probe execution from damaging the developer host",
+    "owner-reviewed sandbox readiness review exists beyond the checked no-claim sandbox readiness-review template before PB-012 readiness, sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, SEC-GATE, production-safety, or implementation claims",
+    "security docs, risk records, and pre-build readiness agree on remaining gaps"
+      ],
+      "negative_tests": [
+    "the no-claim sandbox probe-package template cannot be cited as SEC-GATE evidence or probe execution approval",
+    "the checked no-claim sandbox readiness-review template cannot be cited as owner-reviewed sandbox readiness, PB-012 readiness, sandbox-readiness, renderer-security, site-isolation, SEC-GATE, production-safety, or implementation evidence",
+    "a successful demo cannot bypass sandbox denial checks",
+        "untrusted input cannot broaden probe authority",
+        "no failure is swallowed as a pass"
+      ],
+      "resource_budget": {
+        "wall_seconds": 21600,
+        "cpu_seconds": 7200,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 10737418240,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Remove probe tooling and revert sandbox status if any probe grants more authority than specified.",
+        "evidence_required": ["probe logs", "security review note", "updated risk state"]
+      },
+      "dependencies": ["TASK-000003"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000005",
+      "status": "proposed",
+      "owner": "performance",
+      "independent_reviewer": "release-operations",
+      "requirements": ["REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003", "REQ-PERF-004"],
+      "risks": ["R-019", "R-020", "R-036", "R-038"],
+      "adrs": [],
+      "allowed_paths": [
+        "benchmarks/",
+        "docs/benchmark-lab/",
+        "docs/performance/",
+        "docs/blueprint-v1/machine/benchmark-manifests/",
+        "docs/blueprint-v1/machine/benchmark-corpora/",
+        "docs/blueprint-v1/machine/benchmark-network-profiles/",
+        "docs/blueprint-v1/machine/benchmark-resource-attribution/",
+        "docs/blueprint-v1/machine/benchmark-competitor-versions/",
+        "docs/blueprint-v1/machine/benchmark-competitor-local-installs/",
+          "docs/blueprint-v1/machine/benchmark-browser-pin-captures/",
+          "docs/blueprint-v1/machine/benchmark-browser-pin-diagnostics/",
+        "docs/blueprint-v1/machine/benchmark-tab-scenarios/",
+        "docs/blueprint-v1/machine/benchmark-artifact-packages/",
+        "docs/blueprint-v1/machine/benchmark-launch-runners/",
+        "docs/blueprint-v1/machine/benchmark-claim-bundles/",
+        "docs/blueprint-v1/machine/benchmark-claim-bundle.schema.json",
+        "docs/blueprint-v1/machine/benchmark-readiness-reviews/",
+        "docs/blueprint-v1/machine/benchmark-readiness-review.schema.json",
+        "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+        "docs/research/benchmark-corpus-expansion-2026-07.md",
+          "docs/research/benchmark-competitor-version-manifest-2026-07.md",
+          "docs/research/benchmark-competitor-local-install-inventory-2026-07.md",
+          "docs/research/benchmark-browser-pin-capture-contract-2026-07.md",
+          "docs/research/benchmark-browser-pin-local-diagnostic-capture-2026-07.md",
+          "docs/research/benchmark-server-lifecycle-self-test-2026-07.md",
+          "docs/research/benchmark-30-tab-scenario-contract-2026-07.md",
+          "docs/research/benchmark-trace-artifact-package-contract-2026-07.md",
+          "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
+          "tools/run_benchmark_smoke.py",
+        "tools/capture_benchmark_browser_pins.py",
+        "tools/serve_benchmark_profile.py",
+        "tools/run_benchmark_server_profile.py",
+        "tools/validate_benchmark_manifests.py",
+          "tools/validate_benchmark_competitor_versions.py",
+          "tools/validate_benchmark_competitor_local_installs.py",
+          "tools/validate_benchmark_browser_pin_capture.py",
+          "tools/validate_benchmark_browser_pin_diagnostics.py",
+          "tools/validate_benchmark_tab_scenarios.py",
+        "tools/validate_benchmark_artifact_packages.py",
+        "tools/validate_benchmark_launch_runners.py",
+        "tools/validate_benchmark_claim_bundles.py",
+        "tools/validate_benchmark_readiness_review.py",
+        "tools/run_benchmark_browser_launch.py"
+      ],
+      "prohibited_paths": [
+        "public performance claims",
+        "network downloads during benchmark runs unless explicitly profiled",
+        "comparison runs with unequal security, workload, lifecycle, or discard settings"
+      ],
+      "preconditions": [
+        "current no-claim hardware, OS-control, corpus, network-profile, and resource-attribution registries validate",
+        "browser target, prototype target, or explicit no-browser status is declared",
+        "checked no-claim benchmark readiness-review template remains current and cannot be cited as owner-reviewed benchmark readiness",
+        "claim metadata remains no_claim until real owner-reviewed results exist"
+      ],
+      "acceptance_criteria": [
+        "browser-launch or explicit no-browser runner contract includes timeout, repetitions, cache/profile reset, temporary-profile isolation, prohibited-path checks, viewport, trace capture, failure capture, cancellation, cleanup, and artifact hashing",
+        "raw artifact package includes manifests, hashes, logs, and unsupported behavior",
+        "resource_attribution_id is carried through runner output and raw artifacts",
+        "competitor_version_manifest_id is carried as release-catalog candidate evidence until benchmark-ready local installed-browser pins exist",
+        "competitor_local_install_manifest_id is carried as executable/hash candidate evidence until browser-reported versions, profiles, settings, command lines, and channel proof exist",
+        "browser_pin_capture_plan_id and browser_pin_diagnostic_id are carried as candidate evidence until owner-reviewed browser pins prove isolated browser-reported versions, effective settings, channel proof, and no real profile access",
+        "expanded generated no-claim corpus cases are carried as planning evidence until a reviewed representative corpus, disabled-case denominator, and browser-run artifacts exist",
+        "checked runner-managed server lifecycle self-test is carried as planning evidence until browser-run server evidence, benchmark-run server artifacts, DNS execution proof, and richer network profiles exist",
+          "checked no-claim 30-tab mixed and all-live scenario manifests are carried as planning evidence until runner-generated raw artifacts, revival measurements, process topology, and state-loss evidence exist",
+        "checked no-claim trace and artifact package contract is carried as planning evidence until runner-generated trace packages, redaction review, raw samples, and retention decisions exist",
+        "checked no-claim browser launch-runner contract and checked no-browser browser launch-runner self-test are carried as planning evidence until real browser-run artifacts, timeout/cancellation handling, cache/profile reset, and result finalization exist",
+        "checked no-claim claim-bundle template is carried as planning evidence until owner-reviewed public-claim evidence from real raw artifacts exists",
+        "checked no-claim benchmark readiness-review template is carried as planning evidence until owner-reviewed benchmark readiness review from real hardware, corpus, runner, raw artifact, browser-pin, statistics, denominator, and claim-bundle evidence exists",
+        "validation rejects any benchmark artifact that omits no-claim or unsupported-behavior metadata"
+      ],
+      "negative_tests": [
+        "runner cannot produce an approved claim from smoke or sample data",
+        "runner cannot hide failures, unknown resource buckets, tab discards, or site-isolation state",
+        "competitor comparison remains blocked without pinned versions and equal-workload evidence",
+        "public claim bundle remains rejected without raw samples, trace package, statistics, denominator records, owner review, and expiry",
+        "checked no-claim benchmark readiness-review template cannot be cited as owner-reviewed benchmark readiness, benchmark-ready status, public performance, faster, lower-memory, lower-energy, Chrome-class, competitor-result, daily-driver, production, or implementation evidence"
+      ],
+      "resource_budget": {
+        "wall_seconds": 28800,
+        "cpu_seconds": 10800,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 21474836480,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Revert runner and benchmark-registry changes if they allow unsupported measurement or claim semantics.",
+        "evidence_required": ["runner output", "validator output", "performance review note"]
+      },
+      "dependencies": ["TASK-000002", "TASK-000003"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000006",
+      "status": "proposed",
+      "owner": "ui-runtime",
+      "independent_reviewer": "accessibility",
+      "requirements": ["REQ-A11Y-001", "REQ-PROD-001", "REQ-PROD-003"],
+      "risks": ["R-027", "R-028", "R-034"],
+      "adrs": ["ADR-0013", "ADR-0014", "ADR-0016"],
+      "allowed_paths": [
+        "apps/turing-shell/",
+        "crates/turing-ui-model/",
+        "docs/ui-runtime/",
+        "docs/platform/",
+        "docs/accessibility/",
+        "docs/product-experience/",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+        "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
+        "docs/research/native-ui-component-fixture-inventory-2026-07.md",
+        "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+        "docs/research/page-surface-composition-inventory-2026-07.md",
+        "docs/ui-runtime/machine/adapter-contract-inventory.schema.json",
+        "docs/ui-runtime/machine/adapter-contract-inventory.json",
+        "docs/ui-runtime/machine/framework-bakeoff-inventory.schema.json",
+        "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
+        "docs/ui-runtime/machine/native-ui-readiness-review.schema.json",
+        "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json",
+        "tools/validate_ui_adapter_contract.py",
+        "tools/validate_framework_bakeoff.py",
+        "tools/validate_ui_component_fixtures.py",
+        "tools/validate_window_input_accessibility_spike.py",
+        "tools/validate_page_surface_composition.py",
+        "tools/validate_native_ui_readiness_review.py"
+      ],
+      "prohibited_paths": [
+        "Electron",
+        "Tauri",
+        "system webview",
+        "runtime React or JavaScript in trusted chrome",
+        "runtime CSS parser in trusted chrome release path"
+      ],
+      "preconditions": [
+        "TASK-000003 IPC and command authority are reviewed or the shell prototype is isolated",
+        "all compared UI adapters implement equivalent scope",
+        "checked no-claim adapter contract inventory is treated as planning evidence until ADR-0013, complete toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contracts, native adapter prototype, no-toolkit-owned-authority negative tests, and owner review exist",
+        "checked no-claim framework bake-off inventory is treated as planning evidence until three-adapter or owner-approved reduced reference-shell evidence, ADR-0014, license/provenance review, accessibility evidence, IME/keyboard evidence, page-surface evidence, crash/GPU-loss evidence, and performance evidence exist",
+        "license and dependency review is included before selecting a toolkit",
+        "checked no-claim window/input/accessibility workflow inventory is treated as planning evidence until reference-platform and manual assistive-technology evidence exists",
+        "checked no-claim page-surface composition inventory is treated as planning evidence until UI-GATE-7, ADR-0016, typed page-surface handles, brokered surface handle, document and device generation, software fallback, and owner-review evidence exists",
+        "checked no-claim native UI readiness-review template is treated as planning evidence only and cannot be cited for toolkit selection, accessibility readiness, page-surface approval, release-path UI approval, or production readiness"
+      ],
+      "acceptance_criteria": [
+        "checked no-claim adapter contract inventory is treated as planning evidence until ADR-0013, toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contract evidence, native adapter prototype evidence, no toolkit-owned authority negative tests, and owner review exist",
+        "three-adapter or owner-approved reduced bake-off scope is recorded with equivalent shell tasks",
+        "checked no-claim framework bake-off inventory is treated as planning evidence until equivalent Slint, Vizia, and Floem or GPUI adapter evidence, ADR-0014, accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, replacement, and package/runtime-exclusion evidence exists",
+        "page-surface composition, design-token and component fixtures, accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, and provenance evidence requirements are explicit",
+        "checked no-claim component fixture inventory is treated as planning evidence until rendered or equivalent adapter-specific fixtures exist",
+        "checked no-claim window/input/accessibility workflow inventory is treated as planning evidence until executable reference-platform workflow matrix, page-tree composition, input, IME, keyboard, clipboard, drag-drop, localization, zoom, high contrast, reduced motion, manual assistive-technology, screen-reader, latency, crash, renderer-hang, GPU-loss, UI-GATE-7, and UI-GATE-10 evidence exists",
+        "checked no-claim page-surface composition inventory is treated as planning evidence until executable resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer-crash, GPU-loss, software fallback, latency, frame-pacing, typed page-surface handles, brokered surface handle, document and device generations, UI-GATE-7, ADR-0016, and owner-review evidence exists",
+        "checked no-claim native UI readiness-review template is treated as planning evidence until a real owner-reviewed native UI readiness review replaces null reviewers, selected toolkit, adapter strategy, and reference-platform fields with evidence beyond the template",
+        "toolkit-neutral UI state remains independent of any chosen renderer",
+        "no toolkit is promoted without ADR and license/provenance review"
+      ],
+      "negative_tests": [
+        "trusted chrome cannot depend on a webview, Electron, Tauri, system webview, Node, runtime React, runtime JavaScript, runtime DOM, or runtime CSS parser",
+        "native adapter prototype success cannot be claimed before ADR-0013, explicit adapter contract evidence, and no toolkit-owned authority negative tests exist",
+        "framework bake-off success cannot be claimed from a single adapter, empty-window demo, qualitative source observation, or unchecked license/provenance assumption",
+        "UI success cannot hide missing keyboard, screen-reader, manual assistive-technology, IME, resize, scale, damage, occlusion, capture, crash, renderer-hang, GPU-loss, software fallback, typed page-surface handle, brokered surface handle, document and device generations, page-tree, page-surface, latency, frame-pacing, energy, or memory behavior",
+        "checked no-claim native UI readiness-review template cannot be cited as toolkit selection, accessibility readiness, page-surface approval, trusted-chrome readiness, release-path UI approval, TASK-000006 execution approval, or production readiness",
+        "adapter-specific state cannot become the product source of truth"
+      ],
+      "resource_budget": {
+        "wall_seconds": 28800,
+        "cpu_seconds": 10800,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 21474836480,
+        "network_bytes": 1073741824,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Keep adapter prototypes isolated and revert any toolkit-specific source if review rejects its authority, license, or runtime model.",
+        "evidence_required": ["adapter comparison", "accessibility notes", "license review", "validation output"]
+      },
+      "dependencies": ["TASK-000003"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000007",
+      "status": "proposed",
+      "owner": "storage",
+      "independent_reviewer": "privacy-data",
+      "requirements": ["REQ-PROD-001", "REQ-PROD-002", "REQ-PROD-003", "REQ-STO-001", "REQ-STO-002"],
+      "risks": ["R-021", "R-023", "R-040"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/storage/",
+        "docs/product-experience/",
+        "docs/blueprint-v1/07-network-storage-media.md",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "docs/templates/",
+        "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/storage/machine/profile-session-schema-package.schema.json",
+        "docs/storage/machine/profile-session-schema-packages/",
+        "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
+        "docs/storage/machine/profile-session-readiness-review.schema.json",
+        "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json",
+        "tools/validate_profile_session_formats.py",
+        "tools/validate_profile_session_readiness_review.py"
+      ],
+      "prohibited_paths": [
+        "credential storage implementation",
+        "sync service implementation",
+        "profile migration code that handles real user data"
+      ],
+      "preconditions": [
+        "profile, Space, session, snapshot, and migration terms are defined consistently",
+        "checked no-claim schema-package template remains current",
+        "checked no-claim profile/session readiness-review template remains current and cannot be cited for data-loss safety, user-data handling readiness, production profile-format approval, release-path approval, or implementation evidence",
+        "privacy and downgrade behavior are treated as first-class requirements",
+        "no real user profile data is used as a fixture"
+      ],
+      "acceptance_criteria": [
+        "versioned schema proposals cover profile, Space, session, snapshot, and migration records",
+        "checked no-claim profile/session format inventory is treated as planning evidence until executable schemas and migration tests exist",
+        "first executable schema package starts from the checked no-claim schema-package template and replaces template-only fields with real schema, migration-test, fault-test, fixture-policy, and owner-review evidence",
+        "first profile/session readiness review starts from the checked no-claim profile/session readiness-review template and replaces template-only null schema_package, reference_platform, fixture_policy, owner_reviewer, independent_reviewer, and privacy_reviewer fields with owner-reviewed evidence beyond the template",
+        "disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, and data-loss behavior are specified",
+        "crash recovery and user-work preservation rules are linked to product requirements and risks",
+        "unsupported sync, credential storage, real-profile migration, user-data handling, and production profile-format behavior remains explicit"
+      ],
+      "negative_tests": [
+        "schemas cannot silently discard unsaved or protected work",
+        "private-session data cannot leak into normal profile fixtures",
+        "downgrade or corrupt input cannot be treated as successful migration",
+        "real user profile data cannot be used as a fixture before owner-approved privacy and migration review",
+        "checked no-claim schema-package template cannot be cited as executable schema approval, data-loss safety evidence, user-data handling readiness, production profile-format evidence, or real-profile migration approval",
+        "checked no-claim profile/session readiness-review template cannot be cited as data-loss safety, user-data handling readiness, production profile-format approval, release-path approval, sync support, credential-storage support, or implementation evidence"
+      ],
+      "resource_budget": {
+        "wall_seconds": 21600,
+        "cpu_seconds": 5400,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 10737418240,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Revert schema proposals and readiness wording if privacy, recovery, or downgrade behavior cannot be specified.",
+        "evidence_required": ["schema review", "privacy review", "validation output"]
+      },
+      "dependencies": ["TASK-000003"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000008",
+      "status": "proposed",
+      "owner": "program",
+      "independent_reviewer": "documentation-research",
+      "requirements": ["REQ-OPS-001"],
+      "risks": ["R-001", "R-039"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/project-buildout/",
+        "docs/project-buildout/machine/backup-ownership-gap.schema.json",
+        "docs/project-buildout/machine/backup-ownership-gap.json",
+        "docs/project-buildout/machine/backup-owner-qualification-record.schema.json",
+        "docs/project-buildout/machine/backup-owner-qualification-records/",
+        "docs/project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json",
+        "docs/project-buildout/machine/backup-ownership-readiness-review.schema.json",
+        "docs/project-buildout/machine/backup-ownership-readiness-reviews/",
+        "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json",
+        "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/blueprint-v1/machine/professional-owners.json",
+        "docs/blueprint-v1/machine/professional-review-rules.json",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "tools/validate_backup_ownership_gap.py",
+        "tools/validate_backup_ownership_readiness_review.py"
+      ],
+      "prohibited_paths": [
+        "code ownership changes without named reviewers",
+        "production release authority changes",
+        "security disclosure authority changes"
+      ],
+      "preconditions": [
+        "checked no-claim backup-owner qualification template remains current",
+        "checked no-claim backup-ownership readiness-review template remains current and cannot be cited for owner coverage, two-person control, release authority, production authority, broad readiness, or implementation evidence",
+        "candidate backup maintainers are identified by the owner for build-critical program, architecture, security, release-operations, human-release-authority, incident-response, legal-community, support, quality, supply-chain, documentation-research, product, platform, engine, JavaScript, networking, storage, performance, accessibility, UI-runtime, agent-operations, and privacy-data scopes",
+        "each backup scope includes role level, subsystem competence, representative path coverage, recent review record, availability, succession, recusal, inactivity, removal, and emergency replacement evidence",
+        "single-owner research-phase limits remain visible and PB-019 remains blocked while backups are null, placeholders, undocumented availability, or primary-only review paths"
+      ],
+      "acceptance_criteria": [
+        "build-critical scopes have named qualified backups or explicit checked blocked status from the backup ownership gap inventory remains",
+        "first backup-owner qualification record starts from the checked no-claim backup-owner qualification template and replaces template-only null candidate fields with real named qualified backup, role-level, subsystem-competence, path-coverage, review-record, availability, succession, recusal, inactivity, removal, emergency-replacement, reconciliation, two-person-control, and owner-review evidence",
+        "owner, reviewer, release, security, legal-community, support, incident-response, human-release-authority, quality, supply-chain, product, privacy-data, and accessibility scopes are updated consistently",
+        "CODEOWNERS, review-rule, escalation-policy, support, signing, disclosure, package, CI, service, and repository-access records are reconciled with the ownership registry",
+        "two-person control is explicit for stable signing, update trust, supported-version changes, security disclosure, irreversible profile migration, release promotion, legal approval, and incident closure",
+        "first backup ownership readiness review starts from the checked no-claim backup-ownership readiness-review template and replaces template-only null ownership_inventory, qualification_record_set, owner_reviewer, independent_reviewer, security_reviewer, release_operations_reviewer, legal_reviewer, and support_reviewer fields with owner-reviewed evidence beyond the template",
+        "PB-019 is not promoted unless backup evidence is concrete, reviewable, current, and independently verifiable",
+        "handoff docs state which scopes still rely on the primary owner and which protected paths remain ownerless or primary-only"
+      ],
+      "negative_tests": [
+        "do not treat a placeholder name as a qualified backup",
+        "do not cite the checked no-claim backup-owner qualification template as named backup ownership, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence",
+        "do not cite the checked no-claim backup-ownership readiness-review template as owner-reviewed backup ownership readiness, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence",
+        "do not treat CODEOWNERS routing, intent, self-nomination, undocumented availability, or title-only ownership as qualification evidence",
+        "do not promote production authority from documentation intent",
+        "do not hide single-owner residual risk",
+        "do not leave stale privileged access, ownerless protected paths, or primary-only release, signing, disclosure, support, or incident paths undocumented"
+      ],
+      "resource_budget": {
+        "wall_seconds": 7200,
+        "cpu_seconds": 1800,
+        "memory_bytes": 2147483648,
+        "disk_bytes": 1073741824,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 1
+      },
+      "rollback": {
+        "strategy": "Revert owner and review-rule changes if backup qualifications are not accepted.",
+        "evidence_required": ["owner review note", "updated readiness registry", "validation output"]
+      },
+      "dependencies": [],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000009",
+      "status": "proposed",
+      "owner": "release-operations",
+      "independent_reviewer": "security",
+      "requirements": ["REQ-OPS-001", "REQ-SEC-004", "REQ-STO-002"],
+      "risks": ["R-023", "R-024", "R-026", "R-038"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/release-operations/",
+        "docs/research/research-package-update-lab-inventory-2026-07.md",
+        "docs/release-operations/machine/research-package-update-lab-package.schema.json",
+        "docs/release-operations/machine/research-package-update-lab-packages/",
+        "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
+        "docs/release-operations/machine/research-package-update-readiness-review.schema.json",
+        "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json",
+        "docs/security-engine/",
+        "docs/blueprint-v1/13-build-release-operations.md",
+        "docs/blueprint-v1/08-security-and-sandbox.md",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "docs/project-buildout/",
+        "tools/",
+        "tools/validate_research_package_update_lab.py",
+        "tools/validate_research_package_update_readiness_review.py"
+      ],
+      "prohibited_paths": [
+        "production signing keys",
+        "offline root keys",
+        "stable-channel update service",
+        "public binary distribution",
+        "real user profile migration"
+      ],
+      "preconditions": [
+        "TASK-000002 fresh-host evidence exists or the lab is explicitly same-host and no-claim",
+        "TASK-000003 authority boundaries are reviewed or the updater lab is isolated",
+        "TASK-000007 migration terms are available before any profile schema rollback fixture exists",
+        "checked no-claim update-lab package template remains current",
+        "checked no-claim research package/update readiness-review template remains current and cannot be cited for release readiness, supported security, production updater, stable-channel, public-distribution, signing-readiness, or implementation evidence",
+        "no production signing keys, offline root keys, real updater, stable channel, or public binary distribution are in scope"
+      ],
+      "acceptance_criteria": [
+        "checked no-claim research package/update lab inventory is treated as planning evidence until executable manifests and update tests exist",
+        "first executable update-lab package starts from the checked no-claim update-lab package template and replaces template-only fields with real package-manifest, metadata-parser, fake-key signature-threshold, staged-install, rollback/migration, privacy-event, cleanup, and owner-review evidence",
+        "first research package/update readiness review starts from the checked no-claim research package/update readiness-review template and replaces template-only null lab_package, reference_platform, fixture_policy, owner_reviewer, independent_reviewer, release_operations_reviewer, security_reviewer, and privacy_reviewer fields with owner-reviewed evidence beyond the template",
+        "signed research-package manifest binds source commit, build ID, channel, platform, architecture, toolchain, feature set, SBOM, provenance, symbols, notices, artifact hashes, artifact sizes, and no-stable-support label",
+        "update metadata lab covers role separation, signature threshold, expiry, minimum secure version, channel, platform, architecture, rollout, mirrors, staged install, tamper, replay, wrong-target, partial-write, disk-full, and power-loss tests",
+        "rollback and migration lab proves authorized known-good rollback only, revoked or vulnerable version refusal, profile schema compatibility, downgrade behavior, crash-loop health gate, and privacy-preserving local event record",
+        "release, security, storage, and readiness documents keep unsupported production signing, offline root, stable-channel, user-profile migration, real-updater, and public-distribution behavior explicit"
+      ],
+      "negative_tests": [
+        "tamper, replay, wrong-target, expiry, mirror, partial-write, disk-full, and power-loss cases cannot be reported as successful updates",
+        "rollback cannot restore revoked or vulnerable versions",
+        "the lab cannot use production signing keys, offline root keys, stable-channel infrastructure, public distribution, or real user profile data",
+        "research-package evidence cannot create a production update, stable support, security, or release claim",
+        "checked no-claim update-lab package template cannot be cited as executable package manifest, update metadata parser, signature-threshold, staged-install, rollback safety, migration safety, release readiness, supported security, or production updater evidence",
+        "checked no-claim research package/update readiness-review template cannot be cited as release readiness, supported security, production updater, stable-channel, public-distribution, signing-readiness, owner-review, or implementation evidence"
+      ],
+      "resource_budget": {
+        "wall_seconds": 21600,
+        "cpu_seconds": 7200,
+        "memory_bytes": 8589934592,
+        "disk_bytes": 10737418240,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 2
+      },
+      "rollback": {
+        "strategy": "Revert lab manifests, tools, and readiness wording if update verification or rollback semantics are ambiguous.",
+        "evidence_required": ["update lab output", "security review note", "validation output"]
+      },
+      "dependencies": ["TASK-000002", "TASK-000003", "TASK-000007"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    },
+    {
+      "schema_version": 1,
+      "id": "TASK-000010",
+      "status": "proposed",
+      "owner": "incident-response",
+      "independent_reviewer": "release-operations",
+      "requirements": ["REQ-SEC-005", "REQ-OPS-002", "REQ-SEC-004"],
+      "risks": ["R-024", "R-025", "R-026", "R-038", "R-039"],
+      "adrs": [],
+      "allowed_paths": [
+        "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+        "docs/security.md",
+        "docs/security-engine/",
+        "docs/security-engine/machine/incident-patch-rehearsal-record.schema.json",
+        "docs/security-engine/machine/incident-patch-rehearsal-records/",
+        "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
+        "docs/security-engine/machine/incident-patch-readiness-review.schema.json",
+        "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json",
+        "docs/release-operations/",
+        "docs/blueprint-v1/08-security-and-sandbox.md",
+        "docs/blueprint-v1/13-build-release-operations.md",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "docs/project-buildout/",
+        "docs/templates/",
+        "tools/validate_incident_patch_rehearsal.py",
+        "tools/validate_incident_patch_readiness_review.py"
+      ],
+      "prohibited_paths": [
+        "production signing keys",
+        "offline root keys",
+        "public exploitable issue details",
+        "agent-decided vulnerability severity or disclosure timing",
+        "agent stable-promotion or signing authority"
+      ],
+      "preconditions": [
+        "TASK-000008 ownership limits are explicit or incident staffing gaps remain blocked",
+        "TASK-000009 update dry-run evidence exists or the patch exercise records update-capacity as blocked",
+        "checked no-claim incident patch rehearsal template remains current",
+        "checked no-claim incident/patch readiness-review template remains current and cannot be cited for incident-response readiness, emergency patch capacity, supported security versions, production-safe browsing, disclosure authority, stable promotion, signing authority, incident closure authority, or implementation evidence",
+        "private report channel and confidential evidence handling are available for tabletop material"
+      ],
+      "acceptance_criteria": [
+        "checked no-claim incident patch rehearsal inventory is treated as planning evidence until tabletop records, emergency patch dry-run evidence, and role review exist",
+        "first executable incident patch rehearsal record starts from the checked no-claim incident patch rehearsal template and replaces template-only fields with real private-intake tabletop, emergency-patch dry-run, regression/backport, fake signing/update dry-run, disclosure, postmortem, role-matrix, backup-coverage, and owner-review evidence",
+        "first incident/patch readiness review starts from the checked no-claim incident/patch readiness-review template and replaces template-only null rehearsal_record, reference_platform, private_channel, owner_reviewer, independent_reviewer, security_reviewer, release_operations_reviewer, legal_reviewer, and support_reviewer fields with owner-reviewed evidence beyond the template",
+        "private intake tabletop covers report access control, acknowledgement, reproduction, severity, asset analysis, affected-version statement, embargo handling, and sanitized evidence preservation",
+        "emergency patch rehearsal covers protected patch branch, embargoed CI, regression test, backport decision, signing and update dry run, staged rollout, minimum secure version, revocation, release notes, user and admin communication, CVE and credit handling, coordinated disclosure, and postmortem remediation",
+        "incident-class workflow covers active exploitation, update or signing compromise, dependency vulnerability, data loss, privacy leak, sandbox regression, malicious extension or provider, and service outage",
+        "role matrix names owner, reviewer, release, security, legal, support, and on-call responsibilities with timing targets, escalation path, secret rotation, and no agent disclosure, stable-promotion, or signing authority"
+      ],
+      "negative_tests": [
+        "public issue flow cannot retain exploitable vulnerability details after private escalation",
+        "agents cannot decide severity, disclosure timing, incident closure, stable promotion, or signing",
+        "checked no-claim incident patch rehearsal template cannot be cited as executed private-intake tabletop, emergency patch dry run, regression or backport evidence, signing or update dry-run evidence, disclosure rehearsal, postmortem, role review, backup coverage, owner review, incident-response readiness, emergency patch capacity, supported security, disclosure authority, stable promotion, signing authority, incident closure, production-safe browsing, or implementation evidence",
+        "checked no-claim incident/patch readiness-review template cannot be cited as owner review, incident-response readiness, emergency patch capacity, supported security versions, production-safe browsing, disclosure authority, stable promotion, signing authority, incident closure, or implementation evidence",
+        "tabletop success cannot hide missing update capacity, missing owner coverage, missing regression evidence, or unresolved support targets",
+        "security incident documentation cannot imply production-safe browsing or supported security versions"
+      ],
+      "resource_budget": {
+        "wall_seconds": 14400,
+        "cpu_seconds": 3600,
+        "memory_bytes": 4294967296,
+        "disk_bytes": 2147483648,
+        "network_bytes": 0,
+        "max_workers": 1,
+        "max_retries": 1
+      },
+      "rollback": {
+        "strategy": "Revert incident workflow and readiness wording if private handling, patch dry-run, or authority boundaries are rejected.",
+        "evidence_required": ["tabletop notes", "incident-response review note", "validation output"]
+      },
+      "dependencies": ["TASK-000008", "TASK-000009"],
+      "expires_at": "2026-10-17T00:00:00Z"
+    }
+  ]
+}

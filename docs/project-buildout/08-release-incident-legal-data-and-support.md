@@ -63,3 +63,5 @@ This document is a research and operating baseline, not an implementation or sup
 ## Production readiness ownership
 
 The Production Readiness book owns stable scope, platforms, channels, SLOs, update roles, vulnerability SLAs, service dependencies, support, signing, legal approval, and human release authority. Agents may prepare evidence but cannot make these decisions.
+
+The checked no-claim [backup-ownership readiness-review template](machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) does not grant release authority, stable signing authority, security-disclosure authority, legal approval, incident closure authority, production authority, broad readiness, owner coverage, or two-person control. Those decisions require named human owner review and retained evidence beyond the template.

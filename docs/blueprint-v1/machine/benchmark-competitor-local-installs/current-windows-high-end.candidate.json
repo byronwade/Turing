@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "local_install_manifest_id": "TURING.BENCHMARK.COMPETITOR_LOCAL_INSTALLS.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "status": "candidate_current_host_unreviewed",
+  "claim_status": "Local executable inventory only; no browser-reported version proof, no channel proof, no profile, no command line, no settings, no benchmark run, no competitor result, and no performance claim.",
+  "captured_at": "2026-07-17T20:33:44.3212009-04:00",
+  "host_references": {
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "release_catalog_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07"
+  },
+  "capture_scope": [
+    "standard Windows App Paths entries for Chrome and Edge",
+    "standard Program Files executable locations for Chrome, Edge, and Firefox",
+    "executable file version, product version, file size, last-write time, SHA-256, and Authenticode signer status",
+    "selected Chrome and Edge BLBeacon values",
+    "selected uninstall DisplayVersion values",
+    "no user profile, cookie, history, account, extension, or browsing data was read"
+  ],
+  "observed_browsers": [
+    {
+      "browser_id": "chrome-local-desktop",
+      "release_catalog_browser_id": "chrome-stable-desktop",
+      "product_name": "Google Chrome",
+      "channel_claim": "standard Windows Chrome install path; channel not independently proven",
+      "engine_family": "Chromium/Blink/V8",
+      "platform": "Windows desktop",
+      "executable_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "file_version": "150.0.7871.115",
+      "product_version": "150.0.7871.115",
+      "browser_reported_version": null,
+      "file_size_bytes": 3936920,
+      "last_write_time_utc": "2026-07-07T22:53:20.4406190Z",
+      "sha256": "5718df5f35db255adb85cc8a8305645319f8513e4d8bf818741b8aa491003ce9",
+      "signature": {
+        "status": "Valid",
+        "signer_subject": "CN=Google LLC, O=Google LLC, L=Mountain View, S=California, C=US, SERIALNUMBER=3582691, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.2=Delaware, OID.1.3.6.1.4.1.311.60.2.1.3=US",
+        "signer_thumbprint": "607A3EDAA64933E94422FC8F0C80388E0590986C"
+      },
+      "registry_observations": [
+        "HKLM App Paths chrome.exe default path points to C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "HKLM WOW6432Node App Paths chrome.exe default path points to C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "HKCU Google Chrome BLBeacon version=150.0.7871.115 state=1 failed_count=0",
+        "HKLM uninstall Google Chrome DisplayVersion=150.0.7871.127 InstallDate=20251221",
+        "Chrome application directory contains version directories 150.0.7871.115 and 150.0.7871.127"
+      ],
+      "version_state": {
+        "status": "inconsistent_local_metadata",
+        "details": "Executable file/product version and BLBeacon report 150.0.7871.115, uninstall metadata reports 150.0.7871.127, version directories include both, and chrome.exe --version returned 'Opening in existing browser session.' instead of a browser version."
+      },
+      "release_catalog_relation": "Local metadata is older than the 2026-07-18 release-catalog Chrome Stable candidate 150.0.7871.128/.129 for Windows and macOS; not benchmark eligible.",
+      "local_pin_status": "executable_hash_captured_profile_missing",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "isolated browser-reported version capture",
+        "channel proof",
+        "profile directory source and hash",
+        "extension, sync/account, cache, update, sandbox, site-isolation, memory-saver, power, feature-flag, user-agent, command-line, and environment settings",
+        "runner-generated benchmark manifest and raw artifacts"
+      ]
+    },
+    {
+      "browser_id": "edge-local-desktop",
+      "release_catalog_browser_id": "edge-stable-desktop",
+      "product_name": "Microsoft Edge",
+      "channel_claim": "standard Windows Edge install path; channel not independently proven and version is newer than recorded Stable catalog",
+      "engine_family": "Chromium/Blink/V8",
+      "platform": "Windows desktop",
+      "executable_path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "file_version": "151.0.4129.21",
+      "product_version": "151.0.4129.21",
+      "browser_reported_version": null,
+      "file_size_bytes": 5061960,
+      "last_write_time_utc": "2026-07-12T19:11:03.1675486Z",
+      "sha256": "7298c2707567e442927cb2069889ee14715e2b268537b4c933bf7d56a6bc840d",
+      "signature": {
+        "status": "Valid",
+        "signer_subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        "signer_thumbprint": "4028CAD637509D4744B17EC5B42AED8D7A31E6AF"
+      },
+      "registry_observations": [
+        "HKLM App Paths msedge.exe default path points to C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "HKLM WOW6432Node App Paths msedge.exe default path points to C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "HKCU Microsoft Edge BLBeacon version=151.0.4129.15 state=1 failed_count=0",
+        "HKLM WOW6432Node uninstall Microsoft Edge DisplayVersion=151.0.4129.21 InstallDate=20260713",
+        "HKLM WOW6432Node uninstall Microsoft Edge WebView2 Runtime DisplayVersion=151.0.4129.21 InstallDate=20260713"
+      ],
+      "version_state": {
+        "status": "inconsistent_local_metadata",
+        "details": "Executable file/product version and uninstall metadata report 151.0.4129.21, BLBeacon reports 151.0.4129.15, and msedge.exe --version returned no version output."
+      },
+      "release_catalog_relation": "Local executable metadata is newer than the 2026-07-18 release-catalog Edge Stable candidate 150.0.4078.83, so the local channel and update state must be resolved before comparison.",
+      "local_pin_status": "executable_hash_captured_profile_missing",
+      "benchmark_eligible": false,
+      "missing_pin_evidence": [
+        "isolated browser-reported version capture",
+        "channel proof and update-ring classification",
+        "profile directory source and hash",
+        "extension, sync/account, sidebar/workspaces, WebView2 coupling, cache, update, sandbox, site-isolation, memory-saver, power, feature-flag, user-agent, command-line, and environment settings",
+        "runner-generated benchmark manifest and raw artifacts"
+      ]
+    }
+  ],
+  "absent_or_unsupported_browsers": [
+    {
+      "browser_id": "firefox-stable-desktop",
+      "status": "not_found_in_standard_windows_locations",
+      "checked_evidence": [
+        "C:\\Program Files\\Mozilla Firefox\\firefox.exe not found",
+        "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe not found",
+        "no Mozilla Firefox uninstall entry was returned by the filtered uninstall-key query"
+      ]
+    },
+    {
+      "browser_id": "safari-stable-desktop",
+      "status": "unsupported_on_windows_reference_host",
+      "checked_evidence": [
+        "Safari Stable desktop comparison requires a macOS host manifest and local Safari application evidence"
+      ]
+    },
+    {
+      "browser_id": "safari-technology-preview",
+      "status": "unsupported_on_windows_reference_host",
+      "checked_evidence": [
+        "Safari Technology Preview comparison requires a macOS host manifest and local preview application evidence"
+      ]
+    }
+  ],
+  "unsupported_behavior": [
+    "No user browser profile, history, cookie store, extension data, account state, or browsing data was inspected.",
+    "No isolated browser-reported version was captured.",
+    "No browser command line, feature flags, profile hash, cache state, update state, sandbox state, site-isolation state, lifecycle state, memory/energy-saver setting, or user-agent policy was captured.",
+    "No benchmark suite or local corpus was run in a browser.",
+    "No competitor result, ranking, Chrome-class comparison, fastest claim, lower-memory claim, lower-energy claim, compatibility claim, security claim, or production claim is supported."
+  ],
+  "evidence_required": [
+    "owner-approved fixed hardware and OS-control manifest",
+    "isolated browser-reported version capture for every compared product",
+    "explicit channel and update-state classification before and after each run",
+    "profile source and hash plus extension, sync/account, cache, command-line, environment, feature-flag, sandbox, site-isolation, lifecycle, memory-saver, energy-saver, power, and user-agent disclosure",
+    "Firefox and Safari local install evidence on supported hosts before cross-browser comparison",
+    "runner-generated benchmark manifest linking hardware, OS-control, release-catalog, local-install, resource-attribution, corpus, and network-profile IDs",
+    "raw artifacts, traces, failure denominator, statistical summary, and owner review before any comparison claim"
+  ]
+}

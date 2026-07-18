@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "inventory_id": "BUILD.FRESH_HOST.NOCLAIM.2026_07",
+  "status": "no_claim_fresh_host_reproduction_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim fresh-host reproduction inventory only; no independent fresh-host reproduction, no owner-approved clean-VM equivalent, no owner-reviewed fresh-host readiness, no PB-009 readiness promotion, no broad implementation readiness, no preview readiness, no beta readiness, no stable readiness, no production readiness, no release confidence, no implementation claim, and no Chrome-class claim",
+  "source_records": [
+    "docs/research/m0-build-foundation-2026-07.md",
+    "docs/project-buildout/05-repository-build-toolchain-and-coding-standards.md",
+    "docs/project-buildout/11-pre-build-readiness-checklist.md",
+    "docs/project-buildout/13-build-readiness-operating-board.md",
+    "docs/project-buildout/17-build-readiness-task-queue.md",
+    "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    ".github/workflows/repository-validation.yml",
+    "tools/bootstrap.sh",
+    "tools/bootstrap.ps1",
+    "tools/doctor.sh",
+    "tools/doctor.ps1",
+    "tools/check.sh",
+    "tools/check.ps1",
+    "tools/xtask/src/main.rs",
+    "docs/project-buildout/machine/fresh-host-run-record.schema.json",
+    "docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json",
+    "docs/project-buildout/machine/fresh-host-readiness-review.schema.json",
+    "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json",
+    "tools/validate_fresh_host_run_records.py",
+    "tools/validate_fresh_host_readiness_review.py"
+  ],
+  "current_local_baseline": [
+    "M0 has bootstrap, doctor, check, and xtask commands in the repository.",
+    "The wrappers set CARGO_TARGET_DIR outside the repository when the caller does not provide one.",
+    "The aggregate check validates documentation, registries, formatting, clippy, tests, shell self-test, and the architecture prototype.",
+    "The checked run-record template defines how future independent fresh-host evidence must retain command logs, hashes, cache roots, target directories, source-tree status, and failure classifications.",
+    "The checked fresh-host readiness-review template defines how future owner review must accept or reject retained run evidence before PB-009 readiness promotion.",
+    "Current-host or same-host reruns are useful diagnostics but are not independent fresh-host reproduction evidence."
+  ],
+  "required_reproduction_scope": {
+    "host_scope": [
+      "independent fresh reference host or owner-approved clean VM equivalent",
+      "exact operating system edition, version, architecture, patch level, shell, terminal, locale, timezone, CPU, memory, disk, virtualization state, network posture, and privilege level",
+      "explicit statement that no repository build outputs, Cargo target directory, Rustup toolchain cache, package cache, or generated files were reused from prior Turing work",
+      "owner-approved waiver with expiry if a clean VM is used instead of a physically separate host"
+    ],
+    "source_scope": [
+      "clean repository checkout at an exact Git commit with branch, remote URL, commit hash, and dirty-state output",
+      "source-tree cleanliness before and after bootstrap, doctor, check, and xtask commands",
+      "explicit list of ignored build outputs and generated caches that stay outside durable source",
+      "recorded line-ending and Git configuration facts that affect Windows, macOS, or Linux checkouts"
+    ],
+    "command_scope": [
+      "tools/bootstrap.sh or tools/bootstrap.ps1 output with date, shell, exit code, and environment summary",
+      "tools/doctor.sh or tools/doctor.ps1 output with date, shell, exit code, exact Rust version, rustup component state, cargo version, git version, and required host tools",
+      "tools/check.sh or tools/check.ps1 output with date, shell, exit code, aggregate validator output, cargo fmt, clippy, workspace tests, shell self-test, and prototype run",
+      "direct cargo run --locked -p xtask -- bootstrap, doctor --ci, and check output or a recorded reason that wrapper execution is the owner-approved equivalent"
+    ],
+    "artifact_scope": [
+      "CARGO_TARGET_DIR path, cache root path, temp directory path, and confirmation that build output stayed outside the repository",
+      "hashes or retained logs for bootstrap, doctor, check, and xtask command output",
+      "source-tree status after all commands plus evidence that no tool installer, temporary archive, credential, local profile, or generated junk was committed",
+      "failure logs and rollback notes if any command fails, including whether the failure is environmental, source-controlled, network-dependent, or nondeterministic"
+    ]
+  },
+  "evidence_axes": [
+    {
+      "axis_id": "FRESH-HOST-AXIS-HOST_IDENTITY",
+      "name": "Host Identity And Isolation",
+      "required_output": "A dated host record proving an independent fresh reference host or owner-approved clean VM equivalent with OS, shell, CPU, memory, disk, locale, timezone, network, privilege, cache, and prior-state facts.",
+      "missing_status": "No independent fresh-host or clean-VM run artifact exists."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-SOURCE_IDENTITY",
+      "name": "Source Checkout Identity",
+      "required_output": "A clean checkout record with remote URL, branch, commit hash, dirty-state output, line-ending behavior, ignored-output policy, and before/after source-tree cleanliness.",
+      "missing_status": "Current repository state is useful, but it is not a fresh checkout reproduction artifact."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-COMMAND_OUTPUT",
+      "name": "Bootstrap Doctor Check Output",
+      "required_output": "Bootstrap, doctor, check, and xtask command logs with dates, shell, exit codes, exact Rust/Cargo/Git facts, aggregate validator output, formatting, clippy, tests, shell self-test, and prototype output.",
+      "missing_status": "Only ordinary local command runs exist until fresh-host logs are captured."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-CACHE_TARGET",
+      "name": "Cache And Target Directory Behavior",
+      "required_output": "Evidence for CARGO_TARGET_DIR, Cargo/Rustup cache roots, temp directories, source-tree exclusion, cleanup behavior, and no committed tool installers or generated build outputs.",
+      "missing_status": "Wrapper policy exists, but clean-host cache and target behavior has not been independently recorded."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-FAILURE_ROLLBACK",
+      "name": "Failure Classification And Rollback",
+      "required_output": "If a command fails, retained logs classify the failure as environmental, source-controlled, network-dependent, or nondeterministic and record rollback or cleanup actions.",
+      "missing_status": "No fresh-host failure classification exists."
+    }
+  ],
+  "rejection_rules": [
+    "Reject same-host reruns as independent fresh-host reproduction.",
+    "Reject runs that reuse prior Turing target directories, generated output, Cargo target caches, local profiles, or downloaded installers without an owner-approved clean-VM waiver.",
+    "Reject output that hides command failures, omits exit codes, omits source-tree status, or leaves build artifacts inside durable source.",
+    "Reject any claim that PB-009 is ready, broadly reproducible, preview-ready, beta-ready, stable-ready, production-ready, release-confident, implementation-ready, or Chrome-class from this inventory or the checked no-claim readiness-review template alone."
+  ],
+  "unsupported_boundaries": [
+    "no independent fresh-host reproduction",
+    "no owner-approved clean-VM equivalent",
+    "no owner-reviewed fresh-host readiness",
+    "no PB-009 readiness promotion",
+    "no broad implementation readiness",
+    "no preview readiness",
+    "no beta readiness",
+    "no stable readiness",
+    "no production readiness",
+    "no release confidence",
+    "no implementation claim",
+    "no Chrome-class claim",
+    "no source-strategy approval",
+    "no benchmark claim",
+    "no release packaging claim"
+  ]
+}

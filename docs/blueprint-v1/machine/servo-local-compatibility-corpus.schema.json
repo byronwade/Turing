@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/servo-local-compatibility-corpus-v1.json",
+  "title": "ADR-0009 Local Compatibility Corpus Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "status",
+    "created_at",
+    "related_gate",
+    "evidence_id",
+    "claim_status",
+    "source_strategy_status",
+    "run_status",
+    "fixture_status",
+    "fixture_root",
+    "required_run_record",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "corpus_id": {
+      "type": "string",
+      "pattern": "^ADR9-EV-013\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "contract_only_no_browser_run",
+        "draft_no_claim",
+        "reviewed_no_claim"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "related_gate": {
+      "const": "PB-002"
+    },
+    "evidence_id": {
+      "const": "ADR9-EV-013"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "source_strategy_status": {
+      "const": "no_source_strategy_decision"
+    },
+    "run_status": {
+      "const": "not_executed"
+    },
+    "fixture_status": {
+      "enum": [
+        "not_materialized",
+        "materialized_no_browser_run"
+      ]
+    },
+    "fixture_root": {
+      "type": "string",
+      "pattern": "^benchmarks/compatibility/adr0009/no-claim-tiny$"
+    },
+    "required_run_record": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "category",
+        "name",
+        "purpose",
+        "primary_risk",
+        "local_origins",
+        "required_assertion_groups",
+        "required_artifacts",
+        "failure_denominator",
+        "wpt_focus_areas",
+        "test262_relevance",
+        "fixtures",
+        "execution_status",
+        "external_network_allowed",
+        "compatibility_claim_allowed"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^ADR9-COMPAT-[A-Z0-9-]+$"
+        },
+        "category": {
+          "enum": [
+            "static_document",
+            "dynamic_dom_events",
+            "origin_storage",
+            "fetch_cors_csp",
+            "webidl_js_binding",
+            "form_editing_accessibility",
+            "webdriver_headless_smoke",
+            "crash_timeout_resource"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "primary_risk": {
+          "type": "string"
+        },
+        "local_origins": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^https://[a-z0-9.-]+\\.turing\\.invalid/"
+          }
+        },
+        "required_assertion_groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "failure_denominator": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "wpt_focus_areas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test262_relevance": {
+          "type": "string"
+        },
+        "fixtures": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/fixture"
+          }
+        },
+        "execution_status": {
+          "const": "not_executed"
+        },
+        "external_network_allowed": {
+          "const": false
+        },
+        "compatibility_claim_allowed": {
+          "const": false
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "route_path",
+        "fixture_path",
+        "sha256",
+        "bytes",
+        "generated",
+        "license"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "pattern": "^https://[a-z0-9.-]+\\.turing\\.invalid/$"
+        },
+        "route_path": {
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9._~!$&'()*+,;=:@/-]*$"
+        },
+        "fixture_path": {
+          "type": "string",
+          "pattern": "^benchmarks/compatibility/adr0009/no-claim-tiny/.+\\.html$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "generated": {
+          "const": true
+        },
+        "license": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

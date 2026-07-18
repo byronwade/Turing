@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "exercise_id": "SEC.INCIDENT.NOCLAIM_PATCH_REHEARSAL.2026_07",
+  "status": "no_claim_rehearsal_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim planning inventory only; no production-safe browsing claim, no supported security versions claim, no incident-response readiness claim, no emergency patch capacity claim, no disclosure authority claim, no stable promotion authority claim, no signing authority claim, no incident closure authority claim, and no implementation claim.",
+  "private_intake_steps": [
+    {
+      "id": "SEC-INTAKE-ACCESS_CONTROL",
+      "step": "report access control",
+      "required_evidence": "Private report access must be restricted to named incident roles with audit records.",
+      "authority_boundary": "Access control evidence does not grant disclosure authority, stable promotion, signing authority, or incident closure.",
+      "safe_failure": "Block public handling and require owner review when report access cannot be restricted."
+    },
+    {
+      "id": "SEC-INTAKE-ACKNOWLEDGEMENT",
+      "step": "acknowledgement",
+      "required_evidence": "Acknowledgement timing, minimum response content, and private-channel preservation must be rehearsed.",
+      "authority_boundary": "Acknowledgement cannot promise severity, disclosure timing, stable support, patch timing, supported security versions, or production-safe browsing.",
+      "safe_failure": "Hold response content to a minimal receipt when authority or facts are incomplete."
+    },
+    {
+      "id": "SEC-INTAKE-REPRODUCTION",
+      "step": "reproduction",
+      "required_evidence": "A private reproduction record must capture affected commit, platform, configuration, and sanitized artifact references.",
+      "authority_boundary": "Reproduction evidence does not decide severity, disclosure timing, stable promotion, or signing.",
+      "safe_failure": "Quarantine exploit details and keep the issue private when reproduction is incomplete or unsafe."
+    },
+    {
+      "id": "SEC-INTAKE-SEVERITY",
+      "step": "severity",
+      "required_evidence": "Severity triage must record asset impact, boundary crossed, reachability, prerequisites, and confidence.",
+      "authority_boundary": "Agents and implementation authors cannot decide final vulnerability severity or disclosure timing.",
+      "safe_failure": "Escalate to security owner review when severity evidence is missing, contradictory, or agent-derived."
+    },
+    {
+      "id": "SEC-INTAKE-ASSET_ANALYSIS",
+      "step": "asset analysis",
+      "required_evidence": "Asset analysis must identify origin, profile, credential, update, signing, file, network, extension, DevTools, and agent assets at risk.",
+      "authority_boundary": "Asset analysis does not approve public disclosure, incident closure, or stable release readiness.",
+      "safe_failure": "Preserve private handling and block closure when reachable assets are uncertain."
+    },
+    {
+      "id": "SEC-INTAKE-AFFECTED_VERSION",
+      "step": "affected-version statement",
+      "required_evidence": "Affected-version statement must tie commits, builds, packages, channels, and unsupported unknowns to one private record.",
+      "authority_boundary": "Affected-version drafting does not create supported security versions, disclosure authority, stable support, or patch SLAs.",
+      "safe_failure": "State unknowns privately and block public support language when version scope is unproven."
+    },
+    {
+      "id": "SEC-INTAKE-EMBARGO",
+      "step": "embargo handling",
+      "required_evidence": "Embargo scope, participants, evidence locations, escalation, and expiry triggers must be rehearsed.",
+      "authority_boundary": "Embargo handling does not authorize disclosure timing, public issue conversion, or release promotion.",
+      "safe_failure": "Keep details private and escalate when embargo scope or participant authority is unclear."
+    },
+    {
+      "id": "SEC-INTAKE-SANITIZED_EVIDENCE",
+      "step": "sanitized evidence preservation",
+      "required_evidence": "Sanitized evidence preservation must remove secrets, credentials, private-session data, and exploit-enabling payloads before sharing.",
+      "authority_boundary": "Sanitized evidence cannot hide severity, affected versions, disclosure risk, incident closure blockers, or residual risk from reviewers.",
+      "safe_failure": "Redact or discard unsafe evidence payloads and keep original exploit material access-restricted."
+    }
+  ],
+  "emergency_patch_steps": [
+    {
+      "id": "SEC-PATCH-PROTECTED_BRANCH",
+      "step": "protected patch branch",
+      "required_evidence": "Protected patch branch creation, review rules, CI visibility, and restricted access must be rehearsed.",
+      "authority_boundary": "A protected branch does not grant self-approval, signing authority, stable promotion, or disclosure authority.",
+      "safe_failure": "Block patch work or keep it private when branch protections cannot be verified."
+    },
+    {
+      "id": "SEC-PATCH-EMBARGOED_CI",
+      "step": "embargoed CI",
+      "required_evidence": "Embargoed CI must run required checks without exposing exploit details or secrets to public logs.",
+      "authority_boundary": "Embargoed CI success does not prove production-safe browsing, supported security versions, stable support, or release readiness.",
+      "safe_failure": "Stop the rehearsal and restrict logs when CI leaks details or cannot run privately."
+    },
+    {
+      "id": "SEC-PATCH-REGRESSION",
+      "step": "regression test",
+      "required_evidence": "Regression test evidence must prove the reported path fails safely without publishing exploit-enabling details.",
+      "authority_boundary": "A regression test does not replace independent review, fuzzing, sandbox evidence, disclosure review, or stable release gates.",
+      "safe_failure": "Block closure and preserve private handling when regression evidence is absent or too narrow."
+    },
+    {
+      "id": "SEC-PATCH-BACKPORT",
+      "step": "backport decision",
+      "required_evidence": "Backport decision evidence must record supported branches, unsupported branches, risk, and owner decision.",
+      "authority_boundary": "Backport notes do not create supported security versions, stable support, disclosure authority, or patch-time guarantees.",
+      "safe_failure": "Mark support scope blocked when branch support, owner coverage, or patch applicability is unknown."
+    },
+    {
+      "id": "SEC-PATCH-SIGNING_UPDATE_DRY_RUN",
+      "step": "signing and update dry run",
+      "required_evidence": "Signing and update dry run must use non-production keys and tie artifacts to update metadata and validation output.",
+      "authority_boundary": "Dry-run evidence cannot use production signing keys, offline roots, stable channels, or public distribution.",
+      "safe_failure": "Reject the dry run and preserve no-production-key boundaries when signing or update authority is ambiguous."
+    },
+    {
+      "id": "SEC-PATCH-STAGED_ROLLOUT",
+      "step": "staged rollout",
+      "required_evidence": "Staged rollout rehearsal must record cohort, pause, rollback, failure, and communication decision points.",
+      "authority_boundary": "Staged rollout rehearsal does not approve public distribution, stable promotion, or emergency patch capacity.",
+      "safe_failure": "Abort rollout rehearsal when pause, rollback, or owner authority is missing."
+    },
+    {
+      "id": "SEC-PATCH-MINIMUM_SECURE_VERSION",
+      "step": "minimum secure version",
+      "required_evidence": "Minimum secure version rehearsal must block known vulnerable versions in update and rollback paths.",
+      "authority_boundary": "A version-floor plan does not create supported security versions, stable support, or signing authority without staffing and update capacity.",
+      "safe_failure": "Block rollback or install when a version is revoked, vulnerable, or below the floor."
+    },
+    {
+      "id": "SEC-PATCH-REVOCATION",
+      "step": "revocation",
+      "required_evidence": "Revocation rehearsal must record revoked artifacts, metadata, keys or channels, and client behavior.",
+      "authority_boundary": "Revocation planning does not authorize production signing key rotation, stable update service changes, or public update service changes.",
+      "safe_failure": "Block install, update, or rollback when revocation status cannot be verified."
+    },
+    {
+      "id": "SEC-PATCH-RELEASE_NOTES",
+      "step": "release notes",
+      "required_evidence": "Release notes must balance affected-version facts, mitigation guidance, credit, and exploit-detail restraint.",
+      "authority_boundary": "Draft notes do not approve disclosure timing, public claims, or supported security versions.",
+      "safe_failure": "Hold public notes when disclosure owner, severity, affected version, or mitigation wording is unresolved."
+    },
+    {
+      "id": "SEC-PATCH-USER_ADMIN_COMMUNICATION",
+      "step": "user and admin communication",
+      "required_evidence": "User and admin communication rehearsal must cover update urgency, mitigation, unsupported cases, and support channels.",
+      "authority_boundary": "Communication rehearsal does not create support capacity, disclosure authority, stable support, patch-time guarantees, or release readiness.",
+      "safe_failure": "Block publication when support, legal, disclosure, or release owner approval is missing."
+    },
+    {
+      "id": "SEC-PATCH-CVE_CREDIT",
+      "step": "CVE and credit handling",
+      "required_evidence": "CVE and credit handling must record reporter preference, CNA path, affected versions, and coordinated timing.",
+      "authority_boundary": "CVE handling does not let agents decide severity, disclosure, or incident closure.",
+      "safe_failure": "Escalate to security and legal owners when CVE scope, credit, or timing is unclear."
+    },
+    {
+      "id": "SEC-PATCH-COORDINATED_DISCLOSURE",
+      "step": "coordinated disclosure",
+      "required_evidence": "Coordinated disclosure rehearsal must record parties, embargo status, public timing, and protected-user state.",
+      "authority_boundary": "Disclosure timing remains owner-controlled and unavailable to implementation agents.",
+      "safe_failure": "Keep the issue private when users are not protected or disclosure authority is missing."
+    },
+    {
+      "id": "SEC-PATCH-POSTMORTEM",
+      "step": "postmortem remediation",
+      "required_evidence": "Postmortem remediation must record root cause, systemic fixes, tests, docs, owners, and follow-up deadlines.",
+      "authority_boundary": "Postmortem drafting does not grant incident closure authority or waive unresolved stable release-critical findings.",
+      "safe_failure": "Block closure when root cause, systemic remediation, owner, or regression evidence is missing."
+    }
+  ],
+  "incident_classes": [
+    {
+      "id": "SEC-INCIDENT-ACTIVE_EXPLOITATION",
+      "incident_class": "active exploitation",
+      "tabletop_scope": "Rehearse private escalation, user protection, patch path, communication timing, and evidence preservation for active exploitation.",
+      "blocking_gap": "No current staffing, update capacity, or supported-version evidence proves emergency response capacity.",
+      "safe_failure": "Keep production-safe and supported-security claims blocked until response capacity is proven."
+    },
+    {
+      "id": "SEC-INCIDENT-UPDATE_SIGNING_COMPROMISE",
+      "incident_class": "update or signing compromise",
+      "tabletop_scope": "Rehearse update metadata compromise, signing compromise, revocation, minimum secure version, and recovery ownership.",
+      "blocking_gap": "No production key ceremony, offline root, stable channel, or real updater exists.",
+      "safe_failure": "Block release and update-trust claims until production key and update recovery evidence exists."
+    },
+    {
+      "id": "SEC-INCIDENT-DEPENDENCY",
+      "incident_class": "dependency vulnerability",
+      "tabletop_scope": "Rehearse advisory intake, affected component analysis, source rebuild, SBOM impact, and emergency dependency replacement.",
+      "blocking_gap": "Dependency response capacity and supported-version policy remain unproven.",
+      "safe_failure": "Block supported-security claims when dependency advisory ownership or rebuild evidence is missing."
+    },
+    {
+      "id": "SEC-INCIDENT-DATA_LOSS",
+      "incident_class": "data loss",
+      "tabletop_scope": "Rehearse preservation, affected-version analysis, user communication, recovery guidance, and migration rollback boundaries.",
+      "blocking_gap": "Data-loss safety and profile migration safety remain unproven.",
+      "safe_failure": "Block closure and release claims when data-loss scope or recovery evidence is incomplete."
+    },
+    {
+      "id": "SEC-INCIDENT-PRIVACY_LEAK",
+      "incident_class": "privacy leak",
+      "tabletop_scope": "Rehearse secret redaction, affected asset analysis, notification decision, provider exposure, and log cleanup.",
+      "blocking_gap": "Privacy leak response, notification authority, and evidence redaction process remain unproven.",
+      "safe_failure": "Keep details private and block disclosure until privacy, legal, and security owners review."
+    },
+    {
+      "id": "SEC-INCIDENT-SANDBOX_REGRESSION",
+      "incident_class": "sandbox regression",
+      "tabletop_scope": "Rehearse compromised-process proof, sandbox probe failure, mitigation, affected platform, and release-blocker handling.",
+      "blocking_gap": "Platform sandbox proof and expected-deny probe packages remain incomplete.",
+      "safe_failure": "Treat the regression as a release blocker until platform and security owners accept evidence."
+    },
+    {
+      "id": "SEC-INCIDENT-MALICIOUS_EXTENSION_PROVIDER",
+      "incident_class": "malicious extension or provider",
+      "tabletop_scope": "Rehearse extension/provider disablement, grant revocation, user communication, audit preservation, and policy update.",
+      "blocking_gap": "Extension/provider systems and authority revocation evidence remain future work.",
+      "safe_failure": "Block extension, provider, and agent safety claims when revocation behavior is unproven."
+    },
+    {
+      "id": "SEC-INCIDENT-SERVICE_OUTAGE",
+      "incident_class": "service outage",
+      "tabletop_scope": "Rehearse update, sync, account, support, or optional-service outage handling with local browsing fallback.",
+      "blocking_gap": "Service dependency, offline behavior, support capacity, and stable SLO evidence remain unproven.",
+      "safe_failure": "Block service-readiness and stable-support claims until outage behavior is tested."
+    }
+  ],
+  "role_matrix": [
+    {
+      "id": "SEC-ROLE-OWNER",
+      "role": "owner",
+      "responsibility": "Own incident state, acceptance criteria, closure recommendation, and unresolved-risk escalation.",
+      "authority_boundary": "Owner cannot bypass independent review, legal approval, signing controls, or release gates.",
+      "missing_evidence": "Named qualified owner and backup coverage remain required before readiness claims."
+    },
+    {
+      "id": "SEC-ROLE-REVIEWER",
+      "role": "reviewer",
+      "responsibility": "Independently review reproduction, patch, regression, affected-version scope, and residual risk.",
+      "authority_boundary": "Reviewer cannot self-approve their own implementation or decide disclosure timing alone.",
+      "missing_evidence": "Independent reviewer assignment and review records remain required."
+    },
+    {
+      "id": "SEC-ROLE-RELEASE",
+      "role": "release",
+      "responsibility": "Coordinate package identity, update dry run, staged rollout, minimum secure version, revocation, and release notes.",
+      "authority_boundary": "Release role has no production signing authority or stable promotion authority without owner controls.",
+      "missing_evidence": "Release capacity, signed update evidence, and supported-version policy remain required."
+    },
+    {
+      "id": "SEC-ROLE-SECURITY",
+      "role": "security",
+      "responsibility": "Classify severity, assets, exploitability, embargo scope, disclosure risk, and regression sufficiency.",
+      "authority_boundary": "Security role cannot waive stable-critical boundaries or hide unsupported security status.",
+      "missing_evidence": "Security reviewer coverage, severity process, and tabletop output remain required."
+    },
+    {
+      "id": "SEC-ROLE-LEGAL",
+      "role": "legal",
+      "responsibility": "Review coordinated disclosure, CVE/credit, regulatory, notification, and public wording risks.",
+      "authority_boundary": "Legal review does not create security readiness, release readiness, or technical closure.",
+      "missing_evidence": "Legal-community backup ownership and disclosure approval path remain required."
+    },
+    {
+      "id": "SEC-ROLE-SUPPORT",
+      "role": "support",
+      "responsibility": "Prepare user and admin communication, mitigation guidance, support intake, and known-risk messaging.",
+      "authority_boundary": "Support cannot promise supported security versions or patch targets before gates pass.",
+      "missing_evidence": "Support staffing, response targets, and communication rehearsal remain required."
+    },
+    {
+      "id": "SEC-ROLE-ON_CALL",
+      "role": "on-call",
+      "responsibility": "Track timing targets, escalation path, handoff, availability, and secret-rotation coordination.",
+      "authority_boundary": "On-call does not grant signing authority, stable promotion authority, disclosure authority, or incident closure authority.",
+      "missing_evidence": "On-call staffing, escalation drills, secret rotation, and backup coverage remain required."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no production-safe browsing claim",
+    "no supported security versions claim",
+    "no incident-response readiness claim",
+    "no emergency patch capacity claim",
+    "no disclosure authority claim",
+    "no stable promotion authority claim",
+    "no signing authority claim",
+    "no incident closure authority claim",
+    "no implementation claim"
+  ]
+}

@@ -1,7 +1,7 @@
 # Memory, Allocation, and Cache Policy
 
-Status: research and design baseline  
-Owner: memory architecture  
+Status: research and design baseline
+Owner: memory architecture
 Purpose: Control representation cost, allocator behavior, caches, sharing, pressure, and lifecycle reclamation.
 
 ## Relationship to the Turing program
@@ -13,6 +13,8 @@ This document expands RQ-01, RQ-03, REQ-PERF-002, and REQ-PERF-003. Engine repre
 Every major allocation is directly charged or statistically attributed to browser UI/profile, document/frame/site instance, JavaScript heap/code, DOM/style/layout/paint/accessibility, image/font/media/canvas, network, storage, GPU, extension, DevTools, agent/model, or shared service. Unknown remains explicit.
 
 Shared resources report physical size and charged ownership without double counting. Cross-profile sharing requires privacy and policy equivalence.
+
+The current checked taxonomy is [`semantic-owners.v1.json`](../blueprint-v1/machine/benchmark-resource-attribution/semantic-owners.v1.json), validated by [`tools/validate_benchmark_resource_attribution.py`](../../tools/validate_benchmark_resource_attribution.py). It is a no-claim owner model only; no browser instrumentation or memory result exists yet.
 
 ## Representation budgets
 

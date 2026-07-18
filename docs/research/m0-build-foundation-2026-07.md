@@ -40,13 +40,23 @@ Component ownership, privilege, hostile-input exposure, unsafe policy, dependenc
 
 ## Commands
 
+POSIX shells:
+
 ```bash
 sh tools/bootstrap.sh
 sh tools/doctor.sh
 sh tools/check.sh
 ```
 
-`bootstrap` is intentionally non-installing during M0. It verifies the environment and prints the next action. `doctor` is read-only. `check` runs documentation validation, build-foundation validation, formatting, Clippy with warnings denied, workspace tests, shell self-test, and the architecture prototype.
+Windows PowerShell:
+
+```powershell
+.\tools\bootstrap.ps1
+.\tools\doctor.ps1
+.\tools\check.ps1
+```
+
+`bootstrap` is intentionally non-installing during M0. It verifies the environment and prints the next action. `doctor` is read-only. `check` runs documentation validation, ADR-0009 evidence validation, build-foundation validation, local unstaged and staged diff whitespace checks, formatting, Clippy with warnings denied, workspace tests, shell self-test, and the architecture prototype. The POSIX and PowerShell wrappers delegate to the same `xtask` commands and set `CARGO_TARGET_DIR` outside the repository when unset.
 
 ## Security posture
 

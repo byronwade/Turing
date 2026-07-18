@@ -1,7 +1,7 @@
 # Documentation Policy
 
-Status: mandatory repository policy  
-Scope: all human and software-agent changes  
+Status: mandatory repository policy
+Scope: all human and software-agent changes
 Primary goal: keep implementation, architecture, risks, requirements, and project claims consistent over time
 
 ## 1. Policy
@@ -110,6 +110,8 @@ Research entries must record enough context to reproduce the conclusion:
 
 Use primary sources where possible. Secondary material may identify leads but should not be the sole authority for security or architecture decisions. Dated product and project studies must state when information may become stale.
 
+The research log is a handoff surface. Keep dated entries in newest-first order and keep the reusable entry template after all dated entries so readers do not have to search past older material for newer evidence. The research index must keep the current implementation-research lane map with a `Must not claim` column and the build-readiness research crosswalk with primary `RQ-*`, `PB-*`, and `TASK-*` links so continuation guidance stays tied to unsupported-claim boundaries. The machine companion `blueprint-v1/machine/research-readiness-crosswalk.json` must stay synchronized with that prose and must not promote readiness or task authority. The documentation-readiness matrix in `project-buildout/18-documentation-readiness-evidence-matrix.md` must keep the current `PB-001` evidence, objective-to-evidence mapping, continuation checks, drift triggers, validation commands, and no-claim boundary synchronized with the entry points and machine registries. The checked documentation-readiness completion audit in `project-buildout/machine/documentation-readiness-completion-audit.json` must stay synchronized with the matrix, entry points, `PB-020`, and unsupported all-information-ready-for-building boundary. Documentation-readiness and handoff changes must satisfy the corresponding [Definition of Done](blueprint-v1/20-definition-of-done.md) criteria. `start-here.md`, `docs/README.md`, and the root `README.md` must keep the current stop/resume map so a new maintainer can find gate truth, the source-strategy/fresh-host/IPC/sandbox/benchmark/native-shell/profile-session/package-update/incident-response/ownership lane set, task shaping, source-strategy evidence, benchmark evidence, and operating controls before implementation.
+
 ## 6. Feature and status language
 
 Use exact maturity labels: `unplanned`, `specified`, `prototype`, `partial`, `conformant-subset`, `release-gated`, or `supported`.
@@ -145,7 +147,7 @@ Document unsupported cases, failure behavior, recovery behavior, and residual ri
 
 ## 8. Review and enforcement
 
-`tools/validate_blueprint.py` enforces repository structure, required documents, detailed-book topology, JSON registries, Markdown hygiene, link integrity, index coverage, legacy-path removal, and source hygiene.
+`tools/validate_blueprint.py` enforces repository structure, required documents, detailed-book topology, JSON registries, Markdown hygiene, link integrity, index coverage, root/docs/start-here continuation coverage, documentation-readiness evidence coverage, research-log chronology, repository-map core registry coverage, research-index lane and crosswalk coverage, legacy-path removal, and source hygiene.
 
 `tools/check_documentation_change.py` enforces the minimum same-change rule in pull requests:
 

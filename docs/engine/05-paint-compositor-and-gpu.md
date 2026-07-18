@@ -20,6 +20,8 @@ Layerization is a budgeted decision based on scrolling, transforms, animations, 
 
 Compositor surfaces represent process and cross-origin boundaries. Embedded surfaces are referenced by unforgeable tokens and validated geometry. A renderer cannot read another surface’s pixels or GPU resources through compositor metadata.
 
+The checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md) is the current `PB-005` no-claim planning record for browser page surfaces. It records required contract fields, composition alternatives, failure cases, identity boundaries, and missing proof, but it does not prove renderer-produced page texture composition, typed/brokered handles, software fallback, `UI-GATE-7`, `ADR-0016`, compositor ownership, or page-surface approval.
+
 ## Raster architecture
 
 The reference rasterizer is software and deterministic enough for reduced tests. Production raster may use GPU compute/graphics or platform APIs. Raster tasks are tiled, prioritized by visibility and predicted use, cancelable, and charged to a semantic owner.
@@ -73,7 +75,7 @@ Fallback differences are documented in traces and test manifests. Security or co
 - Chromium RenderingNG key data structures — https://developer.chrome.com/docs/chromium/renderingng-data-structures
 - WebGPU — https://www.w3.org/TR/webgpu/
 - wgpu project — https://github.com/gfx-rs/wgpu
-- MotionMark — https://browserbench.org/MotionMark1.3/
+- MotionMark — https://browserbench.org/MotionMark/
 - WebKit documentation — https://docs.webkit.org/
 
 ## Change discipline

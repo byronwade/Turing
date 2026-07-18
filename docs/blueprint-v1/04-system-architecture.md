@@ -135,6 +135,8 @@ Rules:
 
 The preferred encoding is generated from a compact internal schema with Rust types on both ends. Serialization libraries are evaluated for bounds behavior, zero-copy safety, forward compatibility, and fuzzability.
 
+The current checked `PB-011` evidence is the [IPC Capability Boundary Inventory](../research/ipc-capability-boundary-inventory-2026-07.md), its [`ipc-capability-boundary.json`](machine/ipc-capability-boundary.json) companion, and the checked no-claim [IPC schema-source template](machine/ipc-schema-sources/no-claim-control-envelope-template.json). It records M0 `ControlEnvelope`, typed identity, process-role, capability-model, process-capability evidence, and future schema-source handoff fields, and it keeps the missing implemented schema generator, wire encoding decision, connection authentication, bounded queues/backpressure, stale-epoch receiver rejection, timeout/cancellation behavior, fuzz/model tests, and malformed/duplicate/reordered/unauthorized/wrong-principal coverage explicit. It is not an IPC wire-format decision, schema-generator approval, or process-isolation proof.
+
 ## 6. Threading and execution model
 
 Each process uses a small number of explicit execution domains:

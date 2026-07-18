@@ -123,6 +123,8 @@ State machines for navigation, service workers, storage transactions, updates, p
 - secret scanners inspect logs, traces, crashes, telemetry, agent payloads, and diagnostic exports;
 - dependency, provenance, SBOM, unsafe-code, and binary-hardening checks are release gates.
 
+The checked [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md) and checked no-claim [sandbox probe-package template](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json) are the current `PB-012` planning inventory and package handoff for sandbox negative-test targets and access surfaces. They do not count as sandbox negative-test execution until the probes run inside packaged roles with effective platform-policy capture and host-safe fixtures.
+
 Red-team exercises and independent audits occur before general-use claims, with findings tracked to closure or explicit accepted risk.
 
 ## 8. Agent adversarial suite
@@ -154,6 +156,8 @@ Web-engine accessibility tests cover HTML/ARIA/SVG/forms/tables/live regions/dia
 Pixel tests specify viewport, scale factor, color space, font set, antialiasing mode, GPU/software backend, locale, and animation clock. Where platform text rasterization differs, use geometry/fragment/paint semantics plus bounded pixel masks instead of broad exemptions.
 
 Animations and asynchronous resources use virtual time/test hooks in isolated test builds. Reference images are reviewed with semantic trace changes.
+
+The checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md) is the current `PB-005` planning record for page-surface/compositor testing. It does not replace executable `UI-GATE-7` fixtures for typed page-surface handles, brokered surface handles, renderer-produced page frames, resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, GPU device loss, software fallback, latency, or frame pacing.
 
 ## 11. Network and storage test infrastructure
 
@@ -243,3 +247,5 @@ Each milestone report includes:
 ## Native UI framework conformance
 
 Candidate adapters run one toolkit-neutral suite covering state sequences, commands, components, keyboard/focus, accessibility, IME, clipboard, drag/drop, localization, themes, page surfaces, crash/device loss, recovery, binary, memory, latency, frame pacing, and energy. Results include exact framework source, backend, renderer, features, license, platform, and raw artifacts.
+
+The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) is the current no-claim `PB-015` planning record for that adapter workflow suite. It does not provide executable adapter results, manual assistive-technology coverage, screen-reader evidence, page-tree composition proof, IME correctness, renderer-hang/crash/GPU-loss results, or accessibility readiness.

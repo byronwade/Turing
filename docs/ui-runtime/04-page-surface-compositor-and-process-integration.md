@@ -29,6 +29,10 @@ Hit testing decides whether an event targets trusted chrome or a page surface be
 
 Renderer crash replaces only the page surface with recovery UI. GPU device loss rebuilds toolkit and page resources without discarding the session model. Toolkit failure must not corrupt profile state or automatically replay consequential actions.
 
+## Current no-claim inventory
+
+The checked [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md) records `PB-005` planning evidence for surface contract fields, composition alternatives, workflow tests, failure cases, security identity boundaries, evidence blockers, and unsupported claims. It does not prove renderer-produced page texture composition, typed page-surface handles, brokered surface handles, deterministic software fallback, `ADR-0016`, `UI-GATE-7`, compositor ownership, toolkit selection, page-surface approval, or release-path UI approval.
+
 ## Exit gate
 
 `UI-GATE-7` passes only when the selected toolkit can present the page placeholder and simulated renderer frames across resize, scale, occlusion, capture, crash, and device-loss tests with bounded latency and no trust-boundary bypass.

@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "schema_source_id": "IPC.SCHEMA_SOURCE.NOCLAIM_CONTROL_ENVELOPE_TEMPLATE.2026_07",
+  "status": "no_claim_schema_source_template",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim IPC schema-source template only; no schema generator exists, no approved generator source exists, no wire encoding decision exists, no generated types exist, no generated validators exist, no generated fixtures exist, no production IPC claim, no renderer-security claim, no agent-security claim, no process-isolation readiness claim, no site-isolation claim, no timeout or cancellation implementation claim, and no implementation readiness claim.",
+  "source_records": [
+    "docs/blueprint-v1/04-system-architecture.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/api-design/02-async-streaming-and-cancellation.md",
+    "docs/api-design/03-schemas-errors-versioning-and-compatibility.md",
+    "docs/security-engine/10-capability-provenance-attenuation-and-revocation.md",
+    "docs/blueprint-v1/machine/process-capabilities.json",
+    "docs/blueprint-v1/machine/ipc-capability-boundary.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
+    "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+    "crates/turing-ipc/src/lib.rs",
+    "crates/turing-kernel/src/lib.rs",
+    "crates/turing-types/src/lib.rs",
+    "tools/validate_ipc_readiness_review.py"
+  ],
+  "generator_status": {
+    "implemented": false,
+    "approved_generator_source": false,
+    "regeneration_command": "none - no generator has been selected, approved, implemented, or run",
+    "current_scope": "Template records the required schema-source fields for future generator proposals only; it does not generate source code, validators, fixtures, or protocol documentation."
+  },
+  "wire_encoding_status": {
+    "decision": "not_decided",
+    "approved": false,
+    "bounded_decode_evidence": "missing",
+    "unknown_variant_policy": "Future encodings must fail closed for unknown required variants across trust boundaries and must document deliberate handling for unknown optional fields."
+  },
+  "schema_scope": {
+    "family": "m0-control-envelope-and-role-authority",
+    "maturity": "template_only",
+    "linked_process_capabilities": "docs/blueprint-v1/machine/process-capabilities.json",
+    "message_definition_status": "No concrete IPC message family is approved by this template; future proposals must define each request, response, event, and error separately.",
+    "persistent_format_status": "This is not a persistent profile, trace, benchmark, or audit format and cannot be used as stable disk-format evidence."
+  },
+  "required_message_metadata": [
+    "schema family",
+    "major version",
+    "minor version",
+    "sender role",
+    "receiver role",
+    "required capability",
+    "maximum encoded size",
+    "timeout semantics",
+    "cancellation semantics",
+    "document epoch policy",
+    "profile or storage partition scope",
+    "origin or top-level site scope",
+    "resource owner",
+    "sensitivity and redaction class",
+    "audit event class",
+    "unknown variant policy",
+    "bounded allocation policy",
+    "error code mapping",
+    "compatibility fixture path"
+  ],
+  "role_authority_links": [
+    {
+      "process_capability_role": "browser_kernel",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires generated messages to recompute or verify authority against kernel state before privileged effects."
+    },
+    {
+      "process_capability_role": "renderer",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires renderer-originating messages to carry assigned IPC authority only and to fail closed on ambient network, filesystem, credential, debug, device, update, or internal-protocol expansion."
+    },
+    {
+      "process_capability_role": "network",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires network messages to stay scoped to kernel-issued request context and forbids password-vault or arbitrary-profile authority."
+    },
+    {
+      "process_capability_role": "storage",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires storage messages to use logical profile/origin handles and forbids ambient network, credential export, UI, or process-creation authority."
+    },
+    {
+      "process_capability_role": "gpu",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires GPU messages to validate surfaces, shared memory, resource sizes, and ownership before use and forbids profile, network, credential, or arbitrary filesystem authority."
+    },
+    {
+      "process_capability_role": "media_utility",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires decoder and utility messages to be task scoped with bounded input and output and forbids ambient network, arbitrary filesystem, profile, UI, or credential authority."
+    },
+    {
+      "process_capability_role": "extension_host",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires extension messages to bind declared APIs, host grants, profile/incognito policy, and quotas without kernel-memory, ungranted-profile, native-messaging, update-signing, or agent-confirmation authority."
+    },
+    {
+      "process_capability_role": "devtools",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires DevTools messages to bind an attached target and local frontend resources without unattached-profile, ambient remote listener, signing, or agent-confirmation authority."
+    },
+    {
+      "process_capability_role": "agent_host",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires agent messages to carry granted observation/action scope and audit metadata while forbidding raw cookies, password vault, direct renderer memory, direct input injection, confirmation approval, ungranted files, or ungranted origins."
+    },
+    {
+      "process_capability_role": "updater",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires updater messages to stay scoped to signed metadata, staging, and version roots without profile content, browser history, agent data, or arbitrary execution authority."
+    },
+    {
+      "process_capability_role": "crash_handler",
+      "capabilities_checked": true,
+      "forbidden_authority_checked": true,
+      "schema_source_status": "Template requires crash-handler messages to use bounded dump channels and build-symbol identity without ambient profile read, network without consent, credential store, or browser command authority."
+    }
+  ],
+  "generator_output_plan": [
+    "Rust request, response, event, error, and handle types",
+    "decode-time size and range validators",
+    "sender role and receiver role validators",
+    "capability and principal validators",
+    "protocol documentation",
+    "redaction and sensitivity metadata",
+    "trace and audit metadata",
+    "compatibility fixtures",
+    "negative fixtures",
+    "fuzz corpus seeds",
+    "schema-diff classification output"
+  ],
+  "negative_fixture_plan": [
+    {
+      "case": "malformed",
+      "required_fixture": "Malformed encoding fixture rejected before allocation or authority checks produce side effects.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Reject the message and keep the connection or process in a documented fail-closed state."
+    },
+    {
+      "case": "oversized",
+      "required_fixture": "Oversized encoded-length fixture rejected before payload allocation and before receiver dispatch.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Reject oversized input and block receiver dispatch with a bounded diagnostic."
+    },
+    {
+      "case": "stale",
+      "required_fixture": "Stale document epoch or expired capability fixture rejected after asynchronous delay.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Reject stale authority and require the caller to re-resolve current document or capability state."
+    },
+    {
+      "case": "duplicate",
+      "required_fixture": "Duplicate request identifier fixture rejected without replaying privileged effects.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Return a duplicate or conflict error and block effect replay."
+    },
+    {
+      "case": "reordered",
+      "required_fixture": "Out-of-order stream or subscription event fixture rejected or re-synchronized without hidden state corruption.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Fail the stream, resynchronize from a safe checkpoint, or stop the sender."
+    },
+    {
+      "case": "unauthorized",
+      "required_fixture": "Sender without required capability fixture rejected even when fields are otherwise well formed.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Reject unauthorized authority and emit a bounded audit event."
+    },
+    {
+      "case": "wrong-principal",
+      "required_fixture": "Wrong profile, origin, top-level site, document, extension, or agent principal fixture rejected by the receiver.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Reject wrong-principal routing and avoid leaking whether the target resource exists."
+    },
+    {
+      "case": "timeout",
+      "required_fixture": "Deadline-expired fixture returns a timeout result without leaked work, hidden retries, or authority retention.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Return timeout, cancel bounded work, release resources, and preserve resource-owner accounting."
+    },
+    {
+      "case": "cancellation",
+      "required_fixture": "Caller-initiated cancellation fixture stops queued or running work without partial privileged effects.",
+      "current_status": "not_executable_without_generator",
+      "safe_failure": "Return cancellation, abort cancellable work, and document any explicit non-cancellable cleanup."
+    }
+  ],
+  "review_gates": [
+    "architecture owner review of schema family and role authority",
+    "security owner review of confused-deputy, wrong-principal, stale-epoch, and capability checks",
+    "API compatibility review of versioning, unknown fields, and error codes",
+    "performance review of maximum encoded sizes, queue bounds, allocation bounds, and backpressure",
+    "privacy review of sensitivity, redaction, trace, audit, and crash fields",
+    "fuzzing plan review before decoder implementation",
+    "schema-diff policy review before generated types become durable",
+    "documentation and repository-map update before any generated output lands"
+  ],
+  "unsupported_boundaries": [
+    "no schema generator claim",
+    "no approved generator source claim",
+    "no wire encoding decision claim",
+    "no generated type claim",
+    "no generated validator claim",
+    "no generated fixture claim",
+    "no renderer-security claim",
+    "no agent-security claim",
+    "no process-isolation readiness claim",
+    "no site-isolation claim",
+    "no timeout or cancellation implementation claim",
+    "no production IPC claim",
+    "no implementation readiness claim"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_ipc_capability_boundaries.py",
+    "python3 -B tools/validate_blueprint.py"
+  ]
+}

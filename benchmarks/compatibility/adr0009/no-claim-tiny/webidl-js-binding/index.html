@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Web IDL JS Binding Fixture</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-WEBIDL-JS-001">
+    <main>
+      <h1>Web IDL And JavaScript Binding Fixture</h1>
+      <button id="brand-target" type="button">Brand target</button>
+      <iframe id="realm-target" title="realm target" srcdoc="<p>Realm target</p>"></iframe>
+      <pre id="binding-log">pending</pre>
+    </main>
+    <script>
+      const output = [];
+      const button = document.querySelector("#brand-target");
+      output.push(["eventTarget", button instanceof EventTarget]);
+      try {
+        document.querySelector.call(null, "#missing");
+      } catch (error) {
+        output.push(["brandCheck", error.name]);
+      }
+      Promise.resolve("promise-order").then((value) => output.push(["promise", value]));
+      setTimeout(() => {
+        const frame = document.querySelector("#realm-target");
+        output.push(["realm", Boolean(frame.contentWindow)]);
+        document.querySelector("#binding-log").textContent = JSON.stringify({
+          claim: "no compatibility claim",
+          runtimeAttributionRequired: true,
+          assertions: output,
+        });
+      }, 0);
+    </script>
+  </body>
+</html>

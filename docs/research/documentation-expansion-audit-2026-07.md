@@ -70,9 +70,9 @@ The repository validator is strengthened to require the complete engineering-lib
 
 ## Remaining high-priority expansion gaps
 
-The next audit cycle should build similarly detailed books for networking and Fetch/TLS/cache/cookies; storage/database/migration/recovery; media/PDF/printing/codecs; native platform adapters and browser chrome implementation; accessibility platform bridges and assistive-technology latency; build/release/package/update operations; extensions; enterprise policy/sync; standards feature-dependency graphs; and the fixed-hardware benchmark laboratory.
+At the time of this audit, the next audit cycle needed similarly detailed books for networking and Fetch/TLS/cache/cookies; storage/database/migration/recovery; media/PDF/printing/codecs; native platform adapters and browser chrome implementation; accessibility platform bridges and assistive-technology latency; build/release/package/update operations; extensions; enterprise policy/sync; standards feature-dependency graphs; and the fixed-hardware benchmark laboratory.
 
-These are not undocumented omissions: they remain covered at Blueprint depth and are now recorded as the next documentation queue. Their detailed expansion should follow primary research and should not block the immediate engine representation, process topology, sandbox, protocol, and benchmark experiments already identified.
+Those gaps were subsequently expanded by the [Performance, Security, Developer, and Missing-Systems Expansion Audit - July 2026](performance-security-developer-expansion-audit-2026-07.md). The current continuation status is governed by the [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md) and [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), not by this historical first-pass queue.
 
 ## Definition of completion for this audit
 

@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "inventory_id": "STORAGE.FORMAT.NOCLAIM_PROFILE_SESSION.2026_07",
+  "status": "no_claim_format_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "no-claim planning inventory only; no profile implementation, no real-profile migration, no sync support, no credential storage support, no user-data handling readiness, no data-loss safety claim, no production profile-format claim, and no implementation claim",
+  "record_types": [
+    {
+      "record_type_id": "STO-FORMAT-PROFILE",
+      "name": "Profile Record",
+      "purpose": "Define the profile identity root, local policy scope, storage root reference, supported schema window, privacy boundary, and failure boundary without carrying secrets.",
+      "versioning": "Every profile record carries schema_version, minimum_reader_version, writer_build_id, profile_epoch, and migration_generation.",
+      "authority_boundary": "Profile records describe authority scope but do not grant credential, cookie, extension, Plug-in, update, sync, or agent authority.",
+      "required_fields": [
+        "profile_id",
+        "schema_version",
+        "minimum_reader_version",
+        "writer_build_id",
+        "profile_epoch",
+        "profile_kind",
+        "created_at",
+        "storage_root_handle",
+        "policy_snapshot_id",
+        "migration_generation"
+      ],
+      "privacy_rules": [
+        "stores no credential secret",
+        "stores no cookie value",
+        "stores no raw page content",
+        "private-session state is excluded",
+        "diagnostics use IDs and reason codes"
+      ],
+      "failure_cases": [
+        "malformed profile id",
+        "unsupported schema version",
+        "downgrade attempt",
+        "missing storage root",
+        "corrupt policy reference",
+        "disk-full during metadata update"
+      ],
+      "unsupported": [
+        "no production profile-format approval",
+        "no real user profile migration",
+        "no sync behavior"
+      ]
+    },
+    {
+      "record_type_id": "STO-FORMAT-SPACE",
+      "name": "Space Record",
+      "purpose": "Define a user-visible workspace view over tabs, layouts, saved references, resource policy, optional agent context, privacy boundary, and failure boundary inside one profile.",
+      "versioning": "Every Space record carries schema_version, space_epoch, parent_profile_epoch, and layout_generation.",
+      "authority_boundary": "Space records organize work but are not authority boundaries; profile, origin, permission, agent, and storage services revalidate every action.",
+      "required_fields": [
+        "space_id",
+        "profile_id",
+        "schema_version",
+        "space_epoch",
+        "display_name",
+        "tab_refs",
+        "layout_refs",
+        "resource_policy_ref",
+        "agent_context_refs",
+        "export_policy"
+      ],
+      "privacy_rules": [
+        "agent context is referenced by scoped handle",
+        "export policy omits secrets by default",
+        "cross-profile references are rejected",
+        "private-session tab references are excluded",
+        "shared snapshots require explicit redaction policy"
+      ],
+      "failure_cases": [
+        "cross-profile tab reference",
+        "stale profile epoch",
+        "missing tab reference",
+        "corrupt layout reference",
+        "export denied",
+        "power-loss during Space rename"
+      ],
+      "unsupported": [
+        "no sync behavior",
+        "no collaboration behavior",
+        "no production interchange format"
+      ]
+    },
+    {
+      "record_type_id": "STO-FORMAT-SESSION",
+      "name": "Session Record",
+      "purpose": "Define restart and restore state, privacy boundary, and failure boundary for windows, tabs, lifecycle states, navigation entries, and protected work without replaying unsafe page effects.",
+      "versioning": "Every session record carries schema_version, session_epoch, writer_build_id, checkpoint_sequence, and previous_checkpoint_hash.",
+      "authority_boundary": "Session records can request restore but cannot grant navigation, credential, permission, file, device, agent, or extension authority.",
+      "required_fields": [
+        "session_id",
+        "profile_id",
+        "schema_version",
+        "session_epoch",
+        "window_records",
+        "tab_records",
+        "navigation_entries",
+        "lifecycle_state",
+        "protected_work_markers",
+        "checkpoint_sequence"
+      ],
+      "privacy_rules": [
+        "form values are excluded unless a specific protected-work record permits local-only retention",
+        "password fields are never serialized",
+        "private-session records are memory-only",
+        "downloads use opaque handles",
+        "agent pending actions are not auto-replayed"
+      ],
+      "failure_cases": [
+        "partial checkpoint",
+        "hash mismatch",
+        "crashed renderer",
+        "stale document epoch",
+        "protected work unresolved",
+        "disk-full during checkpoint"
+      ],
+      "unsupported": [
+        "no data-loss safety claim",
+        "no real-profile migration",
+        "no arbitrary page state replay"
+      ]
+    },
+    {
+      "record_type_id": "STO-FORMAT-SNAPSHOT",
+      "name": "Snapshot Record",
+      "purpose": "Define bounded recovery, privacy boundary, and failure boundary for Time Machine-like references to user-visible browser work without retaining secrets or executing historical state.",
+      "versioning": "Every snapshot record carries schema_version, snapshot_epoch, source_session_epoch, retention_class, and content_manifest_hash.",
+      "authority_boundary": "Snapshot records are recovery references and never authority to restore credentials, permissions, service-worker effects, downloads, or agent actions.",
+      "required_fields": [
+        "snapshot_id",
+        "profile_id",
+        "space_id",
+        "schema_version",
+        "snapshot_epoch",
+        "source_session_epoch",
+        "retention_class",
+        "redaction_policy",
+        "content_manifest_hash",
+        "restore_limits"
+      ],
+      "privacy_rules": [
+        "credential and cookie values are excluded",
+        "private-session content is excluded",
+        "sensitive page text requires explicit local-only policy",
+        "retention expiry is required",
+        "export requires redaction review"
+      ],
+      "failure_cases": [
+        "expired snapshot",
+        "manifest hash mismatch",
+        "missing content chunk",
+        "restore crosses profile",
+        "stale permission state",
+        "corruption during snapshot write"
+      ],
+      "unsupported": [
+        "no Time Machine implementation",
+        "no collaboration sync",
+        "no sensitive content retention approval"
+      ]
+    },
+    {
+      "record_type_id": "STO-FORMAT-MIGRATION",
+      "name": "Migration Record",
+      "purpose": "Define migration intent, source and target schema versions, checkpoints, rollback limits, privacy boundary, failure boundary, and evidence for safe format transitions.",
+      "versioning": "Every migration record carries schema_version, migration_id, source_schema_version, target_schema_version, step_sequence, and resume_token.",
+      "authority_boundary": "Migration records describe transformation state but carry no authority to open real user data, accept downgrades, delete data, or bypass owner-reviewed privacy policy.",
+      "required_fields": [
+        "migration_id",
+        "profile_id",
+        "schema_version",
+        "source_schema_version",
+        "target_schema_version",
+        "step_sequence",
+        "checkpoint_hashes",
+        "rollback_plan_ref",
+        "resume_token",
+        "failure_reason"
+      ],
+      "privacy_rules": [
+        "real user profile fixtures are prohibited before owner review",
+        "credential material remains with the credential broker",
+        "private-session stores are not migrated",
+        "logs use record IDs and hashes",
+        "exported evidence excludes raw user data"
+      ],
+      "failure_cases": [
+        "source schema too new",
+        "target schema unsupported",
+        "disk-full before checkpoint",
+        "power-loss after partial step",
+        "corrupt source record",
+        "downgrade attempted",
+        "rollback unavailable"
+      ],
+      "unsupported": [
+        "no real-profile migration approval",
+        "no production profile-format approval",
+        "no data-loss safety claim"
+      ]
+    }
+  ],
+  "behavior_matrix": [
+    {
+      "behavior_id": "STO-BEHAVIOR-DISK-FULL",
+      "name": "Disk Full",
+      "purpose": "Prove writes reserve space, stop before partial durable state becomes authoritative, and preserve old checkpoints.",
+      "required_conditions": [
+        "preflight free-space check",
+        "write reservation",
+        "checkpoint retained",
+        "clear user-visible error",
+        "no deletion without confirmation"
+      ],
+      "safe_failure": "Reject the operation, preserve the previous readable state, and surface a recovery action."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-POWER-LOSS",
+      "name": "Power Loss",
+      "purpose": "Prove interrupted writes and migrations resume or roll back without accepting torn state.",
+      "required_conditions": [
+        "ordered durable checkpoint",
+        "replay journal",
+        "resume token",
+        "hash verification",
+        "idempotent restart"
+      ],
+      "safe_failure": "Quarantine incomplete state and reopen the last verified checkpoint or a repair flow."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-CORRUPTION",
+      "name": "Corruption",
+      "purpose": "Prove malformed, truncated, duplicated, reordered, and hash-mismatched records are treated as hostile input.",
+      "required_conditions": [
+        "schema validation",
+        "checksum validation",
+        "bounded repair",
+        "quarantine",
+        "diagnostic reason code"
+      ],
+      "safe_failure": "Quarantine the affected record set without deleting unrelated profile data."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-DOWNGRADE",
+      "name": "Downgrade",
+      "purpose": "Prove older binaries cannot open newer formats and corrupt them silently.",
+      "required_conditions": [
+        "minimum reader version",
+        "writer build id",
+        "downgrade block",
+        "read-only export path",
+        "user-visible explanation"
+      ],
+      "safe_failure": "Block write access and offer supported export or upgrade guidance."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-EXPORT",
+      "name": "Export",
+      "purpose": "Prove exports preserve user intent while excluding secrets, private-session state, and unsupported sync metadata.",
+      "required_conditions": [
+        "explicit user request",
+        "redaction manifest",
+        "format version",
+        "secret omission list",
+        "hash manifest"
+      ],
+      "safe_failure": "Abort export and show which record class or redaction rule blocked completion."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-DELETION",
+      "name": "Deletion",
+      "purpose": "Prove deletion and clearing target the requested profile, Space, site, or record class only.",
+      "required_conditions": [
+        "target identity",
+        "scope preview",
+        "confirmation for destructive scope",
+        "journaled deletion",
+        "post-delete audit"
+      ],
+      "safe_failure": "Stop before deletion or retain a rollback path where policy permits."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-PRIVATE-SESSION",
+      "name": "Private Session",
+      "purpose": "Prove private-session records use separate ephemeral roots and are not persisted in normal profile stores.",
+      "required_conditions": [
+        "ephemeral root",
+        "separate profile key",
+        "no session checkpoint",
+        "no snapshot",
+        "close-time cleanup"
+      ],
+      "safe_failure": "Fail closed by discarding private-session state rather than writing it to a normal profile store."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-CRASH-RECOVERY",
+      "name": "Crash Recovery",
+      "purpose": "Prove browser or process crash recovery distinguishes reloadable tabs from protected unsaved work.",
+      "required_conditions": [
+        "last verified checkpoint",
+        "protected-work marker",
+        "crash reason",
+        "restore preview",
+        "safe default action"
+      ],
+      "safe_failure": "Fail safely by opening a recovery surface that explains lost, protected, and reload-only state separately."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-PROTECTED-WORK",
+      "name": "Protected Work",
+      "purpose": "Prove forms, downloads, uploads, and pending consequential agent actions are never silently discarded or replayed.",
+      "required_conditions": [
+        "protected marker",
+        "owner service",
+        "user-visible warning",
+        "no automatic replay",
+        "expiry policy"
+      ],
+      "safe_failure": "Block destructive lifecycle changes until the user or owning service resolves the protected state."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-PRIVACY",
+      "name": "Privacy",
+      "purpose": "Prove routine records, traces, exports, and diagnostics exclude secrets and sensitive payloads by default.",
+      "required_conditions": [
+        "redaction at source",
+        "classification labels",
+        "secret omission",
+        "diagnostic preview",
+        "retention class"
+      ],
+      "safe_failure": "Do not emit the diagnostic, export, or snapshot when redaction cannot be proven."
+    },
+    {
+      "behavior_id": "STO-BEHAVIOR-DATA-LOSS",
+      "name": "Data Loss",
+      "purpose": "Prove operations identify possible data loss before executing and record what evidence would establish safety.",
+      "required_conditions": [
+        "loss classification",
+        "affected record classes",
+        "confirmation requirement",
+        "rollback availability",
+        "post-operation evidence"
+      ],
+      "safe_failure": "Stop the operation, keep existing data unchanged, and require owner-reviewed recovery evidence before retrying destructive flows."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no profile implementation exists",
+    "no real-profile migration exists",
+    "no sync support exists",
+    "no credential storage support exists",
+    "no user-data handling readiness exists",
+    "no data-loss safety claim exists",
+    "no production profile-format claim exists",
+    "no implementation claim exists"
+  ]
+}

@@ -20,6 +20,8 @@ The product target is sustained user-perceived responsiveness with low and expla
 
 Performance is architectural. Data representation, process topology, site isolation, IPC, queues, parser behavior, style invalidation, layout fragments, paint retention, GPU work, JIT tiering, GC, storage, browser chrome, extensions, and agents all participate.
 
+The checked no-claim benchmark readiness-review template is a future owner-review shape only. It does not provide owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
+
 ## Measurement rules
 
 - Every result identifies build, commit, platform, hardware, RAM, power, thermal state, profile, cache, network, corpus, process count, isolation, tab states, extensions, agents, repetitions, and analysis.
@@ -48,6 +50,49 @@ Turing should claim performance leadership only from an evidence package showing
 - [JavaScript runtime book](../javascript/README.md)
 - [Developer experience book](../developer-experience/README.md)
 - [Fixed-hardware research issue](../research/browser-engine-landscape-2026-07.md)
+- [Performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md)
+- [Benchmark corpus expansion](../research/benchmark-corpus-expansion-2026-07.md)
+- [Chrome-class performance runbook](../research/chrome-class-performance-runbook-2026-07.md)
+- [Benchmark hardware and OS manifest](../research/benchmark-hardware-os-manifest-2026-07.md)
+- [Benchmark OS and update-control manifest](../research/benchmark-os-update-control-manifest-2026-07.md)
+- [Semantic resource attribution taxonomy](../research/semantic-resource-attribution-taxonomy-2026-07.md)
+- [Benchmark competitor version manifest](../research/benchmark-competitor-version-manifest-2026-07.md)
+- [Benchmark competitor local install inventory](../research/benchmark-competitor-local-install-inventory-2026-07.md)
+- [Benchmark browser pin capture contract](../research/benchmark-browser-pin-capture-contract-2026-07.md)
+- [Benchmark browser pin local diagnostic capture](../research/benchmark-browser-pin-local-diagnostic-capture-2026-07.md)
+- [Benchmark server lifecycle self-test](../research/benchmark-server-lifecycle-self-test-2026-07.md)
+- [Benchmark 30-tab scenario contract](../research/benchmark-30-tab-scenario-contract-2026-07.md)
+- [Benchmark trace/artifact package contract](../research/benchmark-trace-artifact-package-contract-2026-07.md)
+- [Benchmark browser launch-runner contract](../research/benchmark-browser-launch-runner-contract-2026-07.md)
+- [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
+- [No-claim benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json)
+- [Benchmark readiness-review validator](../../tools/validate_benchmark_readiness_review.py)
+- [Servo performance baseline preparation](../research/servo-performance-baseline-2026-07.md)
+- [No-claim benchmark manifest sample](../blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.sample.json)
+- [Benchmark manifest validator](../../tools/validate_benchmark_manifests.py)
+- [No-claim benchmark corpus manifest](../blueprint-v1/machine/benchmark-corpora/no-claim-smoke.corpus.json)
+- [Benchmark corpus validator](../../tools/validate_benchmark_corpus.py)
+- [No-claim local static network profile](../blueprint-v1/machine/benchmark-network-profiles/no-claim-local-static.profile.json)
+- [Benchmark network profile validator](../../tools/validate_benchmark_network_profile.py)
+- [Benchmark server lifecycle self-test](../../tools/run_benchmark_server_profile.py)
+- [Current desktop release-candidate competitor-version manifest](../blueprint-v1/machine/benchmark-competitor-versions/current-desktop-release-candidates.2026-07.json)
+- [Benchmark competitor-version validator](../../tools/validate_benchmark_competitor_versions.py)
+- [Current Windows high-end competitor local-install manifest](../blueprint-v1/machine/benchmark-competitor-local-installs/current-windows-high-end.candidate.json)
+- [Benchmark competitor local-install validator](../../tools/validate_benchmark_competitor_local_installs.py)
+- [Current Windows high-end browser-pin capture plan](../blueprint-v1/machine/benchmark-browser-pin-captures/current-windows-high-end.no-claim.plan.json)
+- [Benchmark browser-pin capture validator](../../tools/validate_benchmark_browser_pin_capture.py)
+- [Benchmark browser-pin capture self-test runner](../../tools/capture_benchmark_browser_pins.py)
+- [Current Windows high-end Chrome/Edge browser-pin diagnostic](../blueprint-v1/machine/benchmark-browser-pin-diagnostics/current-windows-high-end.chrome-edge.no-claim.2026-07.json)
+- [Benchmark browser-pin diagnostic validator](../../tools/validate_benchmark_browser_pin_diagnostics.py)
+- [No-claim 30-tab scenario manifest](../blueprint-v1/machine/benchmark-tab-scenarios/no-claim-30-tab-smoke.scenarios.json)
+- [Benchmark tab scenario validator](../../tools/validate_benchmark_tab_scenarios.py)
+- [No-claim trace/artifact package plan](../blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json)
+- [Benchmark artifact-package validator](../../tools/validate_benchmark_artifact_packages.py)
+- [No-claim browser launch-runner plan](../blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json)
+- [Benchmark launch-runner validator](../../tools/validate_benchmark_launch_runners.py)
+- [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
+- [Benchmark profile static-server self-test](../../tools/serve_benchmark_profile.py)
+- [Benchmark smoke runner self-test](../../tools/run_benchmark_smoke.py)
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Resource Truth Center

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim Service Worker Contract Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        display: grid;
+        gap: 1rem;
+        max-width: 76ch;
+        padding: 1.5rem;
+      }
+
+      output,
+      section {
+        border: 1px solid currentColor;
+        padding: 1rem;
+      }
+
+      button {
+        font: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Generated Service Worker Contract Fixture</h1>
+      <p>
+        This generated local app-like page records the shape of future service
+        worker corpus coverage without registering a worker, opening caches, or
+        making any network request. It is no-claim planning content only.
+      </p>
+
+      <section aria-labelledby="state-heading">
+        <h2 id="state-heading">Local State</h2>
+        <p id="support-summary">Service worker support has not been checked.</p>
+        <button type="button" id="check-support">Check local API surface</button>
+        <output id="result" for="check-support">No interaction yet.</output>
+      </section>
+
+      <section aria-labelledby="boundaries-heading">
+        <h2 id="boundaries-heading">Boundaries</h2>
+        <ul>
+          <li>No worker script is registered.</li>
+          <li>No cache storage is opened.</li>
+          <li>No fetch interception is attempted.</li>
+          <li>No benchmark result or compatibility result is produced.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      const button = document.querySelector("#check-support");
+      const summary = document.querySelector("#support-summary");
+      const result = document.querySelector("#result");
+
+      button.addEventListener("click", () => {
+        const supported = "serviceWorker" in navigator;
+        summary.textContent = supported
+          ? "The API surface is present; no worker was registered."
+          : "The API surface is absent in this environment.";
+        result.value = supported ? "present-no-registration" : "absent";
+      });
+    </script>
+  </body>
+</html>

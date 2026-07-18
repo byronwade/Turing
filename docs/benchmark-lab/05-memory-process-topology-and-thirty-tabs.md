@@ -59,6 +59,12 @@ Measurements report p50, p95, and p99 latency where interaction is involved; liv
 
 An optimization is not accepted from a microbenchmark alone. It must preserve conformance, security mitigations, accessibility paths, failure behavior, and a default-equivalent configuration. Tail regressions, extra process launches, larger working sets, or increased recovery cost remain visible.
 
+## Current No-Claim Scenario Record
+
+The checked [no-claim 30-tab smoke scenario manifest](../blueprint-v1/machine/benchmark-tab-scenarios/no-claim-30-tab-smoke.scenarios.json) and [scenario contract report](../research/benchmark-30-tab-scenario-contract-2026-07.md) define the current mixed-state and all-live planning records for `PB13-EV-008`. They bind 30-tab counts to generated corpus case IDs, local network-profile routes, lifecycle state totals, and no-claim wording.
+
+This record is not the final Tier M workload. It does not launch a browser, measure memory, prove process topology, cover audio/media/service-worker/international/hostile workloads, or support any Chrome-class, faster, lower-memory, lower-energy, daily-driver, or production claim.
+
 ## Security and privacy requirements
 
 - Validate untrusted sizes, counts, enums, offsets, recursion, nesting, handles, paths, versions, and identities before privileged work or large allocation.
@@ -104,7 +110,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 - https://browserbench.org/
 - https://browserbench.org/Speedometer3.1/
-- https://browserbench.org/MotionMark1.3/
+- https://browserbench.org/MotionMark/
 - https://perfetto.dev/
 - https://learn.microsoft.com/en-us/windows-hardware/test/wpt/
 

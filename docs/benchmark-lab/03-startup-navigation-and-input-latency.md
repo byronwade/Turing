@@ -104,7 +104,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 - https://browserbench.org/
 - https://browserbench.org/Speedometer3.1/
-- https://browserbench.org/MotionMark1.3/
+- https://browserbench.org/MotionMark/
 - https://perfetto.dev/
 - https://learn.microsoft.com/en-us/windows-hardware/test/wpt/
 

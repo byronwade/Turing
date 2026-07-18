@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "status": "candidate_current_host",
+  "claim_status": "Candidate hardware inventory only; no browser run, no benchmark result, no competitor result, and no performance claim.",
+  "observed_at": "2026-07-17T23:44:57Z",
+  "hardware_tier": "Tier H",
+  "host": {
+    "hostname": "BYRON-HOME",
+    "manufacturer": "ASUS",
+    "model": "System Product Name",
+    "system_type": "x64-based PC",
+    "role": "available high-end Windows benchmark-host candidate",
+    "owner": "single-owner research phase"
+  },
+  "cpu": {
+    "name": "AMD Ryzen 9 5950X 16-Core Processor",
+    "physical_cores": 16,
+    "logical_processors": 32
+  },
+  "memory": {
+    "total_physical_bytes": 68625825792,
+    "installed_capacity_bytes": 68719476736,
+    "module_count": 4
+  },
+  "gpus": [
+    {
+      "name": "AMD Radeon RX 7900 XTX",
+      "driver_version": "32.0.22029.1019",
+      "current_refresh_hz": 165
+    }
+  ],
+  "storage": [
+    {
+      "model": "Samsung SSD 970 EVO Plus 2TB",
+      "media_type": "Fixed hard disk media",
+      "size_bytes": 2000396321280,
+      "role": "workspace and source storage candidate"
+    },
+    {
+      "model": "Samsung SSD 960 PRO 2TB",
+      "media_type": "Fixed hard disk media",
+      "size_bytes": 2048407280640,
+      "role": "secondary fixed storage candidate"
+    },
+    {
+      "model": "USB DISK 3.0 USB Device",
+      "media_type": "Removable Media",
+      "size_bytes": 31033981440,
+      "role": "attached removable media; not approved for benchmark artifacts"
+    }
+  ],
+  "os_image": {
+    "caption": "Microsoft Windows 11 Pro Insider Preview",
+    "version": "10.0.26220",
+    "build_number": "26220",
+    "display_version": "25H2",
+    "ubr": 8491,
+    "edition_id": "Professional",
+    "installation_type": "Client",
+    "install_date": "2026-04-19T22:50:13-04:00",
+    "last_boot_time": "2026-07-12T09:40:24.010488-04:00",
+    "update_control_status": "unverified current-host image; Windows Insider Preview and update freeze not documented"
+  },
+  "power_thermal": {
+    "active_power_scheme": "Ultimate Performance",
+    "thermal_state": "unmeasured",
+    "display_refresh_control": "current display refresh observed at 165 Hz; not fixed to 60 Hz for MotionMark-class comparison"
+  },
+  "stability_controls": [
+    "current Power Scheme GUID 7014fddf-3752-44e8-8d1d-2471c13cd271 recorded as Ultimate Performance",
+    "host CPU, RAM, GPU, OS build, GPU driver, and storage identities recorded from Windows CIM and registry queries"
+  ],
+  "unsupported_behavior": [
+    "not a clean OS image",
+    "updates and background services are not frozen",
+    "thermal state and fan curve are not measured",
+    "display refresh is not normalized for cross-browser graphics benchmarks",
+    "driver and firmware freeze procedure is missing",
+    "no independent host reproduction exists",
+    "no benchmark runner has used this manifest"
+  ],
+  "evidence_required": [
+    "clean OS image or restore procedure",
+    "Windows Update and driver update control policy",
+    "firmware and BIOS inventory with freeze policy",
+    "display mode and refresh-rate control procedure",
+    "thermal soak and sensor capture procedure",
+    "artifact storage location that excludes removable media unless deliberately approved",
+    "runner-generated manifest that references this hardware_id",
+    "independent review before treating this as a decision-grade Tier H host"
+  ],
+  "sources": [
+    "Get-CimInstance Win32_ComputerSystem",
+    "Get-CimInstance Win32_OperatingSystem",
+    "Get-CimInstance Win32_Processor",
+    "Get-CimInstance Win32_VideoController",
+    "Get-CimInstance Win32_BIOS",
+    "Get-CimInstance Win32_BaseBoard",
+    "Get-CimInstance Win32_PhysicalMemory",
+    "Get-CimInstance Win32_DiskDrive",
+    "Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+    "powercfg /getactivescheme"
+  ]
+}

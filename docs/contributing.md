@@ -38,13 +38,22 @@ See the [documentation policy](documentation-policy.md).
 ## Local checks
 
 ```bash
-python3 tools/validate_blueprint.py
+python3 -B tools/validate_blueprint.py
+python3 -B tools/validate_adr_0009_evidence.py
+git diff --check
+git diff --cached --check
+cargo fmt --all -- --check
 cargo fmt --manifest-path prototype/Cargo.toml -- --check
 cargo test --manifest-path prototype/Cargo.toml --all-targets
 cargo run --manifest-path prototype/Cargo.toml --quiet
+cargo run --locked -p xtask -- check
 ```
 
-The initial prototype has no third-party Rust dependencies.
+`sh tools/check.sh` is the POSIX aggregate wrapper for `cargo run --locked -p xtask -- check`. `.\tools\check.ps1` is the Windows PowerShell wrapper. Both include local unstaged and staged diff whitespace checks and set `CARGO_TARGET_DIR` outside the repository by default.
+
+CI also checks committed PR and push ranges with `git diff --check`; local runs should use the same command before handoff to catch whitespace and line-ending drift while the edits are still in the working tree.
+
+The current M0 workspace has no external runtime Rust dependencies.
 
 ## Pull requests
 

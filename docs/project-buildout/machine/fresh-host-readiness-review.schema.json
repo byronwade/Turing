@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/fresh-host-readiness-review-v1.json",
+  "title": "Turing Fresh Host Readiness Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "readiness_status",
+    "host_identity_axes",
+    "source_checkout_axes",
+    "command_execution_axes",
+    "cache_artifact_axes",
+    "failure_review_axes",
+    "owner_review_axes",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "review_id": {
+      "type": "string",
+      "pattern": "^BUILD\\.FRESH_HOST\\.READINESS_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_fresh_host_readiness_template",
+        "draft",
+        "reviewed",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "updated": { "type": "string", "format": "date" },
+    "claim_status": { "type": "string", "minLength": 160 },
+    "source_records": {
+      "type": "array",
+      "minItems": 20,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_record",
+        "reference_host",
+        "clean_vm_waiver",
+        "owner_reviewer",
+        "independent_reviewer",
+        "release_operations_reviewer",
+        "quality_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "run_record": { "type": ["string", "null"] },
+        "reference_host": { "type": ["string", "null"] },
+        "clean_vm_waiver": { "type": ["string", "null"] },
+        "owner_reviewer": { "type": ["string", "null"] },
+        "independent_reviewer": { "type": ["string", "null"] },
+        "release_operations_reviewer": { "type": ["string", "null"] },
+        "quality_reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": { "type": "string", "minLength": 80 }
+      }
+    },
+    "readiness_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "independent_reviewed",
+        "release_operations_reviewed",
+        "quality_reviewed",
+        "independent_fresh_host_reviewed",
+        "owner_approved_clean_vm_reviewed",
+        "bootstrap_log_reviewed",
+        "doctor_log_reviewed",
+        "check_log_reviewed",
+        "xtask_log_reviewed",
+        "exact_host_facts_reviewed",
+        "source_identity_reviewed",
+        "cache_target_reviewed",
+        "source_tree_cleanliness_reviewed",
+        "failure_denominator_reviewed",
+        "retained_hashes_reviewed",
+        "rollback_cleanup_reviewed",
+        "environmental_waivers_reviewed",
+        "same_host_reruns_rejected",
+        "pb009_ready",
+        "broad_m1_ready",
+        "preview_ready",
+        "beta_ready",
+        "stable_ready",
+        "production_ready",
+        "release_confidence_supported",
+        "chrome_class_supported",
+        "implementation_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "independent_reviewed": { "type": "boolean" },
+        "release_operations_reviewed": { "type": "boolean" },
+        "quality_reviewed": { "type": "boolean" },
+        "independent_fresh_host_reviewed": { "type": "boolean" },
+        "owner_approved_clean_vm_reviewed": { "type": "boolean" },
+        "bootstrap_log_reviewed": { "type": "boolean" },
+        "doctor_log_reviewed": { "type": "boolean" },
+        "check_log_reviewed": { "type": "boolean" },
+        "xtask_log_reviewed": { "type": "boolean" },
+        "exact_host_facts_reviewed": { "type": "boolean" },
+        "source_identity_reviewed": { "type": "boolean" },
+        "cache_target_reviewed": { "type": "boolean" },
+        "source_tree_cleanliness_reviewed": { "type": "boolean" },
+        "failure_denominator_reviewed": { "type": "boolean" },
+        "retained_hashes_reviewed": { "type": "boolean" },
+        "rollback_cleanup_reviewed": { "type": "boolean" },
+        "environmental_waivers_reviewed": { "type": "boolean" },
+        "same_host_reruns_rejected": { "type": "boolean" },
+        "pb009_ready": { "type": "boolean" },
+        "broad_m1_ready": { "type": "boolean" },
+        "preview_ready": { "type": "boolean" },
+        "beta_ready": { "type": "boolean" },
+        "stable_ready": { "type": "boolean" },
+        "production_ready": { "type": "boolean" },
+        "release_confidence_supported": { "type": "boolean" },
+        "chrome_class_supported": { "type": "boolean" },
+        "implementation_claim_supported": { "type": "boolean" }
+      }
+    },
+    "host_identity_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "source_checkout_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "command_execution_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "cache_artifact_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "failure_review_axes": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "$ref": "#/$defs/rejection_rule" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "type": "string", "minLength": 3 }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": { "type": "string", "minLength": 3 },
+        "required_evidence": { "type": "string", "minLength": 20 },
+        "template_status": { "type": "string", "minLength": 10 }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": { "type": "string", "minLength": 20 },
+        "outcome": { "type": "string", "minLength": 20 }
+      }
+    }
+  }
+}

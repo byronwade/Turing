@@ -99,6 +99,8 @@ Quota is enforced before allocation and after actual disk growth. The quota mana
 
 Databases use checksums, journaling/WAL where appropriate, schema versions, transactional migrations, interrupted-write tests, and backup/repair policy. A corrupt origin store is quarantined without deleting unrelated profile data. Browser startup does not block indefinitely on large repair work.
 
+The no-claim [Profile Session Format Inventory](../research/profile-session-format-inventory-2026-07.md), checked storage registry, and checked no-claim [schema-package template](../storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json) provide `PB-016` planning evidence for profile, Space, session, snapshot, migration, privacy, authority, and safe-failure behavior. They do not define executable schemas beyond that template, an implemented or production profile format, real-profile migration, sync, credential storage, user-data handling readiness, or data-loss safety.
+
 ## 8. Service workers and offline behavior
 
 Service-worker execution uses dedicated worker processes or renderer-class sandboxes with origin/site assignment. Registration, update, activation, fetch interception, lifecycle, cache access, push, background sync, and notification capabilities are separately permissioned and scheduled.

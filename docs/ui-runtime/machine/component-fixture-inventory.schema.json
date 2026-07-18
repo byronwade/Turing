@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/ui-component-fixture-inventory-v1.json",
+  "title": "Turing UI Component Fixture Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "token_groups",
+    "components",
+    "fixture_axes",
+    "unsupported"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^UI\\.FIXTURE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "no_claim_planning_inventory",
+        "draft",
+        "reviewed"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "token_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/token_group"
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "fixture_axes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/fixture_axis"
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "token_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token_group_id", "name", "purpose", "tokens"],
+      "properties": {
+        "token_group_id": {
+          "type": "string",
+          "pattern": "^UI-TOKEN-GROUP-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "tokens": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "surface",
+        "name",
+        "purpose",
+        "required_states",
+        "required_commands",
+        "required_fixture_axes",
+        "accessibility_contract",
+        "authority_boundary"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "pattern": "^UI-COMPONENT-[A-Z0-9._-]+$"
+        },
+        "surface": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "required_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_fixture_axes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibility_contract": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authority_boundary": {
+          "type": "string"
+        }
+      }
+    },
+    "fixture_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "name", "purpose", "required_conditions"],
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^UI-FIXTURE-AXIS-[A-Z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "required_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

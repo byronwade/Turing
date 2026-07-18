@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+  "status": "taxonomy_draft_no_instrumentation",
+  "claim_status": "Resource attribution taxonomy only; no browser run, no benchmark result, no measured memory result, no CPU result, no GPU result, no energy result, and no performance claim.",
+  "owner_classes": [
+    {
+      "id": "browser-ui-profile",
+      "title": "Browser UI, profile, session, and product chrome",
+      "principal_scope": "profile",
+      "charge_policy": "direct",
+      "required_metrics": [
+        "cpu_time_ns",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "committed_bytes",
+        "wakeups"
+      ],
+      "examples": [
+        "browser chrome scene graph",
+        "profile metadata",
+        "session restore index"
+      ]
+    },
+    {
+      "id": "document-frame-site-instance",
+      "title": "Documents, frames, site instances, workers, and document epochs",
+      "principal_scope": "profile/site/frame/document_epoch",
+      "charge_policy": "direct_or_sampled",
+      "required_metrics": [
+        "cpu_time_ns",
+        "queue_wait_ns",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "network_bytes"
+      ],
+      "examples": [
+        "renderer document state",
+        "worker execution",
+        "site-instance process state"
+      ]
+    },
+    {
+      "id": "javascript-heap-code-metadata",
+      "title": "JavaScript heap, code, metadata, WebAssembly, and GC",
+      "principal_scope": "realm/agent_cluster/document_epoch",
+      "charge_policy": "direct_or_sampled",
+      "required_metrics": [
+        "cpu_time_ns",
+        "queue_wait_ns",
+        "private_working_set_bytes",
+        "committed_bytes",
+        "resident_bytes"
+      ],
+      "examples": [
+        "JS heap",
+        "bytecode",
+        "machine code",
+        "GC work"
+      ]
+    },
+    {
+      "id": "dom-style-layout-paint-accessibility",
+      "title": "DOM, style, layout, paint, hit testing, and accessibility",
+      "principal_scope": "document_epoch/frame",
+      "charge_policy": "direct_or_sampled",
+      "required_metrics": [
+        "cpu_time_ns",
+        "queue_wait_ns",
+        "private_working_set_bytes",
+        "resident_bytes"
+      ],
+      "examples": [
+        "DOM nodes",
+        "computed style",
+        "layout fragments",
+        "display items",
+        "accessibility tree"
+      ]
+    },
+    {
+      "id": "images-fonts-canvas-media",
+      "title": "Images, fonts, canvas, media, codecs, and decoded resources",
+      "principal_scope": "document_epoch/frame/profile",
+      "charge_policy": "direct_or_shared_charged",
+      "required_metrics": [
+        "private_working_set_bytes",
+        "resident_bytes",
+        "gpu_allocated_bytes",
+        "disk_io_bytes",
+        "energy_estimate_joules"
+      ],
+      "examples": [
+        "decoded images",
+        "font faces",
+        "canvas backing stores",
+        "media buffers"
+      ]
+    },
+    {
+      "id": "network-buffers-cache",
+      "title": "Network buffers, sockets, fetch state, preload, and HTTP cache",
+      "principal_scope": "profile/site/network_partition",
+      "charge_policy": "direct_or_shared_charged",
+      "required_metrics": [
+        "cpu_time_ns",
+        "network_bytes",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "wakeups"
+      ],
+      "examples": [
+        "socket buffers",
+        "response bodies",
+        "HTTP cache entries",
+        "preload state"
+      ]
+    },
+    {
+      "id": "storage-transactions-mappings",
+      "title": "Storage transactions, mappings, databases, quota state, and profile stores",
+      "principal_scope": "profile/storage_key/bucket",
+      "charge_policy": "direct_or_shared_charged",
+      "required_metrics": [
+        "cpu_time_ns",
+        "disk_io_bytes",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "committed_bytes"
+      ],
+      "examples": [
+        "IndexedDB transactions",
+        "cache storage",
+        "history store",
+        "mapped files"
+      ]
+    },
+    {
+      "id": "gpu-textures-buffers-pipelines",
+      "title": "GPU textures, buffers, pipelines, surfaces, and driver-visible resources",
+      "principal_scope": "profile/site/frame/process_or_shared_service",
+      "charge_policy": "direct_or_shared_charged",
+      "required_metrics": [
+        "gpu_allocated_bytes",
+        "cpu_time_ns",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "energy_estimate_joules"
+      ],
+      "examples": [
+        "textures",
+        "render targets",
+        "shader caches",
+        "surface allocations"
+      ]
+    },
+    {
+      "id": "extension",
+      "title": "Extensions, plug-ins, enterprise policy agents, and native messaging bridges",
+      "principal_scope": "profile/extension_id",
+      "charge_policy": "direct_or_sampled",
+      "required_metrics": [
+        "cpu_time_ns",
+        "network_bytes",
+        "private_working_set_bytes",
+        "wakeups"
+      ],
+      "examples": [
+        "extension service worker",
+        "content script",
+        "native messaging pipe"
+      ]
+    },
+    {
+      "id": "devtools",
+      "title": "DevTools, tracing, protocol clients, replay, and diagnostic capture",
+      "principal_scope": "profile/debug_target/tool_session",
+      "charge_policy": "direct",
+      "required_metrics": [
+        "cpu_time_ns",
+        "private_working_set_bytes",
+        "disk_io_bytes",
+        "network_bytes"
+      ],
+      "examples": [
+        "trace capture",
+        "protocol session",
+        "heap snapshot"
+      ]
+    },
+    {
+      "id": "agent-model",
+      "title": "Agents, model providers, local models, observations, and action planning",
+      "principal_scope": "profile/agent_session/document_epoch/provider",
+      "charge_policy": "direct_or_sampled",
+      "required_metrics": [
+        "cpu_time_ns",
+        "private_working_set_bytes",
+        "gpu_allocated_bytes",
+        "model_tokens",
+        "provider_cost_estimate"
+      ],
+      "examples": [
+        "semantic snapshot",
+        "redaction pass",
+        "local model",
+        "provider call"
+      ]
+    },
+    {
+      "id": "shared-service",
+      "title": "Shared browser services with proportional charged views",
+      "principal_scope": "service/process/profile_set",
+      "charge_policy": "physical_total_plus_proportional_charge",
+      "required_metrics": [
+        "cpu_time_ns",
+        "private_working_set_bytes",
+        "resident_bytes",
+        "shared_bytes",
+        "wakeups"
+      ],
+      "examples": [
+        "GPU service",
+        "network service",
+        "storage service",
+        "font cache"
+      ]
+    },
+    {
+      "id": "unknown",
+      "title": "Explicit unknown or unattributed resources",
+      "principal_scope": "unknown",
+      "charge_policy": "unknown_bucket_with_reduction_required",
+      "required_metrics": [
+        "private_working_set_bytes",
+        "resident_bytes",
+        "cpu_time_ns"
+      ],
+      "examples": [
+        "unattributed native allocation",
+        "platform counter without owner identity"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "cpu_time_ns",
+      "unit": "nanoseconds",
+      "kind": "work",
+      "required_scope": "owner and process"
+    },
+    {
+      "id": "queue_wait_ns",
+      "unit": "nanoseconds",
+      "kind": "latency",
+      "required_scope": "owner, task, and scheduler queue"
+    },
+    {
+      "id": "wakeups",
+      "unit": "count",
+      "kind": "energy_proxy",
+      "required_scope": "owner and process"
+    },
+    {
+      "id": "private_working_set_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "owner, process, and lifecycle state"
+    },
+    {
+      "id": "resident_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "owner and process"
+    },
+    {
+      "id": "committed_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "owner and process"
+    },
+    {
+      "id": "shared_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "physical total plus charged owners"
+    },
+    {
+      "id": "compressed_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "platform and process when available"
+    },
+    {
+      "id": "swap_bytes",
+      "unit": "bytes",
+      "kind": "memory",
+      "required_scope": "platform and process when available"
+    },
+    {
+      "id": "gpu_allocated_bytes",
+      "unit": "bytes",
+      "kind": "gpu_memory",
+      "required_scope": "owner, process, and shared GPU service"
+    },
+    {
+      "id": "network_bytes",
+      "unit": "bytes",
+      "kind": "io",
+      "required_scope": "owner, profile, and network partition"
+    },
+    {
+      "id": "disk_io_bytes",
+      "unit": "bytes",
+      "kind": "io",
+      "required_scope": "owner, profile, storage key, and artifact kind"
+    },
+    {
+      "id": "energy_estimate_joules",
+      "unit": "joules",
+      "kind": "energy_estimate",
+      "required_scope": "owner, platform, and measurement method"
+    },
+    {
+      "id": "model_tokens",
+      "unit": "tokens",
+      "kind": "agent_cost",
+      "required_scope": "agent session and provider"
+    },
+    {
+      "id": "provider_cost_estimate",
+      "unit": "minor_currency_units",
+      "kind": "agent_cost",
+      "required_scope": "agent session and provider"
+    }
+  ],
+  "attribution_rules": [
+    {
+      "id": "direct",
+      "description": "Charge resource use to the principal that owns the allocation, task, handle, request, or surface."
+    },
+    {
+      "id": "sampled",
+      "description": "Use sampled stack, trace, or heap evidence only when direct ownership is unavailable; keep confidence visible."
+    },
+    {
+      "id": "shared_charged",
+      "description": "Report physical shared totals once and separately charge proportional or policy-defined owner views."
+    },
+    {
+      "id": "unknown",
+      "description": "Keep unattributed resources in an explicit unknown bucket with reduction work before claims."
+    }
+  ],
+  "shared_resource_policy": {
+    "physical_total_rule": "shared resources appear once in physical totals",
+    "charged_total_rule": "charged views may sum to the shared physical total only under a documented proportional or first-owner policy",
+    "privacy_rule": "cross-profile sharing requires policy and privacy equivalence before attribution is merged",
+    "claim_rule": "memory or energy claims must disclose physical totals, charged totals, unknown totals, and shared-resource policy"
+  },
+  "collection_plan": {
+    "minimum_browser_trace_fields": [
+      "monotonic_timestamp",
+      "process_id",
+      "thread_id",
+      "task_id",
+      "profile_id",
+      "site_id",
+      "frame_id",
+      "document_epoch",
+      "owner_class",
+      "resource_metric",
+      "value",
+      "confidence"
+    ],
+    "minimum_platform_artifacts": [
+      "process memory counters",
+      "CPU scheduling and execution samples",
+      "GPU memory/activity counters where available",
+      "disk and network I/O counters",
+      "wakeups and power or energy proxy counters"
+    ],
+    "unsupported_collection": [
+      "no current Turing browser emits these trace fields",
+      "no current runner collects platform counters by owner",
+      "no current UI exposes the attribution contract"
+    ]
+  },
+  "ui_reporting_contract": {
+    "required_views": [
+      "per-tab",
+      "per-profile",
+      "per-site",
+      "per-process",
+      "shared-service",
+      "unknown"
+    ],
+    "required_disclosures": [
+      "physical versus charged memory",
+      "known versus estimated values",
+      "unknown bucket",
+      "lifecycle state",
+      "discarded or frozen state",
+      "security configuration",
+      "unsupported counters"
+    ],
+    "prohibited_ui_claims": [
+      "do not sum double-counted shared memory as physical memory",
+      "do not hide unknown resources",
+      "do not present estimated energy as measured battery draw",
+      "do not compare browsers when unsupported counters differ materially"
+    ]
+  },
+  "unsupported_behavior": [
+    "taxonomy only; no instrumentation exists",
+    "no browser run has emitted this owner model",
+    "no platform trace has been reconciled to this owner model",
+    "no per-tab memory attribution exists",
+    "no shared GPU accounting exists",
+    "no UI or report implements this contract",
+    "no benchmark result or performance claim is supported"
+  ],
+  "evidence_required": [
+    "trace event schema carrying owner_class and stable principal IDs",
+    "per-process and per-tab memory collection",
+    "shared-resource charging implementation and validation",
+    "GPU allocation accounting and fallback disclosure",
+    "CPU, wakeup, I/O, and energy attribution by owner",
+    "unknown bucket reduction threshold and waiver policy",
+    "user/developer report fixture showing physical and charged views",
+    "runner-generated raw artifacts using this resource_attribution_id",
+    "independent review before any memory, energy, or performance claim"
+  ],
+  "external_sources": [
+    "https://chromium.googlesource.com/chromium/src/+/master/docs/memory-infra/",
+    "https://www.chromium.org/developers/how-tos/trace-event-profiling-tool/memory/howto-adding-memory-infra-tracing-to-a-component/",
+    "https://perfetto.dev/docs/",
+    "https://perfetto.dev/docs/data-sources/memory-counters",
+    "https://perfetto.dev/docs/data-sources/gpu",
+    "https://developer.chrome.com/docs/devtools/performance-monitor",
+    "https://learn.microsoft.com/en-us/windows-hardware/test/wpt/introduction-to-wpr"
+  ]
+}

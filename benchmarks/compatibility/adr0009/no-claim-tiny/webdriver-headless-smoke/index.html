@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 WebDriver Headless Fixture</title>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-WEBDRIVER-001">
+    <main>
+      <h1 id="page-title">WebDriver Headless Fixture</h1>
+      <button id="primary-action" type="button" data-testid="primary-action">Action</button>
+      <output id="action-output" for="primary-action">idle</output>
+      <a id="local-fragment-link" href="#artifact-target">Local fragment</a>
+      <section id="artifact-target" tabindex="-1">
+        <h2>Artifact Capture Target</h2>
+        <p>Future automation must capture a screenshot or DOM snapshot.</p>
+      </section>
+    </main>
+    <script>
+      document.querySelector("#primary-action").addEventListener("click", () => {
+        document.querySelector("#action-output").value = "clicked";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/ipc-readiness-review-v1.json",
+  "title": "Turing IPC Readiness Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "readiness_status",
+    "schema_generator_axes",
+    "wire_transport_axes",
+    "authority_identity_axes",
+    "negative_test_axes",
+    "owner_review_axes",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "review_id": {
+      "type": "string",
+      "pattern": "^IPC\\.READINESS_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_ipc_readiness_template",
+        "draft",
+        "reviewed",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "updated": { "type": "string", "format": "date" },
+    "claim_status": { "type": "string", "minLength": 160 },
+    "source_records": {
+      "type": "array",
+      "minItems": 20,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary_inventory",
+        "schema_source_template",
+        "schema_generator",
+        "wire_encoding_decision",
+        "owner_reviewer",
+        "security_reviewer",
+        "architecture_reviewer",
+        "api_reviewer",
+        "performance_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "boundary_inventory": { "type": ["string", "null"] },
+        "schema_source_template": { "type": ["string", "null"] },
+        "schema_generator": { "type": ["string", "null"] },
+        "wire_encoding_decision": { "type": ["string", "null"] },
+        "owner_reviewer": { "type": ["string", "null"] },
+        "security_reviewer": { "type": ["string", "null"] },
+        "architecture_reviewer": { "type": ["string", "null"] },
+        "api_reviewer": { "type": ["string", "null"] },
+        "performance_reviewer": { "type": ["string", "null"] },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_review",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": { "type": "string", "minLength": 80 }
+      }
+    },
+    "readiness_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_reviewed",
+        "security_reviewed",
+        "architecture_reviewed",
+        "api_reviewed",
+        "performance_reviewed",
+        "boundary_inventory_reviewed",
+        "schema_source_template_reviewed",
+        "schema_generator_implemented",
+        "schema_generator_reviewed",
+        "wire_encoding_reviewed",
+        "generated_types_reviewed",
+        "generated_validators_reviewed",
+        "generated_fixtures_reviewed",
+        "connection_authentication_reviewed",
+        "bounded_queues_reviewed",
+        "backpressure_reviewed",
+        "timeout_semantics_reviewed",
+        "cancellation_semantics_reviewed",
+        "stale_epoch_reviewed",
+        "negative_tests_reviewed",
+        "fuzz_model_tests_reviewed",
+        "process_capability_generation_reviewed",
+        "pb011_ready",
+        "renderer_security_supported",
+        "agent_security_supported",
+        "process_isolation_supported",
+        "site_isolation_supported",
+        "production_ipc_supported",
+        "implementation_claim_supported"
+      ],
+      "properties": {
+        "owner_reviewed": { "type": "boolean" },
+        "security_reviewed": { "type": "boolean" },
+        "architecture_reviewed": { "type": "boolean" },
+        "api_reviewed": { "type": "boolean" },
+        "performance_reviewed": { "type": "boolean" },
+        "boundary_inventory_reviewed": { "type": "boolean" },
+        "schema_source_template_reviewed": { "type": "boolean" },
+        "schema_generator_implemented": { "type": "boolean" },
+        "schema_generator_reviewed": { "type": "boolean" },
+        "wire_encoding_reviewed": { "type": "boolean" },
+        "generated_types_reviewed": { "type": "boolean" },
+        "generated_validators_reviewed": { "type": "boolean" },
+        "generated_fixtures_reviewed": { "type": "boolean" },
+        "connection_authentication_reviewed": { "type": "boolean" },
+        "bounded_queues_reviewed": { "type": "boolean" },
+        "backpressure_reviewed": { "type": "boolean" },
+        "timeout_semantics_reviewed": { "type": "boolean" },
+        "cancellation_semantics_reviewed": { "type": "boolean" },
+        "stale_epoch_reviewed": { "type": "boolean" },
+        "negative_tests_reviewed": { "type": "boolean" },
+        "fuzz_model_tests_reviewed": { "type": "boolean" },
+        "process_capability_generation_reviewed": { "type": "boolean" },
+        "pb011_ready": { "type": "boolean" },
+        "renderer_security_supported": { "type": "boolean" },
+        "agent_security_supported": { "type": "boolean" },
+        "process_isolation_supported": { "type": "boolean" },
+        "site_isolation_supported": { "type": "boolean" },
+        "production_ipc_supported": { "type": "boolean" },
+        "implementation_claim_supported": { "type": "boolean" }
+      }
+    },
+    "schema_generator_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "wire_transport_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "authority_identity_axes": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "negative_test_axes": {
+      "type": "array",
+      "minItems": 9,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/evidence_axis" }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "$ref": "#/$defs/rejection_rule" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "type": "string", "minLength": 3 }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": { "type": "string", "minLength": 3 },
+        "required_evidence": { "type": "string", "minLength": 20 },
+        "template_status": { "type": "string", "minLength": 10 }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": { "type": "string", "minLength": 20 },
+        "outcome": { "type": "string", "minLength": 20 }
+      }
+    }
+  }
+}

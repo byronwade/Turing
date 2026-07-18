@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Static Compatibility Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+      }
+
+      main {
+        max-width: 72ch;
+      }
+
+      .notice {
+        border: 1px solid currentColor;
+        padding: 12px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: 1px solid currentColor;
+        padding: 8px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-STATIC-DOCUMENT-001">
+    <main>
+      <h1>Static Document Fixture</h1>
+      <p class="notice">
+        Generated local compatibility fixture. This is not a browser run and
+        not a compatibility claim.
+      </p>
+      <section aria-labelledby="landmark-heading">
+        <h2 id="landmark-heading">Landmark And Label Shape</h2>
+        <p>
+          This fixture gives the future harness a stable parser, style,
+          layout, font fallback, landmark, and accessible-name target.
+        </p>
+        <label for="fixture-search">Fixture search</label>
+        <input id="fixture-search" name="fixture-search" value="static smoke">
+      </section>
+      <section aria-labelledby="table-heading">
+        <h2 id="table-heading">Semantic Table</h2>
+        <table aria-describedby="table-note">
+          <caption>Local assertion targets</caption>
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Expected denominator</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DOM</td>
+              <td>parse-error</td>
+            </tr>
+            <tr>
+              <td>Style</td>
+              <td>style-mismatch</td>
+            </tr>
+            <tr>
+              <td>Accessibility</td>
+              <td>accessibility-mismatch</td>
+            </tr>
+          </tbody>
+        </table>
+        <p id="table-note">The future harness must record timeout and crash outcomes.</p>
+      </section>
+    </main>
+  </body>
+</html>

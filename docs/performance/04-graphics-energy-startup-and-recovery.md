@@ -75,7 +75,7 @@ macOS, Windows, Linux, display server, GPU vendor/driver, refresh rate, scaling,
 
 ## Primary sources
 
-- MotionMark — https://browserbench.org/MotionMark1.3/
+- MotionMark — https://browserbench.org/MotionMark/
 - WebGPU — https://www.w3.org/TR/webgpu/
 - wgpu project — https://github.com/gfx-rs/wgpu
 - Chromium RenderingNG architecture — https://developer.chrome.com/docs/chromium/renderingng-architecture

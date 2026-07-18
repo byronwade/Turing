@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/task-approval-template-v1.json",
+  "title": "Turing Task Approval Template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "template_id",
+    "status",
+    "updated",
+    "source_queue",
+    "source_template",
+    "task_schema",
+    "run_manifest_schema",
+    "evidence_bundle_schema",
+    "claim_status",
+    "applies_to_tasks",
+    "required_approval_inputs",
+    "immutable_manifest_requirements",
+    "authority_controls",
+    "evidence_bundle_requirements",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "template_id": {
+      "type": "string",
+      "pattern": "^AGENT\\.TASK_APPROVAL_TEMPLATE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["template_no_approval", "reviewed_template", "superseded"]
+    },
+    "updated": { "type": "string", "format": "date" },
+    "source_queue": { "type": "string", "minLength": 3 },
+    "source_template": { "type": "string", "minLength": 3 },
+    "task_schema": { "type": "string", "minLength": 3 },
+    "run_manifest_schema": { "type": "string", "minLength": 3 },
+    "evidence_bundle_schema": { "type": "string", "minLength": 3 },
+    "claim_status": { "type": "string", "minLength": 120 },
+    "applies_to_tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^TASK-[0-9]{6}$"
+      }
+    },
+    "required_approval_inputs": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "immutable_manifest_requirements": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "authority_controls": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "evidence_bundle_requirements": {
+      "type": "array",
+      "minItems": 6,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "type": "string", "minLength": 10 }
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/framework-bakeoff-inventory-v1.json",
+  "title": "Turing Native UI Framework Bake-Off Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "external_observations",
+    "candidate_summaries",
+    "required_bakeoff_scope",
+    "evidence_axes",
+    "disqualifiers",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^UI\\.FRAMEWORK\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": ["no_claim_framework_bakeoff_inventory"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string"
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "external_observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/external_observation"
+      }
+    },
+    "candidate_summaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/candidate_summary"
+      }
+    },
+    "required_bakeoff_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_scope", "equivalent_shell_tasks", "shared_inputs"],
+      "properties": {
+        "adapter_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "equivalent_shell_tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "shared_inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_axes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "disqualifiers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/disqualifier"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "external_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source", "retrieved", "observation", "claim_boundary"],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^UI-FRAMEWORK-SOURCE-[A-Z0-9_-]+$"
+        },
+        "source": {
+          "type": "string"
+        },
+        "retrieved": {
+          "type": "string",
+          "format": "date"
+        },
+        "observation": {
+          "type": "string"
+        },
+        "claim_boundary": {
+          "type": "string"
+        }
+      }
+    },
+    "candidate_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "name",
+        "source_ids",
+        "current_disposition",
+        "required_bakeoff_evidence",
+        "blockers"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^UIF-[0-9]{3}$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "current_disposition": {
+          "type": "string"
+        },
+        "required_bakeoff_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "name", "required_output", "missing_status"],
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^UI-FRAMEWORK-AXIS-[A-Z0-9_-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required_output": {
+          "type": "string"
+        },
+        "missing_status": {
+          "type": "string"
+        }
+      }
+    },
+    "disqualifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disqualifier_id", "condition", "reason"],
+      "properties": {
+        "disqualifier_id": {
+          "type": "string",
+          "pattern": "^UI-FRAMEWORK-DISQUALIFIER-[A-Z0-9_-]+$"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

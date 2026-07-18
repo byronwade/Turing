@@ -76,7 +76,7 @@ A product claim identifies scope, version, workload, hardware, confidence, compa
 ## Primary sources
 
 - Speedometer — https://browserbench.org/Speedometer3.1/
-- MotionMark — https://browserbench.org/MotionMark1.3/
+- MotionMark — https://browserbench.org/MotionMark/
 - Chromium RenderingNG key data structures — https://developer.chrome.com/docs/chromium/renderingng-data-structures
 
 ## Change discipline

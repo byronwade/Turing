@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ADR-0009 Dynamic DOM Fixture</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 24px;
+      }
+
+      [data-state="mutated"] {
+        outline: 2px solid currentColor;
+      }
+    </style>
+  </head>
+  <body data-adr9-case="ADR9-COMPAT-DYNAMIC-DOM-001">
+    <main>
+      <h1>Dynamic DOM Fixture</h1>
+      <button id="dispatch-target" type="button">Dispatch local event</button>
+      <div id="mutation-target" data-state="initial">Initial state</div>
+      <pre id="result-log" aria-live="polite">pending</pre>
+    </main>
+    <script>
+      const log = [];
+      const resultLog = document.querySelector("#result-log");
+      const target = document.querySelector("#mutation-target");
+      const button = document.querySelector("#dispatch-target");
+      const observer = new MutationObserver(() => log.push("mutation"));
+
+      observer.observe(target, { attributes: true, childList: true });
+      button.addEventListener("click", () => {
+        log.push("listener");
+        Promise.resolve().then(() => log.push("microtask"));
+        target.dataset.state = "mutated";
+        target.textContent = "Mutated state";
+        setTimeout(() => {
+          log.push("task");
+          resultLog.textContent = JSON.stringify({
+            claim: "no compatibility claim",
+            case: document.body.dataset.adr9Case,
+            events: log,
+          });
+          observer.disconnect();
+        }, 0);
+      });
+      button.click();
+    </script>
+  </body>
+</html>

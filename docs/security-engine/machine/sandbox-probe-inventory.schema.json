@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/sandbox-probe-inventory-v1.json",
+  "title": "Turing Sandbox Probe Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "required_probe_surfaces",
+    "probe_targets",
+    "platform_evidence_requirements",
+    "harness_blockers",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^SANDBOX\\.PROBE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_probe_inventory",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "required_probe_surfaces": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "surface",
+          "hostile_attempt",
+          "expected_safe_result",
+          "missing_evidence"
+        ],
+        "properties": {
+          "surface": {
+            "type": "string",
+            "minLength": 3
+          },
+          "hostile_attempt": {
+            "type": "string",
+            "minLength": 20
+          },
+          "expected_safe_result": {
+            "type": "string",
+            "minLength": 20
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "probe_targets": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "process_capability_role",
+          "purpose",
+          "current_evidence",
+          "missing_evidence",
+          "probe_matrix"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 3
+          },
+          "process_capability_role": {
+            "type": "string",
+            "minLength": 3
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 20
+          },
+          "current_evidence": {
+            "type": "string",
+            "minLength": 20
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 30
+          },
+          "probe_matrix": {
+            "type": "array",
+            "minItems": 10,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "surface",
+                "expected_result",
+                "current_status"
+              ],
+              "properties": {
+                "surface": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "expected_result": {
+                  "type": "string",
+                  "minLength": 20
+                },
+                "current_status": {
+                  "type": "string",
+                  "enum": [
+                    "missing_no_harness",
+                    "policy_record_only",
+                    "unsupported_until_platform_selected"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "platform_evidence_requirements": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "required_artifacts",
+          "missing_evidence"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "macos",
+              "windows",
+              "linux"
+            ]
+          },
+          "required_artifacts": {
+            "type": "array",
+            "minItems": 3,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "missing_evidence": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "harness_blockers": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "blocker",
+          "status",
+          "required_evidence",
+          "safe_failure"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SBX-BLOCKER-[A-Z0-9_]+$"
+          },
+          "blocker": {
+            "type": "string",
+            "minLength": 3
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "partially_covered",
+              "proposed"
+            ]
+          },
+          "required_evidence": {
+            "type": "string",
+            "minLength": 40
+          },
+          "safe_failure": {
+            "type": "string",
+            "minLength": 30
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

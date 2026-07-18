@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "package_id": "TURING.BENCHMARK.ARTIFACT_PACKAGE.NOCLAIM_TRACE_PACKAGE.2026_07",
+  "status": "sample_only_no_benchmark_result",
+  "created_at": "2026-07-18T00:00:00Z",
+  "claim_status": "Trace and artifact package contract only; no browser run, no benchmark result, no trace captured, no memory result, no energy result, no Chrome-class claim, and no performance claim.",
+  "benchmark_manifest_id": "NOCLAIM.RUNNER_SMOKE.2026_07",
+  "raw_artifact_index_id": "NOCLAIM.RUNNER_SMOKE.ARTIFACTS.2026_07",
+  "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+  "corpus_id": "TURING.CORPUS.NOCLAIM_SMOKE.2026_07",
+  "network_profile_id": "TURING.NETWORK.NOCLAIM_LOCAL_STATIC.2026_07",
+  "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
+  "tab_scenario_set_id": "TURING.BENCHMARK.TAB_SCENARIOS.NOCLAIM_30_TAB_SMOKE.2026_07",
+  "package_root_policy": {
+    "root_kind": "runner_managed_temporary_or_external_artifact_root",
+    "source_tree_policy": "Real benchmark-run artifacts must be written to a runner-owned temporary or external artifact root, then copied into any durable store only through an explicit retention decision. This checked file is a plan record, not a real artifact package.",
+    "cleanup_required": true,
+    "prohibit_real_profiles": true,
+    "path_redaction": "Durable manifests record relative artifact paths, sizes, hashes, run IDs, and stable registry IDs. They must not retain user home paths, real profile paths, secrets, cookies, tokens, or private page content."
+  },
+  "trace_capture": [
+    {
+      "trace_id": "PB13-TRACE-ETW-WPR-001",
+      "trace_kind": "trace-etw",
+      "platform": "Windows reference hosts",
+      "status": "not_generated",
+      "tool": "Windows Performance Recorder, Windows Performance Analyzer, or reviewed ETW-equivalent collection",
+      "output_extensions": [".etl"],
+      "required_for_real_run": true,
+      "redaction_boundary": "ETW providers, stacks, command lines, file paths, and process metadata require redaction review before durable publication.",
+      "missing_proof": "No ETW or WPR trace exists for this no-claim package contract."
+    },
+    {
+      "trace_id": "PB13-TRACE-PERFETTO-001",
+      "trace_kind": "trace-perfetto",
+      "platform": "Cross-platform browser and renderer traces where supported",
+      "status": "not_generated",
+      "tool": "Perfetto-compatible trace export or reviewed equivalent browser trace format",
+      "output_extensions": [".pftrace", ".json"],
+      "required_for_real_run": true,
+      "redaction_boundary": "Trace events must use stable IDs, process roles, origin/site classifications, and semantic owners instead of raw page content or secrets.",
+      "missing_proof": "No Perfetto-compatible browser trace exists for this no-claim package contract."
+    },
+    {
+      "trace_id": "PB13-TRACE-TAB-LIFECYCLE-001",
+      "trace_kind": "trace-tab-lifecycle",
+      "platform": "Benchmark runner and browser under test",
+      "status": "not_generated",
+      "tool": "Runner-generated tab lifecycle and process-topology log",
+      "output_extensions": [".json"],
+      "required_for_real_run": true,
+      "redaction_boundary": "Lifecycle records must preserve tab, origin, site-instance, frame, profile, process, and document-epoch identity without serializing private page state.",
+      "missing_proof": "No concrete tab IDs, navigation order, lifecycle timestamps, process topology, or revival/state-loss records exist."
+    }
+  ],
+  "artifact_classes": [
+    {
+      "kind": "environment-manifest",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "benchmark runner",
+      "path_policy": "runner-owned artifact root; checked manifests may link only hashes or fixture-relative paths",
+      "hash_required": true,
+      "redaction": "stable hardware, OS-control, corpus, network, browser-pin, and resource-attribution IDs only",
+      "retention": "retain with benchmark result bundle until claim expiry plus review window",
+      "missing_proof": "No runner-generated environment manifest exists."
+    },
+    {
+      "kind": "benchmark-manifest",
+      "status": "sample_placeholder",
+      "required_for_real_run": true,
+      "producer": "benchmark runner and tools/validate_benchmark_manifests.py",
+      "path_policy": "runner-owned artifact root with optional checked no-claim fixture",
+      "hash_required": true,
+      "redaction": "no real profile paths, cookies, tokens, secrets, or private content",
+      "retention": "retain with raw samples and traces",
+      "missing_proof": "Only the no-claim sample manifest exists; no browser-run manifest exists."
+    },
+    {
+      "kind": "trace-etw",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "Windows trace collector",
+      "path_policy": "runner-owned artifact root outside the source tree",
+      "hash_required": true,
+      "redaction": "review process metadata, command lines, paths, stacks, and provider payloads",
+      "retention": "retain when used for Windows performance, memory, energy, or regression interpretation",
+      "missing_proof": "No ETW trace file and hash exist."
+    },
+    {
+      "kind": "trace-perfetto",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "browser trace exporter or reviewed equivalent",
+      "path_policy": "runner-owned artifact root outside the source tree",
+      "hash_required": true,
+      "redaction": "stable process, frame, document, site, and semantic-owner IDs without private page payloads",
+      "retention": "retain when used for browser-internal timing or ownership interpretation",
+      "missing_proof": "No Perfetto-compatible trace file and hash exist."
+    },
+    {
+      "kind": "runner-log",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "benchmark runner",
+      "path_policy": "runner-owned artifact root with relative paths in the artifact index",
+      "hash_required": true,
+      "redaction": "no secrets, private profile paths, raw cookies, tokens, or user content",
+      "retention": "retain with every run, including failed and cancelled runs",
+      "missing_proof": "No browser-run runner log exists."
+    },
+    {
+      "kind": "browser-stdout-stderr",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "browser process launcher",
+      "path_policy": "runner-owned artifact root with failure-denominator inclusion",
+      "hash_required": true,
+      "redaction": "review command lines, paths, URLs, crash payloads, and environment variables",
+      "retention": "retain with failed, unsupported, timed-out, cancelled, and successful runs",
+      "missing_proof": "No browser process stdout or stderr artifact exists."
+    },
+    {
+      "kind": "screenshot",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "runner-controlled capture",
+      "path_policy": "runner-owned artifact root; generated local corpus only unless separate privacy review approves capture",
+      "hash_required": true,
+      "redaction": "generated corpus pixels only; no private user page capture",
+      "retention": "retain representative failure and validation screenshots when needed for interpretation",
+      "missing_proof": "No screenshots exist."
+    },
+    {
+      "kind": "raw-samples",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "benchmark runner",
+      "path_policy": "runner-owned artifact root with manifest hash",
+      "hash_required": true,
+      "redaction": "metrics, sample order, failures, and stable IDs only",
+      "retention": "retain every sample used in any summary or claim bundle",
+      "missing_proof": "No runner-generated raw samples exist."
+    },
+    {
+      "kind": "memory-snapshot",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "platform counter collector and browser instrumentation",
+      "path_policy": "runner-owned artifact root",
+      "hash_required": true,
+      "redaction": "physical, resident, committed, shared, compressed, swap, GPU, and charged memory counters without heap payloads",
+      "retention": "retain when memory or 30-tab interpretation depends on the snapshot",
+      "missing_proof": "No memory snapshot exists."
+    },
+    {
+      "kind": "power-energy-sample",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "platform power or energy collector",
+      "path_policy": "runner-owned artifact root",
+      "hash_required": true,
+      "redaction": "hardware and process counters only",
+      "retention": "retain when energy, wakeup, thermal, or battery interpretation depends on the sample",
+      "missing_proof": "No power, energy, thermal, or wakeup sample exists."
+    },
+    {
+      "kind": "failure-record",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "benchmark runner",
+      "path_policy": "runner-owned artifact root and benchmark manifest denominator",
+      "hash_required": true,
+      "redaction": "stable target IDs, reason codes, and bounded diagnostic text",
+      "retention": "retain for every unsupported, failed, crashed, cancelled, or timed-out case",
+      "missing_proof": "No browser-run failure denominator record exists."
+    },
+    {
+      "kind": "artifact-index",
+      "status": "sample_placeholder",
+      "required_for_real_run": true,
+      "producer": "benchmark runner",
+      "path_policy": "runner-owned artifact root plus SHA-256 manifest",
+      "hash_required": true,
+      "redaction": "relative paths, sizes, hashes, and classifications only",
+      "retention": "retain as the package root manifest",
+      "missing_proof": "Only a no-claim placeholder index exists; no run-generated artifact index exists."
+    },
+    {
+      "kind": "tab-lifecycle-log",
+      "status": "not_generated",
+      "required_for_real_run": true,
+      "producer": "benchmark runner and browser lifecycle instrumentation",
+      "path_policy": "runner-owned artifact root",
+      "hash_required": true,
+      "redaction": "tab, profile, process, site, frame, document-epoch, state, timestamp, and reason-code fields only",
+      "retention": "retain with every 30-tab mixed or all-live result",
+      "missing_proof": "No concrete 30-tab lifecycle log exists."
+    }
+  ],
+  "required_manifest_records": [
+    "artifact file kind, relative path, byte size, and SHA-256",
+    "hardware_id, os_control_id, corpus_id, network_profile_id, resource_attribution_id, and tab_scenario_set_id",
+    "browser target, browser pin, command line, profile root classification, viewport, cache state, extension state, agent mode, and security/isolation settings",
+    "sample order, timestamps, timeout, cancellation, warmup, cache reset, and cleanup records",
+    "trace start/stop status, collector version, provider set, dropped-event status, and redaction review status",
+    "failure, unsupported, crashed, discarded, serialized, revived, timed-out, and cancelled denominator records"
+  ],
+  "prohibited_content": [
+    "secrets, tokens, API keys, cookies, credential material, signing keys, and private certificates",
+    "real user profile contents, browsing history, bookmarks, saved passwords, extensions, sync data, cache entries, or local storage",
+    "private page content, screenshots, videos, heap dumps, or trace payloads outside generated or reviewed benchmark corpus material",
+    "absolute user home paths or real profile paths in durable public records",
+    "model prompts, model outputs, or agent observations that include private page content or credentials"
+  ],
+  "unsupported_behavior": [
+    "no browser was launched",
+    "no benchmark result exists",
+    "no ETW, WPR, WPA, Perfetto, or equivalent trace was captured",
+    "no raw sample file, memory snapshot, power sample, screenshot, video, or browser log exists",
+    "no runner-generated 30-tab artifact, process topology, site-isolation, revival, or state-loss evidence exists",
+    "no Chrome-class, faster, lower-memory, lower-energy, daily-driver, production, beta, stable, accessibility, security, or compatibility claim is supported"
+  ],
+  "missing_proof": [
+    "runner-generated trace and artifact package root with SHA-256 manifest",
+    "ETW or equivalent Windows trace and Perfetto-compatible browser trace where applicable",
+    "runner logs, browser stdout/stderr, environment manifest, and failure denominator records",
+    "raw samples, memory snapshots, CPU/GPU counters, power or energy samples, screenshots when relevant, and redaction review",
+    "30-tab lifecycle log with concrete tab IDs, navigation order, process topology, site-instance identity, lifecycle transition timestamps, revival measurements, and state-loss records",
+    "owner-reviewed retention, publication, privacy, and claim-bundle decision"
+  ]
+}

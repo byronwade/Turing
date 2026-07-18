@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/implementation-kickoff-review-v1.json",
+  "title": "Turing Implementation Kickoff Review Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inventory_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "readiness_items",
+    "kickoff_gates",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "inventory_id": {
+      "type": "string",
+      "pattern": "^PB020\\.KICKOFF\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_kickoff_inventory", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "readiness_items": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "status",
+          "owner_scope",
+          "current_evidence",
+          "required_before_m1",
+          "first_next_actions",
+          "owner_only_decisions",
+          "prohibited_claims",
+          "validation_or_evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^PB-[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 3
+          },
+          "status": {
+            "type": "string",
+            "enum": ["blocked", "partial", "documented_no_runner"]
+          },
+          "owner_scope": {
+            "type": "string",
+            "minLength": 3
+          },
+          "current_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "required_before_m1": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "first_next_actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "owner_only_decisions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "prohibited_claims": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 10
+            }
+          },
+          "validation_or_evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          }
+        }
+      }
+    },
+    "kickoff_gates": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "related_readiness_items",
+          "gate",
+          "blocked_until",
+          "owner_only_decision",
+          "no_claim_boundary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^KICKOFF-GATE-[A-Z0-9_]+$"
+          },
+          "related_readiness_items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^PB-[0-9]{3}$"
+            }
+          },
+          "gate": {
+            "type": "string",
+            "minLength": 3
+          },
+          "blocked_until": {
+            "type": "string",
+            "minLength": 20
+          },
+          "owner_only_decision": {
+            "type": "string",
+            "minLength": 20
+          },
+          "no_claim_boundary": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}

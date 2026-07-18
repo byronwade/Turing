@@ -21,6 +21,8 @@ Owner: UI runtime, performance, accessibility, build, security, and legal
 
 Implement the same reference shell in Slint, Vizia, and one of Floem or GPUI. The shell contains one window, 100 synthetic tabs, vertical and horizontal modes, a Space selector, address field, split page placeholder, side panel, settings, permission prompt, agent confirmation, resource panel, virtualized history, keyboard navigation, native accessibility, IME, high contrast, reduced motion, renderer-hang simulation, and GPU-device-loss simulation.
 
+The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) turns this plan into `PB-004` no-claim planning evidence. It defines candidate summaries, equivalent adapter scope, evidence axes, disqualifiers, and unsupported boundaries; it does not select a toolkit, accept `ADR-0014`, prove accessibility, prove IME or keyboard behavior, approve page-surface composition, approve licensing/provenance, or approve trusted release chrome.
+
 ## Required measurements
 
 - stripped binary and packaged application contribution;

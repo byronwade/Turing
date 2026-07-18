@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/adr-0009-decision-review-v1.json",
+  "title": "Turing ADR-0009 Decision Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "review_scope",
+    "decision_status",
+    "evidence_axes",
+    "option_axes",
+    "owner_review_axes",
+    "required_document_updates",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "review_id": {
+      "type": "string",
+      "pattern": "^ADR0009\\.DECISION_REVIEW\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_decision_review_template",
+        "draft",
+        "owner_reviewed",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "review_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_option",
+        "source_baseline",
+        "feature_profile",
+        "owner_reviewer",
+        "independent_reviewer",
+        "review_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "selected_option": {
+          "type": ["string", "null"]
+        },
+        "source_baseline": {
+          "type": ["string", "null"]
+        },
+        "feature_profile": {
+          "type": ["string", "null"]
+        },
+        "owner_reviewer": {
+          "type": ["string", "null"]
+        },
+        "independent_reviewer": {
+          "type": ["string", "null"]
+        },
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_decision",
+            "draft_review",
+            "owner_reviewed",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "decision_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_selected_option",
+        "source_baseline_selected",
+        "feature_profile_selected",
+        "evidence_items_closed",
+        "exceptions_approved",
+        "public_claim_diff_applied",
+        "support_language_updated",
+        "pb002_unblocked",
+        "source_import_authorized",
+        "servo_source_strategy_accepted",
+        "component_approval_granted",
+        "release_code_authorized"
+      ],
+      "properties": {
+        "owner_selected_option": { "type": "boolean" },
+        "source_baseline_selected": { "type": "boolean" },
+        "feature_profile_selected": { "type": "boolean" },
+        "evidence_items_closed": { "type": "boolean" },
+        "exceptions_approved": { "type": "boolean" },
+        "public_claim_diff_applied": { "type": "boolean" },
+        "support_language_updated": { "type": "boolean" },
+        "pb002_unblocked": { "type": "boolean" },
+        "source_import_authorized": { "type": "boolean" },
+        "servo_source_strategy_accepted": { "type": "boolean" },
+        "component_approval_granted": { "type": "boolean" },
+        "release_code_authorized": { "type": "boolean" }
+      }
+    },
+    "evidence_axes": {
+      "type": "array",
+      "minItems": 18,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "option_axes": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "owner_review_axes": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "required_document_updates": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "$ref": "#/$defs/rejection_rule"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "minLength": 3
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "template_status": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 20
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

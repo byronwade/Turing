@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/backup-owner-qualification-record-v1.json",
+  "title": "Turing Backup Owner Qualification Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "qualification_record_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "candidate_scope",
+    "qualification_status",
+    "qualification_axes",
+    "reconciliation_axes",
+    "two_person_control_axes",
+    "qualification_lifecycle",
+    "fixture_policy",
+    "rejection_rules",
+    "unsupported_boundaries",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "qualification_record_id": {
+      "type": "string",
+      "pattern": "^OWN\\.BACKUP_QUALIFICATION\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "no_claim_backup_owner_qualification_template",
+        "draft",
+        "reviewed",
+        "superseded"
+      ]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 160
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "candidate_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "candidate_backup",
+        "candidate_status",
+        "prohibited_placeholder_policy"
+      ],
+      "properties": {
+        "scope": {
+          "type": ["string", "null"]
+        },
+        "candidate_backup": {
+          "type": ["string", "null"]
+        },
+        "candidate_status": {
+          "type": "string",
+          "enum": [
+            "template_only_no_candidate",
+            "candidate_named",
+            "reviewed_qualified",
+            "rejected"
+          ]
+        },
+        "prohibited_placeholder_policy": {
+          "type": "string",
+          "minLength": 80
+        }
+      }
+    },
+    "qualification_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "named_backup_owner",
+        "owner_identity_verified",
+        "role_level_reviewed",
+        "subsystem_competence_reviewed",
+        "representative_path_coverage_reviewed",
+        "recent_review_record_verified",
+        "availability_reviewed",
+        "succession_reviewed",
+        "recusal_reviewed",
+        "inactivity_reviewed",
+        "removal_reviewed",
+        "emergency_replacement_reviewed",
+        "codeowners_reconciled",
+        "review_rules_reconciled",
+        "escalation_policy_reconciled",
+        "stale_access_reviewed",
+        "two_person_control_reviewed",
+        "owner_reviewed"
+      ],
+      "properties": {
+        "named_backup_owner": { "type": "boolean" },
+        "owner_identity_verified": { "type": "boolean" },
+        "role_level_reviewed": { "type": "boolean" },
+        "subsystem_competence_reviewed": { "type": "boolean" },
+        "representative_path_coverage_reviewed": { "type": "boolean" },
+        "recent_review_record_verified": { "type": "boolean" },
+        "availability_reviewed": { "type": "boolean" },
+        "succession_reviewed": { "type": "boolean" },
+        "recusal_reviewed": { "type": "boolean" },
+        "inactivity_reviewed": { "type": "boolean" },
+        "removal_reviewed": { "type": "boolean" },
+        "emergency_replacement_reviewed": { "type": "boolean" },
+        "codeowners_reconciled": { "type": "boolean" },
+        "review_rules_reconciled": { "type": "boolean" },
+        "escalation_policy_reconciled": { "type": "boolean" },
+        "stale_access_reviewed": { "type": "boolean" },
+        "two_person_control_reviewed": { "type": "boolean" },
+        "owner_reviewed": { "type": "boolean" }
+      }
+    },
+    "qualification_axes": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "reconciliation_axes": {
+      "type": "array",
+      "minItems": 15,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "two_person_control_axes": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "qualification_lifecycle": {
+      "type": "array",
+      "minItems": 18,
+      "items": {
+        "$ref": "#/$defs/evidence_axis"
+      }
+    },
+    "fixture_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placeholder_candidates_prohibited",
+        "self_nomination_not_sufficient",
+        "private_contact_details_prohibited",
+        "least_privilege_review_required",
+        "stale_access_review_required",
+        "two_person_control_required",
+        "owner_review_required",
+        "release_authority_prohibited"
+      ],
+      "properties": {
+        "placeholder_candidates_prohibited": { "const": true },
+        "self_nomination_not_sufficient": { "const": true },
+        "private_contact_details_prohibited": { "const": true },
+        "least_privilege_review_required": { "const": true },
+        "stale_access_review_required": { "const": true },
+        "two_person_control_required": { "const": true },
+        "owner_review_required": { "const": true },
+        "release_authority_prohibited": { "const": true }
+      }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 16,
+      "items": {
+        "$ref": "#/$defs/rejection_rule"
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 14,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    }
+  },
+  "$defs": {
+    "evidence_axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "required_evidence", "template_status"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "minLength": 3
+        },
+        "required_evidence": {
+          "type": "string",
+          "minLength": 20
+        },
+        "template_status": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rejection_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "condition", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^reject_[a-z0-9_]+$"
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 20
+        },
+        "outcome": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

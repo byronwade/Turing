@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/fresh-host-run-record-v1.json",
+  "title": "Turing Fresh Host Reproduction Run Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "status",
+    "updated",
+    "related_gate",
+    "related_task",
+    "source_inventory",
+    "claim_status",
+    "run_class",
+    "execution_status",
+    "host_identity",
+    "source_checkout",
+    "commands",
+    "cache_and_artifact_controls",
+    "source_tree_cleanliness",
+    "failure_denominator",
+    "prohibited_evidence",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "record_id": {
+      "type": "string",
+      "pattern": "^BUILD\\.FRESH_HOST\\.RUN_RECORD\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "enum": [
+        "template_no_execution",
+        "candidate_unreviewed",
+        "owner_reviewed_no_claim",
+        "rejected"
+      ]
+    },
+    "updated": { "type": "string", "format": "date" },
+    "related_gate": { "const": "PB-009" },
+    "related_task": { "const": "TASK-000002" },
+    "source_inventory": { "type": "string" },
+    "claim_status": { "type": "string" },
+    "run_class": {
+      "enum": [
+        "template_only",
+        "independent_fresh_host_candidate",
+        "owner_approved_clean_vm_candidate",
+        "current_host_diagnostic_not_fresh"
+      ]
+    },
+    "execution_status": {
+      "enum": [
+        "not_executed",
+        "executed_unreviewed",
+        "executed_owner_reviewed",
+        "failed_retained"
+      ]
+    },
+    "host_identity": { "$ref": "#/$defs/requirement_group" },
+    "source_checkout": { "$ref": "#/$defs/requirement_group" },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/command_record" }
+    },
+    "cache_and_artifact_controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "source_tree_cleanliness": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "failure_denominator": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "prohibited_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "requirement_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields", "evidence_artifacts"],
+      "properties": {
+        "required_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "evidence_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "command_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command_id",
+        "command_family",
+        "required_commands",
+        "required_fields",
+        "success_evidence",
+        "failure_evidence"
+      ],
+      "properties": {
+        "command_id": {
+          "type": "string",
+          "pattern": "^FRESH-HOST-CMD-[A-Z0-9_]+$"
+        },
+        "command_family": {
+          "enum": ["bootstrap", "doctor", "check", "xtask-bootstrap", "xtask-doctor", "xtask-check"]
+        },
+        "required_commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "required_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "success_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "failure_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

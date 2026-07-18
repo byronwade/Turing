@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "diagnostic_id": "TURING.BENCHMARK.BROWSER_PIN_DIAGNOSTIC.CURRENT_WINDOWS_HIGH_END.CHROME_EDGE.2026_07",
+  "status": "no_claim_diagnostic_unreviewed",
+  "claim_status": "Current-host browser-pin diagnostic only; no benchmark run, no competitor result, no latency result, no memory result, no energy result, no compatibility result, no benchmark-ready browser pin, and no performance claim.",
+  "captured_at": "2026-07-18T01:03:13+00:00",
+  "tool": {
+    "path": "tools/capture_benchmark_browser_pins.py",
+    "command": "python3 -B tools/capture_benchmark_browser_pins.py --capture-local --target chrome --target edge --output-dir %TEMP%/turing-browser-pin-local-e2579a92afcc430a80cc37d08d777fe6",
+    "artifact_id": "NOCLAIM.BROWSER_PIN_CAPTURE.2026_07",
+    "mode": "local_capture",
+    "runner_status": "no_claim_artifact_package"
+  },
+  "host_references": {
+    "hardware_id": "TURING.BENCHMARK.HARDWARE.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "os_control_id": "TURING.BENCHMARK.OS_CONTROL.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "release_catalog_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
+    "local_install_manifest_id": "TURING.BENCHMARK.COMPETITOR_LOCAL_INSTALLS.CURRENT_WINDOWS_HIGH_END.2026_07",
+    "capture_plan_id": "TURING.BENCHMARK.BROWSER_PIN_CAPTURE.CURRENT_WINDOWS_HIGH_END.2026_07"
+  },
+  "artifact_package": {
+    "run_id": "local-3ce4c5aa3076",
+    "storage": "operator temporary directory outside source control",
+    "raw_artifacts_committed": false,
+    "raw_artifacts_not_committed_reason": "The raw package is a current-host diagnostic bundle with temporary profile file listings and local temp paths; this checked summary records the browser-reported versions, hashes, cleanup status, unsupported behavior, and remaining evidence gaps.",
+    "capture_summary_sha256": "464149c0688ab370e8361314eeb900176af02c77de2705fdd9d8689ef162b848",
+    "artifact_index_sha256": "e5b2b8077a732b682d5853048f06b0c1e5b98989e1fcf431004d0f6d69a12286",
+    "artifact_files": [
+      {
+        "target_id": "chrome-current-host-pin-capture",
+        "kind": "browser-version",
+        "path": "targets/chrome-current-host-pin-capture/version.json",
+        "bytes": 426,
+        "sha256": "ea955d488acd0b9077ff5b9ead4a9cbab41c52720a6932ab141a64efade9ca1f"
+      },
+      {
+        "target_id": "chrome-current-host-pin-capture",
+        "kind": "temporary-profile-manifest",
+        "path": "targets/chrome-current-host-pin-capture/temporary-profile-manifest.json",
+        "bytes": 39520,
+        "sha256": "51158fd6eb5acff3e27237a6f58295b8af7edb3aaa2b60468e961bdc60dd137a"
+      },
+      {
+        "target_id": "chrome-current-host-pin-capture",
+        "kind": "target-summary",
+        "path": "targets/chrome-current-host-pin-capture/target-summary.json",
+        "bytes": 6430,
+        "sha256": "5d85942efc53091bd03066612807ab6e62375c90f3688181a8b0ab475821d2ae"
+      },
+      {
+        "target_id": "edge-current-host-pin-capture",
+        "kind": "browser-version",
+        "path": "targets/edge-current-host-pin-capture/version.json",
+        "bytes": 434,
+        "sha256": "3cd089ff09687828c0738954329c1bbf9e5dde55307f737a147259d64e33a8c8"
+      },
+      {
+        "target_id": "edge-current-host-pin-capture",
+        "kind": "temporary-profile-manifest",
+        "path": "targets/edge-current-host-pin-capture/temporary-profile-manifest.json",
+        "bytes": 55270,
+        "sha256": "b82af143f16244a1874141911f40e5536ddb4b3097c2166d36b4545ec8e78834"
+      },
+      {
+        "target_id": "edge-current-host-pin-capture",
+        "kind": "target-summary",
+        "path": "targets/edge-current-host-pin-capture/target-summary.json",
+        "bytes": 6098,
+        "sha256": "fb33441072ddb31b5175e7a155b0bfed15290b6e0c4cecb8ef488383d5e12392"
+      }
+    ]
+  },
+  "browser_targets": [
+    {
+      "target_id": "chrome-current-host-pin-capture",
+      "product_name": "Google Chrome",
+      "local_install_browser_id": "chrome-local-desktop",
+      "release_catalog_browser_id": "chrome-stable-desktop",
+      "status": "diagnostic_capture_unreviewed",
+      "browser_launched": true,
+      "browser_reported_version": "Chrome/150.0.7871.115",
+      "local_executable_sha256": "5718df5f35db255adb85cc8a8305645319f8513e4d8bf818741b8aa491003ce9",
+      "profile_source": "runner-owned temporary profile",
+      "temporary_profile_cleanup": "deleted",
+      "prohibited_access_detected": false,
+      "profile_hash_status": "complete",
+      "capture_arguments": [
+        "--user-data-dir=%TEMP%/turing-browser-pin-capture/${run_id}/chrome-current-host-pin-capture",
+        "--no-first-run",
+        "--disable-sync",
+        "--disable-background-networking",
+        "--disable-component-update",
+        "--headless=new",
+        "--remote-debugging-port=0",
+        "--host-resolver-rules=MAP * 127.0.0.1, EXCLUDE localhost",
+        "about:blank"
+      ],
+      "observations": [
+        "Browser-reported version matched the executable file/product version recorded in the local-install inventory.",
+        "The local version remains older than the current release-catalog Chrome Stable candidate.",
+        "The runner terminated the Chrome process tree and deleted the temporary profile."
+      ]
+    },
+    {
+      "target_id": "edge-current-host-pin-capture",
+      "product_name": "Microsoft Edge",
+      "local_install_browser_id": "edge-local-desktop",
+      "release_catalog_browser_id": "edge-stable-desktop",
+      "status": "diagnostic_capture_unreviewed",
+      "browser_launched": true,
+      "browser_reported_version": "Edg/151.0.4129.21",
+      "local_executable_sha256": "7298c2707567e442927cb2069889ee14715e2b268537b4c933bf7d56a6bc840d",
+      "profile_source": "runner-owned temporary profile",
+      "temporary_profile_cleanup": "deleted",
+      "prohibited_access_detected": false,
+      "profile_hash_status": "complete",
+      "capture_arguments": [
+        "--user-data-dir=%TEMP%/turing-browser-pin-capture/${run_id}/edge-current-host-pin-capture",
+        "--no-first-run",
+        "--disable-sync",
+        "--disable-background-networking",
+        "--disable-component-update",
+        "--headless=new",
+        "--remote-debugging-port=0",
+        "--host-resolver-rules=MAP * 127.0.0.1, EXCLUDE localhost",
+        "about:blank"
+      ],
+      "observations": [
+        "Browser-reported version matched the executable file/product and uninstall version recorded in the local-install inventory.",
+        "The local version remains newer than the recorded Edge Stable release-catalog candidate, so channel and update-ring proof remain unresolved.",
+        "The runner stopped lingering Edge processes tied to the temporary profile path and deleted the temporary profile."
+      ]
+    }
+  ],
+  "unsupported_behavior": [
+    "The run used diagnostic capture arguments, not benchmark workload arguments.",
+    "No benchmark suite or corpus page was loaded.",
+    "No timing, memory, CPU, GPU, energy, accessibility, compatibility, or resource-attribution sample was collected.",
+    "No browser channel proof, update-ring proof, process-tree command-line audit, extension enumeration, sandbox/site-isolation proof, memory-saver proof, or energy-saver proof was collected.",
+    "Firefox, Safari Stable, and Safari Technology Preview were not captured.",
+    "No competitor comparison, ranking, regression, release, Chrome-class, fastest, lower-memory, lower-energy, compatibility, security, accessibility, daily-driver, production, or performance claim is supported."
+  ],
+  "evidence_required": [
+    "owner review of the Chrome and Edge diagnostic capture arguments and artifact package",
+    "channel and update-ring proof for Edge",
+    "process-tree command-line audit and effective-settings capture",
+    "extension, sync/account, cache, update, sandbox, site-isolation, memory-saver, energy-saver, power, and user-agent records from approved capture surfaces",
+    "Firefox local-install and browser-reported version evidence on an approved Windows host",
+    "Safari Stable and Safari Technology Preview evidence on an approved macOS host",
+    "runner-generated benchmark artifacts from equal-workload runs before any competitor comparison or performance claim"
+  ]
+}

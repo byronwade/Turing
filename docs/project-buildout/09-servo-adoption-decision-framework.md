@@ -2,11 +2,13 @@
 
 Status: detailed research and professional operating baseline  
 Owner: engine, architecture, embedding, security, and provenance owners  
-Last researched: 2026-07-16
+Last researched: 2026-07-17
 
 ## Purpose
 
 Resolve the conflict between the accepted independent-engine boundary and the desire to use Servo as a baseline through evidence rather than ideology or schedule pressure.
+
+The current decision packet is [`14-adr-0009-source-strategy-decision-packet.md`](14-adr-0009-source-strategy-decision-packet.md). The continuation queue is [`15-adr-0009-evidence-traceability-matrix.md`](15-adr-0009-evidence-traceability-matrix.md). Together they are the checklist for moving `ADR-0009` beyond proposed status.
 
 ## Governing principles
 

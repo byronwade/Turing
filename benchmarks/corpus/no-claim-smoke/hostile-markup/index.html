@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Turing No-Claim Hostile Markup Fixture</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 1rem;
+      }
+
+      main {
+        max-width: 80ch;
+      }
+
+      .deep {
+        border-left: 2px solid currentColor;
+        margin-left: 0.25rem;
+        padding-left: 0.25rem;
+      }
+
+      .wide-attributes [data-long-value] {
+        overflow-wrap: anywhere;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td,
+      th {
+        border: 1px solid currentColor;
+        padding: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Generated Hostile Markup Fixture</h1>
+      <p>
+        This generated local page exercises nested elements, duplicate-looking
+        labels, long attributes, inert controls, entity text, and dense table
+        markup. It is not a fuzzing result and it makes no safety claim.
+      </p>
+
+      <section aria-labelledby="deep-heading">
+        <h2 id="deep-heading">Nested Structure</h2>
+        <div class="deep"><div class="deep"><div class="deep"><div class="deep"><div class="deep">
+          <div class="deep"><div class="deep"><div class="deep"><div class="deep"><div class="deep">
+            <p>Ten nested containers with bounded, generated text.</p>
+          </div></div></div></div></div>
+        </div></div></div></div></div>
+      </section>
+
+      <section class="wide-attributes" aria-labelledby="attributes-heading">
+        <h2 id="attributes-heading">Long Attribute Values</h2>
+        <p
+          data-long-value="alpha-beta-gamma-delta-epsilon-zeta-eta-theta-iota-kappa-lambda-mu-nu-xi-omicron-pi-rho-sigma-tau-upsilon-phi-chi-psi-omega"
+          title="Generated local attribute stress value">
+          The attribute string is long but local and deterministic.
+        </p>
+      </section>
+
+      <section aria-labelledby="dense-table-heading">
+        <h2 id="dense-table-heading">Dense Table</h2>
+        <table>
+          <thead>
+            <tr><th>Index</th><th>State</th><th>Entity Text</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>open</td><td>&lt;script&gt; appears as text only</td></tr>
+            <tr><td>2</td><td>closed</td><td>&amp; escaped ampersand</td></tr>
+            <tr><td>3</td><td>blocked</td><td>&quot;quoted&quot; generated value</td></tr>
+            <tr><td>4</td><td>pending</td><td>&apos;apostrophe&apos; generated value</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

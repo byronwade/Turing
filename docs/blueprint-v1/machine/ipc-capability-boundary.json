@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "inventory_id": "IPC.CAPABILITY.BOUNDARY_INVENTORY.2026_07",
+  "status": "no_claim_boundary_inventory",
+  "updated": "2026-07-18",
+  "claim_status": "No-claim boundary inventory only; no renderer-security claim, no agent-security claim, no process-isolation readiness claim, no site-isolation claim, no production IPC claim, no wire encoding decision claim, no schema generator claim, no timeout or cancellation implementation claim, and no implementation readiness claim.",
+  "source_records": [
+    "crates/turing-ipc/src/lib.rs",
+    "crates/turing-kernel/src/lib.rs",
+    "crates/turing-types/src/lib.rs",
+    "docs/blueprint-v1/04-system-architecture.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/machine/process-capabilities.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
+    "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+    "docs/api-design/02-async-streaming-and-cancellation.md",
+    "docs/api-design/03-schemas-errors-versioning-and-compatibility.md",
+    "docs/security-engine/10-capability-provenance-attenuation-and-revocation.md",
+    "tools/validate_ipc_readiness_review.py"
+  ],
+  "m0_evidence": [
+    {
+      "id": "IPC-M0-BOUNDED_ENVELOPE",
+      "artifact": "crates/turing-ipc/src/lib.rs",
+            "evidence": "The bounded envelope evidence is ControlEnvelope, which records sender, receiver, sequence, optional document epoch, encoded length, and typed payload with a fixed M0 control-message limit.",
+      "limit": "The crate does not serialize payloads, authenticate connections, implement queues, or define the canonical IPC schema generator."
+    },
+    {
+      "id": "IPC-M0-OVERSIZE_TEST",
+      "artifact": "crates/turing-ipc/src/lib.rs",
+            "evidence": "The oversize test rejects_oversized_control_messages rejects a declared control message larger than MAX_CONTROL_MESSAGE_BYTES.",
+      "limit": "Only oversized declared length is covered; malformed encodings, stale epochs, duplicates, reordering, wrong principals, timeout, and cancellation remain unimplemented."
+    },
+    {
+      "id": "IPC-M0-ROLE_CAPABILITIES",
+      "artifact": "crates/turing-kernel/src/lib.rs",
+      "evidence": "ProcessRole, Capability, CapabilitySet, and ProcessPolicy encode default role capabilities and deny ambient renderer, network, storage, and agent authority in focused tests.",
+      "limit": "The policy is a Rust model only; it is not generated from process-capabilities.json and does not enforce OS sandbox, broker authentication, wire encoding, or runtime revocation."
+    },
+    {
+      "id": "IPC-M0-TYPED_IDENTITIES",
+      "artifact": "crates/turing-types/src/lib.rs",
+            "evidence": "Typed identities use non-zero process, principal, profile, Space, tab, view, document epoch, operation, and sequence identifiers that reject zero and preserve explicit routing metadata.",
+      "limit": "IDs are local typed wrappers only; they are not unguessable handles, persisted grants, authenticated principals, or cross-process capability tokens."
+    },
+    {
+      "id": "IPC-M0-PROCESS_CAPABILITY_RECORD",
+      "artifact": "docs/blueprint-v1/machine/process-capabilities.json",
+            "evidence": "The machine process capability record lists current role capabilities and forbidden authority for browser_kernel, renderer, network, storage, gpu, media_utility, extension_host, devtools, agent_host, updater, and crash_handler roles.",
+      "limit": "The record is a policy draft; it is not generated into crates, not enforced by a broker, and not proof of platform sandbox or production process isolation."
+    }
+  ],
+  "schema_and_transport_blockers": [
+    {
+      "id": "IPC-BLOCKER-SCHEMA_GENERATOR",
+      "blocker": "schema generator",
+      "status": "missing",
+      "required_evidence": "A canonical schema source must generate Rust types, validators, documentation, compatibility fixtures, and redaction/trace metadata for each IPC family.",
+      "safe_failure": "Keep hand-written M0 objects isolated and block production IPC claims until generated schema evidence exists."
+    },
+    {
+      "id": "IPC-BLOCKER-WIRE_ENCODING",
+      "blocker": "wire encoding decision",
+      "status": "missing",
+      "required_evidence": "A reviewed wire encoding decision must prove bounded decode behavior, unknown variant handling, zero-copy safety posture, versioning, fuzzability, and compatibility.",
+      "safe_failure": "Fail closed on production transport selection and keep PB-011 partial while encoding is undecided."
+    },
+    {
+      "id": "IPC-BLOCKER-CONNECTION_AUTHENTICATION",
+      "blocker": "connection authentication",
+      "status": "missing",
+      "required_evidence": "Privileged receivers must authenticate process identity and role against kernel-issued process state before accepting capabilities or routing metadata.",
+      "safe_failure": "Reject messages whose sender, role, epoch, or capability cannot be verified by trusted state."
+    },
+    {
+      "id": "IPC-BLOCKER-BOUNDED_QUEUES",
+      "blocker": "bounded queues and backpressure",
+      "status": "missing",
+      "required_evidence": "Each process or trust-boundary queue must declare capacity, overload behavior, cancellation priority, coalescing policy, and process-termination behavior.",
+      "safe_failure": "Stop or reject work instead of allowing unbounded queues, hidden wakeups, or control-message starvation."
+    },
+    {
+      "id": "IPC-BLOCKER-TIMEOUTS",
+      "blocker": "timeout semantics",
+      "status": "missing",
+      "required_evidence": "Every request/response operation must declare monotonic deadline behavior, queue versus execution timing, timeout result state, and cleanup guarantees.",
+      "safe_failure": "Return stable timeout errors and preserve authority boundaries when completion cannot be proven."
+    },
+    {
+      "id": "IPC-BLOCKER-CANCELLATION",
+      "blocker": "cancellation semantics",
+      "status": "missing",
+      "required_evidence": "Each long operation must define cancellation safe points, post-cancel state, partial effect reporting, cleanup, and grant revocation.",
+      "safe_failure": "Hold or abort work without widening authority when cancellation cannot be resolved."
+    },
+    {
+      "id": "IPC-BLOCKER-STALE_EPOCH",
+      "blocker": "stale document epoch rejection",
+      "status": "partially_covered",
+      "required_evidence": "Document-scoped messages must be rejected when the document epoch, frame, profile, origin, site, process, or capability is stale after navigation or asynchronous delay.",
+      "safe_failure": "Reject stale operations and require callers to re-resolve authority against the current document epoch."
+    },
+    {
+      "id": "IPC-BLOCKER-FUZZ_AND_MODEL_TESTS",
+      "blocker": "fuzz and model tests",
+      "status": "missing",
+      "required_evidence": "Decoder, queue, state-machine, stale-epoch, duplicate, reordering, unauthorized, timeout, cancellation, and resource-exhaustion behavior must have fuzz, property, or model tests.",
+      "safe_failure": "Keep IPC boundary evidence partial and block renderer, agent, and production IPC claims."
+    }
+  ],
+  "negative_coverage_requirements": [
+    {
+      "id": "IPC-NEG-MALFORMED",
+      "case": "malformed",
+      "current_status": "not_executable_without_schema",
+      "current_evidence": "No canonical schema or decoder exists, so malformed encoding cases cannot yet execute.",
+      "required_evidence": "Generated decoder fixtures and fuzz cases must reject malformed tags, lengths, counts, enum values, offsets, handles, and nested structures before allocation.",
+      "safe_failure": "Reject malformed input before privileged work or large allocation."
+    },
+    {
+      "id": "IPC-NEG-OVERSIZED",
+      "case": "oversized",
+      "current_status": "implemented_m0_test",
+      "current_evidence": "crates/turing-ipc rejects declared control envelopes above MAX_CONTROL_MESSAGE_BYTES.",
+      "required_evidence": "All generated message families and stream paths must enforce size, count, queue, and shared-memory limits across encode, decode, and broker paths.",
+      "safe_failure": "Reject oversized messages and surface resource-limit errors without allocation spikes."
+    },
+    {
+      "id": "IPC-NEG-STALE",
+      "case": "stale",
+      "current_status": "missing",
+      "current_evidence": "ControlEnvelope can carry an optional DocumentEpoch, but no receiver validates stale epochs.",
+      "required_evidence": "Document-scoped operations must reject stale document epochs after navigation, crash, BFCache, timeout, or asynchronous delay.",
+      "safe_failure": "Reject stale operations and require fresh authority resolution."
+    },
+    {
+      "id": "IPC-NEG-DUPLICATE",
+      "case": "duplicate",
+      "current_status": "missing",
+      "current_evidence": "SequenceNumber exists as typed metadata, but no replay cache or duplicate-delivery test exists.",
+      "required_evidence": "Request IDs, sequence numbers, and idempotency keys must reject or safely coalesce duplicate messages across retries and reconnects.",
+      "safe_failure": "Return stable duplicate or conflict errors without repeating consequential effects."
+    },
+    {
+      "id": "IPC-NEG-REORDERED",
+      "case": "reordered",
+      "current_status": "missing",
+      "current_evidence": "No ordered queue, stream, or subscription state machine exists in the current IPC crate.",
+      "required_evidence": "Queue and stream tests must prove allowed ordering, sequence gaps, stale data handling, and explicit gap or reset events.",
+      "safe_failure": "Reject, reorder safely, or emit explicit gap events without hiding lost or stale work."
+    },
+    {
+      "id": "IPC-NEG-UNAUTHORIZED",
+      "case": "unauthorized",
+      "current_status": "missing",
+      "current_evidence": "CapabilitySet models role defaults, but no receiver checks message-specific capability requirements.",
+      "required_evidence": "Each privileged message must declare required role, capability, profile, origin/site, document epoch, and policy checks with rejection tests.",
+      "safe_failure": "Return authorization denial and keep page, extension, DevTools, or agent input from minting authority."
+    },
+    {
+      "id": "IPC-NEG-WRONG_PRINCIPAL",
+      "case": "wrong-principal",
+      "current_status": "missing",
+      "current_evidence": "ProcessId and PrincipalId are typed, but no receiver validates that sender, role, principal, profile, origin, and capability match kernel state.",
+      "required_evidence": "Wrong-principal tests must cover cross-profile, cross-origin, wrong-role, stale-process, extension, DevTools, and agent action attempts.",
+      "safe_failure": "Reject wrong-principal messages and audit policy-sensitive attempts."
+    },
+    {
+      "id": "IPC-NEG-TIMEOUT",
+      "case": "timeout",
+      "current_status": "missing",
+      "current_evidence": "No deadline, queue-wait, execution-time, or timeout result type exists in the current IPC crate.",
+      "required_evidence": "Timeout tests must cover queued work, in-flight work, partial effects, process crash, network/storage wait, and cleanup reporting.",
+      "safe_failure": "Return timeout state without implying rollback unless the operation contract proves rollback."
+    },
+    {
+      "id": "IPC-NEG-CANCELLATION",
+      "case": "cancellation",
+      "current_status": "missing",
+      "current_evidence": "No cancellation token, cancellation queue priority, or cancelled-result state exists in the current IPC crate.",
+      "required_evidence": "Cancellation tests must cover not-started, stopped-before-effect, stopped-after-partial-effect, too-late-after-commit, cleanup, and grant revocation.",
+      "safe_failure": "Stop or report partial effects without leaving undefined state or widening authority."
+    }
+  ],
+  "role_capability_boundaries": [
+    {
+      "id": "IPC-ROLE-BROWSER_KERNEL",
+      "process_capability_role": "browser_kernel",
+      "boundary": "Browser kernel coordinates policy, process launch, navigation commit, permission policy, agent policy, session journals, and UI commands.",
+      "current_evidence": "process-capabilities.json lists the role and current capabilities.",
+      "missing_evidence": "Generated broker checks, connection authentication, per-message authority, and runtime revocation remain missing."
+    },
+    {
+      "id": "IPC-ROLE-RENDERER",
+      "process_capability_role": "renderer",
+      "boundary": "Renderer receives only assigned IPC, shared memory, surfaces, and read-only font handles with forbidden ambient network, filesystem, credentials, debug, update, and internal protocol access.",
+      "current_evidence": "process-capabilities.json and turing-kernel renderer tests deny network and arbitrary file capabilities.",
+      "missing_evidence": "OS sandbox proof, IPC broker enforcement, stale-epoch rejection, and wrong-principal tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-NETWORK",
+      "process_capability_role": "network",
+      "boundary": "Network owns sockets, proxy resolution, certificate verification adapter, HTTP cache, and cookie attachment but cannot read password vaults or arbitrary profile files.",
+      "current_evidence": "process-capabilities.json and turing-kernel network tests distinguish network sockets from profile storage.",
+      "missing_evidence": "Kernel-issued request-context verification, cookie authority checks, timeout behavior, and wrong-principal tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-STORAGE",
+      "process_capability_role": "storage",
+      "boundary": "Storage owns profile storage roots, quota database, and logical origin stores without ambient network, credential export, browser UI, or process creation.",
+      "current_evidence": "process-capabilities.json lists storage capabilities and forbidden authority.",
+      "missing_evidence": "Per-origin/profile broker handles, migration-safe cancellation, malformed store inputs, and cross-profile denial tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-GPU",
+      "process_capability_role": "gpu",
+      "boundary": "GPU owns graphics device, assigned surfaces, and validated shared memory without profile storage, network sockets, credential store, or arbitrary filesystem access.",
+      "current_evidence": "process-capabilities.json lists GPU capabilities and forbidden authority.",
+      "missing_evidence": "Shared-memory ownership states, resource-size validation, device-generation checks, and GPU reset recovery tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-MEDIA_UTILITY",
+      "process_capability_role": "media_utility",
+      "boundary": "Media utility receives task-scoped input, bounded output, and optional assigned device handles without ambient network, arbitrary filesystem, profile storage, browser UI, or credential store access.",
+      "current_evidence": "process-capabilities.json lists media_utility capabilities and forbidden authority.",
+      "missing_evidence": "Decoder-specific schemas, hostile-input fuzzing, bounded output enforcement, and sandbox probe linkage remain missing."
+    },
+    {
+      "id": "IPC-ROLE-EXTENSION_HOST",
+      "process_capability_role": "extension_host",
+      "boundary": "Extension host receives declared extension APIs, granted hosts, and extension storage but no kernel memory, ungranted profiles, ambient native messaging, update signing, or agent confirmation authority.",
+      "current_evidence": "process-capabilities.json lists extension_host capabilities and forbidden authority.",
+      "missing_evidence": "Extension identity, host grants, incognito policy, native-messaging broker checks, and revocation tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-DEVTOOLS",
+      "process_capability_role": "devtools",
+      "boundary": "DevTools receives attached target protocol and local frontend resources without unattached profile access, ambient remote listener, release signing, or agent confirmation authority.",
+      "current_evidence": "process-capabilities.json lists devtools capabilities and forbidden authority.",
+      "missing_evidence": "Attach authorization, visible indicator, target epoch, remote-debug authentication, and wrong-target tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-AGENT_HOST",
+      "process_capability_role": "agent_host",
+      "boundary": "Agent host receives granted observations, model adapter, proposed actions, and audit append but no raw cookies, password vault, direct renderer memory, direct input injection, confirmation approval, ungranted files, or ungranted origins.",
+      "current_evidence": "process-capabilities.json and turing-kernel agent tests deny ambient browser authority.",
+      "missing_evidence": "Grant-token provenance, document-epoch revalidation, confirmation checks, provider timeout/cancellation, and wrong-principal action tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-UPDATER",
+      "process_capability_role": "updater",
+      "boundary": "Updater receives update endpoint, signed metadata, staging directory, and version install roots without web profile content, browser history, agent data, or arbitrary execution authority.",
+      "current_evidence": "process-capabilities.json lists updater capabilities and forbidden authority.",
+      "missing_evidence": "Signed metadata schemas, no-production-key update lab linkage, rollback refusal, and update trust recovery tests remain missing."
+    },
+    {
+      "id": "IPC-ROLE-CRASH_HANDLER",
+      "process_capability_role": "crash_handler",
+      "boundary": "Crash handler receives crash channels, bounded dump directory, and build ID symbols without ambient profile read, network without consent, credential store, or browser commands.",
+      "current_evidence": "process-capabilities.json lists crash_handler capabilities and forbidden authority.",
+      "missing_evidence": "Crash redaction, consent, bounded dump schema, symbol handling, and no-secret diagnostic export tests remain missing."
+    }
+  ],
+  "unsupported_boundaries": [
+    "no renderer-security claim",
+    "no agent-security claim",
+    "no process-isolation readiness claim",
+    "no site-isolation claim",
+    "no production IPC claim",
+    "no wire encoding decision claim",
+    "no schema generator claim",
+    "no timeout or cancellation implementation claim",
+    "no implementation readiness claim"
+  ]
+}

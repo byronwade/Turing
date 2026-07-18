@@ -62,3 +62,5 @@ The book is a research baseline. Accepted architecture requires an ADR or owning
 ## Time Machine and continuity research
 
 `OP-002`, `OP-010`, and `OP-014` add journal, snapshot, encryption, conflict, retention, deletion, and recovery questions. No snapshot or sync design may retain private or credential state by accident or replay consequential effects.
+
+The checked [Profile Session Format Inventory](../research/profile-session-format-inventory-2026-07.md), [`profile-session-format-inventory.json`](machine/profile-session-format-inventory.json), checked no-claim [`schema-package template`](machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json), and [`validate_profile_session_formats.py`](../../tools/validate_profile_session_formats.py) provide no-claim `PB-016` planning evidence for profile, Space, session, snapshot, migration, privacy, and safe-failure behavior. They do not implement a profile format, define executable schemas beyond the template, approve real-profile migration, approve sync or credential storage, prove data-loss safety, or make user-data handling production-ready.
