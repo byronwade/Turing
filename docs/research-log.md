@@ -2,6 +2,37 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — Servo clean generated-output reproduction probe
+
+Question:
+
+Can selected Servo generated outputs be regenerated from a clean external target directory without relying on the previously warm Servo target, and what remains before `ADR9-EV-007` can be treated as decision-grade generated-output evidence?
+
+Inputs:
+
+- [Servo Clean Generated-Output Reproduction Probe](research/servo-clean-generated-output-reproduction-2026-07.md);
+- [Servo Build-Script and Generated-Output Audit](research/servo-build-script-generated-output-audit-2026-07.md);
+- [ADR-0009 Source Strategy Decision Packet](project-buildout/14-adr-0009-source-strategy-decision-packet.md);
+- [ADR-0009 Evidence Traceability Matrix](project-buildout/15-adr-0009-evidence-traceability-matrix.md);
+- [`adr-0009-evidence.json`](blueprint-v1/machine/adr-0009-evidence.json);
+- external Servo checkout `C:\ts\servo` at commit `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe`.
+
+Method:
+
+Ran two isolated package-scoped clean-target attempts outside the Turing repository. The default-media attempt failed before Cargo output inspection because GStreamer was missing. The dummy-media attempt emitted substantial `servo-script-bindings`, Stylo, GLSL, atom, zlib, and Khronos outputs under a clean target, then failed in `mozjs_sys` while trying a JIT-disabled source build.
+
+Decision:
+
+Record the result as partial `ADR9-EV-007` evidence only. The probe narrows the next clean-target work but does not prove a clean Servo build, generated-output determinism, source-to-output provenance, generated-code approval, component approval, or source-strategy readiness.
+
+Impact:
+
+Future `PB-002` work now distinguishes package-scoped dummy-media output from feature-correct full clean-target regeneration. The next evidence must use an owner-selected baseline/profile, retain success and failure logs, compare independent-host output, and map generated outputs to source, license, and provenance.
+
+Next question:
+
+Can a feature-correct full clean-target Servo build regenerate the selected generated-output families with identical hashes on the reference host and an independent clean host or VM?
+
 ## 2026-07-18 — Benchmark statistics-analysis contract
 
 Follow-up:

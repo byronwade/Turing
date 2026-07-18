@@ -467,6 +467,7 @@ These reports feed `ADR-0009`; they do not approve a Servo-derived release path:
 - [`docs/research/servo-generated-native-unsafe-classification-2026-07.md`](research/servo-generated-native-unsafe-classification-2026-07.md);
 - [`docs/research/servo-unsafe-ffi-contract-review-2026-07.md`](research/servo-unsafe-ffi-contract-review-2026-07.md);
 - [`docs/research/servo-build-script-generated-output-audit-2026-07.md`](research/servo-build-script-generated-output-audit-2026-07.md);
+- [`docs/research/servo-clean-generated-output-reproduction-2026-07.md`](research/servo-clean-generated-output-reproduction-2026-07.md);
 - [`docs/research/servo-build-script-proc-macro-side-effect-audit-2026-07.md`](research/servo-build-script-proc-macro-side-effect-audit-2026-07.md);
 - [`docs/research/servo-source-archive-provenance-audit-2026-07.md`](research/servo-source-archive-provenance-audit-2026-07.md);
 - [`docs/research/servo-upstream-source-provenance-2026-07.md`](research/servo-upstream-source-provenance-2026-07.md);

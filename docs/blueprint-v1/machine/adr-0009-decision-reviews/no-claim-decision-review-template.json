@@ -20,6 +20,7 @@
     "docs/blueprint-v1/17-architecture-decisions.md",
     "docs/blueprint-v1/20-definition-of-done.md",
     "docs/research/servo-source-strategy-inventory-2026-07.md",
+    "docs/research/servo-clean-generated-output-reproduction-2026-07.md",
     "docs/research/servo-component-boundary-analysis-2026-07.md",
     "docs/research/servo-local-compatibility-corpus-2026-07.md",
     "docs/research/servo-performance-baseline-2026-07.md",

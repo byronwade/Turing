@@ -238,7 +238,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 - build scripts are safe or unsafe;
 - proc macros expand deterministically or safely;
 - build scripts avoid network access at runtime;
-- generated outputs are deterministic from a clean target;
+- generated outputs are deterministic from a feature-correct full clean target;
 - source-to-output license/provenance is complete;
 - any package, proc macro, native tool, or generated output is approved for Turing;
 - compatibility, performance, accessibility, daily-driver, production, or Chrome-class readiness.
@@ -247,7 +247,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 
 `PB-002` remains blocked.
 
-`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, generated-output provenance, clean-target regeneration, independent replay, and owner approval remain missing.
+`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, generated-output provenance, feature-correct full clean-target regeneration beyond the package-scoped dummy-media probe, independent replay, and owner approval remain missing.
 
 ## Affected Records
 
@@ -262,6 +262,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 - [`docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md`](../project-buildout/15-adr-0009-evidence-traceability-matrix.md)
 - [`docs/blueprint-v1/machine/pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json)
 - [`docs/research/servo-build-script-generated-output-audit-2026-07.md`](servo-build-script-generated-output-audit-2026-07.md)
+- [`docs/research/servo-clean-generated-output-reproduction-2026-07.md`](servo-clean-generated-output-reproduction-2026-07.md)
 - [`docs/research/servo-generated-native-unsafe-classification-2026-07.md`](servo-generated-native-unsafe-classification-2026-07.md)
 
 ## Next Experiments

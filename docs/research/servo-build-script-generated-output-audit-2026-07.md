@@ -11,7 +11,7 @@ What build-script side effects and generated outputs does the clean external Ser
 
 This audit does not import Servo source, generated Rust, Cargo metadata, build logs, native binaries, or timing artifacts into Turing. It does not approve Servo-derived release code, a generated-code pipeline, a build script, a proc macro, a native package, or an `ADR-0009` option.
 
-A follow-up [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md) expands this first-party build-script review into a registry, git, path, and proc-macro side-effect queue. A later [Servo Source and Archive Provenance Audit - July 2026](servo-source-archive-provenance-audit-2026-07.md) records local source archive, tracked-file manifest, Cargo registry cache, Stylo git-source, and native/bootstrap artifact identity evidence for the same checkout.
+A follow-up [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md) records a partial package-scoped clean-target attempt and failure analysis for `ADR9-EV-007`. The [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md) expands this first-party build-script review into a registry, git, path, and proc-macro side-effect queue. A later [Servo Source and Archive Provenance Audit - July 2026](servo-source-archive-provenance-audit-2026-07.md) records local source archive, tracked-file manifest, Cargo registry cache, Stylo git-source, and native/bootstrap artifact identity evidence for the same checkout.
 
 ## Inputs
 
@@ -216,7 +216,7 @@ This audit does not prove:
 
 Before `ADR-0009` can advance, produce:
 
-1. a clean-target regeneration run with before/after source and output hashes;
+1. a feature-correct full clean-target regeneration run beyond the package-scoped dummy-media probe, with before/after source and output hashes;
 2. independent-host generated-output comparison for the same commit, features, target, and profile;
 3. explicit generator manifests for Web IDL, CSS properties, WebGPU, DevTools build IDs, C API headers, bindgen outputs, proc macros, shaders, native build glue, and SDKs;
 4. owner-accepted build-script/proc-macro side-effect policy and dynamic tracing, starting from the [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md), covering process execution, filesystem writes, network behavior, environment variables, compiler/linker invocation, platform SDK discovery, native-copy behavior, and native artifacts;
@@ -231,6 +231,7 @@ This audit adds evidence for `PB-002` but does not change its blocked status. It
 
 - [ADR-0009 Source Strategy Decision Packet](../project-buildout/14-adr-0009-source-strategy-decision-packet.md);
 - [Servo Generated, Native, Unsafe, and FFI Classification - July 2026](servo-generated-native-unsafe-classification-2026-07.md);
+- [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md);
 - [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md);
 - [Servo Dependency and Provenance Inventory - July 2026](servo-dependency-provenance-inventory-2026-07.md);
 - [Servo Supply-Chain Policy Scan - July 2026](servo-supply-chain-policy-scan-2026-07.md);

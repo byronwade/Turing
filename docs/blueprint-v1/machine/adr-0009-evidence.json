@@ -147,15 +147,16 @@
         "quality"
       ],
       "existing_evidence": [
-        "docs/research/servo-build-script-generated-output-audit-2026-07.md"
+        "docs/research/servo-build-script-generated-output-audit-2026-07.md",
+        "docs/research/servo-clean-generated-output-reproduction-2026-07.md"
       ],
       "missing_outputs": [
-        "clean-target regeneration diff",
+        "feature-correct full clean-target regeneration diff beyond the package-scoped dummy-media probe",
         "independent-host comparison",
         "generator manifest",
         "source-to-output license and provenance mapping"
       ],
-      "next_action": "Regenerate selected generated outputs from a clean target and compare hashes plus provenance on an independent host."
+      "next_action": "Regenerate selected generated outputs from a feature-correct full clean target beyond the package-scoped dummy-media probe, then compare hashes plus provenance on an independent host."
     },
     {
       "id": "ADR9-EV-008",
