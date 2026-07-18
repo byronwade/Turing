@@ -113,6 +113,8 @@ The contract exists so a future runner cannot treat raw artifacts as statistical
 
 Future public claim bundles must reference the statistics-analysis plan through `registry_references.statistics_analysis_plan_id`, and [`tools/validate_benchmark_claim_bundles.py`](../../tools/validate_benchmark_claim_bundles.py) cross-checks that ID against the checked no-claim plan. A claim bundle that omits the plan or cites stale analysis evidence fails before owner review.
 
+Future benchmark readiness reviews must also fill `review_scope.statistics_analysis_plan` with the owner-reviewed plan they accept. The checked no-claim readiness-review template keeps that field null, so it cannot be cited as statistics review, denominator review, claim-bundle review, benchmark-ready status, Chrome-class evidence, or public performance evidence.
+
 ## Risks
 
 Primary risks are semantic divergence, confused-deputy behavior, stale identity, unbounded work, memory retention, cross-profile or cross-origin leakage, native or platform compromise, hidden performance cliffs, inaccessible failure UI, unreliable recovery, and documentation becoming more certain than the evidence.

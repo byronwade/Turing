@@ -8,6 +8,8 @@ Follow-up:
 
 The benchmark claim-bundle schema and no-claim template now require `registry_references.statistics_analysis_plan_id`, and `tools/validate_benchmark_claim_bundles.py` cross-checks that value against the checked no-claim statistics-analysis plan. Future public claim bundles cannot pass validation while bypassing or drifting from the statistics-analysis contract. This remains no-claim evidence only.
 
+The benchmark readiness-review schema and no-claim template now also carry `review_scope.statistics_analysis_plan`, kept null in the template and covered by `tools/validate_benchmark_readiness_review.py`. A future owner-reviewed benchmark readiness record must name the statistics-analysis plan it accepts before statistics, denominator, claim-bundle, benchmark-ready, Chrome-class, or public-performance review can pass.
+
 Question:
 
 Can `PB13-EV-006` have a checked no-claim statistics-analysis contract before runner-generated raw samples, confidence intervals, owner-reviewed benchmark readiness, benchmark results, competitor results, or public performance claims exist?

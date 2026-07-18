@@ -51,7 +51,7 @@ What exists:
 - checked browser launch-runner contract and no-browser self-test;
 - checked 30-tab scenario contract;
 - checked claim-bundle template requiring raw samples, the referenced statistics-analysis plan, failure denominators, and owner review;
-- checked benchmark readiness-review template that keeps raw result review, statistics review, denominator review, and claim-bundle review false.
+- checked benchmark readiness-review template that keeps raw result review, statistics-analysis plan scope, statistics review, denominator review, and claim-bundle review false.
 
 What was missing before this change:
 
@@ -72,6 +72,8 @@ The checked no-claim plan requires future real analysis records to carry:
 The contract explicitly covers latency, memory, energy, 30-tab behavior, and compatibility/failure metric families. Each family must retain units, summaries, uncertainty, effect size or practical impact where relevant, and failure denominator treatment.
 
 The checked claim-bundle template consumes this contract through `registry_references.statistics_analysis_plan_id`. `tools/validate_benchmark_claim_bundles.py` cross-checks that field against the checked no-claim analysis plan, and the template also lists `tools/validate_benchmark_statistics_analysis.py` in its validation commands. A future claim bundle that omits or drifts from the analysis plan is invalid before public text is reviewed.
+
+The checked benchmark readiness-review template also carries `review_scope.statistics_analysis_plan`. It is null in the no-claim template, and a future real readiness review must replace it with owner-reviewed analysis-plan evidence before statistics, denominator, claim-bundle, benchmark-ready, Chrome-class, or public-performance review can pass.
 
 ## Claim Boundary
 
