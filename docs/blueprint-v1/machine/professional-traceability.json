@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-17",
   "requirements": [
     {
       "id": "REQ-A11Y-001",
@@ -455,14 +455,25 @@
       "owner_scope": "performance",
       "milestone": "M1",
       "specification_status": "accepted",
-      "implementation_status": "not_started",
-      "verification_status": "none",
-      "design": [],
-      "source": [],
-      "tests": [],
+      "implementation_status": "m0_reference_implemented",
+      "verification_status": "unit_tests_pending_fixed_hardware_measurement",
+      "design": [
+        "schemas/ipc/control-plane.json",
+        "docs/blueprint-v1/09-performance-memory.md"
+      ],
+      "source": [
+        "crates/turing-ipc/src/queue.rs",
+        "crates/turing-ipc/src/generated.rs"
+      ],
+      "tests": [
+        "crates/turing-ipc/src/queue.rs",
+        "apps/turing-shell/src/main.rs"
+      ],
       "reviews": [],
-      "evidence": [],
-      "note": "Populate without hiding absence as implementation begins."
+      "evidence": [
+        "docs/research/wp-002-kernel-ipc-2026-07.md"
+      ],
+      "note": "Generated queue count and byte budgets enforce backpressure in the M0 reference model; production transport and workload budgets remain unmeasured."
     },
     {
       "id": "REQ-PROD-001",
@@ -567,14 +578,30 @@
       "owner_scope": "security",
       "milestone": "M1",
       "specification_status": "accepted",
-      "implementation_status": "not_started",
-      "verification_status": "none",
-      "design": [],
-      "source": [],
-      "tests": [],
+      "implementation_status": "m0_reference_implemented",
+      "verification_status": "unit_and_integration_tests_pending_independent_review",
+      "design": [
+        "schemas/ipc/control-plane.json",
+        "docs/blueprint-v1/04-system-architecture.md",
+        "docs/blueprint-v1/08-security-and-sandbox.md"
+      ],
+      "source": [
+        "crates/turing-types/src/lib.rs",
+        "crates/turing-ipc/src",
+        "crates/turing-kernel/src/lib.rs",
+        "tools/generate_ipc.py"
+      ],
+      "tests": [
+        "crates/turing-ipc/src/envelope.rs",
+        "crates/turing-ipc/src/sequence.rs",
+        "crates/turing-kernel/src/lib.rs",
+        "apps/turing-shell/src/main.rs"
+      ],
       "reviews": [],
-      "evidence": [],
-      "note": "Populate without hiding absence as implementation begins."
+      "evidence": [
+        "docs/research/wp-002-kernel-ipc-2026-07.md"
+      ],
+      "note": "M0 policy oracle and generated schema exist; operating-system transport, compromised-process harness, and sandbox integration remain unverified."
     },
     {
       "id": "REQ-SEC-004",

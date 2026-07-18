@@ -1,6 +1,6 @@
 [package]
 name = "turing-kernel"
-description = "Capability and process-role policy skeleton for the Turing browser kernel"
+description = "Capability, process identity, and IPC authorization model for Turing"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,6 +11,7 @@ authors.workspace = true
 publish = false
 
 [dependencies]
+turing-ipc.workspace = true
 turing-types.workspace = true
 
 [lints]

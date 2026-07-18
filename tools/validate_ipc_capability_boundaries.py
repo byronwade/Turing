@@ -345,14 +345,16 @@ def validate_inventory(path: Path) -> None:
             + ", ".join(sorted(boundary_roles))
         )
 
-    ipc_source = (ROOT / "crates" / "turing-ipc" / "src" / "lib.rs").read_text(
-        encoding="utf-8"
+    ipc_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((ROOT / "crates" / "turing-ipc" / "src").glob("*.rs"))
     )
     for phrase in [
-        "MAX_CONTROL_MESSAGE_BYTES",
-        "rejects_oversized_control_messages",
-        "preserves_typed_routing_metadata",
-        "canonical IPC generator",
+        "MAX_REGISTERED_PROCESSES",
+        "rejects_message_larger_than_generated_kind_limit",
+        "enforces_generated_document_scope",
+        "applies_byte_backpressure_without_dropping_item",
+        "tools/generate_ipc.py",
     ]:
         if phrase not in ipc_source:
             fail(f"turing-ipc source is missing expected current-evidence phrase: {phrase}")
@@ -360,9 +362,10 @@ def validate_inventory(path: Path) -> None:
         encoding="utf-8"
     )
     for phrase in [
-        "renderers_have_no_ambient_network_or_file_access",
-        "network_process_has_network_but_not_profile_storage",
-        "agent_has_no_ambient_browser_authority",
+        "renderer_cannot_launch_processes",
+        "generated_route_and_capability_are_enforced",
+        "attenuated_process_cannot_use_removed_capability",
+        "renderer_cannot_register_a_channel",
     ]:
         if phrase not in kernel_source:
             fail(f"turing-kernel source is missing expected current-evidence phrase: {phrase}")

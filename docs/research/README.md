@@ -2,9 +2,9 @@
 
 Status: active evidence index
 Owner: research and architecture
-Update rule: every durable study is indexed here and mapped to its decision owner
+Update rule: every durable study is indexed here, mapped to its decision owner, and logged in the research log
 
-Research artifacts inform, challenge, or validate the Blueprint. They do not replace requirements, risks, ADRs, benchmark manifests, work packages, or implementation evidence.
+This directory contains dated research and implementation-evidence artifacts that inform, challenge, or validate the Turing Blueprint. A study is not a substitute for a requirement, risk, ADR, benchmark manifest, or implementation plan. Recommendations remain hypotheses until the decision owner accepts them through the normal process.
 
 ## Current studies
 
@@ -26,6 +26,7 @@ Research artifacts inform, challenge, or validate the Blueprint. They do not rep
 | [Incident Patch Rehearsal Inventory — July 2026](incident-patch-rehearsal-inventory-2026-07.md) | Can private-intake, emergency patch, incident-class, and authority-boundary terms become checked planning evidence? | `PB-018` partial no-claim inventory, incident patch rehearsal template, and readiness-review template; no executable rehearsal beyond the template, owner-reviewed incident/patch readiness, incident-response readiness, emergency patch capacity, disclosure authority, signing authority, stable promotion, supported security versions, or production-safe browsing claim |
 | [Backup Ownership Gap Inventory — July 2026](backup-ownership-gap-inventory-2026-07.md) | Can backup ownership gaps become checked blocked evidence without naming placeholders or granting authority? | `PB-019` checked blocked inventory, backup-owner qualification template, and readiness-review template; no named qualified backups beyond the template, owner-reviewed backup ownership readiness, two-person control, release authority, signing authority, security-disclosure authority, legal approval, incident closure, production authority, or owner-coverage claim |
 | [IPC Capability Boundary Inventory — July 2026](ipc-capability-boundary-inventory-2026-07.md) | Can current M0 IPC and process-capability evidence become checked boundary and readiness-review evidence without approving schema generation or production IPC? | `PB-011` partial no-claim inventory, schema-source template, and IPC readiness-review template; no schema generator, wire encoding decision, owner-reviewed IPC readiness, renderer-security claim, agent-security claim, process-isolation readiness, site-isolation, timeout/cancellation implementation, production IPC, or implementation claim |
+| [WP-002 kernel identity, capability, and bounded IPC reference — July 2026](wp-002-kernel-ipc-2026-07.md) | Can one generated schema drive deny-by-default roles, capabilities, routes, limits, and a deterministic Rust policy oracle? | Contained M0 reference implemented; no transport, sandbox, site-isolation, or production IPC claim |
 | [Sandbox Probe Inventory — July 2026](sandbox-probe-inventory-2026-07.md) | Can sandbox-probe targets, surfaces, platform evidence, blockers, probe-package handoff fields, and readiness-review handoff fields become checked planning evidence without approving sandbox readiness? | `PB-012` partial no-claim inventory, probe-package template, and sandbox readiness-review template; no packaged expected-deny probes, effective platform policy, owner-reviewed sandbox readiness, sandbox readiness, renderer security, site isolation, hostile-browsing safety, SEC-GATE-1, SEC-GATE-6, production-safety, or implementation claim |
 | [Pre-build readiness audit — July 2026](pre-build-readiness-gap-audit-2026-07.md) | Which controls remain before broad implementation? | Current `PB-001` through `PB-020` audit; contained M0 only |
 | [Implementation Kickoff Review Inventory — July 2026](implementation-kickoff-review-inventory-2026-07.md) | Can `PB-020` become a checked stop/resume inventory without promoting broad implementation readiness? | `PB-020` partial no-claim inventory across unresolved source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, owner-review, and release-authority gates; no task approval or readiness promotion |
@@ -70,20 +71,74 @@ Research artifacts inform, challenge, or validate the Blueprint. They do not rep
 
 ## Research operating rules
 
-Every study records:
+Every study must:
 
-1. question, date, owner, scope, and confidence;
-2. primary sources and relevant versions;
-3. facts, inferences, proposals, and decisions separately;
-4. contradictory evidence and unsupported conclusions;
-5. falsifiable experiments;
-6. security, privacy, accessibility, compatibility, performance, operational, and legal effects;
-7. relevant Blueprint chapters, ADRs, requirements, and work packages;
-8. raw evidence and a revisit trigger.
+1. state its question, date, owner, scope, and confidence;
+2. prefer standards, official project documentation, source repositories, test suites, and primary research;
+3. separate observed facts, inferences, proposals, implemented references, and accepted decisions;
+4. identify versions or retrieval dates for changing systems;
+5. disclose unsupported conclusions, missing data, and conflicting evidence;
+6. define experiments that could falsify the recommendation;
+7. map findings to relevant Blueprint chapters and research questions;
+8. update the [research log](../research-log.md);
+9. update requirements, risks, ADRs, work packages, or machine registries only when their meaning changes.
 
 ## Detailed research libraries
 
-The [documentation index](../README.md#detailed-engineering-books) links all twenty-seven engineering and product books. They remain subordinate to the owning Blueprint chapters.
+- [Browser engine engineering](../engine/README.md)
+- [JavaScript runtime engineering](../javascript/README.md)
+- [Browser security engineering](../security-engine/README.md)
+- [Developer experience and DevTools](../developer-experience/README.md)
+- [API design](../api-design/README.md)
+- [Performance engineering](../performance/README.md)
+- [AI and agent engineering](../ai/README.md)
+- [Competitive browser and engine studies](../competitive/README.md)
+- [Networking engineering](../networking/README.md)
+- [Storage and recovery engineering](../storage/README.md)
+- [Media, documents, and printing engineering](../media-documents/README.md)
+- [Native platform and browser chrome engineering](../platform/README.md)
+- [Accessibility engineering](../accessibility/README.md)
+- [Build, release, update, and incident operations](../release-operations/README.md)
+- [Extensions, enterprise policy, accounts, and sync](../extensions-enterprise/README.md)
+- [Open web platform governance](../web-platform/README.md)
+- [Fixed-hardware benchmark laboratory](../benchmark-lab/README.md)
+- [Quality assurance, conformance, and verification](../quality-assurance/README.md)
+- [Everyday product experience](../product-experience/README.md)
+- [Native UI runtime and browser chrome](../ui-runtime/README.md)
+- [Agent execution and autonomous engineering](../agent-execution/README.md)
+- [Production readiness and stable release](../production-readiness/README.md)
+
+These libraries are detailed research and design baselines. They remain subordinate to the owning Blueprint chapters and do not silently change accepted status.
+
+## Program links
+
+- [Research and measurement program](../blueprint-v1/22-research-program.md)
+- [Primary-source bibliography](../blueprint-v1/18-source-bibliography.md)
+- [Performance and memory contract](../blueprint-v1/09-performance-memory.md)
+- [Testing and compatibility](../blueprint-v1/12-testing-compatibility.md)
+- [Documentation policy](../documentation-policy.md)
+
+## Next study and implementation-evidence queue
+
+The next evidence should cover:
+
+- authenticated operating-system IPC transport and wire encoding;
+- shared-memory and handle-transfer leases;
+- compromised-process malformed-message harnesses;
+- platform sandbox and process-launch evidence;
+- fixed-hardware process, compatibility, latency, memory, and energy baselines;
+- native UI reference-shell bake-off and page-surface composition;
+- accessibility-tree architecture and assistive-technology latency;
+- DOM, style, fragment, display-list, bytecode, object, and GC representation experiments;
+- adaptive versus fixed parallelism;
+- startup and process-launch cost by platform;
+- contributor throughput, security response, and release sustainability.
+
+## Market, agent, and production programs
+
+The browser-market program uses `RQ-49` through `RQ-54`. Native UI and pre-build research uses `RQ-55` through `RQ-58`. Agent execution and production readiness uses `RQ-59` through `RQ-66`.
+
+The market opportunity registry remains research-only, and the production release-gate registry remains `not_ready_for_production` until deliberately promoted with evidence.
 
 ## Current implementation-research lanes
 
@@ -93,7 +148,7 @@ Use these lanes after the [Build Readiness Operating Board](../project-buildout/
 |---|---|---|---|
 | Source strategy and `ADR-0009` | [ADR-0009 evidence matrix](../project-buildout/15-adr-0009-evidence-traceability-matrix.md), [source packet](../project-buildout/14-adr-0009-source-strategy-decision-packet.md), [decision draft](../project-buildout/16-adr-0009-decision-draft.md), and checked no-claim [decision-review template](../blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json) | Owner-selected source baseline, accepted provenance/equivalence policy, legal/advisory/SBOM decisions, component boundaries, JavaScript-runtime decision, local compatibility HTTPS/browser execution beyond the checked harness plan plus WPT/Test262 denominator, performance baseline, security implications, maintenance model, public-claim diffs, and owner-reviewed decision review beyond the checked no-claim template | Servo adoption, dependency approval, component approval, compatibility, security, performance, memory, release, source import, release-code authorization, `PB-002` readiness promotion, or support readiness |
 | Fresh-host build confidence | [M0 build foundation](m0-build-foundation-2026-07.md), [Fresh Host Reproduction Inventory](fresh-host-reproduction-inventory-2026-07.md), [pre-build audit](pre-build-readiness-gap-audit-2026-07.md), [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json), checked [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), checked no-claim [fresh-host readiness-review template](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), and `TASK-000002` in the [task queue](../project-buildout/17-build-readiness-task-queue.md) | Independent fresh-host or owner-approved clean-VM equivalent bootstrap, doctor, check, xtask, cache, target-directory, toolchain, source-cleanliness, failure-classification, retained-log, and owner-reviewed fresh-host readiness evidence beyond the checked inventory, run-record template, and readiness-review template | Broad M1 readiness, independent reproducibility, owner-reviewed fresh-host readiness, `PB-009` readiness, preview, beta, stable, production, implementation, Chrome-class, or release confidence from same-host reruns or no-claim templates |
-| Kernel, process authority, and IPC | [IPC Capability Boundary Inventory](ipc-capability-boundary-inventory-2026-07.md), [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), `TASK-000003` in the [task queue](../project-buildout/17-build-readiness-task-queue.md), [system architecture](../blueprint-v1/04-system-architecture.md), and [security/sandbox](../blueprint-v1/08-security-and-sandbox.md) | Canonical process-capability and IPC schema experiments beyond the checked inventory and owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template, with malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation tests | Renderer security, agent security, process-isolation readiness, site-isolation, schema-generator approval, wire-encoding approval, timeout/cancellation implementation, production IPC stability, or owner-reviewed IPC readiness from the checked no-claim template |
+| Kernel, process authority, and IPC | [IPC Capability Boundary Inventory](ipc-capability-boundary-inventory-2026-07.md), [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md), [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json), [`control-plane.json`](../../schemas/ipc/control-plane.json), [`generate_ipc.py`](../../tools/generate_ipc.py), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), `TASK-000003` in the [task queue](../project-buildout/17-build-readiness-task-queue.md), [system architecture](../blueprint-v1/04-system-architecture.md), and [security/sandbox](../blueprint-v1/08-security-and-sandbox.md) | Implemented schema generator evidence beyond the checked no-claim schema-source template, wire encoding, authenticated operating-system IPC transport, shared-memory and handle-transfer leases, timeout/cancellation behavior, malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, compromised-client, and crash/reconnect tests, plus owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template | Renderer security, agent security, process-isolation readiness, site-isolation, schema-generator approval, wire-encoding approval, timeout/cancellation implementation, production IPC stability, or owner-reviewed IPC readiness from the checked no-claim template or contained M0 reference |
 | Sandbox probes | [Sandbox Probe Inventory](sandbox-probe-inventory-2026-07.md), [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json), checked no-claim [probe-package template](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), checked no-claim [sandbox readiness-review template](../security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), `TASK-000004` in the [task queue](../project-buildout/17-build-readiness-task-queue.md), and the [security-engine book](../security-engine/README.md) | Packaged expected-deny probes beyond the checked no-claim probe-package template and owner-reviewed sandbox readiness review beyond the checked no-claim sandbox readiness-review template for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles across file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC access, with effective platform-policy capture and host-safe fixtures | Sandbox readiness, renderer security, site-isolation safety, hostile-browsing safety, SEC-GATE-1, SEC-GATE-6, production safety, owner-reviewed sandbox readiness from the checked no-claim template, or any weakened security policy |
 | Benchmark and extreme-performance lab | [performance benchmark readiness packet](performance-benchmark-readiness-packet-2026-07.md), [Benchmark corpus expansion](benchmark-corpus-expansion-2026-07.md), [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md), benchmark manifests, expanded generated corpus seed, network profile, runner-managed server lifecycle self-test, browser-pin capture, diagnostics, no-claim browser launch-runner contract, checked no-browser browser launch-runner self-test, no-claim 30-tab scenarios, no-claim trace/artifact package, checked no-claim claim-bundle template, checked no-claim [benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json), and smoke-runner evidence | Owner-approved hardware tiers, clean-image/update controls, reviewed representative corpus, browser-run server evidence, implemented browser launch runner, runner-generated trace package, runner-generated 30-tab results, complete local competitor pins, equal-workload runs, raw results, statistics, reviewed claim bundles, and owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template | Faster, lower-memory, lower-energy, Chrome-class, benchmark-ready, competitor result, or public performance claims |
 | Native shell and page-surface composition | [Native UI framework evaluation](native-ui-framework-evaluation-2026-07.md), [Toolkit-Neutral UI Adapter Contract Inventory](toolkit-neutral-ui-adapter-contract-inventory-2026-07.md), [Native UI Framework Bake-Off Inventory](native-ui-framework-bakeoff-inventory-2026-07.md), [Native UI component fixture inventory](native-ui-component-fixture-inventory-2026-07.md), [Page Surface Composition Inventory](page-surface-composition-inventory-2026-07.md), [Window Input Accessibility Spike Inventory](window-input-accessibility-spike-inventory-2026-07.md), checked no-claim [native UI readiness-review template](../ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json), [UI runtime book](../ui-runtime/README.md), and `TASK-000006` in the [task queue](../project-buildout/17-build-readiness-task-queue.md) | Accepted `ADR-0013`, complete toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contracts, native adapter prototype evidence, no-toolkit-owned-authority negative tests, equivalent Slint, Vizia, and Floem or GPUI reference-shell prototypes with `ADR-0014`, page-surface, typed page-surface handles, brokered surface handles, document and device generations, `UI-GATE-7`, `ADR-0016`, resize, scale, damage, input, IME, accessibility, occlusion, capture, software fallback, page-tree, keyboard, clipboard, drag-drop, localization, zoom, high contrast, forced colors, reduced motion, screen-reader, manual assistive-technology, crash, renderer hang, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, rendered design-token, adapter-specific component-fixture, license, dependency, provenance, replacement, package/runtime-exclusion evidence, and owner-reviewed native UI readiness review beyond the checked no-claim template | `ADR-0013`, native adapter prototype, UI toolkit selection, `ADR-0014`, owner-reviewed native UI readiness, trusted-chrome readiness, accessibility readiness, screen-reader coverage, page-tree proof, page-surface approval, compositor ownership decision, `UI-GATE-7`, `ADR-0016`, or release-path UI approval |
@@ -129,8 +184,8 @@ Use this crosswalk when adding or continuing research. It keeps `RQ-*` work tied
 
 - Build blockers: `PB-011` and `TASK-000003`.
 - Primary research questions: `RQ-02`, `RQ-13`, `RQ-20`, `RQ-22`, and `RQ-36`.
-- Current evidence starts from the [IPC Capability Boundary Inventory](ipc-capability-boundary-inventory-2026-07.md), [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json), [`ipc-capability-boundary.schema.json`](../blueprint-v1/machine/ipc-capability-boundary.schema.json), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), [`ipc-schema-source.schema.json`](../blueprint-v1/machine/ipc-schema-source.schema.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), [`ipc-readiness-review.schema.json`](../blueprint-v1/machine/ipc-readiness-review.schema.json), [`validate_ipc_capability_boundaries.py`](../../tools/validate_ipc_capability_boundaries.py), [`validate_ipc_readiness_review.py`](../../tools/validate_ipc_readiness_review.py), `crates/turing-ipc`, `crates/turing-kernel`, `crates/turing-types`, process-capability records, the system architecture Blueprint, and the security/sandbox Blueprint.
-- Next proof is implemented schema generator evidence beyond the checked no-claim schema-source template, a reviewed wire encoding decision, bounded queues/backpressure, connection authentication, stale-epoch rejection, timeout/cancellation behavior, negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases, and owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template.
+- Current evidence starts from the [IPC Capability Boundary Inventory](ipc-capability-boundary-inventory-2026-07.md), [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md), [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json), [`ipc-capability-boundary.schema.json`](../blueprint-v1/machine/ipc-capability-boundary.schema.json), [`control-plane.json`](../../schemas/ipc/control-plane.json), [`generate_ipc.py`](../../tools/generate_ipc.py), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), [`ipc-schema-source.schema.json`](../blueprint-v1/machine/ipc-schema-source.schema.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), [`ipc-readiness-review.schema.json`](../blueprint-v1/machine/ipc-readiness-review.schema.json), [`validate_ipc_capability_boundaries.py`](../../tools/validate_ipc_capability_boundaries.py), [`validate_ipc_readiness_review.py`](../../tools/validate_ipc_readiness_review.py), `crates/turing-ipc`, `crates/turing-kernel`, `crates/turing-types`, process-capability records, the system architecture Blueprint, and the security/sandbox Blueprint.
+- Next proof is implemented schema generator evidence beyond the checked no-claim schema-source template, a reviewed wire encoding decision, authenticated operating-system IPC transport, shared-memory and handle-transfer leases, connection authentication, stale-epoch rejection, timeout/cancellation behavior, negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, compromised-client, and crash/reconnect cases, and owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template.
 - Claim boundary: no owner-reviewed IPC readiness, `PB-011` readiness promotion, renderer-security, agent-security, process-isolation, site-isolation, schema-generator approval, wire-encoding approval, timeout/cancellation implementation, production IPC, or implementation claim from the checked no-claim IPC readiness-review template or tested M0 boundary.
 
 ### Sandbox Probes

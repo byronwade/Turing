@@ -249,3 +249,10 @@ Each milestone report includes:
 Candidate adapters run one toolkit-neutral suite covering state sequences, commands, components, keyboard/focus, accessibility, IME, clipboard, drag/drop, localization, themes, page surfaces, crash/device loss, recovery, binary, memory, latency, frame pacing, and energy. Results include exact framework source, backend, renderer, features, license, platform, and raw artifacts.
 
 The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) is the current no-claim `PB-015` planning record for that adapter workflow suite. It does not provide executable adapter results, manual assistive-technology coverage, screen-reader evidence, page-tree composition proof, IME correctness, renderer-hang/crash/GPU-loss results, or accessibility readiness.
+
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## Generated control-plane verification
+
+CI now checks that the canonical IPC schema is valid and that committed Rust and process-capability documentation regenerate byte-for-byte. Unit and integration tests cover identity epochs, message limits, document scope, sequence gaps and duplicates, queue backpressure, immutable admission-charge accounting, launch denial, capability escalation, stale identities, denied routes, attenuated capabilities, broker-only channel registration, unknown and duplicate channels, endpoint binding, and shell-level authorization.
+
+The next verification stage requires a fuzzable wire codec, malformed and unauthorized traffic corpus, peer-authentication tests, platform handle-transfer tests, compromised-process harness, transport crash/reconnect tests, and independent security review. Passing the M0 Rust tests does not imply sandbox or production IPC compatibility.

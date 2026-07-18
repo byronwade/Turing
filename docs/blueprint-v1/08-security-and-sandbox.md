@@ -232,3 +232,10 @@ The selected UI toolkit is part of the trusted computing base and receives depen
 ## AI-assisted implementation threat boundary
 
 Repository files, issues, tests, logs, dependency documentation, terminal output, and network content are untrusted inputs to coding agents. Agent execution uses task-scoped files, network, credentials, budgets, provenance, independent review, and human escalation. Production signing, disclosure, and release authority remain outside agent capabilities.
+
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## M0 control-plane security evidence
+
+The `WP-002` reference establishes deny-by-default generated role/capability policy, restart-safe process epochs, capability attenuation without escalation, explicit message routes, kind-specific size and document-epoch checks, process-broker-only channel registration, unknown-channel rejection, endpoint binding, exact monotonic sequence validation, bounded process/channel tables, and bounded queues that return rejected work instead of silently dropping it. Queue byte accounting uses the immutable admission charge rather than recomputing a potentially mutable payload value.
+
+These properties reduce ambiguity in later platform launchers and transports, but do not establish an effective operating-system sandbox or hostile-wire security. Remaining security evidence includes peer credential binding, canonical fuzzed decoding, safe handle/shared-memory transfer, compromised-process traffic generation, crash/reconnect state machines, platform sandbox probes, and independent review. The detailed evidence and limitations are recorded in the [WP-002 report](../research/wp-002-kernel-ipc-2026-07.md).

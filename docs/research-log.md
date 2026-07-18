@@ -4368,6 +4368,48 @@ Added the Native UI Runtime book, Slint/Vizia/Floem/GPUI evaluation, React desig
 
 Added task-scoped agent authority, run and evidence provenance, independent-verification rules, stable-scope and platform contracts, release channels, SLO catalog, production gates, update trust roles, service dependencies, vulnerability SLA framework, secure-development crosswalk, signing separation, and human release authority. Turing remains not ready for production or stable release.
 
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## 2026-07-17 — WP-002 kernel identity, capability, and bounded IPC reference
+
+Question:
+
+How can Turing turn its process-role and IPC architecture into an executable policy reference without prematurely selecting an operating-system transport or serialization dependency?
+
+Method and environment:
+
+Added a dependency-free Rust implementation and a standard-library-only deterministic generator on the pinned M0 workspace. The schema, generated Rust, generated process-capability documentation, unit tests, shell integration, workspace validators, and CI are reviewed together.
+
+Decision:
+
+- make `schemas/ipc/control-plane.json` the M0 source for role, capability, launch, message, route, scope, size, and queue policy;
+- generate committed Rust and process-capability documentation and reject drift;
+- use restart-safe process ID/epoch pairs;
+- enforce capability attenuation, deny-by-default routes, exact sequence state, channel endpoint binding, and bounded queues;
+- keep `WP-002`, `REQ-SEC-003`, and `REQ-PERF-004` at M0 reference status rather than claiming transport, sandbox, or production completion.
+
+Security/privacy impact:
+
+The reference rejects stale identity, capability escalation, unauthorized routes, missing capabilities, endpoint reuse, sequence errors, and resource overcommit. It introduces no external runtime or native dependency and no unsafe code. It does not yet authenticate real peers or decode hostile wire bytes.
+
+Performance/memory/energy impact:
+
+Count and byte budgets now have executable backpressure behavior. Values remain unvalidated M0 defaults pending fixed-hardware transport workloads.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- `WP-002` is `m0_reference_in_progress`;
+- `REQ-SEC-003` and `REQ-PERF-004` gain traceable M0 implementation evidence but remain unverified;
+- source, generated-code ledger, workspace map, pre-build readiness, CI, root/docs/research indexes, architecture/security/performance/testing/roadmap/backlog/definition-of-done prose, and the dated report are synchronized.
+
+Next evidence required:
+
+Canonical fuzzable wire encoding, authenticated per-platform transports, handle/shared-memory leases, cancellation and close state machines, compromised-process negative traffic, sandbox integration, fixed-hardware measurements, and independent security review.
+
+<!-- WP-002-AUDIT-HARDENING-2026-07 -->
+## 2026-07-17 — WP-002 channel and queue audit hardening
+
+A final non-approving audit found that the first envelope could implicitly claim an unused channel ID and that generic queue accounting recomputed `EncodedSize` during dequeue. The reference now requires process-broker registration before a channel can carry messages, rejects unknown and duplicate channel use, and stores the byte charge captured at admission. Negative tests and all affected architecture, security, performance, testing, task, and evidence records were synchronized. The change remains an M0 reference and does not add an operating-system transport or production-security claim.
+
 ## 2026-07-17 — Servo component boundary and JavaScript conflict evidence
 
 Question:

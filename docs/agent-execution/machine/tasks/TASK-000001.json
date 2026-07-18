@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000001",
+  "status": "review_pending",
+  "owner": "agent:gpt-5.6-pro",
+  "independent_reviewer": "human-owner-or-separately-controlled-reviewer",
+  "requirements": [
+    "REQ-SEC-003",
+    "REQ-PERF-004"
+  ],
+  "risks": [],
+  "adrs": [],
+  "allowed_paths": [
+    "schemas/ipc/",
+    "crates/turing-types/",
+    "crates/turing-ipc/",
+    "crates/turing-kernel/",
+    "apps/turing-shell/",
+    "tools/generate_ipc.py",
+    "tools/validate_build_foundation.py",
+    "tools/xtask/",
+    "security/generated-code.json",
+    "docs/",
+    ".github/CODEOWNERS",
+    ".github/workflows/repository-validation.yml",
+    "Cargo.lock"
+  ],
+  "prohibited_paths": [
+    "release signing keys",
+    "production credentials",
+    "private vulnerability material",
+    "stable release metadata"
+  ],
+  "preconditions": [
+    "WP-001 build foundation is present on main",
+    "contained M0 implementation is authorized",
+    "no external runtime dependency is required"
+  ],
+  "acceptance_criteria": [
+    "one canonical schema generates roles capabilities messages routes limits and process capability documentation",
+    "restart-safe identities reject stale process epochs",
+    "capabilities can be attenuated but not escalated",
+    "message routes and sender capabilities are deny-by-default",
+    "messages queues processes and channels have explicit bounds",
+    "sequence failures do not advance channel state",
+    "generation drift formatting lint tests shell integration and documentation validation pass",
+    "limitations remain explicit and no production security claim is made",
+    "only a process-broker principal can register a channel before messages use it",
+    "queue byte accounting uses the immutable charge captured at admission"
+  ],
+  "negative_tests": [
+    "zero identity",
+    "oversized message",
+    "missing or unexpected document epoch",
+    "duplicate or skipped sequence",
+    "queue byte or item overcommit",
+    "unauthorized child launch",
+    "capability escalation",
+    "stale process epoch",
+    "remove and relaunch cannot resurrect a prior process identity",
+    "denied role route",
+    "missing attenuated capability",
+    "channel endpoint reuse",
+    "unregistered channel",
+    "unauthorized channel registration",
+    "duplicate channel registration",
+    "mutable encoded-size accounting"
+  ],
+  "resource_budget": {
+    "wall_seconds": 21600,
+    "cpu_seconds": 14400,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 2147483648,
+    "network_bytes": 268435456,
+    "max_workers": 1,
+    "max_retries": 3
+  },
+  "rollback": {
+    "strategy": "close the pull request or revert its squash commit; generated outputs are regenerated from the prior schema",
+    "evidence_required": [
+      "main remains green",
+      "no schema or generated output from TASK-000001 remains after rollback"
+    ]
+  },
+  "dependencies": [],
+  "expires_at": "2026-08-17T00:00:00Z"
+}

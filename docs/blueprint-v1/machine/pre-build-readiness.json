@@ -166,15 +166,12 @@
     },
     {
       "id": "PB-006",
-      "name": "M0 reference desktop environment",
-      "status": "ready",
+      "name": "M1 reference desktop platform",
+      "status": "not_selected",
       "owner_scope": "platform",
-      "evidence": [
-        "docs/blueprint-v1/machine/toolchains.json",
-        "docs/research/m0-build-foundation-2026-07.md"
-      ],
       "evidence_required": [
-        "later product platform scorecard"
+        "platform scorecard",
+        "support/CI availability"
       ]
     },
     {
@@ -191,14 +188,15 @@
     {
       "id": "PB-008",
       "name": "Pinned compiler SDK linker and toolchain",
-      "status": "ready",
+      "status": "partial",
       "owner_scope": "release-operations",
       "evidence": [
         "rust-toolchain.toml",
         "docs/blueprint-v1/machine/toolchains.json"
       ],
       "evidence_required": [
-        "native platform toolchain manifests before native dependencies"
+        "platform compiler SDK and linker manifests",
+        "fresh-host reproduction beyond reference CI"
       ]
     },
     {
@@ -242,8 +240,7 @@
         "security/unsafe-code.json",
         "security/native-code.json",
         "security/generated-code.json",
-        "security/provenance.json",
-        "tools/validate_build_foundation.py"
+        "security/provenance.json"
       ]
     },
     {
@@ -251,30 +248,38 @@
       "name": "Canonical IPC schema and process capability generation",
       "status": "partial",
       "owner_scope": "architecture",
-    "evidence": [
-      "crates/turing-ipc",
-      "crates/turing-kernel",
-      "docs/research/ipc-capability-boundary-inventory-2026-07.md",
-      "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
-      "docs/blueprint-v1/machine/ipc-capability-boundary.json",
-      "docs/blueprint-v1/machine/ipc-schema-source.schema.json",
-      "docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json",
-      "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
-      "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
-      "tools/validate_ipc_capability_boundaries.py",
-      "tools/validate_ipc_readiness_review.py"
-    ],
-    "evidence_required": [
-      "implemented schema generator evidence beyond the checked no-claim schema-source template",
-      "wire encoding decision",
-      "connection authentication",
-      "bounded queues and backpressure",
-      "stale-epoch receiver rejection",
-      "timeout and cancellation behavior",
-      "negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases",
-      "owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template before PB-011 readiness promotion, renderer-security, agent-security, process-isolation, site-isolation, production IPC, or implementation claims"
-    ]
-  },
+      "evidence": [
+        "schemas/ipc/control-plane.json",
+        "tools/generate_ipc.py",
+        "crates/turing-ipc/src/generated.rs",
+        "docs/blueprint-v1/machine/process-capabilities.json",
+        "crates/turing-kernel/src/lib.rs",
+        "crates/turing-ipc",
+        "crates/turing-kernel",
+        "docs/research/wp-002-kernel-ipc-2026-07.md",
+        "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
+        "docs/blueprint-v1/machine/ipc-capability-boundary.json",
+        "docs/blueprint-v1/machine/ipc-schema-source.schema.json",
+        "docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json",
+        "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
+        "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+        "tools/validate_ipc_capability_boundaries.py",
+        "tools/validate_ipc_readiness_review.py"
+      ],
+      "evidence_required": [
+        "implemented schema generator evidence beyond the checked no-claim schema-source template",
+        "wire encoding decision",
+        "connection authentication",
+        "operating-system IPC transport",
+        "shared-memory handle transfer",
+        "bounded queues and backpressure",
+        "timeout and cancellation behavior",
+        "negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, cancellation, and stale-epoch receiver rejection cases",
+        "peer-authentication tests, malformed-traffic corpus, fuzzable wire codec, compromised-process harness, and transport crash/reconnect tests",
+        "owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template before PB-011 readiness promotion, renderer-security, agent-security, process-isolation, site-isolation, production IPC, or implementation claims"
+      ]
+    },
     {
       "id": "PB-012",
       "name": "Reference sandbox probe harness",
@@ -571,6 +576,5 @@
       ]
     }
   ],
-  "completion_rule": "PB-GATE-0 currently authorizes bounded M0 tasks that use the root workspace and agent-execution controls. M1, preview, beta, and stable claims remain separately gated.",
-  "contained_m0_authorization": "ready"
+  "completion_rule": "PB-GATE-0 passes when every item required for the selected contained milestone is ready or has a reviewed, expiring exception. Stable-release prerequisites remain later gates."
 }

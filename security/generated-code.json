@@ -1,7 +1,22 @@
 {
   "schema_version": 1,
   "updated": "2026-07-17",
-  "status": "empty",
+  "status": "active",
   "policy": "Generated source must identify its schema or generator, exact command, owner, review boundary, deterministic output check, and whether generated output is committed.",
-  "entries": []
+  "entries": [
+    {
+      "id": "GEN-IPC-001",
+      "owner_scope": "architecture",
+      "source": "schemas/ipc/control-plane.json",
+      "generator": "tools/generate_ipc.py",
+      "command": "python3 -B tools/generate_ipc.py",
+      "check": "python3 -B tools/generate_ipc.py --check",
+      "committed": true,
+      "outputs": [
+        "crates/turing-ipc/src/generated.rs",
+        "docs/blueprint-v1/machine/process-capabilities.json"
+      ],
+      "review_boundary": "roles, capabilities, routes, limits, queue budgets, and generated-code diff"
+    }
+  ]
 }

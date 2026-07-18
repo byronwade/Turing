@@ -342,3 +342,10 @@ Before M1 shell code expands, complete the toolkit-neutral UI contracts, select 
 - M1–M4: permit contained component tasks with independent review; no production claim.
 - M5+: activate preview gates only after update, security, migration, accessibility, and incident evidence.
 - Beta and stable: require `PRG-001` through `PRG-020`, numeric SLOs, supported platform contracts, qualified backup ownership, and human release authority.
+
+<!-- WP-002-KERNEL-IPC-2026-07 -->
+## WP-002 implementation status
+
+`WP-002` is `m0_reference_in_progress`. The repository now contains restart-safe process identities, a generated role/capability/message schema, bounded envelopes and queues, exact channel sequencing, and a deterministic kernel authorization registry. This is sufficient for contained M0 follow-on work and for defining the contract used by `WP-003` sandbox probes and `WP-004` shell experiments.
+
+M1 completion still requires an authenticated operating-system transport, canonical wire representation, safe shared-memory and handle transfer, process launch integration, crash/reconnect and cancellation state machines, compromised-process negative tests, production queue measurements, and independent review. The roadmap must not report `WP-002` complete until those artifacts exist.

@@ -9,10 +9,19 @@
 /clippy.toml @byronwade
 /apps/ @byronwade
 /crates/ @byronwade
+/schemas/ @byronwade
 /security/ @byronwade
 /tools/ @byronwade
 /prototype/ @byronwade
 /.github/ @byronwade
+
+# High-authority control plane
+/schemas/ipc/ @byronwade
+/crates/turing-types/ @byronwade
+/crates/turing-ipc/ @byronwade
+/crates/turing-kernel/ @byronwade
+/tools/generate_ipc.py @byronwade
+/docs/blueprint-v1/machine/process-capabilities.json @byronwade
 
 # Canonical documentation
 /docs/ @byronwade

@@ -8,7 +8,12 @@ use std::env;
 use std::process::ExitCode;
 
 use turing_build_info::{BuildIdentity, Maturity};
-use turing_types::{ProfileId, SpaceId, TabId, ViewId, WindowId};
+use turing_ipc::{BoundedQueue, ControlEnvelope, MessageKind, QueueClass};
+use turing_kernel::{ProcessRegistry, ProcessRole};
+use turing_types::{
+    ChannelId, DocumentEpoch, OperationId, ProcessId, ProfileId, SequenceNumber, SpaceId, TabId,
+    ViewId, WindowId,
+};
 use turing_ui_model::{ShellSnapshot, TabLifecycle, TabSummary};
 
 fn shell_self_test() -> Result<(), Box<dyn std::error::Error>> {
@@ -30,6 +35,36 @@ fn shell_self_test() -> Result<(), Box<dyn std::error::Error>> {
         tabs: vec![tab],
     }
     .validate()?;
+
+    let mut registry = ProcessRegistry::new(ProcessId::new(1)?);
+    let kernel = registry.kernel();
+    let renderer = registry.launch(kernel, ProcessId::new(2)?, ProcessRole::Renderer)?;
+    let channel = ChannelId::new(1)?;
+    registry.register_channel(kernel, channel, renderer, kernel)?;
+    let message = ControlEnvelope::new(
+        MessageKind::NavigationIntent,
+        renderer,
+        kernel,
+        channel,
+        SequenceNumber::new(1)?,
+        OperationId::new(1)?,
+        Some(DocumentEpoch::new(1)?),
+        128,
+        "about:blank",
+    )?;
+    let mut queue = BoundedQueue::new(QueueClass::Control);
+    queue.try_push(message).map_err(|error| {
+        std::io::Error::other(format!(
+            "control queue rejected message: {:?}",
+            error.kind()
+        ))
+    })?;
+    let message = queue
+        .pop_front()
+        .ok_or_else(|| std::io::Error::other("control queue lost its message"))?;
+    let route = registry.authorize(&message)?;
+    assert_eq!(route.sender_role(), ProcessRole::Renderer);
+    assert_eq!(route.receiver_role(), ProcessRole::BrowserKernel);
 
     Ok(())
 }
@@ -56,11 +91,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         None => {
             debug_assert_eq!(identity.maturity, Maturity::Research);
-            println!("Turing M0 shell laboratory");
+            println!("Turing M0 shell and kernel laboratory");
             println!(
-                "No native UI, web engine, network, storage, Plug-ins, or AI runtime exists yet."
+                "Typed process identity, generated IPC policy, and bounded queues exist; no native UI or web runtime exists yet."
             );
-            println!("Run with --self-test to validate toolkit-neutral shell contracts.");
+            println!("Run with --self-test to validate the M0 control-plane contracts.");
         }
     }
 

@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
   "updated": "2026-07-17",
-  "status": "m0_buildable_skeleton",
+  "status": "wp002_control_plane_reference",
   "reference_target": "x86_64-unknown-linux-gnu",
   "rules": {
     "default_unsafe_policy": "forbid",
     "external_runtime_dependencies": 0,
     "forbidden_dependency_cycles": true,
     "toolkit_types_outside_ui_adapter": false,
-    "browser_policy_in_ui_crates": false
+    "browser_policy_in_ui_crates": false,
+    "generated_control_plane_source": "schemas/ipc/control-plane.json"
   },
   "components": [
     {
@@ -47,11 +48,11 @@
       "owner_scope": "architecture",
       "privilege": "boundary",
       "hostile_input": true,
-      "public_api": "internal-schema-foundation",
+      "public_api": "internal-generated-control-plane",
       "unsafe_policy": "forbid",
       "platforms": ["all-rust-hosts"],
       "dependencies": ["turing-types"],
-      "failure_boundary": "reject-invalid-envelope"
+      "failure_boundary": "reject-invalid-envelope-sequence-or-queue"
     },
     {
       "id": "COMP-004",
@@ -61,10 +62,10 @@
       "owner_scope": "architecture",
       "privilege": "high",
       "hostile_input": true,
-      "public_api": "internal",
+      "public_api": "internal-policy-oracle",
       "unsafe_policy": "forbid",
       "platforms": ["all-rust-hosts"],
-      "dependencies": ["turing-types"],
+      "dependencies": ["turing-ipc", "turing-types"],
       "failure_boundary": "browser-kernel-process"
     },
     {
@@ -92,7 +93,7 @@
       "public_api": "none",
       "unsafe_policy": "forbid",
       "platforms": ["x86_64-unknown-linux-gnu"],
-      "dependencies": ["turing-build-info", "turing-types", "turing-ui-model"],
+      "dependencies": ["turing-build-info", "turing-ipc", "turing-kernel", "turing-types", "turing-ui-model"],
       "failure_boundary": "future-ui-process"
     },
     {

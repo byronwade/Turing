@@ -33,9 +33,17 @@ Update rule: required for every file or directory addition, deletion, rename, or
 ├── crates/
 │   ├── turing-build-info/
 │   ├── turing-ipc/
+│   │   └── src/
+│   │       ├── generated.rs
+│   │       ├── envelope.rs
+│   │       ├── queue.rs
+│   │       └── sequence.rs
 │   ├── turing-kernel/
 │   ├── turing-types/
 │   └── turing-ui-model/
+├── schemas/
+│   └── ipc/
+│       └── control-plane.json
 ├── docs/
 │   ├── README.md
 │   ├── blueprint-v1/
@@ -62,6 +70,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── doctor.ps1
     ├── check.sh
     ├── check.ps1
+    ├── generate_ipc.py
     ├── capture_benchmark_browser_pins.py
     ├── run_benchmark_browser_launch.py
     ├── run_benchmark_server_profile.py
@@ -127,7 +136,7 @@ Workspace membership must match [`workspace-components.json`](blueprint-v1/machi
 - internal dependencies;
 - failure boundary.
 
-`tools/validate_build_foundation.py` rejects missing components, dependency cycles, toolchain drift, unledgered unsafe/native syntax, or M0 external runtime dependencies.
+`tools/validate_build_foundation.py` rejects missing components, dependency cycles, manifest/registry drift, toolchain drift, generated IPC drift, unledgered unsafe/native syntax, or M0 external runtime dependencies.
 
 ## `benchmarks/`
 
@@ -137,7 +146,7 @@ Benchmark and compatibility fixtures live here when they are executable or serve
 
 Application binaries live here.
 
-`turing-shell` is currently a command-line M0 laboratory. It validates toolkit-neutral shell contracts but has no native UI, web engine, networking, storage, Plug-in, or AI capability.
+`turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 
 Future application directories require an accepted purpose, owner, maturity label, support boundary, and package/update implications.
 
@@ -147,13 +156,37 @@ Production-oriented Rust libraries live here. Crates are split by authority, own
 
 Current crates:
 
-- `turing-types`: shared identities;
+- `turing-types`: shared non-zero identities, including restart-safe process identities;
 - `turing-build-info`: build and maturity identity;
-- `turing-ipc`: bounded control-envelope foundation;
-- `turing-kernel`: process roles and capabilities;
+- `turing-ipc`: generated role/message contracts, bounded envelopes, exact sequence state, and bounded queues;
+- `turing-kernel`: process registration, role launch policy, capability attenuation, route authorization, and channel binding;
 - `turing-ui-model`: toolkit-neutral shell state and commands.
 
-A toolkit, platform, GPU, network, storage, or runtime dependency may not enter these crates merely to accelerate a demo.
+A toolkit, platform, GPU, network, storage, serializer, or runtime dependency may not enter these crates merely to accelerate a demo.
+
+## `schemas/`
+
+Canonical machine-readable interface definitions live here when they generate source or cross-language contracts.
+
+`schemas/ipc/control-plane.json` owns the M0 control-plane protocol version, stable process-role and capability IDs, default capability sets, launch authority, message IDs, role-pair routes, document-scope rules, encoded-size limits, and queue budgets.
+
+The schema is untrusted input to the generator. `tools/generate_ipc.py` validates it before producing committed Rust and documentation outputs. Schema changes require review of compatibility, authority, resource limits, generated diffs, tests, and migration implications.
+
+## Generated IPC output
+
+`tools/generate_ipc.py` deterministically generates:
+
+- `crates/turing-ipc/src/generated.rs`;
+- `docs/blueprint-v1/machine/process-capabilities.json`.
+
+Run:
+
+```bash
+python3 -B tools/generate_ipc.py
+python3 -B tools/generate_ipc.py --check
+```
+
+Generated output must not be edited directly. The source, generator, command, outputs, owner, and review boundary are registered as `GEN-IPC-001` in [`security/generated-code.json`](../security/generated-code.json).
 
 ## `prototype/`
 
@@ -166,7 +199,7 @@ Machine-readable source and supply-chain ledgers live here.
 - `dependencies.json`: exact external runtime, build, and toolchain dependencies;
 - `unsafe-code.json`: every approved unsafe island;
 - `native-code.json`: FFI, native libraries, platform SDKs, build scripts, and dynamic code;
-- `generated-code.json`: schemas, generators, commands, ownership, and deterministic-output policy;
+- `generated-code.json`: schemas, generators, commands, ownership, deterministic-output checks, and review boundaries;
 - `provenance.json`: original-source license, contribution, source, and build attestations.
 
 These files are not prose. Governing explanation remains under `docs/`.
@@ -180,6 +213,7 @@ Repository-owned tools live here.
 - `check.sh` and `check.ps1`: complete local check;
 - `capture_benchmark_browser_pins.py`: dependency-free no-claim browser-pin capture runner with a checked no-browser self-test, temp-profile/prohibited-path validation, artifact hashing, and optional future local Chrome/Edge diagnostic capture;
 - `xtask`: cross-platform Rust implementation of bootstrap, doctor, and check;
+- `generate_ipc.py`: deterministic control-plane schema validator and generator;
 - `run_benchmark_browser_launch.py`: dependency-free no-claim browser launch-runner self-test that validates command parsing, forbidden arguments, registry references, artifact-root handling, hashed artifacts, and no-claim finalization without launching a browser;
 - `run_benchmark_server_profile.py`: dependency-free no-claim benchmark server lifecycle self-test that starts the checked local profile server, validates routes, records shutdown, hashes artifacts, and launches no browser;
 - `run_benchmark_smoke.py`: dependency-free no-claim benchmark smoke runner that captures static-server self-test output plus benchmark hardware, OS-control, and resource-attribution registry IDs into a hashed artifact package;
@@ -229,7 +263,7 @@ Repository-owned tools live here.
 - `validate_benchmark_hardware.py`: dependency-free validation for benchmark hardware and OS manifests;
 - `validate_benchmark_os_controls.py`: dependency-free validation for benchmark OS, update, driver, firmware, power, display, thermal, clock, service, and unsupported-control manifests;
 - `validate_benchmark_resource_attribution.py`: dependency-free validation for semantic resource owner taxonomy, metrics, shared-resource policy, collection plan, and UI/reporting contract manifests;
-- `validate_build_foundation.py`: executable workspace, toolchain, ledger, and source-policy validation;
+- `validate_build_foundation.py`: executable workspace, toolchain, generated-code, ledger, and source-policy validation;
 - `check_documentation_change.py`: pull-request same-change documentation enforcement.
 
 Tools must fail visibly, avoid hidden network access, preserve source-tree cleanliness, and document any generated output.
@@ -419,10 +453,10 @@ CI and wrapper commands set `CARGO_TARGET_DIR` outside the repository. The repos
 For any structural change:
 
 1. update this map;
-2. update `Cargo.toml` and `workspace-components.json` when workspace membership changes;
+2. update `Cargo.toml` and `workspace-components.json` when workspace membership or dependency direction changes;
 3. update CODEOWNERS and professional ownership;
 4. update dependency, unsafe, native, generated, and provenance ledgers;
-5. update affected Blueprint, book, roadmap, and readiness records;
-6. update validation;
+5. update affected Blueprint, book, roadmap, traceability, and readiness records;
+6. update validation and deterministic generation checks;
 7. run `sh tools/check.sh` or `.\tools\check.ps1`;
-8. attach evidence and unsupported behavior to the review.
+8. attach evidence, unsupported behavior, and rollback implications to the review.

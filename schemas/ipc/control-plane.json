@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "protocol_version": 1,
+  "maximum_registered_processes": 1024,
+  "capabilities": [
+    {"id": 0, "name": "kernel_control_channel"},
+    {"id": 1, "name": "profile_registry"},
+    {"id": 2, "name": "process_broker"},
+    {"id": 3, "name": "navigation_commit"},
+    {"id": 4, "name": "permission_policy"},
+    {"id": 5, "name": "agent_policy"},
+    {"id": 6, "name": "session_journal"},
+    {"id": 7, "name": "ui_commands"},
+    {"id": 8, "name": "network_request_broker"},
+    {"id": 9, "name": "storage_request_broker"},
+    {"id": 10, "name": "decoder_route"},
+    {"id": 11, "name": "request_navigation"},
+    {"id": 12, "name": "submit_gpu_work"},
+    {"id": 13, "name": "emit_diagnostics"},
+    {"id": 14, "name": "assigned_ipc"},
+    {"id": 15, "name": "assigned_shared_memory"},
+    {"id": 16, "name": "assigned_surface"},
+    {"id": 17, "name": "read_only_font_handles"},
+    {"id": 18, "name": "network_sockets"},
+    {"id": 19, "name": "proxy_resolution"},
+    {"id": 20, "name": "certificate_verification_adapter"},
+    {"id": 21, "name": "http_cache"},
+    {"id": 22, "name": "cookie_attachment"},
+    {"id": 23, "name": "profile_storage_roots"},
+    {"id": 24, "name": "quota_database"},
+    {"id": 25, "name": "logical_origin_stores"},
+    {"id": 26, "name": "graphics_device"},
+    {"id": 27, "name": "assigned_surfaces"},
+    {"id": 28, "name": "validated_shared_memory"},
+    {"id": 29, "name": "task_scoped_input"},
+    {"id": 30, "name": "bounded_output"},
+    {"id": 31, "name": "optional_assigned_device_handle"},
+    {"id": 32, "name": "declared_extension_apis"},
+    {"id": 33, "name": "granted_hosts"},
+    {"id": 34, "name": "extension_storage"},
+    {"id": 35, "name": "attached_target_protocol"},
+    {"id": 36, "name": "local_frontend_resources"},
+    {"id": 37, "name": "granted_observations"},
+    {"id": 38, "name": "model_adapter"},
+    {"id": 39, "name": "proposed_actions"},
+    {"id": 40, "name": "audit_append"},
+    {"id": 41, "name": "update_endpoint"},
+    {"id": 42, "name": "signed_metadata"},
+    {"id": 43, "name": "staging_directory"},
+    {"id": 44, "name": "version_install_roots"},
+    {"id": 45, "name": "crash_channels"},
+    {"id": 46, "name": "bounded_dump_directory"},
+    {"id": 47, "name": "build_id_symbols"}
+  ],
+  "roles": [
+    {
+      "id": 1,
+      "name": "browser_kernel",
+      "may_launch": ["renderer", "network", "storage", "gpu", "media_utility", "extension_host", "devtools", "agent_host", "updater", "crash_handler"],
+      "capabilities": ["kernel_control_channel", "profile_registry", "process_broker", "navigation_commit", "permission_policy", "agent_policy", "session_journal", "ui_commands", "network_request_broker", "storage_request_broker", "decoder_route", "emit_diagnostics"],
+      "forbidden": []
+    },
+    {
+      "id": 2,
+      "name": "renderer",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "assigned_ipc", "assigned_shared_memory", "assigned_surface", "read_only_font_handles", "request_navigation", "submit_gpu_work", "emit_diagnostics"],
+      "forbidden": ["ambient_network", "arbitrary_filesystem", "credential_store", "process_creation", "debug_attach", "raw_devices", "global_clipboard", "update_service", "browser_internal_protocol"]
+    },
+    {
+      "id": 3,
+      "name": "network",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "network_sockets", "proxy_resolution", "certificate_verification_adapter", "http_cache", "cookie_attachment", "emit_diagnostics"],
+      "forbidden": ["password_vault", "arbitrary_profile_files", "browser_ui", "agent_confirmation"]
+    },
+    {
+      "id": 4,
+      "name": "storage",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "profile_storage_roots", "quota_database", "logical_origin_stores", "emit_diagnostics"],
+      "forbidden": ["network_sockets", "credential_secret_export", "browser_ui", "process_creation"]
+    },
+    {
+      "id": 5,
+      "name": "gpu",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "graphics_device", "assigned_surfaces", "validated_shared_memory", "emit_diagnostics"],
+      "forbidden": ["profile_storage", "network_sockets", "credential_store", "arbitrary_filesystem"]
+    },
+    {
+      "id": 6,
+      "name": "media_utility",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "task_scoped_input", "bounded_output", "optional_assigned_device_handle", "emit_diagnostics"],
+      "forbidden": ["ambient_network", "arbitrary_filesystem", "profile_storage", "browser_ui", "credential_store"]
+    },
+    {
+      "id": 7,
+      "name": "extension_host",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "declared_extension_apis", "granted_hosts", "extension_storage", "emit_diagnostics"],
+      "forbidden": ["kernel_memory", "ungranted_profiles", "ambient_native_messaging", "update_signing", "agent_confirmation"]
+    },
+    {
+      "id": 8,
+      "name": "devtools",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "attached_target_protocol", "local_frontend_resources", "emit_diagnostics"],
+      "forbidden": ["unattached_profiles", "ambient_remote_listener", "release_signing", "agent_confirmation"]
+    },
+    {
+      "id": 9,
+      "name": "agent_host",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "granted_observations", "model_adapter", "proposed_actions", "audit_append", "emit_diagnostics"],
+      "forbidden": ["raw_cookies", "password_vault", "direct_renderer_memory", "direct_input_injection", "confirmation_approval", "ungranted_files", "ungranted_origins"]
+    },
+    {
+      "id": 10,
+      "name": "updater",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "update_endpoint", "signed_metadata", "staging_directory", "version_install_roots", "emit_diagnostics"],
+      "forbidden": ["web_profile_content", "browser_history", "agent_data", "arbitrary_execution"]
+    },
+    {
+      "id": 11,
+      "name": "crash_handler",
+      "may_launch": [],
+      "capabilities": ["kernel_control_channel", "crash_channels", "bounded_dump_directory", "build_id_symbols", "emit_diagnostics"],
+      "forbidden": ["ambient_profile_read", "network_without_consent", "credential_store", "browser_commands"]
+    }
+  ],
+  "queue_classes": [
+    {"id": 1, "name": "urgent", "maximum_items": 64, "maximum_queued_bytes": 262144},
+    {"id": 2, "name": "control", "maximum_items": 256, "maximum_queued_bytes": 1048576}
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "name": "process_hello",
+      "maximum_encoded_bytes": 4096,
+      "document_scope": "forbidden",
+      "required_capability": "kernel_control_channel",
+      "allowed_routes": [["renderer", "browser_kernel"], ["network", "browser_kernel"], ["storage", "browser_kernel"], ["gpu", "browser_kernel"], ["media_utility", "browser_kernel"], ["extension_host", "browser_kernel"], ["devtools", "browser_kernel"], ["agent_host", "browser_kernel"], ["updater", "browser_kernel"], ["crash_handler", "browser_kernel"]]
+    },
+    {
+      "id": 2,
+      "name": "process_ready",
+      "maximum_encoded_bytes": 4096,
+      "document_scope": "forbidden",
+      "required_capability": "kernel_control_channel",
+      "allowed_routes": [["renderer", "browser_kernel"], ["network", "browser_kernel"], ["storage", "browser_kernel"], ["gpu", "browser_kernel"], ["media_utility", "browser_kernel"], ["extension_host", "browser_kernel"], ["devtools", "browser_kernel"], ["agent_host", "browser_kernel"], ["updater", "browser_kernel"], ["crash_handler", "browser_kernel"]]
+    },
+    {
+      "id": 3,
+      "name": "shutdown",
+      "maximum_encoded_bytes": 4096,
+      "document_scope": "forbidden",
+      "required_capability": "process_broker",
+      "allowed_routes": [["browser_kernel", "renderer"], ["browser_kernel", "network"], ["browser_kernel", "storage"], ["browser_kernel", "gpu"], ["browser_kernel", "media_utility"], ["browser_kernel", "extension_host"], ["browser_kernel", "devtools"], ["browser_kernel", "agent_host"], ["browser_kernel", "updater"], ["browser_kernel", "crash_handler"]]
+    },
+    {
+      "id": 10,
+      "name": "navigation_intent",
+      "maximum_encoded_bytes": 8192,
+      "document_scope": "required",
+      "required_capability": "request_navigation",
+      "allowed_routes": [["renderer", "browser_kernel"]]
+    },
+    {
+      "id": 11,
+      "name": "navigation_commit",
+      "maximum_encoded_bytes": 16384,
+      "document_scope": "required",
+      "required_capability": "navigation_commit",
+      "allowed_routes": [["browser_kernel", "renderer"]]
+    },
+    {
+      "id": 20,
+      "name": "network_request",
+      "maximum_encoded_bytes": 32768,
+      "document_scope": "required",
+      "required_capability": "network_request_broker",
+      "allowed_routes": [["browser_kernel", "network"]]
+    },
+    {
+      "id": 21,
+      "name": "network_response",
+      "maximum_encoded_bytes": 65536,
+      "document_scope": "required",
+      "required_capability": "network_sockets",
+      "allowed_routes": [["network", "browser_kernel"]]
+    },
+    {
+      "id": 30,
+      "name": "storage_request",
+      "maximum_encoded_bytes": 32768,
+      "document_scope": "required",
+      "required_capability": "storage_request_broker",
+      "allowed_routes": [["browser_kernel", "storage"]]
+    },
+    {
+      "id": 31,
+      "name": "storage_response",
+      "maximum_encoded_bytes": 65536,
+      "document_scope": "required",
+      "required_capability": "profile_storage_roots",
+      "allowed_routes": [["storage", "browser_kernel"]]
+    },
+    {
+      "id": 40,
+      "name": "gpu_submit",
+      "maximum_encoded_bytes": 65536,
+      "document_scope": "required",
+      "required_capability": "submit_gpu_work",
+      "allowed_routes": [["renderer", "gpu"]]
+    },
+    {
+      "id": 50,
+      "name": "decode_request",
+      "maximum_encoded_bytes": 32768,
+      "document_scope": "optional",
+      "required_capability": "decoder_route",
+      "allowed_routes": [["browser_kernel", "media_utility"]]
+    },
+    {
+      "id": 60,
+      "name": "diagnostic_event",
+      "maximum_encoded_bytes": 16384,
+      "document_scope": "optional",
+      "required_capability": "emit_diagnostics",
+      "allowed_routes": [["renderer", "browser_kernel"], ["network", "browser_kernel"], ["storage", "browser_kernel"], ["gpu", "browser_kernel"], ["media_utility", "browser_kernel"], ["extension_host", "browser_kernel"], ["devtools", "browser_kernel"], ["agent_host", "browser_kernel"], ["updater", "browser_kernel"], ["crash_handler", "browser_kernel"]]
+    },
+    {
+      "id": 70,
+      "name": "agent_action_proposal",
+      "maximum_encoded_bytes": 32768,
+      "document_scope": "required",
+      "required_capability": "proposed_actions",
+      "allowed_routes": [["agent_host", "browser_kernel"]]
+    },
+    {
+      "id": 80,
+      "name": "extension_api_request",
+      "maximum_encoded_bytes": 32768,
+      "document_scope": "optional",
+      "required_capability": "declared_extension_apis",
+      "allowed_routes": [["extension_host", "browser_kernel"]]
+    }
+  ]
+}
