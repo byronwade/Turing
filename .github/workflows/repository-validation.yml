@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           show-progress: false
@@ -103,7 +103,7 @@ jobs:
 
       - name: Upload validation diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: repository-validation-${{ github.run_id }}
           path: |
@@ -133,7 +133,7 @@ jobs:
 
       - name: Upload formatting diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rustfmt-${{ github.run_id }}
           path: rustfmt.log
@@ -151,7 +151,7 @@ jobs:
 
       - name: Upload Clippy diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: clippy-${{ github.run_id }}
           path: clippy.log
