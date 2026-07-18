@@ -189,6 +189,7 @@
         "docs/research/performance-benchmark-readiness-packet-2026-07.md",
         "docs/research/benchmark-corpus-expansion-2026-07.md",
         "docs/research/chrome-class-performance-runbook-2026-07.md",
+        "docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md",
         "docs/benchmark-lab/README.md",
         "docs/performance/README.md",
         "docs/blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.sample.json",

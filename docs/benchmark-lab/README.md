@@ -75,6 +75,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 - [Benchmark trace/artifact package contract](../research/benchmark-trace-artifact-package-contract-2026-07.md)
 - [Benchmark browser launch-runner contract](../research/benchmark-browser-launch-runner-contract-2026-07.md)
 - [Benchmark statistics analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md)
+- [Benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md)
 - [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
 - [No-claim benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json)
 - [Benchmark readiness-review validator](../../tools/validate_benchmark_readiness_review.py)
@@ -111,7 +112,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
 
-The checked no-claim statistics-analysis contract and benchmark readiness-review template are future evidence shapes only. They do not provide owner-reviewed statistics analysis, owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
+The checked no-claim statistics-analysis contract, benchmark readiness-review template, and benchmark engine baseline harness readiness map are future evidence shapes and handoff aids only. They do not provide owner-reviewed statistics analysis, owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Product workflow laboratory

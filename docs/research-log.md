@@ -2,6 +2,41 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - Benchmark engine baseline harness readiness map
+
+Question:
+
+Can the existing no-claim benchmark contracts, manifests, self-tests, and reports be collapsed into one issue `#14`, `PB-013`, and `TASK-000005` stop/resume path before any browser-run performance evidence exists?
+
+Inputs:
+
+- [Benchmark Engine Baseline Harness Readiness Map](research/benchmark-engine-baseline-harness-readiness-map-2026-07.md);
+- [Performance Benchmark Readiness Packet](research/performance-benchmark-readiness-packet-2026-07.md);
+- [Chrome-Class Performance Runbook](research/chrome-class-performance-runbook-2026-07.md);
+- [Benchmark Browser Launch-Runner Contract](research/benchmark-browser-launch-runner-contract-2026-07.md);
+- [Benchmark Trace/Artifact Package Contract](research/benchmark-trace-artifact-package-contract-2026-07.md);
+- [Benchmark 30-Tab Scenario Contract](research/benchmark-30-tab-scenario-contract-2026-07.md);
+- [Benchmark Statistics Analysis Contract](research/benchmark-statistics-analysis-contract-2026-07.md);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json);
+- [`research-readiness-crosswalk.json`](blueprint-v1/machine/research-readiness-crosswalk.json);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json).
+
+Method:
+
+Reviewed the current benchmark readiness packet, Chrome-class runbook, benchmark no-claim contracts, machine readiness records, task queue, operating board, and documentation-readiness matrix. Added a single handoff map that classifies the benchmark lane from Level 0 harness smoke through Level 3 public claim candidate. No new external source was consulted, no browser was launched, and no benchmark sample or competitor result was produced.
+
+Decision:
+
+Treat the map as no-claim `PB-013` organization evidence only. It gives maintainers one place to answer what exists, what remains missing, what an agent may continue, what remains owner-only, and what must not be claimed before issue `#14` or `TASK-000005` continues.
+
+Impact:
+
+`PB-013` remains `documented_no_runner`. The map does not prove a browser-run benchmark runner, browser-run server evidence, trace package, raw sample, memory result, energy result, competitor result, owner-reviewed statistics analysis, owner-reviewed claim bundle, owner-reviewed benchmark readiness, Chrome-class claim, or performance claim.
+
+Next question:
+
+Which Level 1 local-browser launch mode should be implemented first so it can produce no-claim browser-run server evidence, trace/artifact packages, failure-denominator records, and raw artifact hashes without touching real profiles or allowing benchmark claims?
+
 ## 2026-07-18 — Servo generated-output source-to-output provenance map
 
 Question:

@@ -348,6 +348,7 @@
           "docs/research/benchmark-trace-artifact-package-contract-2026-07.md",
           "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
           "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+          "docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md",
           "tools/run_benchmark_smoke.py",
         "tools/capture_benchmark_browser_pins.py",
         "tools/serve_benchmark_profile.py",

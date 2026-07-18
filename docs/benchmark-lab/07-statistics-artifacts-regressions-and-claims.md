@@ -115,6 +115,8 @@ Future public claim bundles must reference the statistics-analysis plan through 
 
 Future benchmark readiness reviews must also fill `review_scope.statistics_analysis_plan` with the owner-reviewed plan they accept. The checked no-claim readiness-review template keeps that field null, so it cannot be cited as statistics review, denominator review, claim-bundle review, benchmark-ready status, Chrome-class evidence, or public performance evidence.
 
+The checked [Benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md) organizes the current no-claim `PB-013` evidence into Level 0 through Level 3 stop/resume guidance. It is an evidence-routing aid only and does not provide a browser run, raw sample, owner-reviewed statistics analysis, owner-reviewed benchmark readiness, competitor result, Chrome-class evidence, or public performance claim.
+
 ## Risks
 
 Primary risks are semantic divergence, confused-deputy behavior, stale identity, unbounded work, memory retention, cross-profile or cross-origin leakage, native or platform compromise, hidden performance cliffs, inaccessible failure UI, unreliable recovery, and documentation becoming more certain than the evidence.
