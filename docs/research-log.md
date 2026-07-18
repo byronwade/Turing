@@ -2,6 +2,38 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - Build-information readiness ledger
+
+Question:
+
+Can the remaining information needed before broad building be made visible in one checked no-claim ledger without claiming that all information is ready?
+
+Inputs:
+
+- [Build Information Readiness Ledger](research/build-information-readiness-ledger-2026-07.md);
+- [`build-information-readiness-ledger.json`](project-buildout/machine/build-information-readiness-ledger.json);
+- [`build-information-readiness-ledger.schema.json`](project-buildout/machine/build-information-readiness-ledger.schema.json);
+- [`validate_build_information_readiness.py`](../tools/validate_build_information_readiness.py);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json);
+- [`contained-m0-start-state.json`](project-buildout/machine/contained-m0-start-state.json).
+
+Method:
+
+Added a checked no-claim gap ledger with information classes for entrypoints, task authority, source strategy, fresh-host reproduction, IPC, sandbox, benchmark, native shell, profile/session, package/update, incident response, backup ownership, and Chrome-class product claims. The validator checks that each lane keeps current evidence, missing information, owner-only decisions, prohibited claims, proposed-task boundaries, `TASK-000011` review-pending status, and `PB-020` evidence synchronized.
+
+Decision:
+
+Use the ledger as the current all-information gap map. It helps a maintainer choose the next no-claim evidence lane or owner-review packet, but it does not approve proposed tasks, accept `TASK-000011`, promote readiness, or authorize broad building.
+
+Impact:
+
+Future maintainers no longer have to infer the missing broad-build information by reading every readiness report first. The ledger keeps source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, task-authority, and Chrome-class product gaps in one checked surface.
+
+Next question:
+
+Which owner-reviewed information lane should become the first real task manifest: fresh-host reproduction, `TASK-000011` independent review, or source-strategy closure?
+
 ## 2026-07-18 - Contained M0 start-state control
 
 Question:

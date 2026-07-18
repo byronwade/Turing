@@ -1,0 +1,563 @@
+{
+  "schema_version": 1,
+  "ledger_id": "PB020.BUILD_INFORMATION_READINESS_LEDGER.NO_CLAIM.2026_07",
+  "status": "no_claim_information_readiness_gap_ledger",
+  "updated": "2026-07-18",
+  "claim_status": "Build-information readiness gap ledger only; no complete documentation claim, no all-information-ready-for-building claim, no proposed task approval, no TASK-000011 acceptance, no readiness promotion, no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no performance claim, no compatibility claim, no security claim, no accessibility claim, no release readiness claim, and no daily-driver claim.",
+  "source_records": [
+    "README.md",
+    "docs/start-here.md",
+    "docs/README.md",
+    "docs/documentation-policy.md",
+    "docs/repository-map.md",
+    "docs/security.md",
+    "docs/project-buildout/README.md",
+    "docs/project-buildout/11-pre-build-readiness-checklist.md",
+    "docs/project-buildout/13-build-readiness-operating-board.md",
+    "docs/project-buildout/17-build-readiness-task-queue.md",
+    "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/implementation-plan/README.md",
+    "docs/project-buildout/machine/implementation-kickoff-review.json",
+    "docs/project-buildout/machine/build-readiness-dependency-graph.json",
+    "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
+    "docs/project-buildout/machine/contained-m0-start-state.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "docs/agent-execution/README.md",
+    "docs/production-readiness/README.md",
+    "docs/research/README.md",
+    "docs/research/chrome-class-capability-traceability-map-2026-07.md"
+  ],
+  "current_state": {
+    "contained_m0_information_ready": true,
+    "broad_build_information_ready": false,
+    "all_information_ready_for_building": false,
+    "chrome_class_information_ready": false,
+    "production_information_ready": false,
+    "proposed_task_information_ready": false,
+    "owner_review_required_for_promotion": true
+  },
+  "task_queue_state": {
+    "proposed_tasks": [
+      "TASK-000001",
+      "TASK-000002",
+      "TASK-000003",
+      "TASK-000004",
+      "TASK-000005",
+      "TASK-000006",
+      "TASK-000007",
+      "TASK-000008",
+      "TASK-000009",
+      "TASK-000010"
+    ],
+    "review_pending_tasks": ["TASK-000011"],
+    "accepted_tasks": [],
+    "release_gated_tasks": []
+  },
+  "information_classes": [
+    {
+      "id": "INFO-ENTRYPOINTS",
+      "name": "First-entry documentation and stop/resume map",
+      "gate_refs": ["PB-001", "PB-020"],
+      "task_refs": [],
+      "build_scope": "contained_m0_only",
+      "information_status": "ready_for_contained_m0_only",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "One current information path from root discovery to gate truth, task authority, research lanes, validation, and unsupported claims.",
+        "A checked start-state record that separates no-claim docs and research from proposed task execution and broad product work."
+      ],
+      "current_evidence": [
+        "README.md",
+        "docs/start-here.md",
+        "docs/README.md",
+        "docs/repository-map.md",
+        "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+        "docs/project-buildout/machine/contained-m0-start-state.json"
+      ],
+      "missing_information": [
+        "Owner-reviewed build-readiness closure beyond no-claim templates before any all-information-ready-for-building or broad build claim.",
+        "Accepted task-specific manifests for proposed queue work before any proposed task executes."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts or rejects documentation completion beyond contained M0.",
+        "Owner promotes any start-state or closure-review record from no-claim inventory to build authorization."
+      ],
+      "next_research_or_review": "Keep entrypoint records synchronized whenever a lane gains evidence, a validator changes, or a task status changes.",
+      "prohibited_claims": [
+        "No all-information-ready-for-building claim.",
+        "No broad M1 implementation claim.",
+        "No task approval claim."
+      ]
+    },
+    {
+      "id": "INFO-TASK-AUTHORITY",
+      "name": "Task authority and evidence-bundle readiness",
+      "gate_refs": ["PB-020"],
+      "task_refs": [
+        "TASK-000001",
+        "TASK-000002",
+        "TASK-000003",
+        "TASK-000004",
+        "TASK-000005",
+        "TASK-000006",
+        "TASK-000007",
+        "TASK-000008",
+        "TASK-000009",
+        "TASK-000010",
+        "TASK-000011"
+      ],
+      "build_scope": "cross_cutting_blocker",
+      "information_status": "missing_owner_review",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Reviewed immutable task manifests with owner, independent reviewer, allowed paths, prohibited paths, budgets, rollback, expiry, and evidence-bundle location.",
+        "Accepted or rejected evidence bundles produced by independent review for execution tasks."
+      ],
+      "current_evidence": [
+        "docs/project-buildout/17-build-readiness-task-queue.md",
+        "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+        "docs/agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json"
+      ],
+      "missing_information": [
+        "Owner-approved immutable manifests for proposed TASK-000001 through TASK-000010.",
+        "Independent accepted or rejected evidence bundle for TASK-000011."
+      ],
+      "owner_only_decisions": [
+        "Owner approves any proposed task for execution.",
+        "Owner accepts TASK-000011 or rejects it after independent review.",
+        "Owner promotes any task to release-gated status."
+      ],
+      "next_research_or_review": "Prepare one task-specific approval record only after the owner picks a proposed task and reviewer.",
+      "prohibited_claims": [
+        "No proposed task approval claim.",
+        "No TASK-000011 acceptance claim.",
+        "No readiness promotion claim."
+      ]
+    },
+    {
+      "id": "INFO-SOURCE-STRATEGY",
+      "name": "Source strategy and ADR-0009",
+      "gate_refs": ["PB-002"],
+      "task_refs": ["TASK-000001"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "blocked_owner_only",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Owner-reviewed ADR-0009 source decision covering selected baseline, source provenance, generated output, license, SBOM, unsafe, FFI, component boundaries, compatibility, performance, security, maintenance, and public-claim impact.",
+        "Evidence for every ADR9-EV-001 through ADR9-EV-018 item or an explicit retained blocker."
+      ],
+      "current_evidence": [
+        "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+        "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
+        "docs/project-buildout/16-adr-0009-decision-draft.md",
+        "docs/blueprint-v1/machine/adr-0009-evidence.json",
+        "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
+        "docs/research/servo-source-strategy-inventory-2026-07.md",
+        "docs/research/servo-security-maintenance-implications-2026-07.md"
+      ],
+      "missing_information": [
+        "Selected source baseline and feature profile with owner-reviewed provenance and equivalence policy.",
+        "Owner-reviewed generated-output, unsafe, FFI, license, SBOM, local compatibility, performance, security, and maintenance decisions."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts or rejects Servo or any other source baseline.",
+        "Owner authorizes any browser-engine source in a release path.",
+        "Owner approves component boundaries and JavaScript-runtime conflict handling."
+      ],
+      "next_research_or_review": "Continue TASK-000001 as no-claim source-strategy evidence until an owner starts a real ADR-0009 decision review.",
+      "prohibited_claims": [
+        "No Servo adoption claim.",
+        "No source approval claim.",
+        "No release-code authorization claim."
+      ]
+    },
+    {
+      "id": "INFO-FRESH-HOST",
+      "name": "Fresh-host build reproduction",
+      "gate_refs": ["PB-009", "PB-020"],
+      "task_refs": ["TASK-000002"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_independent_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Independent fresh-host or owner-approved clean-VM bootstrap, doctor, check, and xtask logs with exact OS, shell, Rust, Cargo, Git, cache, target directory, temp directory, and source-tree cleanliness.",
+        "Owner-reviewed fresh-host readiness beyond the checked no-claim readiness-review template."
+      ],
+      "current_evidence": [
+        "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/project-buildout/machine/fresh-host-reproduction.json",
+        "docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json",
+        "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json"
+      ],
+      "missing_information": [
+        "Independent retained run records with output hashes and failure denominator.",
+        "Owner-reviewed fresh-host readiness decision beyond the no-claim template."
+      ],
+      "owner_only_decisions": [
+        "Owner designates the reference host or approves clean-VM equivalence.",
+        "Owner promotes PB-009 from partial to ready."
+      ],
+      "next_research_or_review": "Convert TASK-000002 into a reviewed manifest only when the fresh reference host or clean-VM scope is known.",
+      "prohibited_claims": [
+        "No independent reproduction claim.",
+        "No release confidence claim.",
+        "No production readiness claim."
+      ]
+    },
+    {
+      "id": "INFO-IPC",
+      "name": "Process authority and IPC information",
+      "gate_refs": ["PB-011"],
+      "task_refs": ["TASK-000003", "TASK-000011"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_independent_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Accepted TASK-000011 independent evidence and owner-reviewed IPC readiness beyond the no-claim template.",
+        "Canonical wire encoding, authenticated transport, handle transfer, stale-epoch receiver behavior, timeout and cancellation behavior, and negative coverage for malformed, oversized, stale, duplicate, reordered, unauthorized, and wrong-principal messages."
+      ],
+      "current_evidence": [
+        "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/wp-002-kernel-ipc-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
+        "docs/blueprint-v1/machine/ipc-capability-boundary.json",
+        "docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json",
+        "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json"
+      ],
+      "missing_information": [
+        "Accepted or rejected independent TASK-000011 evidence bundle.",
+        "Owner-reviewed IPC readiness and platform transport evidence beyond current M0 reference tests."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts TASK-000011 and PB-011 readiness.",
+        "Owner approves wire format, transport authority model, schema-source approval, and production process topology."
+      ],
+      "next_research_or_review": "Get independent review of TASK-000011, then scope TASK-000003 negative tests and transport design from the IPC templates.",
+      "prohibited_claims": [
+        "No production IPC claim.",
+        "No renderer-security claim.",
+        "No site-isolation claim."
+      ]
+    },
+    {
+      "id": "INFO-SANDBOX",
+      "name": "Sandbox probe and containment information",
+      "gate_refs": ["PB-012"],
+      "task_refs": ["TASK-000004"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Executable expected-deny probe packages for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles across filesystem, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC access.",
+        "Effective platform-policy capture, unsandboxed controls, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner-reviewed sandbox readiness."
+      ],
+      "current_evidence": [
+        "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
+        "docs/security-engine/machine/sandbox-probe-inventory.json",
+        "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
+        "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+        "schemas/sandbox/probe-catalog.json",
+        "schemas/sandbox/probe-evidence.schema.json"
+      ],
+      "missing_information": [
+        "Packaged probe execution records beyond the no-claim template.",
+        "Owner-reviewed platform sandbox policy and readiness decision."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts platform sandbox policy and waiver scope.",
+        "Owner promotes sandbox readiness, SEC-GATE-1, SEC-GATE-6, or site-isolation evidence."
+      ],
+      "next_research_or_review": "Turn the WP-003 operation catalog into task-scoped probe packages only after IPC authority scope is accepted or explicitly isolated.",
+      "prohibited_claims": [
+        "No sandbox-readiness claim.",
+        "No hostile-browsing safety claim.",
+        "No production-safety claim."
+      ]
+    },
+    {
+      "id": "INFO-BENCHMARK",
+      "name": "Benchmark, Chrome-class performance, and raw-result information",
+      "gate_refs": ["PB-013"],
+      "task_refs": ["TASK-000005"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Fixed hardware, OS controls, browser pins, local corpus, network profiles, launch runner, trace/artifact package, 30-tab scenario, raw result, statistics analysis, claim bundle, and owner-reviewed benchmark readiness evidence.",
+        "Equal-workload competitor runs with disclosed site-isolation, tab lifecycle, update, profile, cache, extension, and discard settings before any Chrome-class or performance claim."
+      ],
+      "current_evidence": [
+        "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+        "docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md",
+        "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+        "docs/blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json",
+        "docs/blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json",
+        "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
+        "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json"
+      ],
+      "missing_information": [
+        "Browser-run raw artifacts, trace packages, memory samples, energy samples, and failure records.",
+        "Owner-reviewed statistics analysis and claim bundles beyond no-claim templates."
+      ],
+      "owner_only_decisions": [
+        "Owner approves fixed benchmark hardware tiers, browser pins, statistics-analysis plan scope, claim-bundle publication, and benchmark readiness.",
+        "Owner authorizes any public speed, memory, energy, or Chrome-class comparison."
+      ],
+      "next_research_or_review": "Continue no-claim TASK-000005 runner and artifact-package preparation without producing benchmark claims.",
+      "prohibited_claims": [
+        "No faster claim.",
+        "No lower-memory claim.",
+        "No Chrome-class claim."
+      ]
+    },
+    {
+      "id": "INFO-NATIVE-SHELL",
+      "name": "Native shell, page surface, component, and accessibility information",
+      "gate_refs": ["PB-003", "PB-004", "PB-005", "PB-014", "PB-015"],
+      "task_refs": ["TASK-000006"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Accepted ADR-0013, ADR-0014, and ADR-0016 decisions, equivalent reference-shell adapter evidence, toolkit-neutral state/command/surface/accessibility/diagnostic contracts, and no-toolkit-owned-authority negative tests.",
+        "Rendered component fixtures, UI-GATE-7 and UI-GATE-10 evidence, page-tree composition proof, IME and keyboard proof, manual assistive-technology coverage, crash, renderer-hang, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, and package/runtime-exclusion evidence."
+      ],
+      "current_evidence": [
+        "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+        "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
+        "docs/research/native-ui-component-fixture-inventory-2026-07.md",
+        "docs/research/page-surface-composition-inventory-2026-07.md",
+        "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+        "docs/ui-runtime/machine/adapter-contract-inventory.json",
+        "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
+        "docs/ui-runtime/machine/page-surface-composition.json",
+        "docs/accessibility/machine/window-input-accessibility-spike.json",
+        "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json"
+      ],
+      "missing_information": [
+        "Equivalent adapter prototypes and rendered fixture evidence beyond current no-claim inventories.",
+        "Owner-reviewed native UI readiness, toolkit selection, page-surface approval, and accessibility readiness."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts ADR-0013, ADR-0014, ADR-0016, UI-GATE-7, UI-GATE-10, toolkit selection, and compositor ownership.",
+        "Owner approves trusted-chrome, accessibility, page-surface, page-tree, or release-path UI readiness."
+      ],
+      "next_research_or_review": "Prepare task-scoped native-shell bake-off manifests only after IPC command authority is accepted or the shell prototype is explicitly isolated.",
+      "prohibited_claims": [
+        "No toolkit selection claim.",
+        "No accessibility readiness claim.",
+        "No release-path UI claim."
+      ]
+    },
+    {
+      "id": "INFO-PROFILE-SESSION",
+      "name": "Profile, Space, session, snapshot, and migration information",
+      "gate_refs": ["PB-016"],
+      "task_refs": ["TASK-000007"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Executable versioned profile, Space, session, snapshot, and migration schemas.",
+        "Disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, data-loss, real-profile fixture, sync, credential-storage, and user-data handling evidence."
+      ],
+      "current_evidence": [
+        "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/storage/machine/profile-session-format-inventory.json",
+        "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
+        "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json"
+      ],
+      "missing_information": [
+        "Executable schema proposals and fault/migration tests beyond the schema-package template.",
+        "Owner-reviewed profile/session readiness and real-profile fixture policy."
+      ],
+      "owner_only_decisions": [
+        "Owner approves profile/session readiness, data-loss safety, real-profile migration, sync, credential storage, and release-path profile behavior.",
+        "Owner promotes any production profile-format claim."
+      ],
+      "next_research_or_review": "Draft task-specific schema-package evidence only after the owner confirms no real user profile data is in scope.",
+      "prohibited_claims": [
+        "No real-profile migration claim.",
+        "No data-loss safety claim.",
+        "No production profile-format claim."
+      ]
+    },
+    {
+      "id": "INFO-PACKAGE-UPDATE",
+      "name": "Research package, update, rollback, and signing-boundary information",
+      "gate_refs": ["PB-017"],
+      "task_refs": ["TASK-000009"],
+      "build_scope": "release_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Executable signed research-package manifest, metadata parser, fake-key local signature verification, staged install, rollback, migration, downgrade, crash-loop, tamper, replay, wrong-target, partial-write, disk-full, and power-loss evidence.",
+        "Explicit production-key separation and owner-reviewed package/update readiness before any updater or release claim."
+      ],
+      "current_evidence": [
+        "docs/research/research-package-update-lab-inventory-2026-07.md",
+        "docs/release-operations/machine/research-package-update-lab.json",
+        "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
+        "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json"
+      ],
+      "missing_information": [
+        "Executable package/update lab output beyond no-claim templates.",
+        "Owner-reviewed package/update readiness, production-key separation review, supported-security review, and release-readiness approval."
+      ],
+      "owner_only_decisions": [
+        "Owner approves package/update readiness, signing readiness, stable channel, public distribution, supported security, and production updater boundaries.",
+        "Owner authorizes any use of production signing or offline root material."
+      ],
+      "next_research_or_review": "Keep TASK-000009 isolated to fake-key local research-package evidence until release authority exists.",
+      "prohibited_claims": [
+        "No production updater claim.",
+        "No signing-readiness claim.",
+        "No supported-security claim."
+      ]
+    },
+    {
+      "id": "INFO-INCIDENT-RESPONSE",
+      "name": "Security incident and emergency patch information",
+      "gate_refs": ["PB-018"],
+      "task_refs": ["TASK-000010"],
+      "build_scope": "release_blocker",
+      "information_status": "missing_executable_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Executed private-intake tabletop, access control, acknowledgement, reproduction, severity, asset analysis, embargo handling, protected patch branch, embargoed CI, regression, backport, signing/update dry run, staged rollout, minimum secure version, revocation, release notes, CVE/credit handling, coordinated disclosure, and postmortem evidence.",
+        "Role matrix, escalation, timing, secret rotation, backup coverage, no-agent-authority controls, and owner-reviewed incident/patch readiness."
+      ],
+      "current_evidence": [
+        "docs/security.md",
+        "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+        "docs/security-engine/machine/incident-patch-rehearsal.json",
+        "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
+        "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json"
+      ],
+      "missing_information": [
+        "Executed tabletop and emergency patch dry-run records beyond no-claim templates.",
+        "Owner-reviewed incident/patch readiness and demonstrated update capacity."
+      ],
+      "owner_only_decisions": [
+        "Owner decides severity, disclosure, stable promotion, signing authority, supported security versions, and incident closure.",
+        "Owner approves production-safe browsing or supported-security claims."
+      ],
+      "next_research_or_review": "Keep TASK-000010 as a private tabletop and authority-separation exercise until backup owners and update lab evidence exist.",
+      "prohibited_claims": [
+        "No incident-response readiness claim.",
+        "No emergency patch capacity claim.",
+        "No production-safe browsing claim."
+      ]
+    },
+    {
+      "id": "INFO-BACKUP-OWNERSHIP",
+      "name": "Backup ownership and two-person control information",
+      "gate_refs": ["PB-019", "PB-020"],
+      "task_refs": ["TASK-000008"],
+      "build_scope": "cross_cutting_blocker",
+      "information_status": "blocked_owner_only",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Named qualified backup owners for build-critical program, architecture, security, release-operations, human-release-authority, incident-response, legal-community, support, quality, supply-chain, documentation-research, product, platform, engine, JavaScript, networking, storage, performance, accessibility, UI-runtime, agent-operations, and privacy-data scopes.",
+        "Role-level evidence, subsystem competence, representative path coverage, recent review record, availability, succession, recusal, inactivity, removal, emergency replacement, CODEOWNERS and review-rule reconciliation, no stale privileged access, no ownerless protected paths, and two-person control evidence."
+      ],
+      "current_evidence": [
+        "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/project-buildout/machine/backup-ownership-gap.json",
+        "docs/project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json",
+        "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json"
+      ],
+      "missing_information": [
+        "Named qualified backups and qualification records beyond the no-claim template.",
+        "Owner-reviewed backup ownership readiness and two-person control evidence."
+      ],
+      "owner_only_decisions": [
+        "Owner names and verifies qualified backup owners.",
+        "Owner approves owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, and production authority."
+      ],
+      "next_research_or_review": "Keep PB-019 blocked until real owner identities and qualification evidence are available.",
+      "prohibited_claims": [
+        "No owner coverage claim.",
+        "No two-person control claim.",
+        "No release authority claim."
+      ]
+    },
+    {
+      "id": "INFO-CHROME-CLASS-PRODUCT",
+      "name": "Chrome-class product and capability information",
+      "gate_refs": ["PB-020"],
+      "task_refs": [],
+      "build_scope": "cross_cutting_blocker",
+      "information_status": "blocked_owner_only",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Traceability from Chrome-class product expectations to capability parity, product requirements, security, accessibility, performance, DevTools, extension, enterprise, update, sync, media, printing, PDF, AI, and operating evidence.",
+        "Owner-reviewed capability evidence and claim bundles for every public comparison axis before using Chrome-class or number-one language."
+      ],
+      "current_evidence": [
+        "docs/start-here.md",
+        "docs/blueprint-v1/02-capability-parity.md",
+        "docs/blueprint-v1/21-product-requirements.md",
+        "docs/research/chrome-class-capability-traceability-map-2026-07.md",
+        "docs/project-buildout/13-build-readiness-operating-board.md",
+        "docs/project-buildout/machine/documentation-readiness-completion-audit.json"
+      ],
+      "missing_information": [
+        "Accepted capability evidence for each Chrome-class domain, not only routing and requirements.",
+        "Owner-reviewed public-claim bundles covering compatibility, security, accessibility, performance, memory, energy, stability, update, incident-response, and support obligations."
+      ],
+      "owner_only_decisions": [
+        "Owner authorizes any Chrome-class, Chrome-equivalent, number-one, daily-driver, or public comparison statement.",
+        "Owner promotes a capability area from target or requirement to supported behavior."
+      ],
+      "next_research_or_review": "Use the Chrome-class traceability map to choose the next evidence lane without making capability claims.",
+      "prohibited_claims": [
+        "No Chrome-class claim.",
+        "No daily-driver claim.",
+        "No compatibility leadership claim."
+      ]
+    }
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_build_information_readiness.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ],
+  "unsupported_boundaries": [
+    "No complete documentation claim.",
+    "No all-information-ready-for-building claim.",
+    "No proposed task approval claim.",
+    "No TASK-000011 acceptance claim.",
+    "No readiness promotion claim.",
+    "No broad M1 implementation claim.",
+    "No developer preview claim.",
+    "No beta claim.",
+    "No stable claim.",
+    "No production claim.",
+    "No Chrome-class claim.",
+    "No performance claim.",
+    "No compatibility claim.",
+    "No security claim.",
+    "No accessibility claim.",
+    "No release readiness claim.",
+    "No daily-driver claim."
+  ]
+}

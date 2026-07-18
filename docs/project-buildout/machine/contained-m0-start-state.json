@@ -17,6 +17,8 @@
     "docs/project-buildout/machine/build-readiness-dependency-graph.json",
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
     "docs/research/contained-m0-start-state-inventory-2026-07.md",
+    "docs/research/build-information-readiness-ledger-2026-07.md",
+    "docs/project-buildout/machine/build-information-readiness-ledger.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
     "docs/agent-execution/README.md",
@@ -145,7 +147,7 @@
         "Keep Chrome-class and extreme-performance goals traced to evidence requirements without representing them as current capability."
       ],
       "required_before_start": [
-        "Broad M1 or product implementation requires owner-reviewed closure of source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, build-readiness closure, and release-authority gates.",
+        "Broad M1 or product implementation requires owner-reviewed closure of source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, build-readiness closure, build-information readiness, and release-authority gates.",
         "Chrome-class, speed, memory, energy, compatibility, security, accessibility, production, release, or daily-driver claims require retained raw evidence and owner-reviewed claim bundles."
       ],
       "must_stop_before": [

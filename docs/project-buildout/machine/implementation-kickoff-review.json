@@ -14,6 +14,8 @@
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
     "docs/research/contained-m0-start-state-inventory-2026-07.md",
     "docs/project-buildout/machine/contained-m0-start-state.json",
+    "docs/research/build-information-readiness-ledger-2026-07.md",
+    "docs/project-buildout/machine/build-information-readiness-ledger.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
     "docs/blueprint-v1/machine/research-readiness-crosswalk.json",

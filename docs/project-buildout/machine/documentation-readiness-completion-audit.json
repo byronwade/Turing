@@ -22,6 +22,8 @@
     "docs/project-buildout/machine/build-readiness-dependency-graph.json",
     "docs/research/contained-m0-start-state-inventory-2026-07.md",
     "docs/project-buildout/machine/contained-m0-start-state.json",
+    "docs/research/build-information-readiness-ledger-2026-07.md",
+    "docs/project-buildout/machine/build-information-readiness-ledger.json",
     "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
     "docs/agent-execution/machine/task-approval-template.schema.json",
@@ -56,7 +58,7 @@
       "id": "DOC-READY-STOP_RESUME",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The operating board, kickoff inventory, dependency graph, contained M0 start-state record, and evidence matrix preserve the first continuation path, first next actions, owner-only decisions, proposed-task start boundaries, and release-authority boundaries."
+        "The operating board, kickoff inventory, dependency graph, contained M0 start-state record, build-information readiness ledger, and evidence matrix preserve the first continuation path, first next actions, owner-only decisions, proposed-task start boundaries, missing broad-build information, and release-authority boundaries."
       ],
       "missing_for_full_goal": [
         "Owner-reviewed closure for remaining P0 source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident response, backup ownership, and build-readiness closure-review blockers remains missing beyond the checked no-claim build-readiness closure-review template."
@@ -71,6 +73,8 @@
         "docs/project-buildout/machine/build-readiness-dependency-graph.json",
         "docs/research/contained-m0-start-state-inventory-2026-07.md",
         "docs/project-buildout/machine/contained-m0-start-state.json",
+        "docs/research/build-information-readiness-ledger-2026-07.md",
+        "docs/project-buildout/machine/build-information-readiness-ledger.json",
         "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json"
       ]
     },
@@ -78,7 +82,7 @@
       "id": "DOC-READY-MACHINE_REGISTRIES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "Pre-build readiness, build-readiness task queue, research-readiness crosswalk, kickoff inventory, dependency graph, contained M0 start-state record, requirements, risks, backlog, owners, and validators provide checked IDs and status boundaries."
+        "Pre-build readiness, build-readiness task queue, research-readiness crosswalk, kickoff inventory, dependency graph, contained M0 start-state record, build-information readiness ledger, requirements, risks, backlog, owners, and validators provide checked IDs and status boundaries."
       ],
       "missing_for_full_goal": [
         "Machine records still lack promoted readiness for PB-002, PB-009, PB-011, PB-012, PB-013, native-shell readiness, profile/session implementation, package/update lab execution, incident rehearsal execution, and backup-owner coverage."
@@ -91,7 +95,8 @@
         "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
         "docs/project-buildout/machine/implementation-kickoff-review.json",
         "docs/project-buildout/machine/build-readiness-dependency-graph.json",
-        "docs/project-buildout/machine/contained-m0-start-state.json"
+        "docs/project-buildout/machine/contained-m0-start-state.json",
+        "docs/project-buildout/machine/build-information-readiness-ledger.json"
       ]
     },
     {
@@ -116,7 +121,7 @@
       "id": "DOC-READY-TASK_HANDOFF",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The proposed task queue records TASK-000001 through TASK-000010 with owners, reviewers, dependencies, allowed paths, prohibited paths, negative evidence, rollback, and acceptance-evidence requirements. The checked no-claim task approval template defines the owner, independent reviewer, authority, evidence-bundle, rollback, expiry, and rejection controls required before any proposed row becomes an immutable reviewed execution manifest. The checked contained M0 start-state record separately verifies that proposed queue rows are not executable from proposed status alone."
+        "The proposed task queue records TASK-000001 through TASK-000010 with owners, reviewers, dependencies, allowed paths, prohibited paths, negative evidence, rollback, and acceptance-evidence requirements. The checked no-claim task approval template defines the owner, independent reviewer, authority, evidence-bundle, rollback, expiry, and rejection controls required before any proposed row becomes an immutable reviewed execution manifest. The checked contained M0 start-state record separately verifies that proposed queue rows are not executable from proposed status alone. The checked build-information readiness ledger records the missing owner-review and evidence-bundle information before proposed tasks can be treated as ready."
       ],
       "missing_for_full_goal": [
         "No proposed build-readiness queue task is approved, running, accepted, release-gated, or sufficient for broad M1 implementation. The separate WP-002 M0 execution manifest is review_pending and still requires independent review before acceptance."
@@ -127,6 +132,7 @@
         "docs/project-buildout/17-build-readiness-task-queue.md",
         "docs/blueprint-v1/machine/build-readiness-task-queue.json",
         "docs/project-buildout/machine/contained-m0-start-state.json",
+        "docs/project-buildout/machine/build-information-readiness-ledger.json",
         "docs/agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json",
         "docs/agent-execution/README.md"
       ]

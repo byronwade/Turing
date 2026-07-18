@@ -49,7 +49,7 @@ cargo test --manifest-path prototype/Cargo.toml --all-targets
 cargo run --manifest-path prototype/Cargo.toml --quiet
 ```
 
-Contributor and agent handoffs that touch the prototype still run the complete local gate set from [`docs/contributing.md`](contributing.md), including documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, contained M0 start-state validation, diff whitespace checks, and `xtask check`.
+Contributor and agent handoffs that touch the prototype still run the complete local gate set from [`docs/contributing.md`](contributing.md), including documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, contained M0 start-state validation, build-information readiness validation, diff whitespace checks, and `xtask check`.
 
 The package uses only the Rust standard library, retains Edition 2021, and declares Rust 1.97 as its minimum within the repository-pinned Rust 1.97.1 toolchain. It does not depend on the new production-oriented crates.
 

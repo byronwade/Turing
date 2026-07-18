@@ -858,6 +858,19 @@ REQUIRED_DOCUMENTATION_READINESS_COMPLETION_AUDIT_FILES = [
     RESEARCH / "documentation-readiness-completion-audit-2026-07.md",
 ]
 
+REQUIRED_BUILD_INFORMATION_READINESS_FILES = [
+    ROOT / "tools" / "validate_build_information_readiness.py",
+    RESEARCH / "build-information-readiness-ledger-2026-07.md",
+    DOCS
+    / "project-buildout"
+    / "machine"
+    / "build-information-readiness-ledger.schema.json",
+    DOCS
+    / "project-buildout"
+    / "machine"
+    / "build-information-readiness-ledger.json",
+]
+
 REQUIRED_IMPLEMENTATION_PLAN_FILES = [
     ROOT / "tools" / "validate_implementation_plan.py",
     RESEARCH / "full-implementation-game-plan-audit-2026-07.md",
@@ -1013,6 +1026,7 @@ def check_required_files() -> None:
             *REQUIRED_IMPLEMENTATION_KICKOFF_REVIEW_FILES,
             *REQUIRED_BUILD_READINESS_DEPENDENCY_GRAPH_FILES,
             *REQUIRED_DOCUMENTATION_READINESS_COMPLETION_AUDIT_FILES,
+            *REQUIRED_BUILD_INFORMATION_READINESS_FILES,
             *REQUIRED_IMPLEMENTATION_PLAN_FILES,
             *REQUIRED_GITHUB_ISSUE_HANDOFF_FILES,
             *REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES,
@@ -6597,6 +6611,7 @@ def check_documentation_readiness_matrix() -> None:
         "Coherent first-entry documentation",
         "Stop/resume continuity",
         "Documentation readiness completion audit",
+        "Build information readiness gap ledger",
         "GitHub issue and stale-PR cleanup handoff",
         "not complete enough for broad M1 expansion",
         "research lane set",
@@ -6612,6 +6627,7 @@ def check_documentation_readiness_matrix() -> None:
         "Documentation topology and links are enforceable",
         "Build and compile gates remain reproducible for M0",
         "validate_documentation_readiness_completion_audit.py",
+        "validate_build_information_readiness.py",
         "validate_github_issue_handoff.py",
         "Definition of Done",
         "documentation-readiness DoD coverage",
@@ -6821,6 +6837,7 @@ def check_xtask_aggregate_check() -> None:
         '["-B", "tools/validate_implementation_plan.py"]',
         '["-B", "tools/validate_github_issue_handoff.py"]',
         '["-B", "tools/validate_contained_m0_start_state.py"]',
+        '["-B", "tools/validate_build_information_readiness.py"]',
         '["-B", "tools/validate_adr_0009_evidence.py"]',
         '["-B", "tools/validate_build_foundation.py"]',
         '["-B", "tools/validate_evidence_bundles.py"]',
@@ -6842,6 +6859,9 @@ def check_xtask_aggregate_check() -> None:
         "Validate contained M0 start state",
         "python3 -B tools/validate_contained_m0_start_state.py > contained-m0-start-state-validation.log",
         "contained-m0-start-state-validation.log",
+        "Validate build information readiness",
+        "python3 -B tools/validate_build_information_readiness.py > build-information-readiness-validation.log",
+        "build-information-readiness-validation.log",
         "Validate ADR-0009 evidence records",
         "python3 -B tools/validate_adr_0009_evidence.py > adr-0009-evidence-validation.log",
         "adr-0009-evidence-validation.log",
@@ -6859,20 +6879,22 @@ def check_xtask_aggregate_check() -> None:
 
     doc_requirements = {
         ROOT / "README.md": [
-            "CI for documentation, implementation-plan validation, GitHub issue handoff validation, contained M0 start-state validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
+            "CI for documentation, implementation-plan validation, GitHub issue handoff validation, contained M0 start-state validation, build-information readiness validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
             "`xtask check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
             "contained M0 start-state validation",
+            "build-information readiness validation",
             "local unstaged and staged diff whitespace checks",
             "cargo run --locked -p xtask -- check",
         ],
         DOCS / "prototype.md": [
             "cargo fmt --manifest-path prototype/Cargo.toml -- --check",
             "cargo test --manifest-path prototype/Cargo.toml --all-targets",
-            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, contained M0 start-state validation, diff whitespace checks, and `xtask check`",
+            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, contained M0 start-state validation, build-information readiness validation, diff whitespace checks, and `xtask check`",
         ],
         RESEARCH / "m0-build-foundation-2026-07.md": [
             "`check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
             "contained M0 start-state validation",
+            "build-information readiness validation",
             "local unstaged and staged diff whitespace checks",
         ],
     }

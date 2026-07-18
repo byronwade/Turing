@@ -18,6 +18,8 @@ It also records that `TASK-000011` remains `review_pending`: its review handoff 
 
 The record does not approve broad M1, developer preview, beta, stable, production, Chrome-class, performance, compatibility, security, accessibility, release, daily-driver, or all-information-ready-for-building claims.
 
+For the broader "what information is still missing?" question, use the checked [Build Information Readiness Ledger](build-information-readiness-ledger-2026-07.md) and [`build-information-readiness-ledger.json`](../project-buildout/machine/build-information-readiness-ledger.json). The start-state record routes the current session; the ledger explains the broad-build information gaps.
+
 ## Current start classes
 
 | Start class | Current state | Execution answer | Stop before |
@@ -49,4 +51,4 @@ This adds a compact control surface for stop/resume sessions. A future maintaine
 
 ## What remains missing
 
-Before broad building or Chrome-class competition claims, the project still needs owner-reviewed closure or explicit expiring exceptions for source strategy, fresh-host reproduction, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup ownership, build-readiness closure, and release authority. The start-state record intentionally preserves those blockers.
+Before broad building or Chrome-class competition claims, the project still needs owner-reviewed closure or explicit expiring exceptions for source strategy, fresh-host reproduction, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup ownership, build-readiness closure, build-information readiness, and release authority. The start-state record intentionally preserves those blockers.

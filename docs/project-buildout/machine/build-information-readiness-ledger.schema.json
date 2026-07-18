@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.example/project-buildout/build-information-readiness-ledger.schema.json",
+  "title": "Turing Build Information Readiness Ledger",
+  "description": "No-claim ledger for information that must exist before broad build or readiness promotion.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "ledger_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "current_state",
+    "task_queue_state",
+    "information_classes",
+    "validation_commands",
+    "unsupported_boundaries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "ledger_id": {
+      "type": "string",
+      "pattern": "^PB020\\.BUILD_INFORMATION_READINESS_LEDGER\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "const": "no_claim_information_readiness_gap_ledger"
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 40
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "current_state": {
+      "type": "object",
+      "required": [
+        "contained_m0_information_ready",
+        "broad_build_information_ready",
+        "all_information_ready_for_building",
+        "chrome_class_information_ready",
+        "production_information_ready",
+        "proposed_task_information_ready",
+        "owner_review_required_for_promotion"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "contained_m0_information_ready": {
+          "type": "boolean"
+        },
+        "broad_build_information_ready": {
+          "type": "boolean"
+        },
+        "all_information_ready_for_building": {
+          "type": "boolean"
+        },
+        "chrome_class_information_ready": {
+          "type": "boolean"
+        },
+        "production_information_ready": {
+          "type": "boolean"
+        },
+        "proposed_task_information_ready": {
+          "type": "boolean"
+        },
+        "owner_review_required_for_promotion": {
+          "type": "boolean"
+        }
+      }
+    },
+    "task_queue_state": {
+      "type": "object",
+      "required": [
+        "proposed_tasks",
+        "review_pending_tasks",
+        "accepted_tasks",
+        "release_gated_tasks"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "proposed_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        },
+        "review_pending_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        },
+        "accepted_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        },
+        "release_gated_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "information_classes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "gate_refs",
+          "task_refs",
+          "build_scope",
+          "information_status",
+          "ready_for_broad_build",
+          "owner_review_required",
+          "required_information",
+          "current_evidence",
+          "missing_information",
+          "owner_only_decisions",
+          "next_research_or_review",
+          "prohibited_claims"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^INFO-[A-Z0-9_-]+$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gate_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^PB-[0-9]{3}$"
+            },
+            "uniqueItems": true
+          },
+          "task_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^TASK-[0-9]{6}$"
+            },
+            "uniqueItems": true
+          },
+          "build_scope": {
+            "type": "string",
+            "enum": [
+              "contained_m0_only",
+              "broad_build_blocker",
+              "release_blocker",
+              "cross_cutting_blocker"
+            ]
+          },
+          "information_status": {
+            "type": "string",
+            "enum": [
+              "ready_for_contained_m0_only",
+              "missing_owner_review",
+              "missing_independent_evidence",
+              "missing_executable_evidence",
+              "blocked_owner_only"
+            ]
+          },
+          "ready_for_broad_build": {
+            "type": "boolean"
+          },
+          "owner_review_required": {
+            "type": "boolean"
+          },
+          "required_information": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "current_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "missing_information": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "owner_only_decisions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "next_research_or_review": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prohibited_claims": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}
