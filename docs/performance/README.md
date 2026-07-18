@@ -22,6 +22,18 @@ Performance is architectural. Data representation, process topology, site isolat
 
 The checked no-claim benchmark readiness-review template is a future owner-review shape only. It does not provide owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
 
+## Chrome-class and extreme-performance boundary
+
+The market goal of Chrome-class performance leadership is a future claim and remains blocked by unresolved `PB-013`.
+
+Current status:
+
+- no accepted claim exists yet for lower memory, lower energy, faster startup/interaction, better 30-tab behavior, or Chrome-class compatibility throughput;
+- fixed-hardware capture, equal-workload harness proof, raw-browser samples, statistics-analysis plans, and owner-reviewed benchmark readiness remain required;
+- required evidence is tracked through `TASK-000005`, [Performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md), [benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md), [30-tab scenario contract](../research/benchmark-30-tab-scenario-contract-2026-07.md), [statistics-analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md), and the checked validators/commands in the [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md#validation-commands).
+
+No implementation, production, or Chrome-class positioning claims may rely on pre-ready benchmark evidence.
+
 ## Measurement rules
 
 - Every result identifies build, commit, platform, hardware, RAM, power, thermal state, profile, cache, network, corpus, process count, isolation, tab states, extensions, agents, repetitions, and analysis.

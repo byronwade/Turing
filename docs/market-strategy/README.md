@@ -10,6 +10,19 @@ This book converts competitive patterns and user-demand signals into falsifiable
 
 > **Turing is the open project browser for people and agents: it remembers the work, explains the cost, and keeps the user in control.**
 
+## Competitive performance posture
+
+The long-horizon positioning for this program is a credible Chrome-class browser with measurable performance advantage only where the full benchmark evidence pipeline is complete.
+
+Current claim boundary:
+
+- `PB-013` remains the hard gate for Chrome-class and extreme-performance claims.
+- No public "faster/lower-memory/lower-energy/daily-driver/chrome-equivalent" statement may be made until owner-reviewed benchmark readiness, statistics analysis, and claim bundles are complete.
+- A supported claim requires fixed-hardware equivalence, raw browser-run artifact retention, 30-tab and recovery scenario evidence, and review against the benchmark claim-expiry and acceptance rules.
+- Task lane to this claim remains [TASK-000005](../project-buildout/17-build-readiness-task-queue.md).
+
+This means market strategy can prioritize performance opportunities, but pricing, marketing, and roadmap claims must stay out-of-scope until evidence gates are complete.
+
 ## Reading order
 
 1. [Market Method, Segments, and Positioning](01-market-method-and-segments.md)
