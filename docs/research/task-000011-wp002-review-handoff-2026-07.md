@@ -9,15 +9,15 @@ Related requirements: `REQ-SEC-003`, `REQ-PERF-004`
 
 ## Purpose
 
-This packet gives an independent reviewer one place to evaluate the `review_pending` M0 `WP-002` implementation task without inventing project state from scattered source files, tests, generated output, CI checks, and prose.
+This packet gives an independent reviewer one place to evaluate the `review_pending` M0 `WP-002` implementation task without inventing project state from scattered source files, tests, generated output, CI checks, evidence-capture records, and prose.
 
-It does not accept `TASK-000011`. It does not create a signed or hashed evidence bundle. It does not promote `PB-011`, complete `WP-002`, approve `TASK-000003`, or establish renderer security, agent security, process isolation, site isolation, production IPC, broad implementation readiness, Chrome-class status, or any security or performance claim.
+It does not accept `TASK-000011`. It does not create an accepted independent evidence bundle. It does not promote `PB-011`, complete `WP-002`, approve `TASK-000003`, or establish renderer security, agent security, process isolation, site isolation, production IPC, broad implementation readiness, Chrome-class status, or any security or performance claim.
 
 ## Review question
 
 Can `TASK-000011` move from implementation-complete-for-review to independent acceptance for the contained M0 reference scope?
 
-Current answer: the repository has candidate evidence for an independent review, but acceptance is still unproven until a reviewer reruns the required checks on the exact commit under review, records an evidence bundle conforming to [`evidence-bundle.schema.json`](../agent-execution/machine/evidence-bundle.schema.json), and writes an explicit review decision.
+Current answer: the repository has candidate evidence and a checked non-accepting evidence capture for independent review, but acceptance is still unproven until a reviewer reruns the required checks on the exact commit under review, records an independent evidence bundle conforming to [`evidence-bundle.schema.json`](../agent-execution/machine/evidence-bundle.schema.json), and writes an explicit review decision.
 
 ## Scope boundary
 
@@ -135,7 +135,9 @@ Acceptance requires a machine-readable evidence bundle that follows [`docs/agent
 - a reviewer identity distinct from the implementation owner;
 - an explicit `accept`, `reject`, or `needs_changes` decision.
 
-No such accepted evidence-bundle instance is present in this repository at the time of this packet.
+The checked no-claim [`TASK-000011.no-claim.2026-07-18.json`](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json) record is a non-accepting evidence capture validated by [`validate_evidence_bundles.py`](../../tools/validate_evidence_bundles.py). It binds candidate source files and successful GitHub validation runs to source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`, but its reviewer is not independent and its decision is `needs_independent_review`.
+
+No accepted evidence-bundle instance is present in this repository at the time of this packet.
 
 ## Rejection triggers
 

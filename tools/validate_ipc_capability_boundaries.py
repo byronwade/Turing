@@ -564,7 +564,7 @@ def validate_schema_source(path: Path) -> None:
         DOCS / "start-here.md": ["IPC schema-source template", "no accepted `TASK-000011`"],
         DOCS / "README.md": ["IPC schema-source template", "`TASK-000011` acceptance"],
         DOCS / "repository-map.md": ["IPC schema-source template", "`TASK-000011` review handoff"],
-        DOCS / "research" / "README.md": ["IPC schema-source template", "Independent review and evidence bundle for `TASK-000011`"],
+        DOCS / "research" / "README.md": ["IPC schema-source template", "Independent review and accepted evidence bundle for `TASK-000011`"],
         DOCS / "research" / "ipc-capability-boundary-inventory-2026-07.md": ["IPC schema-source template", "accepted `TASK-000011` evidence bundle"],
         DOCS / "api-design" / "03-schemas-errors-versioning-and-compatibility.md": ["IPC schema-source template", "review-pending M0 generator/reference"],
         DOCS / "project-buildout" / "13-build-readiness-operating-board.md": ["IPC schema-source template", "no accepted `TASK-000011`"],

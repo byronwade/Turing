@@ -6822,6 +6822,7 @@ def check_xtask_aggregate_check() -> None:
         '["-B", "tools/validate_github_issue_handoff.py"]',
         '["-B", "tools/validate_adr_0009_evidence.py"]',
         '["-B", "tools/validate_build_foundation.py"]',
+        '["-B", "tools/validate_evidence_bundles.py"]',
         '["diff", "--check"]',
         '["diff", "--cached", "--check"]',
         "cargo run --locked -p xtask -- check",
@@ -6862,7 +6863,7 @@ def check_xtask_aggregate_check() -> None:
         DOCS / "prototype.md": [
             "cargo fmt --manifest-path prototype/Cargo.toml -- --check",
             "cargo test --manifest-path prototype/Cargo.toml --all-targets",
-            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, diff whitespace checks, and `xtask check`",
+            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, diff whitespace checks, and `xtask check`",
         ],
         RESEARCH / "m0-build-foundation-2026-07.md": [
             "`check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "bundle_id": "EVID-20260718-TASK-000011-NOCLAIM",
+  "task_id": "TASK-000011",
+  "source_commit": "4590aad94f298d380d43bffc7b9a5cb618beccac",
+  "environment": {
+    "captured_at": "2026-07-18",
+    "host_os": "Windows",
+    "shell": "PowerShell",
+    "python": "Python 3.12.10",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "git": "git version 2.52.0.windows.1",
+    "origin": "https://github.com/byronwade/Turing.git",
+    "working_tree_status": "clean main tracking origin/main before this evidence-capture commit",
+    "validation_scope": "No-claim capture of committed source files plus successful GitHub repository and implementation-plan validation runs for the source commit."
+  },
+  "artifacts": [
+    {
+      "type": "source_file",
+      "path": "schemas/ipc/control-plane.json",
+      "sha256": "36bb004447f2817db743768a629ab243154fc392cd8f68afb6a4ed128cc5dad7",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "tools/generate_ipc.py",
+      "sha256": "68f1c7f36ab22d4bda482fd83bd5d68ee304155444db192406dda7472983ddf4",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-ipc/src/generated.rs",
+      "sha256": "8b192d4478204971fd0a3c2de2da5fa1728b2451d051250a49e44431524c8bed",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "docs/blueprint-v1/machine/process-capabilities.json",
+      "sha256": "c1bbced696b890f780ccca1d82caba3389990b8046dfea5bea3ef351e65fffa3",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "security/generated-code.json",
+      "sha256": "759dbe28d195a103f3f4cbe40e8a7b4cb9ebd10946272b42c7e161179cbe1109",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-types/src/lib.rs",
+      "sha256": "8c44a04ba5dbb3028277c5840a7aee714c368935de3928b39b76bfa9c22a6b6b",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-ipc/src/envelope.rs",
+      "sha256": "d217d256330b8682d6784264058bc2ccb1776724ec7dade55ba3101633cd4a9f",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-ipc/src/queue.rs",
+      "sha256": "0a68196ad953b3b6c14959e82f6ab13536aefbce2abca78e6d84d06e0a3ee74e",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-ipc/src/sequence.rs",
+      "sha256": "ded60c775d55d93a9325476bf018ef5a4f460f764bdeb01da0c82553fe4dfb55",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "crates/turing-kernel/src/lib.rs",
+      "sha256": "7a44fd4c72d5a612c8663bd6610dfbb85bd8a26f18d9cbaf77a2bf25cbf89474",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "apps/turing-shell/src/main.rs",
+      "sha256": "4e14c6d206ef24467e6063fbaae7d061e2e7a22a5edc95bfc083781bb48c51ba",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "tools/validate_build_foundation.py",
+      "sha256": "912e60714f14e3575ea87a06253d5346a648d44118e6f75276b7274d38467907",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "docs/research/wp-002-kernel-ipc-2026-07.md",
+      "sha256": "3bae09a0de4fed5c74520ff218e4820b200d0e26d45d269986849e8c1cf77342",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+      "sha256": "faee5816526421311bfcb363f82b6209adde4f37cc6288545e0a9eb87bcd2e8f",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "source_file",
+      "path": "docs/agent-execution/machine/tasks/TASK-000011.json",
+      "sha256": "2a758d225b69847ce808da1a8b58dc3a2cd34345903ed7e3bb00b762ea6f2d88",
+      "result": "present_at_source_commit"
+    },
+    {
+      "type": "github_actions_run",
+      "path": "https://github.com/byronwade/Turing/actions/runs/29661297898",
+      "sha256": "e14f5ac5dd87e1c337a6b9968f56792f5350af6cd092539ae275fc50a01a3ccc",
+      "result": "repository_validation_success"
+    },
+    {
+      "type": "github_actions_run",
+      "path": "https://github.com/byronwade/Turing/actions/runs/29661297877",
+      "sha256": "893ebb3b8bfcd5b86e10dde2caffaef23852193a4689945c3cc7c05a921bcbc9",
+      "result": "implementation_plan_validation_success"
+    }
+  ],
+  "failures": [],
+  "limitations": [
+    "No TASK-000011 acceptance.",
+    "No independent reviewer decision.",
+    "No accepted evidence-bundle instance.",
+    "No PB-011 readiness promotion.",
+    "No owner-reviewed IPC readiness.",
+    "No production IPC claim.",
+    "No renderer-security claim.",
+    "No agent-security claim.",
+    "No process-isolation claim.",
+    "No site-isolation claim.",
+    "No Chrome-class claim.",
+    "No broad M1 implementation claim.",
+    "Raw local command logs were not retained in this no-claim capture.",
+    "The source commit is the green source commit captured before this evidence-bundle validation commit."
+  ],
+  "review": {
+    "reviewer": "agent:gpt-5.6-pro-validation-capture",
+    "independent": false,
+    "decision": "needs_independent_review",
+    "notes": "This record captures candidate evidence for reviewer routing only. It is intentionally not an acceptance review."
+  }
+}

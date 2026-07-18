@@ -133,6 +133,11 @@ fn check() -> Result<(), String> {
         "python3",
         ["-B", "tools/validate_build_foundation.py"],
     )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_evidence_bundles.py"],
+    )?;
     command(&root, "git", ["diff", "--check"])?;
     command(&root, "git", ["diff", "--cached", "--check"])?;
     command(&root, "cargo", ["fmt", "--all", "--", "--check"])?;

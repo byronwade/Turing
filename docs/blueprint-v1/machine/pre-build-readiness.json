@@ -274,6 +274,7 @@
         "crates/turing-kernel",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
         "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
         "docs/blueprint-v1/machine/ipc-capability-boundary.json",
@@ -281,11 +282,12 @@
         "docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json",
         "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
         "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+        "tools/validate_evidence_bundles.py",
         "tools/validate_ipc_capability_boundaries.py",
         "tools/validate_ipc_readiness_review.py"
       ],
       "evidence_required": [
-        "accepted TASK-000011 schema generator and M0 reference evidence bundle beyond the checked no-claim schema-source template",
+        "accepted TASK-000011 schema generator and M0 reference evidence bundle beyond the checked no-claim schema-source template and non-accepting evidence capture",
         "wire encoding decision",
         "connection authentication",
         "operating-system IPC transport",

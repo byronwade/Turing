@@ -11,9 +11,9 @@ Can `PB-011` keep its no-claim boundary inventory coherent after the review-pend
 
 ## Short Answer
 
-Yes, for boundary planning and review handoff only. The [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json) registry, [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md), [TASK-000011 WP-002 Review Handoff](task-000011-wp002-review-handoff-2026-07.md), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), [`validate_ipc_capability_boundaries.py`](../../tools/validate_ipc_capability_boundaries.py), and [`validate_ipc_readiness_review.py`](../../tools/validate_ipc_readiness_review.py) make the current M0 IPC and process-capability evidence explicit and define the future owner-review handoff. They connect the existing `turing-ipc`, `turing-kernel`, `turing-types`, generated reference, and [`process-capabilities.json`](../blueprint-v1/machine/process-capabilities.json) records to the missing accepted `TASK-000011` evidence bundle, wire encoding decision, authentication, stale-epoch receiver proof on a real transport, timeout, cancellation, owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template, and transport-level negative-test requirements.
+Yes, for boundary planning, review handoff, and non-accepting evidence capture only. The [`ipc-capability-boundary.json`](../blueprint-v1/machine/ipc-capability-boundary.json) registry, [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md), [TASK-000011 WP-002 Review Handoff](task-000011-wp002-review-handoff-2026-07.md), checked no-claim [TASK-000011 evidence capture](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json), checked no-claim [IPC schema-source template](../blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json), checked no-claim [IPC readiness-review template](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json), [`validate_evidence_bundles.py`](../../tools/validate_evidence_bundles.py), [`validate_ipc_capability_boundaries.py`](../../tools/validate_ipc_capability_boundaries.py), and [`validate_ipc_readiness_review.py`](../../tools/validate_ipc_readiness_review.py) make the current M0 IPC and process-capability evidence explicit and define the future owner-review handoff. They connect the existing `turing-ipc`, `turing-kernel`, `turing-types`, generated reference, and [`process-capabilities.json`](../blueprint-v1/machine/process-capabilities.json) records to the missing accepted `TASK-000011` evidence bundle, wire encoding decision, authentication, stale-epoch receiver proof on a real transport, timeout, cancellation, owner-reviewed IPC readiness review beyond the checked no-claim IPC readiness-review template, and transport-level negative-test requirements.
 
-This is not a production IPC protocol, accepted execution task, evidence-bundle instance, owner-reviewed IPC readiness review, renderer sandbox, process-isolation proof, site-isolation proof, schema-generator approval for production use, schema-source approval, or wire-encoding decision.
+This is not a production IPC protocol, accepted execution task, accepted independent evidence-bundle instance, owner-reviewed IPC readiness review, renderer sandbox, process-isolation proof, site-isolation proof, schema-generator approval for production use, schema-source approval, or wire-encoding decision.
 
 ## Inputs
 
@@ -31,6 +31,7 @@ This is not a production IPC protocol, accepted execution task, evidence-bundle 
 - [`no-claim-ipc-readiness-template.json`](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json)
 - [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md)
 - [TASK-000011 WP-002 Review Handoff](task-000011-wp002-review-handoff-2026-07.md)
+- checked no-claim [TASK-000011 evidence capture](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json)
 - [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json)
 - [`validate_ipc_capability_boundaries.py`](../../tools/validate_ipc_capability_boundaries.py)
 - [`validate_ipc_readiness_review.py`](../../tools/validate_ipc_readiness_review.py)
@@ -102,7 +103,7 @@ The inventory explicitly keeps these outside the proof:
 - no wire encoding decision claim;
 - no schema generator claim;
 - no accepted `TASK-000011` claim;
-- no evidence-bundle instance claim;
+- no accepted independent evidence-bundle instance claim;
 - no approved schema-source claim;
 - no timeout or cancellation implementation claim;
 - no implementation readiness claim.

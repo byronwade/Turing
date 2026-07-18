@@ -104,6 +104,7 @@
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
         "docs/agent-execution/machine/tasks/TASK-000011.json",
         "docs/blueprint-v1/machine/ipc-capability-boundary.schema.json",
       "docs/blueprint-v1/machine/ipc-capability-boundary.json",
@@ -111,6 +112,7 @@
       "docs/blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json",
       "docs/blueprint-v1/machine/ipc-readiness-review.schema.json",
       "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json",
+      "tools/validate_evidence_bundles.py",
       "tools/validate_ipc_capability_boundaries.py",
       "tools/validate_ipc_readiness_review.py",
       "crates/turing-ipc/",
@@ -121,7 +123,7 @@
         "docs/blueprint-v1/08-security-and-sandbox.md"
       ],
       "next_proof": [
-      "independent review of TASK-000011 with an evidence bundle tied to the exact source commit for the contained M0 reference",
+      "independent review of TASK-000011 with an accepted evidence bundle tied to the exact source commit for the contained M0 reference beyond the checked non-accepting evidence capture",
       "reviewed wire encoding decision",
       "bounded queue, backpressure, connection authentication, timeout, cancellation, and stale-epoch behavior",
       "negative tests for malformed, oversized, stale, duplicate, reordered, unauthorized, wrong-principal, timeout, and cancellation cases",
@@ -134,6 +136,7 @@
       "no process-isolation readiness claim",
       "no site-isolation readiness claim",
       "no TASK-000011 acceptance",
+      "no accepted independent TASK-000011 evidence bundle",
       "no schema-generator approval for production use",
       "no schema-source or wire-encoding approval",
       "no timeout or cancellation implementation claim",

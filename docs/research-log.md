@@ -2,6 +2,36 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - TASK-000011 no-claim evidence capture
+
+Question:
+
+Can the review-pending `TASK-000011` source evidence be bound to a checked source commit without converting the task into self-approval or `PB-011` readiness?
+
+Inputs:
+
+- checked no-claim [TASK-000011 evidence capture](agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json);
+- [TASK-000011 WP-002 Review Handoff](research/task-000011-wp002-review-handoff-2026-07.md);
+- [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json);
+- [`evidence-bundle.schema.json`](agent-execution/machine/evidence-bundle.schema.json);
+- [`validate_evidence_bundles.py`](../tools/validate_evidence_bundles.py).
+
+Method:
+
+Added a checked non-accepting evidence-bundle record for source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`, including source-file hashes from that commit and successful GitHub validation run references. Added a validator that verifies bundle shape, source-file hashes from the recorded commit, task status, reviewer independence boundaries, and no-claim limitations, then wired it into `xtask check`.
+
+Decision:
+
+Treat the record as source-commit artifact binding only. It does not accept `TASK-000011`, provide an independent reviewer decision, satisfy the accepted evidence-bundle requirement, promote `PB-011`, approve production IPC, or establish any security, performance, compatibility, Chrome-class, release, beta, stable, production, or daily-driver claim.
+
+Impact:
+
+The next reviewer now has checked source-commit artifact evidence to start from, and future evidence-bundle records are validation-covered. `TASK-000011` remains `review_pending`, and accepted independent review remains required before `PB-011` can advance.
+
+Next question:
+
+Should the owner assign an independent reviewer to rerun the checks and replace this non-accepting capture with an accepted or rejected evidence bundle for the exact review commit?
+
 ## 2026-07-18 - TASK-000011 WP-002 review handoff
 
 Question:
@@ -28,7 +58,7 @@ Added a dated review handoff that maps `TASK-000011` acceptance criteria, manife
 
 Decision:
 
-Treat the packet as candidate independent-review organization evidence only. It does not accept `TASK-000011`, create an evidence-bundle instance, promote `PB-011`, complete `WP-002`, approve `TASK-000003`, or establish production IPC, process-isolation, site-isolation, renderer-security, agent-security, Chrome-class, performance, compatibility, accessibility, release, beta, stable, or daily-driver claims.
+Treat the packet as candidate independent-review organization evidence only. It does not accept `TASK-000011`, create an accepted independent evidence-bundle instance, promote `PB-011`, complete `WP-002`, approve `TASK-000003`, or establish production IPC, process-isolation, site-isolation, renderer-security, agent-security, Chrome-class, performance, compatibility, accessibility, release, beta, stable, or daily-driver claims.
 
 Impact:
 
