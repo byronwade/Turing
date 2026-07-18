@@ -218,7 +218,7 @@
           "implemented browser launch runner beyond the checked no-browser self-test",
         "runner-generated trace package with raw artifacts and runner-generated 30-tab results",
         "complete local competitor pins",
-        "equal-workload runs, raw results, owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract, and reviewed claim bundles beyond the checked no-claim claim-bundle template",
+        "equal-workload runs, raw results, owner-reviewed statistics-analysis plan reference, owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract, and reviewed claim bundles beyond the checked no-claim claim-bundle template",
         "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"
       ],
       "claim_boundary": [

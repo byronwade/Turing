@@ -5762,10 +5762,11 @@ def check_benchmark_statistics_analysis() -> None:
     evidence_required = pb013.get("evidence_required")
     if not isinstance(evidence_required, list) or not any(
         "checked no-claim statistics-analysis contract" in str(item)
+        and "owner-reviewed statistics-analysis plan reference" in str(item)
         and "owner-reviewed statistics analysis" in str(item)
         for item in evidence_required
     ):
-        fail("PB-013 evidence_required must keep owner-reviewed statistics analysis proof missing")
+        fail("PB-013 evidence_required must keep owner-reviewed statistics-analysis plan and analysis proof missing")
 
     crosswalk = load_json(MACHINE / "research-readiness-crosswalk.json")
     lanes = crosswalk.get("lanes")
@@ -5790,11 +5791,13 @@ def check_benchmark_statistics_analysis() -> None:
             fail(f"benchmark lane evidence_start is missing {required}")
     next_proof = benchmark_lane.get("next_proof")
     if not isinstance(next_proof, list) or not any(
+        "owner-reviewed statistics-analysis plan reference" in str(item)
+        and
         "owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract"
         in str(item)
         for item in next_proof
     ):
-        fail("benchmark lane next_proof must require owner-reviewed statistics analysis")
+        fail("benchmark lane next_proof must require owner-reviewed statistics-analysis plan and analysis")
 
     task_queue = load_json(MACHINE / "build-readiness-task-queue.json")
     tasks = task_queue.get("tasks")
@@ -5824,10 +5827,11 @@ def check_benchmark_statistics_analysis() -> None:
     acceptance = task.get("acceptance_criteria")
     if not isinstance(acceptance, list) or not any(
         "checked no-claim statistics-analysis contract" in str(item)
+        and "owner-reviewed statistics-analysis plan reference" in str(item)
         and "owner-reviewed analysis evidence" in str(item)
         for item in acceptance
     ):
-        fail("TASK-000005 acceptance criteria must carry checked statistics-analysis contract")
+        fail("TASK-000005 acceptance criteria must carry checked statistics-analysis contract and plan scope")
 
     doc_requirements = {
         DOCS / "README.md": ["Benchmark statistics analysis contract"],

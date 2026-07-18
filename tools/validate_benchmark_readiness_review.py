@@ -452,6 +452,7 @@ def validate_readiness_registry() -> None:
         "reviewed representative offline corpus",
         "implemented browser benchmark launch runner",
         "runner-generated raw result",
+        "owner-reviewed statistics-analysis plan",
         "trace and artifact package",
         "30-tab",
         "benchmark-ready browser pins",
@@ -494,6 +495,7 @@ def validate_task_queue() -> None:
     for phrase in [
         "checked no-claim benchmark readiness-review template",
         "owner-reviewed benchmark readiness review",
+        "statistics-analysis plan",
         "cannot be cited",
         "benchmark-ready",
         "public performance",
@@ -537,6 +539,7 @@ def validate_crosswalk() -> None:
     )
     for phrase in [
         "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template",
+        "owner-reviewed statistics-analysis plan reference",
         "no benchmark-ready claim from the checked no-claim benchmark readiness-review template",
         "no public performance claim",
         "no Chrome-class claim",
@@ -549,11 +552,11 @@ def validate_crosswalk() -> None:
 def validate_docs() -> None:
     docs_to_check = {
         ROOT / "README.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness"],
-        DOCS / "start-here.md": ["benchmark readiness-review template", "no owner-reviewed benchmark readiness"],
-        DOCS / "README.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness"],
+        DOCS / "start-here.md": ["benchmark readiness-review template", "owner-reviewed statistics-analysis plan scope", "no owner-reviewed benchmark readiness"],
+        DOCS / "README.md": ["benchmark readiness-review template", "owner-reviewed statistics-analysis plan scope", "owner-reviewed benchmark readiness"],
         DOCS / "repository-map.md": ["benchmark readiness-review template", "benchmark-readiness-review.schema.json"],
-        DOCS / "research" / "README.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"],
-        DOCS / "research" / "performance-benchmark-readiness-packet-2026-07.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"],
+        DOCS / "research" / "README.md": ["benchmark readiness-review template", "owner-reviewed statistics-analysis plan reference", "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"],
+        DOCS / "research" / "performance-benchmark-readiness-packet-2026-07.md": ["benchmark readiness-review template", "statistics-analysis plan", "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"],
         DOCS / "benchmark-lab" / "README.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness"],
         DOCS / "performance" / "README.md": ["benchmark readiness-review template", "owner-reviewed benchmark readiness"],
         DOCS / "blueprint-v1" / "09-performance-memory.md": ["benchmark readiness-review template", "no owner-reviewed benchmark readiness"],

@@ -389,15 +389,15 @@
         "checked no-claim trace and artifact package contract is carried as planning evidence until runner-generated trace packages, redaction review, raw samples, and retention decisions exist",
         "checked no-claim browser launch-runner contract and checked no-browser browser launch-runner self-test are carried as planning evidence until real browser-run artifacts, timeout/cancellation handling, cache/profile reset, and result finalization exist",
         "checked no-claim claim-bundle template is carried as planning evidence until owner-reviewed public-claim evidence from real raw artifacts exists",
-        "checked no-claim statistics-analysis contract is carried as planning evidence until runner-generated raw samples, noise study, confidence or uncertainty, effect-size, denominator, and owner-reviewed analysis evidence exists",
-        "checked no-claim benchmark readiness-review template is carried as planning evidence until owner-reviewed benchmark readiness review from real hardware, corpus, runner, raw artifact, browser-pin, statistics, denominator, and claim-bundle evidence exists",
+        "checked no-claim statistics-analysis contract is carried as planning evidence until runner-generated raw samples, owner-reviewed statistics-analysis plan reference, noise study, confidence or uncertainty, effect-size, denominator, and owner-reviewed analysis evidence exists",
+        "checked no-claim benchmark readiness-review template is carried as planning evidence until owner-reviewed benchmark readiness review from real hardware, corpus, runner, raw artifact, browser-pin, statistics-analysis plan, statistics, denominator, and claim-bundle evidence exists",
         "validation rejects any benchmark artifact that omits no-claim or unsupported-behavior metadata"
       ],
       "negative_tests": [
         "runner cannot produce an approved claim from smoke or sample data",
         "runner cannot hide failures, unknown resource buckets, tab discards, or site-isolation state",
         "competitor comparison remains blocked without pinned versions and equal-workload evidence",
-        "public claim bundle remains rejected without raw samples, trace package, statistics-analysis contract and review, denominator records, owner review, and expiry",
+        "public claim bundle remains rejected without raw samples, trace package, statistics-analysis plan reference, statistics-analysis contract and review, denominator records, owner review, and expiry",
         "checked no-claim benchmark readiness-review template cannot be cited as owner-reviewed benchmark readiness, benchmark-ready status, public performance, faster, lower-memory, lower-energy, Chrome-class, competitor-result, daily-driver, production, or implementation evidence"
       ],
       "resource_budget": {

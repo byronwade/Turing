@@ -76,11 +76,11 @@ The exact owners, reviewers, allowed paths, prohibited paths, budgets, dependenc
 
 `TASK-000005` Browser-launch benchmark runner contract:
 
-- Start with validated no-claim hardware, OS-control, corpus, network-profile, tab-scenario, artifact-package, launch-runner, resource-attribution registries, and the checked no-claim benchmark readiness-review template.
-- Proves progress with the expanded generated no-claim corpus seed, a no-claim runner contract, checked runner-managed server lifecycle self-test, and checked no-browser browser launch-runner self-test that record server startup/shutdown, timeout, repetition, cache/profile reset, temporary-profile isolation, prohibited-path checks, viewport, checked browser launch-runner planning, trace/artifact package generation, redaction and retention review, failures, cleanup, artifact hashes, resource attribution, 30-tab mixed/all-live scenario handling, and browser-pin candidate evidence.
+- Start with validated no-claim hardware, OS-control, corpus, network-profile, tab-scenario, artifact-package, launch-runner, resource-attribution registries, the checked no-claim statistics-analysis contract, and the checked no-claim benchmark readiness-review template.
+- Proves progress with the expanded generated no-claim corpus seed, a no-claim runner contract, checked runner-managed server lifecycle self-test, and checked no-browser browser launch-runner self-test that record server startup/shutdown, timeout, repetition, cache/profile reset, temporary-profile isolation, prohibited-path checks, viewport, checked browser launch-runner planning, trace/artifact package generation, statistics-analysis plan references, redaction and retention review, failures, cleanup, artifact hashes, resource attribution, 30-tab mixed/all-live scenario handling, and browser-pin candidate evidence.
 - Reject if smoke/sample data can produce an approved claim or if failures, unknown resource buckets, tab discards, site-isolation state, or unequal workload settings are hidden.
-- Reject if the checked no-claim benchmark readiness-review template is cited as owner-reviewed benchmark readiness, benchmark-ready status, public performance, faster, lower-memory, lower-energy, Chrome-class, competitor-result, daily-driver, production, or implementation evidence.
-- Must not claim faster, lower-memory, lower-energy, Chrome-class, compatibility, public performance, or benchmark-ready competitor results until owner-reviewed benchmark readiness and claim-bundle evidence exist.
+- Reject if the checked no-claim benchmark readiness-review template is cited as owner-reviewed benchmark readiness, statistics-analysis plan acceptance, benchmark-ready status, public performance, faster, lower-memory, lower-energy, Chrome-class, competitor-result, daily-driver, production, or implementation evidence.
+- Must not claim faster, lower-memory, lower-energy, Chrome-class, compatibility, public performance, or benchmark-ready competitor results until owner-reviewed statistics-analysis plan scope, benchmark readiness, and claim-bundle evidence exist.
 
 `TASK-000006` Native shell adapter bake-off:
 
