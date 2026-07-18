@@ -111,7 +111,7 @@ The following items need Turing owner/legal review before any affected code, pac
 - `NCSA` is allowed only as a Servo exception for `libfuzzer-sys`; Turing needs its own exception decision if the crate is reachable in a selected profile;
 - `Unlicense`, `0BSD`, `MIT-0`, complex `AND` expressions, and slash-separated expressions need normalized SPDX policy handling rather than string-only acceptance;
 - expressions with copyleft alternatives, such as `Apache-2.0 OR GPL-2.0-only` and `MIT OR Apache-2.0 OR LGPL-2.1-or-later`, require an explicit selected-license path; their presence is not by itself approval or rejection;
-- generated outputs need source-to-output license mapping before they are copied, regenerated, vendored, or distributed by Turing;
+- generated outputs need owner-reviewed source-to-output license approval before they are copied, regenerated, vendored, or distributed by Turing;
 - native packages need separate legal and notice review because Cargo metadata does not cover the extracted Windows dependency tree.
 
 ## Advisory Decision Queue

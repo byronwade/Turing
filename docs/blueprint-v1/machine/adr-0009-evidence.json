@@ -149,15 +149,16 @@
       "existing_evidence": [
         "docs/research/servo-build-script-generated-output-audit-2026-07.md",
         "docs/research/servo-clean-generated-output-reproduction-2026-07.md",
-        "docs/research/servo-generated-output-generator-manifest-2026-07.md"
+        "docs/research/servo-generated-output-generator-manifest-2026-07.md",
+        "docs/research/servo-generated-output-source-provenance-map-2026-07.md"
       ],
       "missing_outputs": [
         "feature-correct full clean-target regeneration diff beyond the package-scoped dummy-media probe",
         "independent-host comparison",
         "owner-reviewed generator manifest tied to the selected baseline, feature profile, target profile, output families, generator versions, and environment policy",
-        "source-to-output license and provenance mapping"
+        "owner-reviewed source-to-output license and provenance approval tied to the selected baseline, feature profile, target profile, output families, generator versions, and component boundary"
       ],
-      "next_action": "First owner-review the generator manifest, regenerate selected generated outputs from a feature-correct full clean target beyond the package-scoped dummy-media probe, then compare hashes plus provenance on an independent host."
+      "next_action": "First owner-review the generator manifest and owner-review the source-to-output provenance map, regenerate selected generated outputs from a feature-correct full clean target beyond the package-scoped dummy-media probe, then compare hashes plus provenance on an independent host."
     },
     {
       "id": "ADR9-EV-008",

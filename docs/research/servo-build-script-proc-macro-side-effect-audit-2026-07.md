@@ -221,7 +221,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 5. compiler, linker, assembler, resource compiler, CMake, Ninja, bindgen, cbindgen, pkg-config, and platform SDK discovery;
 6. time, git, profile-path, and other non-hermetic inputs, including `SOURCE_DATE_EPOCH`;
 7. nested Cargo invocations and target/cache isolation;
-8. generated-output source-to-output mapping and license/provenance attribution;
+8. owner-reviewed generated-output source-to-output mapping and license/provenance attribution;
 9. proc-macro source provenance, expansion determinism, emitted code review, and denied ambient authority;
 10. native artifact copying, DLL/plugin packaging, and release manifest linkage.
 
@@ -239,7 +239,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 - proc macros expand deterministically or safely;
 - build scripts avoid network access at runtime;
 - generated outputs are deterministic from a feature-correct full clean target;
-- source-to-output license/provenance is complete;
+- owner-reviewed source-to-output license/provenance is complete;
 - any package, proc macro, native tool, or generated output is approved for Turing;
 - compatibility, performance, accessibility, daily-driver, production, or Chrome-class readiness.
 
@@ -247,7 +247,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 
 `PB-002` remains blocked.
 
-`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, and adjacent `ADR9-EV-007` evidence now includes a first-pass generated-output generator manifest, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, generated-output provenance, feature-correct full clean-target regeneration beyond the package-scoped dummy-media probe, independent replay, and owner approval remain missing.
+`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, and adjacent `ADR9-EV-007` evidence now includes a first-pass generated-output generator manifest plus a first-pass source-to-output provenance map, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, owner-reviewed generated-output provenance, feature-correct full clean-target regeneration beyond the package-scoped dummy-media probe, independent replay, and owner approval remain missing.
 
 ## Affected Records
 

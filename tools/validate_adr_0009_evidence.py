@@ -25,6 +25,9 @@ CLEAN_GENERATED_OUTPUT_REPORT = (
 GENERATED_OUTPUT_GENERATOR_MANIFEST = (
     "docs/research/servo-generated-output-generator-manifest-2026-07.md"
 )
+GENERATED_OUTPUT_SOURCE_PROVENANCE_MAP = (
+    "docs/research/servo-generated-output-source-provenance-map-2026-07.md"
+)
 
 EVIDENCE_ID = re.compile(r"^ADR9-EV-\d{3}$")
 DECISION_REVIEW_ID = re.compile(r"^ADR0009\.DECISION_REVIEW\.[A-Z0-9._-]+$")
@@ -46,6 +49,7 @@ REQUIRED_DECISION_REVIEW_SOURCES = {
     "docs/blueprint-v1/20-definition-of-done.md",
     CLEAN_GENERATED_OUTPUT_REPORT,
     GENERATED_OUTPUT_GENERATOR_MANIFEST,
+    GENERATED_OUTPUT_SOURCE_PROVENANCE_MAP,
     "tools/validate_adr_0009_evidence.py",
     "tools/validate_blueprint.py",
     "tools/check.ps1",
@@ -291,6 +295,7 @@ def validate_registry(payload: dict[str, object], scopes: set[str]) -> list[dict
     for required in [
         CLEAN_GENERATED_OUTPUT_REPORT,
         GENERATED_OUTPUT_GENERATOR_MANIFEST,
+        GENERATED_OUTPUT_SOURCE_PROVENANCE_MAP,
     ]:
         if required not in ev007_evidence:
             fail(f"ADR9-EV-007 existing_evidence must include {required}")
@@ -301,13 +306,14 @@ def validate_registry(payload: dict[str, object], scopes: set[str]) -> list[dict
         "feature-correct full clean-target",
         "independent-host comparison",
         "owner-reviewed generator manifest",
-        "source-to-output",
+        "owner-reviewed source-to-output",
     ]:
         if phrase not in ev007_missing:
             fail(f"ADR9-EV-007 missing_outputs must mention {phrase}")
     ev007_next_action = require_string(ev007, "next_action", "ADR9-EV-007")
     for phrase in [
         "owner-review the generator manifest",
+        "owner-review the source-to-output provenance map",
         "feature-correct full clean target",
         "independent host",
     ]:
@@ -355,8 +361,10 @@ def validate_matrix(items: list[dict[str, object]]) -> None:
     for phrase in [
         "clean generated-output reproduction probe",
         "generated-output generator manifest",
+        "source-to-output provenance map",
         "feature-correct full clean-target regeneration diff",
         "owner-reviewed generator manifest",
+        "owner-reviewed source-to-output",
     ]:
         if phrase not in text:
             fail(f"{relative(MATRIX)}: matrix must mention {phrase}")
@@ -382,6 +390,7 @@ def validate_readiness() -> None:
         "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
         CLEAN_GENERATED_OUTPUT_REPORT,
         GENERATED_OUTPUT_GENERATOR_MANIFEST,
+        GENERATED_OUTPUT_SOURCE_PROVENANCE_MAP,
     ]:
         if required not in evidence:
             fail(f"PB-002 evidence must include {required}")
@@ -390,6 +399,8 @@ def validate_readiness() -> None:
         fail("PB-002 evidence_required must retain the feature-correct clean generated-output blocker")
     if not any("owner-reviewed generated-output generator manifest" in item for item in evidence_required):
         fail("PB-002 evidence_required must retain the owner-reviewed generated-output generator manifest blocker")
+    if not any("owner-reviewed source-to-output" in item for item in evidence_required):
+        fail("PB-002 evidence_required must retain the owner-reviewed source-to-output provenance blocker")
 
 
 def validate_decision_review() -> None:

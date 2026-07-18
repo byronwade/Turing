@@ -2,6 +2,38 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — Servo generated-output source-to-output provenance map
+
+Question:
+
+Which source and license families feed the first-party Servo and pinned Stylo generated-output families already mapped for `ADR9-EV-007`, and what still prevents those generated outputs from becoming decision-grade source-strategy evidence?
+
+Inputs:
+
+- [Servo Generated-Output Source-To-Output Provenance Map](research/servo-generated-output-source-provenance-map-2026-07.md);
+- [Servo Generated-Output Generator Manifest](research/servo-generated-output-generator-manifest-2026-07.md);
+- [Servo Build-Script and Generated-Output Audit](research/servo-build-script-generated-output-audit-2026-07.md);
+- [Servo Clean Generated-Output Reproduction Probe](research/servo-clean-generated-output-reproduction-2026-07.md);
+- [ADR-0009 Evidence Traceability Matrix](project-buildout/15-adr-0009-evidence-traceability-matrix.md);
+- [`adr-0009-evidence.json`](blueprint-v1/machine/adr-0009-evidence.json);
+- external Servo checkout `C:\ts\servo` at commit `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe` and pinned Stylo commit `d3de91cbac7bba38e159239b3c0a360783fce2ee`.
+
+Method:
+
+Statically inspected Servo and Stylo source/license signals for the already mapped generator families: root license files, package license expressions, sampled generator source headers, WebIDL corpus license markers, PLY README license terms, vendored Python wheel metadata, and MarkupSafe license text. No Servo source, generated output, native binary, wheel, package metadata file, or build log was copied into Turing.
+
+Decision:
+
+Record the source-to-output provenance map as partial `ADR9-EV-007` evidence only. It replaces the broad "source-to-output map missing" gap with a sharper owner-reviewed source-to-output license/provenance approval blocker tied to a selected baseline, feature profile, target profile, output-family set, generator-version set, and component boundary.
+
+Impact:
+
+`PB-002` remains blocked. The report does not prove legal approval, generated-output determinism, clean-target generation, independent-host reproducibility, generated-code approval, component approval, source approval, or release-code authorization.
+
+Next question:
+
+Can the generator manifest and provenance map be owner-reviewed for a selected source baseline and feature profile, then replayed through a feature-correct full clean target and independent host with dynamic build tracing?
+
 ## 2026-07-18 — Servo generated-output generator manifest
 
 Question:

@@ -14,7 +14,7 @@ Which generated-output families are visible in the local Servo and Stylo source 
 
 ## Scope
 
-This manifest extends the [Servo Build-Script and Generated-Output Audit - July 2026](servo-build-script-generated-output-audit-2026-07.md) and the [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md). It is intentionally a manifest, not a generated-code approval.
+This manifest extends the [Servo Build-Script and Generated-Output Audit - July 2026](servo-build-script-generated-output-audit-2026-07.md) and the [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md). A later [Servo Generated-Output Source-To-Output Provenance Map - July 2026](servo-generated-output-source-provenance-map-2026-07.md) adds a first-pass source/license map for these families. This file remains a manifest, not a generated-code approval.
 
 Included:
 
@@ -56,7 +56,7 @@ These are method-local directory digests. They are useful for this report's sour
 
 | Family | Generator | Primary inputs | Generated outputs | Environment and tool sensitivity | Remaining gap |
 |---|---|---|---|---|---|
-| Web IDL and script bindings | `components/script_bindings/build.rs`; `components/script_bindings/codegen/run.py` | `components/script_bindings/webidls`, `components/script_bindings/codegen`, `third_party/WebIDL/parser`, `third_party/ply`, Stylo `css-properties.json`, `Bindings.conf` | `Bindings/`, `ConcreteBindings/`, `WebGPUConcreteBindings/`, `PrototypeList.rs`, `RegisterBindings.rs`, `Globals.rs`, `InterfaceObjectMap.rs`, `InterfaceObjectMapData.json`, `InterfaceObjectMapPhf.rs`, `InterfaceTypes.rs`, `InheritTypes.rs`, `ConcreteInheritTypes.rs`, `GenericUnionTypes.rs`, `UnionTypes.rs`, `DomTypes.rs`, `DomTypeHolder.rs`, `ContentEventHandlerNames.rs`, `doc/apis.html` | Python discovery tries `uv run --frozen python`, then `python3`, then `python`; generator uses `DEP_SERVO_STYLE_CRATE_OUT_DIR`, `OUT_DIR`, `PYTHONDONTWRITEBYTECODE=1`, feature-gated `skip-unless` WebIDL comments, and the Stylo CSS property manifest | Needs feature-profile selection, owner-reviewed input map, source-to-output license/provenance mapping, and feature-correct clean regeneration |
+| Web IDL and script bindings | `components/script_bindings/build.rs`; `components/script_bindings/codegen/run.py` | `components/script_bindings/webidls`, `components/script_bindings/codegen`, `third_party/WebIDL/parser`, `third_party/ply`, Stylo `css-properties.json`, `Bindings.conf` | `Bindings/`, `ConcreteBindings/`, `WebGPUConcreteBindings/`, `PrototypeList.rs`, `RegisterBindings.rs`, `Globals.rs`, `InterfaceObjectMap.rs`, `InterfaceObjectMapData.json`, `InterfaceObjectMapPhf.rs`, `InterfaceTypes.rs`, `InheritTypes.rs`, `ConcreteInheritTypes.rs`, `GenericUnionTypes.rs`, `UnionTypes.rs`, `DomTypes.rs`, `DomTypeHolder.rs`, `ContentEventHandlerNames.rs`, `doc/apis.html` | Python discovery tries `uv run --frozen python`, then `python3`, then `python`; generator uses `DEP_SERVO_STYLE_CRATE_OUT_DIR`, `OUT_DIR`, `PYTHONDONTWRITEBYTECODE=1`, feature-gated `skip-unless` WebIDL comments, and the Stylo CSS property manifest | Needs feature-profile selection, owner-reviewed input map, owner-reviewed source-to-output license/provenance approval, and feature-correct clean regeneration |
 | Script copy outputs | `components/script/build.rs` | `DEP_SCRIPT_BINDINGS_CRATE_OUT_DIR`; generated script-binding roots and `ConcreteBindings/` | Copies selected root files and all `ConcreteBindings/` files into `components/script` `OUT_DIR` | Sensitive to upstream script-bindings output and Cargo dependency output path | Copy-chain provenance must be tracked separately from original generation |
 | WebGPU binding copy outputs | `components/script_webgpu/build.rs` | `DEP_SCRIPT_BINDINGS_CRATE_OUT_DIR`; `WebGPUConcreteBindings/` | Copies WebGPU concrete bindings into a local `ConcreteBindings/` directory | Sensitive to feature gating and upstream script-bindings output | Needs WebGPU feature-profile policy and clean-target comparison |
 | Stylo CSS properties | `style/build.rs`; `style/properties/build.py` in the pinned Stylo checkout | `style/properties` templates and data files, vendored Python packages, `OUT_DIR`, engine mode | `properties.rs`, `css-properties.json`, `css-properties.html`, documentation under `doc/stylo` for Servo mode | Feature-sensitive (`servo` or `gecko`); Python selected through `PYTHON3` or platform default; aborts on Python object-address pattern in output | Needs owner-reviewed generated source provenance and release-path license review |
@@ -136,7 +136,7 @@ The retained warm and clean package-scoped output families do not prove overall 
 ## What This Proves
 
 - First-party Servo and pinned Stylo generator families now have a first-pass manifest with generator paths, primary inputs, output names, and known environment sensitivity.
-- The `ADR9-EV-007` gap is narrower than "generator manifest missing"; the remaining blocker is an owner-reviewed generator manifest tied to a selected source baseline, feature profile, target profile, and source-to-output provenance map.
+- The `ADR9-EV-007` gap is narrower than "generator manifest missing"; the remaining blocker is an owner-reviewed generator manifest tied to a selected source baseline, feature profile, target profile, and owner-reviewed source-to-output provenance map.
 - Some Stylo generated outputs matched across the retained warm and package-scoped clean target observations under this report's digest method.
 - The WebIDL/script-bindings family remains feature/profile-sensitive and did not match between the retained warm full output and package-scoped clean dummy-media output.
 - The DevTools build id is explicitly time-sensitive unless `SOURCE_DATE_EPOCH` is pinned.
@@ -159,7 +159,7 @@ Before generated outputs can support an `ADR-0009` decision, Turing still needs:
 2. owner-reviewed generated-output generator manifest for only that selected baseline/profile;
 3. feature-correct full clean-target regeneration diff beyond the package-scoped dummy-media probe;
 4. independent-host or owner-approved clean-VM comparison using the same source baseline, features, target, profile, toolchain, environment policy, and digest method;
-5. source-to-output license/provenance mapping for every generated family inside any candidate component boundary;
+5. owner-reviewed source-to-output license/provenance approval for every generated family inside any candidate component boundary;
 6. accepted policy for time-sensitive, Git-sensitive, platform-sensitive, SDK-sensitive, native-copy, nested-Cargo, and stdout-generated build behavior;
 7. dynamic tracing that covers filesystem, process, network, time, environment, compiler, linker, native-copy, and proc-macro behavior;
 8. owner approval before any generated-output claim, source import, component approval, or release-code authorization.
@@ -174,5 +174,6 @@ This manifest updates the same `PB-002` and `ADR9-EV-007` queue as:
 - [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json);
 - [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json);
 - checked no-claim [`ADR-0009` decision-review template](../blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json).
+- [Servo Generated-Output Source-To-Output Provenance Map - July 2026](servo-generated-output-source-provenance-map-2026-07.md).
 
 `PB-002` remains blocked and `ADR-0009` remains unresolved.

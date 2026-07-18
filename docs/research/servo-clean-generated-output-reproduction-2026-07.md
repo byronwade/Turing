@@ -11,7 +11,7 @@ Can selected Servo generated outputs be regenerated from a clean external target
 
 This probe does not import Servo source, generated Rust, Cargo output, native binaries, build logs, Cargo timing HTML, or target directories into Turing. It does not approve Servo, generated outputs, build scripts, proc macros, native packages, dependencies, or any `ADR-0009` option.
 
-Follow-up: the [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md) maps first-party Servo and pinned Stylo generator families, inputs, outputs, and environment sensitivity for `ADR9-EV-007`. It does not replace the owner-reviewed manifest, feature-correct full clean regeneration, independent-host comparison, or source-to-output provenance evidence still required below.
+Follow-up: the [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md) maps first-party Servo and pinned Stylo generator families, inputs, outputs, and environment sensitivity for `ADR9-EV-007`. The [Servo Generated-Output Source-To-Output Provenance Map - July 2026](servo-generated-output-source-provenance-map-2026-07.md) adds a first-pass source/license map for those families. Neither report replaces the owner-reviewed manifest, owner-reviewed source-to-output approval, feature-correct full clean regeneration, or independent-host comparison still required below.
 
 ## Inputs
 
@@ -140,7 +140,7 @@ This probe does not prove:
 - the dummy-media package-scoped generated outputs match a full `servoshell` development build;
 - generated outputs are deterministic across clean targets;
 - generated outputs are reproducible across hosts;
-- generated outputs have accepted source-to-output license or provenance mapping;
+- generated outputs have accepted owner-reviewed source-to-output license or provenance approval;
 - GStreamer, MozJS, SpiderMonkey, Stylo, WebRender, GLSL, Web IDL, Python, PLY, proc-macro, native, registry, or git build-script behavior is acceptable under Turing policy;
 - any generated output can be imported, copied, rewritten, or used in Turing release code;
 - Servo is compatible, secure, lower-memory, high-performance, Chrome-class, accessible, production-ready, or approved for a source-strategy decision.
@@ -154,7 +154,7 @@ Before `ADR9-EV-007` can close, produce:
 3. retained success and failure logs with wrapper exit handling, `mach` exit status, stdout and stderr hashes, target-directory hashes, environment records, and source-tree cleanliness proof;
 4. an independent-host or clean-VM comparison for the same commit, feature set, target, profile, environment policy, and generator inputs;
 5. owner-reviewed generated-output generator manifest beyond the first-pass manifest, tied to selected baseline, feature profile, target profile, output families, generator versions, and environment policy;
-6. source-to-output license, notice, and provenance mapping for each generated-output family;
+6. owner-reviewed source-to-output license, notice, and provenance approval for each generated-output family in the selected component boundary;
 7. accepted policy for GStreamer presence or exclusion, MozJS/SpiderMonkey feature selection, JIT posture, `SOURCE_DATE_EPOCH`, Python or `uv` discovery, git-derived versions, `OUT_DIR` profile inference, nested Cargo, native copying, SDK discovery, and platform resource tools;
 8. dynamic build-script and proc-macro tracing tied to the selected baseline and profile.
 

@@ -3,7 +3,7 @@
 Status: dated external audit for `PB-002` and proposed `ADR-0009`; no generated-output, build-script, dependency, native, or source approval
 Owner: architecture, security, provenance, release operations, engine, and embedding owners
 Audit date: 2026-07-17
-Confidence: medium for the inspected Windows dev build outputs and first-party Servo build scripts; low for full provenance until clean rebuild, source-to-output mapping, registry/git build-script review, and owner audit run
+Confidence: medium for the inspected Windows dev build outputs and first-party Servo build scripts; low for full provenance until clean rebuild, owner-reviewed source-to-output mapping, registry/git build-script review, and owner audit run
 
 ## Question
 
@@ -11,7 +11,7 @@ What build-script side effects and generated outputs does the clean external Ser
 
 This audit does not import Servo source, generated Rust, Cargo metadata, build logs, native binaries, or timing artifacts into Turing. It does not approve Servo-derived release code, a generated-code pipeline, a build script, a proc macro, a native package, or an `ADR-0009` option.
 
-A follow-up [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md) records a partial package-scoped clean-target attempt and failure analysis for `ADR9-EV-007`. The [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md) maps first-party Servo and pinned Stylo generator families, inputs, outputs, and environment sensitivity for the same evidence item. The [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md) expands this first-party build-script review into a registry, git, path, and proc-macro side-effect queue. A later [Servo Source and Archive Provenance Audit - July 2026](servo-source-archive-provenance-audit-2026-07.md) records local source archive, tracked-file manifest, Cargo registry cache, Stylo git-source, and native/bootstrap artifact identity evidence for the same checkout.
+A follow-up [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md) records a partial package-scoped clean-target attempt and failure analysis for `ADR9-EV-007`. The [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md) maps first-party Servo and pinned Stylo generator families, inputs, outputs, and environment sensitivity for the same evidence item. The [Servo Generated-Output Source-To-Output Provenance Map - July 2026](servo-generated-output-source-provenance-map-2026-07.md) adds a first-pass source/license map for those generated-output families. The [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md) expands this first-party build-script review into a registry, git, path, and proc-macro side-effect queue. A later [Servo Source and Archive Provenance Audit - July 2026](servo-source-archive-provenance-audit-2026-07.md) records local source archive, tracked-file manifest, Cargo registry cache, Stylo git-source, and native/bootstrap artifact identity evidence for the same checkout.
 
 ## Inputs
 
@@ -197,7 +197,7 @@ Observations:
 
 Inference:
 
-The first-party Servo generated-output pipeline is now partially mapped, but not proven acceptable. A Turing adoption or selective-component proposal still needs a clean, hermetic regeneration check with source-to-output mapping, independent-host reproduction, accepted build-script/proc-macro side-effect policy, dynamic tracing, license/provenance review for generated files, and explicit release controls for environment variables and native tools.
+The first-party Servo generated-output pipeline is now partially mapped, but not proven acceptable. A Turing adoption or selective-component proposal still needs a clean, hermetic regeneration check with owner-reviewed source-to-output mapping, independent-host reproduction, accepted build-script/proc-macro side-effect policy, dynamic tracing, license/provenance review for generated files, and explicit release controls for environment variables and native tools.
 
 ## What this does not prove
 
@@ -221,7 +221,7 @@ Before `ADR-0009` can advance, produce:
 3. owner-reviewed generated-output generator manifest beyond the first-pass manifest, tied to selected baseline, feature profile, target profile, output families, generator versions, and environment policy;
 4. owner-accepted build-script/proc-macro side-effect policy and dynamic tracing, starting from the [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md), covering process execution, filesystem writes, network behavior, environment variables, compiler/linker invocation, platform SDK discovery, native-copy behavior, and native artifacts;
 5. a policy for `SOURCE_DATE_EPOCH`, Python/`uv` fallback, `OUT_DIR` profile inference, git-derived version strings, `OHOS_SDK_NATIVE`, nested Cargo, DLL copying, and platform resource compilation;
-6. license/provenance and source-offer review for generated outputs and any generated headers;
+6. owner-reviewed license/provenance and source-offer review for generated outputs and any generated headers, starting from the first-pass source-to-output provenance map;
 7. sandbox and packaging review for native artifacts copied by `mach` or produced by build scripts;
 8. generated-output diff review tied to any candidate component boundary.
 
@@ -233,6 +233,7 @@ This audit adds evidence for `PB-002` but does not change its blocked status. It
 - [Servo Generated, Native, Unsafe, and FFI Classification - July 2026](servo-generated-native-unsafe-classification-2026-07.md);
 - [Servo Clean Generated-Output Reproduction Probe - July 2026](servo-clean-generated-output-reproduction-2026-07.md);
 - [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md);
+- [Servo Generated-Output Source-To-Output Provenance Map - July 2026](servo-generated-output-source-provenance-map-2026-07.md);
 - [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md);
 - [Servo Dependency and Provenance Inventory - July 2026](servo-dependency-provenance-inventory-2026-07.md);
 - [Servo Supply-Chain Policy Scan - July 2026](servo-supply-chain-policy-scan-2026-07.md);

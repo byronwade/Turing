@@ -97,7 +97,7 @@ Do not block clean no-claim evidence work merely because an owner-only decision 
 
 The `PB-002` evidence set now includes the [Servo unsafe and FFI contract review](../research/servo-unsafe-ffi-contract-review-2026-07.md). It narrows `ADR9-EV-009` and `ADR9-EV-010` into a review plan, but the gate still lacks a block-level unsafe ledger, accepted FFI ABI contracts, C conformance tests, selected component boundary, and owner approval.
 
-The `PB-002` evidence set also includes the [Servo generated-output generator manifest](../research/servo-generated-output-generator-manifest-2026-07.md). It narrows `ADR9-EV-007` from "generator manifest missing" to an owner-reviewed generator-manifest blocker, but the gate still lacks a selected baseline/profile, feature-correct full clean-target regeneration, independent-host comparison, source-to-output license/provenance mapping, dynamic tracing, and owner approval.
+The `PB-002` evidence set also includes the [Servo generated-output generator manifest](../research/servo-generated-output-generator-manifest-2026-07.md) and [Servo generated-output source-to-output provenance map](../research/servo-generated-output-source-provenance-map-2026-07.md). They narrow `ADR9-EV-007` from "generator manifest and source-to-output map missing" to owner-reviewed generator-manifest and source-to-output approval blockers, but the gate still lacks a selected baseline/profile, feature-correct full clean-target regeneration, independent-host comparison, dynamic tracing, and owner approval.
 
 ## Contained task intake rule
 
