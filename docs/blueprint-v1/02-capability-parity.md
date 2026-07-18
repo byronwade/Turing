@@ -121,6 +121,8 @@ Turing documents these as external dependencies. It does not fake support, bypas
 
 The phrase **Chrome-class general-purpose browser** may be used only after all release-critical rows have owners, tests, support statements, security coverage, and update procedures. The phrase **Chrome-equivalent** is reserved for a versioned comparison report showing the exact tested Chrome version, platform, test corpus, pass rates, unsupported proprietary services, and security caveats.
 
+Use the checked no-claim [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md) to route each parity domain to current requirements, readiness blockers, work packages, proposed task handoffs, next proof, and prohibited claims. That map is traceability only; it is not parity, compatibility, security, accessibility, performance, production, or release evidence.
+
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Parity versus differentiation
 

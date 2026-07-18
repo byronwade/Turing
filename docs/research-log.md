@@ -2,6 +2,41 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - Chrome-class capability traceability map
+
+Question:
+
+Can the long-term Chrome-class browser destination be traced to current requirements, work packages, pre-build blockers, task handoffs, evidence owners, and unsupported claims without inventing implementation state?
+
+Inputs:
+
+- [Chrome-Class Capability Traceability Map](research/chrome-class-capability-traceability-map-2026-07.md);
+- [Start Here](start-here.md);
+- [Capability Parity](blueprint-v1/02-capability-parity.md);
+- [Product Requirements](blueprint-v1/21-product-requirements.md);
+- [Build Readiness Operating Board](project-buildout/13-build-readiness-operating-board.md);
+- [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json);
+- [`requirements.json`](blueprint-v1/machine/requirements.json);
+- [`backlog.json`](blueprint-v1/machine/backlog.json);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json).
+
+Method:
+
+Mapped existing documentation and machine records across product shell, engine, JavaScript, network/storage/security, media, accessibility, DevTools, extensions, performance, security/updates, AI, build, and ownership domains. No new external browser, benchmark, market, standards, or implementation fact was introduced.
+
+Decision:
+
+Treat the map as no-claim `PB-020` traceability evidence only. It helps maintainers route Chrome-class questions to owners, blockers, next proof, and prohibited claims, but it does not approve tasks or promote readiness.
+
+Impact:
+
+The docs remain organized enough for contained M0 implementation tasks only. Chrome-class, Chrome-equivalent, broad M1, production, release, compatibility, accessibility, security, performance, memory, energy, daily-driver, and all-information-ready-for-building claims remain unsupported.
+
+Next question:
+
+Which bounded M0 `TASK-*` manifest should be owner-approved first: fresh-host reproducibility, IPC/process authority hardening, sandbox probe packaging, or benchmark launch-runner evidence?
+
 ## 2026-07-18 - Benchmark engine baseline harness readiness map
 
 Question:

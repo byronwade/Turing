@@ -41,6 +41,7 @@ Turing's target is the Pareto frontier across open-web compatibility, interactio
 - [Browser engine book](../engine/README.md)
 - [Developer experience book](../developer-experience/README.md)
 - [Performance engineering book](../performance/README.md)
+- [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-gap companion
