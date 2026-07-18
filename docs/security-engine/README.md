@@ -66,6 +66,7 @@ Security leadership means measurable containment and response, not absence of pu
 - [Security policy](../security.md)
 - [Servo security and maintenance implications](../research/servo-security-maintenance-implications-2026-07.md)
 - [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md)
+- [WP-003 Sandbox Probe Contract](../research/wp-003-sandbox-probe-plan-2026-07.md)
 - [Incident Patch Rehearsal Inventory](../research/incident-patch-rehearsal-inventory-2026-07.md)
 
 ## Incident and patch readiness boundary

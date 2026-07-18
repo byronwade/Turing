@@ -11,7 +11,7 @@ Can `PB-012` move from prose requirements into checked planning evidence, a prob
 
 ## Short Answer
 
-Yes, for planning only. The [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json) registry, checked no-claim [`no-claim-expected-deny-template.json`](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), checked no-claim [`no-claim-sandbox-readiness-template.json`](../security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), [`validate_sandbox_probe_inventory.py`](../../tools/validate_sandbox_probe_inventory.py), and [`validate_sandbox_readiness_review.py`](../../tools/validate_sandbox_readiness_review.py) make the expected-deny probe surface, future package handoff, and future owner-review handoff explicit for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles.
+Yes, for planning only. The [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json) registry, [WP-003 Sandbox Probe Contract](wp-003-sandbox-probe-plan-2026-07.md), checked no-claim [`no-claim-expected-deny-template.json`](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), checked no-claim [`no-claim-sandbox-readiness-template.json`](../security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), [`validate_sandbox_contracts.py`](../../tools/validate_sandbox_contracts.py), [`validate_sandbox_probe_inventory.py`](../../tools/validate_sandbox_probe_inventory.py), and [`validate_sandbox_readiness_review.py`](../../tools/validate_sandbox_readiness_review.py) make the expected-deny probe surface, operation catalog, evidence-bundle shape, future package handoff, and future owner-review handoff explicit for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles.
 
 This is not a working sandbox harness, platform policy, packaged-build probe result, owner-reviewed sandbox readiness, renderer-security proof, site-isolation proof, hostile-browsing safety claim, production security claim, or implementation claim.
 
@@ -27,10 +27,14 @@ This is not a working sandbox harness, platform policy, packaged-build probe res
 - [`process-capabilities.json`](../blueprint-v1/machine/process-capabilities.json)
 - [`sandbox-probe-inventory.schema.json`](../security-engine/machine/sandbox-probe-inventory.schema.json)
 - [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json)
+- [WP-003 Sandbox Probe Contract](wp-003-sandbox-probe-plan-2026-07.md)
+- [`probe-catalog.json`](../../schemas/sandbox/probe-catalog.json)
+- [`probe-evidence.schema.json`](../../schemas/sandbox/probe-evidence.schema.json)
 - [`sandbox-probe-package.schema.json`](../security-engine/machine/sandbox-probe-package.schema.json)
 - [`no-claim-expected-deny-template.json`](../security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json)
 - [`sandbox-readiness-review.schema.json`](../security-engine/machine/sandbox-readiness-review.schema.json)
 - [`no-claim-sandbox-readiness-template.json`](../security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json)
+- [`validate_sandbox_contracts.py`](../../tools/validate_sandbox_contracts.py)
 - [`validate_sandbox_probe_inventory.py`](../../tools/validate_sandbox_probe_inventory.py)
 - [`validate_sandbox_readiness_review.py`](../../tools/validate_sandbox_readiness_review.py)
 
@@ -48,11 +52,14 @@ The checked probe-package template adds the handoff shape for the first future e
 
 The checked sandbox readiness-review template adds the handoff shape for the first future owner-reviewed sandbox readiness review. Its review fields are deliberately null, every readiness flag is false, and its axes require packaged role runners, effective platform policy, host-safe fixtures, broker fixtures, compromised-client harnesses, role/surface coverage, result records, failure denominator, cleanup, platform matrix evidence, and owner/security/platform/quality/release review beyond the checked no-claim sandbox readiness-review template.
 
+The checked WP-003 contract adds a stable no-claim operation catalog and evidence-bundle schema for the first future executable package. It requires three allowed control probes, expected-deny operation records, unsupported-as-not-pass behavior, rejection of application-level stub denials as sandbox proof, redacted evidence, and `research_evidence_only` release-claim status.
+
 ## Missing Evidence
 
 `PB-012` remains partial because the following are still missing:
 
 - packaged expected-deny probes beyond the checked no-claim probe-package template using the same process launch path, handle set, sandbox policy, and mitigation flags as the evaluated configuration;
+- real probe output that replaces the checked no-claim operation catalog and evidence schema with retained evidence, unsandboxed control runs, and redacted platform artifacts;
 - owner-reviewed sandbox readiness review beyond the checked no-claim sandbox readiness-review template;
 - per-platform effective policy capture for macOS, Windows, and Linux;
 - a stable probe result schema and artifact package;
@@ -104,6 +111,7 @@ To advance `PB-012`, the next task should produce:
 Run:
 
 ```bash
+python3 -B tools/validate_sandbox_contracts.py
 python3 -B tools/validate_sandbox_probe_inventory.py
 python3 -B tools/validate_sandbox_readiness_review.py
 python3 -B tools/validate_blueprint.py

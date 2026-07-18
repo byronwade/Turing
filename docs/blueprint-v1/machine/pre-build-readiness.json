@@ -287,16 +287,21 @@
       "owner_scope": "security",
       "evidence": [
         "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
         "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
       "docs/security-engine/machine/sandbox-probe-inventory.json",
       "docs/security-engine/machine/sandbox-probe-package.schema.json",
       "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
       "docs/security-engine/machine/sandbox-readiness-review.schema.json",
       "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+      "schemas/sandbox/probe-catalog.json",
+      "schemas/sandbox/probe-evidence.schema.json",
+      "tools/validate_sandbox_contracts.py",
       "tools/validate_sandbox_probe_inventory.py",
       "tools/validate_sandbox_readiness_review.py"
     ],
     "evidence_required": [
+      "stable operation catalog, evidence schema, unsandboxed control, unsupported platform primitives handling, and application-level stub rejection must remain checked before executable probe work is accepted",
       "packaged expected-deny probes beyond the checked no-claim probe-package template for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles covering file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC access",
       "effective platform policy capture, host-safe fixtures, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner review before any sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, platform containment, SEC-GATE-1, SEC-GATE-6, or production-safety claim",
       "owner-reviewed sandbox readiness review beyond the checked no-claim sandbox readiness-review template before PB-012 readiness promotion, sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, platform containment, SEC-GATE-1, SEC-GATE-6, production-safety, or implementation claims"

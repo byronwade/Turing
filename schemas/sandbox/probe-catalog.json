@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "catalog_id": "SANDBOX.PROBE.CATALOG.2026_07",
+  "status": "no_claim_contract",
+  "updated": "2026-07-18",
+  "related_readiness": "PB-012",
+  "related_task": "TASK-000004",
+  "default_policy": "deny",
+  "claim_status": "No-claim sandbox probe contract only; no packaged probe execution, no effective platform policy, no owner-reviewed sandbox readiness, no renderer-security, no site-isolation, no hostile-browsing safety, no SEC-GATE evidence, no production-safety, and no implementation claim.",
+  "result_values": [
+    "allowed",
+    "denied",
+    "killed",
+    "brokered",
+    "unsupported",
+    "not_attempted",
+    "error"
+  ],
+  "rules": {
+    "unsandboxed_control_required": true,
+    "unsupported_is_pass": false,
+    "application_stub_denial_is_pass": false,
+    "unexpected_allow_is_blocking": true,
+    "unexpected_deny_requires_review": true,
+    "destructive_external_targets_forbidden": true
+  },
+  "operations": [
+    {
+      "id": "SBX-PROBE-001",
+      "name": "assigned output write control",
+      "category": "control",
+      "control": true,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "allowed",
+      "enforcement_required": "explicit grant",
+      "safe_target": "probe-owned temporary output file",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-002",
+      "name": "assigned input read control",
+      "category": "control",
+      "control": true,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "allowed",
+      "enforcement_required": "explicit grant",
+      "safe_target": "probe-owned read-only fixture file",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-003",
+      "name": "monotonic clock read control",
+      "category": "control",
+      "control": true,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "allowed",
+      "enforcement_required": "platform baseline",
+      "safe_target": "monotonic clock API",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-004",
+      "name": "arbitrary filesystem read",
+      "category": "file",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "operating system boundary or broker policy",
+      "safe_target": "probe-created sibling directory outside assigned root",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-005",
+      "name": "arbitrary filesystem write",
+      "category": "file",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "operating system boundary or broker policy",
+      "safe_target": "probe-created sibling directory outside assigned root",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-006",
+      "name": "untrusted dynamic library load",
+      "category": "dynamic-code",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "library validation, dynamic-code policy, or loader boundary",
+      "safe_target": "inert unsigned or non-loadable probe library fixture",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-007",
+      "name": "outbound network connect",
+      "category": "socket",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "network namespace, AppContainer, seatbelt, seccomp, or broker boundary",
+      "safe_target": "loopback-only fixture listener with no external traffic",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-008",
+      "name": "network listen",
+      "category": "socket",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "network namespace, AppContainer, seatbelt, seccomp, or broker boundary",
+      "safe_target": "loopback ephemeral port",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-009",
+      "name": "raw socket create",
+      "category": "socket",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "operating system privilege boundary",
+      "safe_target": "socket creation only; no transmitted traffic",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-010",
+      "name": "child process create",
+      "category": "process",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "process launch restriction, job, token, namespace, or broker boundary",
+      "safe_target": "inert probe child binary",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-011",
+      "name": "debug attach",
+      "category": "debug",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "ptrace, task-port, process-access, or debug-privilege boundary",
+      "safe_target": "probe-owned sibling process fixture",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-012",
+      "name": "cross-process memory read",
+      "category": "debug",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "process-access, ptrace, task-port, or memory-read boundary",
+      "safe_target": "probe-owned sibling process with inert sentinel bytes",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-013",
+      "name": "credential store access",
+      "category": "credential",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "keychain, credential-manager, secret-service, or broker boundary",
+      "safe_target": "empty fake credential namespace",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-014",
+      "name": "global clipboard read",
+      "category": "device",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "platform clipboard, window-server, or broker boundary",
+      "safe_target": "isolated test clipboard sentinel when available",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-015",
+      "name": "device open",
+      "category": "device",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "device permission, namespace, entitlement, token, or broker boundary",
+      "safe_target": "harmless fake device node, unavailable dummy path, or denied platform handle",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-016",
+      "name": "ambient platform IPC",
+      "category": "ipc",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "Mach, COM/RPC, D-Bus, named-pipe, namespace, or broker boundary",
+      "safe_target": "local denied service endpoint fixture",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-017",
+      "name": "registry or preference write",
+      "category": "registry",
+      "control": false,
+      "platforms": ["macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "registry virtualization, preference domain, entitlement, token, or broker boundary",
+      "safe_target": "dedicated probe-only key or preference domain",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-018",
+      "name": "unexpected inherited handle",
+      "category": "process",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "close-on-exec, handle allowlist, job, token, or launcher boundary",
+      "safe_target": "probe-owned sentinel descriptor or handle intentionally withheld",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-019",
+      "name": "secret environment variable",
+      "category": "profile",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "launcher environment allowlist",
+      "safe_target": "synthetic non-secret sentinel variable",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-020",
+      "name": "unsafe working directory",
+      "category": "profile",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "denied",
+      "enforcement_required": "launcher working-directory policy",
+      "safe_target": "probe-created directory outside assigned profile root",
+      "destructive": false
+    },
+    {
+      "id": "SBX-PROBE-021",
+      "name": "broker disconnect",
+      "category": "ipc",
+      "control": false,
+      "platforms": ["linux", "macos", "windows"],
+      "expected_on_supported_sandbox": "killed",
+      "enforcement_required": "parent-death, broker liveness, channel revocation, or fatal policy boundary",
+      "safe_target": "probe-owned broker fixture",
+      "destructive": false
+    }
+  ]
+}

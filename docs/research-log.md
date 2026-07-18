@@ -2,6 +2,38 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — WP-003 sandbox probe contract
+
+Question:
+
+Can `PB-012` and `TASK-000004` gain a checked operation catalog, evidence-bundle schema, and focused validator before executable packaged probes, effective platform policy, owner-reviewed sandbox readiness, sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, `SEC-GATE-*`, production-safety, or implementation claims exist?
+
+Inputs:
+
+- [Sandbox Probe Inventory](research/sandbox-probe-inventory-2026-07.md);
+- [WP-003 Sandbox Probe Contract](research/wp-003-sandbox-probe-plan-2026-07.md);
+- [`probe-catalog.json`](../schemas/sandbox/probe-catalog.json);
+- [`probe-evidence.schema.json`](../schemas/sandbox/probe-evidence.schema.json);
+- [`tools/validate_sandbox_contracts.py`](../tools/validate_sandbox_contracts.py);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
+
+Method:
+
+Added a checked no-claim WP-003 operation catalog and evidence schema, then added focused and aggregate validation for exact probe IDs, no-destructive-host targets, three allowed controls, result enums, unsupported-as-not-pass behavior, application-level stub rejection, redaction requirements, `research_evidence_only` release claims, `PB-012` evidence, `TASK-000004` scope, and research-index/report links.
+
+Decision:
+
+Keep `PB-012` partial and `TASK-000004` proposed. The contract defines what future executable sandbox probe packages must report, but it does not execute probes, prove platform containment, approve sandbox adapters, complete owner-reviewed sandbox readiness, or support security, release, production, or implementation claims.
+
+Impact:
+
+Future `TASK-000004` work now has a stable no-claim operation/evidence contract in addition to the inventory, package template, and readiness-review template. Any real probe result must replace planning-only fields with retained platform evidence, unsandboxed control runs, redacted artifacts, cleanup checks, and owner-reviewed sandbox readiness beyond the checked no-claim readiness-review template.
+
+Next question:
+
+Which `PB-012` blocker should become executable evidence first: packaged role runner, effective platform-policy capture, safe fixture package, broker fixture, compromised-client harness, result artifact package, or platform matrix execution?
+
 ## 2026-07-18 — Benchmark readiness-review template
 
 Question:

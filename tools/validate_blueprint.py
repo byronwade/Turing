@@ -312,6 +312,7 @@ REQUIRED_DOCS = [
     RESEARCH / "backup-ownership-gap-inventory-2026-07.md",
     RESEARCH / "ipc-capability-boundary-inventory-2026-07.md",
     RESEARCH / "sandbox-probe-inventory-2026-07.md",
+    RESEARCH / "wp-003-sandbox-probe-plan-2026-07.md",
     RESEARCH / "agent-execution-production-readiness-audit-2026-07.md",
     RESEARCH / "servo-unsafe-ffi-contract-review-2026-07.md",
     DOCS / "templates" / "agent-task.md",
@@ -461,6 +462,8 @@ REQUIRED_MACHINE_FILES = [
     / "machine"
     / "sandbox-readiness-reviews"
     / "no-claim-sandbox-readiness-template.json",
+    ROOT / "schemas" / "sandbox" / "probe-catalog.json",
+    ROOT / "schemas" / "sandbox" / "probe-evidence.schema.json",
     DOCS / "project-buildout" / "machine" / "backup-ownership-gap.schema.json",
     DOCS / "project-buildout" / "machine" / "backup-ownership-gap.json",
     DOCS / "project-buildout" / "machine" / "backup-owner-qualification-record.schema.json",
@@ -860,6 +863,13 @@ REQUIRED_SANDBOX_PROBE_INVENTORY_FILES = [
     / "no-claim-expected-deny-template.json",
 ]
 
+REQUIRED_SANDBOX_CONTRACT_FILES = [
+    ROOT / "tools" / "validate_sandbox_contracts.py",
+    RESEARCH / "wp-003-sandbox-probe-plan-2026-07.md",
+    ROOT / "schemas" / "sandbox" / "probe-catalog.json",
+    ROOT / "schemas" / "sandbox" / "probe-evidence.schema.json",
+]
+
 REQUIRED_SANDBOX_READINESS_REVIEW_FILES = [
     ROOT / "tools" / "validate_sandbox_readiness_review.py",
     DOCS / "security-engine" / "machine" / "sandbox-readiness-review.schema.json",
@@ -964,6 +974,7 @@ def check_required_files() -> None:
             *REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES,
             *REQUIRED_IPC_READINESS_REVIEW_FILES,
             *REQUIRED_SANDBOX_PROBE_INVENTORY_FILES,
+            *REQUIRED_SANDBOX_CONTRACT_FILES,
             *REQUIRED_SANDBOX_READINESS_REVIEW_FILES,
         ]
         if not path.is_file()
@@ -2920,6 +2931,22 @@ def check_sandbox_probe_inventory() -> None:
         fail(detail or "sandbox probe inventory validation failed")
 
 
+def check_sandbox_contracts() -> None:
+    validator = ROOT / "tools" / "validate_sandbox_contracts.py"
+    result = subprocess.run(
+        [sys.executable, "-B", str(validator)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = "\n".join(
+            line for line in [result.stdout.strip(), result.stderr.strip()] if line
+        )
+        fail(detail or "sandbox contract validation failed")
+
+
 def check_sandbox_readiness_review() -> None:
     validator = ROOT / "tools" / "validate_sandbox_readiness_review.py"
     result = subprocess.run(
@@ -3407,16 +3434,20 @@ def check_ui_runtime_controls() -> None:
     if not isinstance(pb012, dict):
         fail("pre-build readiness is missing PB-012")
     if pb012.get("status") != "partial":
-        fail("PB-012 must remain partial while only no-claim sandbox probe inventory, probe-package template, and readiness-review template exist")
+        fail("PB-012 must remain partial while only no-claim sandbox probe inventory, operation/evidence contract, probe-package template, and readiness-review template exist")
     pb012_evidence = pb012.get("evidence")
     required_pb012_evidence = [
         "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
         "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
         "docs/security-engine/machine/sandbox-probe-inventory.json",
         "docs/security-engine/machine/sandbox-probe-package.schema.json",
         "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
         "docs/security-engine/machine/sandbox-readiness-review.schema.json",
         "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+        "schemas/sandbox/probe-catalog.json",
+        "schemas/sandbox/probe-evidence.schema.json",
+        "tools/validate_sandbox_contracts.py",
         "tools/validate_sandbox_probe_inventory.py",
         "tools/validate_sandbox_readiness_review.py",
     ]
@@ -6882,6 +6913,7 @@ def main() -> int:
         check_ipc_capability_boundaries()
         check_ipc_readiness_review()
         check_sandbox_probe_inventory()
+        check_sandbox_contracts()
         check_sandbox_readiness_review()
         check_ui_runtime_controls()
         check_adr_0009_evidence_controls()
@@ -6913,11 +6945,11 @@ def main() -> int:
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
         "27 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 114 core machine-readable registries, "
+        "18 work packages, 116 core machine-readable registries, "
         "research-readiness crosswalk, ADR-0009 decision-review template, benchmark manifest, hardware, OS-control, resource attribution, "
         "competitor versions, competitor local installs, browser-pin capture, "
         "browser-pin capture self-test, browser-pin diagnostics, corpus, "
-        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
+        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
         "research-log chronology, repository-map core registries, index/root/start machine-registry navigation, "
         "research-index lanes/crosswalk, start-here continuation, "
         "documentation-readiness evidence/DoD, "

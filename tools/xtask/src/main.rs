@@ -82,6 +82,8 @@ fn doctor(require_exact_toolchain: bool) -> Result<(), String> {
         "rust-toolchain.toml",
         "docs/README.md",
         "schemas/ipc/control-plane.json",
+        "schemas/sandbox/probe-catalog.json",
+        "schemas/sandbox/probe-evidence.schema.json",
         "crates/turing-ipc/src/generated.rs",
         "security/dependencies.json",
         "security/unsafe-code.json",

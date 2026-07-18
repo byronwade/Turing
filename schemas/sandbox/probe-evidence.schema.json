@@ -1,0 +1,406 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/sandbox/probe-evidence-v1.json",
+  "title": "Turing Sandbox Probe Evidence Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "probe_catalog_version",
+    "run_id",
+    "build_identity",
+    "platform",
+    "sandbox_policy",
+    "launcher",
+    "probe_process",
+    "redaction",
+    "results",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "probe_catalog_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^SBX-RUN-[0-9A-Fa-f-]{8,64}$"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "build_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "build_id", "maturity", "profile"],
+      "properties": {
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "build_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "maturity": {
+          "enum": ["research", "nightly", "preview", "beta", "stable"]
+        },
+        "profile": {
+          "enum": ["debug", "release", "instrumented", "sanitized"]
+        }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "architecture",
+        "os_version",
+        "kernel_or_build",
+        "sandbox_features"
+      ],
+      "properties": {
+        "family": {
+          "enum": ["linux", "macos", "windows"]
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "os_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "kernel_or_build": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "sandbox_features": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "status"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
+              "status": {
+                "enum": ["enabled", "disabled", "unsupported", "unknown"]
+              },
+              "version": {
+                "type": ["string", "integer", "null"]
+              },
+              "reason_code": {
+                "type": ["string", "null"],
+                "maxLength": 160
+              }
+            }
+          }
+        }
+      }
+    },
+    "sandbox_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "role",
+        "expected_default"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "policy_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "role": {
+          "enum": [
+            "renderer",
+            "network",
+            "storage",
+            "gpu",
+            "decoder",
+            "extension",
+            "devtools",
+            "agent",
+            "updater",
+            "control"
+          ]
+        },
+        "expected_default": {
+          "enum": ["deny", "control-unsandboxed"]
+        },
+        "declared_grants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "launcher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "process_identity",
+        "broker_identity",
+        "granted_handles",
+        "environment_allowlist"
+      ],
+      "properties": {
+        "process_identity": {
+          "$ref": "#/$defs/process_identity"
+        },
+        "broker_identity": {
+          "$ref": "#/$defs/process_identity"
+        },
+        "granted_handles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "purpose", "access"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "purpose": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "access": {
+                "enum": ["read", "write", "read_write", "signal", "metadata_only"]
+              }
+            }
+          }
+        },
+        "environment_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]{1,64}$"
+          }
+        }
+      }
+    },
+    "probe_process": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["process_identity", "executable_digest", "catalog_digest"],
+      "properties": {
+        "process_identity": {
+          "$ref": "#/$defs/process_identity"
+        },
+        "executable_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "catalog_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "forbidden_data_classes",
+        "stable_machine_identifier_included"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "forbidden_data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "user_profile_path",
+              "username",
+              "hostname",
+              "credential",
+              "token",
+              "cookie",
+              "page_content",
+              "clipboard_content",
+              "device_serial",
+              "stable_machine_identifier",
+              "external_ip_address"
+            ]
+          }
+        },
+        "stable_machine_identifier_included": {
+          "const": false
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "probe_id",
+          "expected",
+          "actual",
+          "passed",
+          "enforcement_source",
+          "reason_code",
+          "duration_micros"
+        ],
+        "properties": {
+          "probe_id": {
+            "type": "string",
+            "pattern": "^SBX-PROBE-[0-9]{3}$"
+          },
+          "expected": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "actual": {
+            "enum": [
+              "allowed",
+              "denied",
+              "killed",
+              "brokered",
+              "unsupported",
+              "not_attempted",
+              "error"
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "enforcement_source": {
+            "enum": [
+              "operating_system",
+              "broker",
+              "host_acl",
+              "application_stub",
+              "unsupported",
+              "unknown"
+            ]
+          },
+          "reason_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "platform_status_code": {
+            "type": ["integer", "string", "null"]
+          },
+          "signal_or_exception": {
+            "type": ["string", "null"],
+            "maxLength": 96
+          },
+          "duration_micros": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "notes": {
+            "type": ["string", "null"],
+            "maxLength": 512
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "failed",
+        "unsupported",
+        "unexpected_allows",
+        "unexpected_denials",
+        "release_claim"
+      ],
+      "properties": {
+        "passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unsupported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unexpected_allows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unexpected_denials": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "release_claim": {
+          "const": "research_evidence_only"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "process_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "epoch", "role"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    }
+  }
+}

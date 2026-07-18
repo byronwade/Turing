@@ -137,12 +137,16 @@
       "research_questions": ["RQ-20", "RQ-38", "RQ-31"],
       "evidence_start": [
         "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
         "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
       "docs/security-engine/machine/sandbox-probe-inventory.json",
       "docs/security-engine/machine/sandbox-probe-package.schema.json",
       "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
       "docs/security-engine/machine/sandbox-readiness-review.schema.json",
       "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+      "schemas/sandbox/probe-catalog.json",
+      "schemas/sandbox/probe-evidence.schema.json",
+      "tools/validate_sandbox_contracts.py",
       "tools/validate_sandbox_probe_inventory.py",
       "tools/validate_sandbox_readiness_review.py",
       "docs/security-engine/README.md",
@@ -151,6 +155,7 @@
         "docs/blueprint-v1/08-security-and-sandbox.md"
       ],
       "next_proof": [
+      "stable operation catalog replacement, evidence schema records, unsandboxed control runs, unsupported platform primitive handling, and application-level stub rejection",
       "packaged expected-deny probes beyond the checked no-claim probe-package template for renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles",
       "file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC negative evidence",
       "effective platform policy capture, host-safe fixtures, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner review",
