@@ -1,0 +1,216 @@
+{
+  "$schema": "../benchmark-statistics-analysis.schema.json",
+  "schema_version": 1,
+  "analysis_id": "TURING.BENCHMARK.STATISTICS_ANALYSIS.NOCLAIM_PLAN.2026_07",
+  "status": "no_claim_statistics_analysis_contract",
+  "updated": "2026-07-18",
+  "evidence_id": "PB13-EV-006",
+  "task": "TASK-000005",
+  "claim_status": "Benchmark statistics-analysis contract only; no browser benchmark run, no runner-generated raw sample, no statistical summary from real samples, no confidence interval from measured browser data, no benchmark result, no competitor result, no memory result, no energy result, no Chrome-class claim, no faster claim, no lower-memory claim, no lower-energy claim, no public performance claim, no production claim, and no daily-driver claim.",
+  "source_records": [
+    "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+    "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+    "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
+    "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+    "docs/research/chrome-class-performance-runbook-2026-07.md",
+    "docs/benchmark-lab/07-statistics-artifacts-regressions-and-claims.md",
+    "docs/performance/05-benchmarks-statistics-and-regression-governance.md",
+    "docs/blueprint-v1/09-performance-memory.md",
+    "docs/blueprint-v1/machine/benchmark-manifest.schema.json",
+    "docs/blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.sample.json",
+    "docs/blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.raw-artifacts.json",
+    "docs/blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json",
+    "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+    "docs/blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+    "tools/validate_benchmark_statistics_analysis.py",
+    "tools/validate_blueprint.py"
+  ],
+  "registry_references": {
+    "benchmark_manifest_id": "NOCLAIM.RUNNER_SMOKE.2026_07",
+    "raw_artifact_index_id": "NOCLAIM.RUNNER_SMOKE.ARTIFACTS.2026_07",
+    "artifact_package_id": "TURING.BENCHMARK.ARTIFACT_PACKAGE.NOCLAIM_TRACE_PACKAGE.2026_07",
+    "claim_bundle_id": "TURING.BENCHMARK.CLAIM_BUNDLE.NOCLAIM_PUBLIC_TEMPLATE.2026_07",
+    "benchmark_readiness_review_id": "TURING.BENCHMARK.READINESS_REVIEW.NOCLAIM_TEMPLATE.2026_07"
+  },
+  "analysis_scope": {
+    "level": "contract_only_no_result",
+    "actual_samples_present": false,
+    "statistical_summary_present": false,
+    "claim_supported": false,
+    "future_runner_required": true,
+    "owner_review_required": true
+  },
+  "required_inputs": [
+    {
+      "input": "runner-generated raw samples",
+      "required_for_real_analysis": true,
+      "current_status": "not_generated",
+      "missing_proof": "No browser benchmark runner has produced raw samples, sample order, warmup samples, or failure records."
+    },
+    {
+      "input": "trace and artifact package hashes",
+      "required_for_real_analysis": true,
+      "current_status": "contract_only",
+      "missing_proof": "The checked trace package contract exists, but no runner-generated ETW, Perfetto-compatible trace, memory, power, log, or artifact-index package exists."
+    },
+    {
+      "input": "noise study",
+      "required_for_real_analysis": true,
+      "current_status": "not_generated",
+      "missing_proof": "No fixed-hardware noise study exists to set repetitions, thresholds, confidence intervals, or practical significance."
+    },
+    {
+      "input": "failure denominator",
+      "required_for_real_analysis": true,
+      "current_status": "contract_only",
+      "missing_proof": "No browser-run denominator records exist for unsupported, failed, timed-out, cancelled, crashed, discarded, revived, wrong-target, cleanup, or trace-finalization cases."
+    },
+    {
+      "input": "owner-reviewed analysis",
+      "required_for_real_analysis": true,
+      "current_status": "not_reviewed",
+      "missing_proof": "No owner, performance, benchmark-operations, quality, security, accessibility, or release-operations review has accepted statistical methods or claim scope."
+    }
+  ],
+  "sample_design_controls": [
+    "declare measured sample count per browser, scenario, hardware tier, cache state, and tab-lifecycle condition before a run is interpreted",
+    "retain warmup policy, warmup sample count, measured sample order, and whether warmup samples are excluded from summaries",
+    "record randomization or paired-run order so Turing and competitor runs do not receive systematic thermal, cache, update, or clock-order advantages",
+    "retain cold, warm, repeat-view, cache, profile, network, display, power, thermal, and background-service state beside every sample",
+    "retain failed, unsupported, timed-out, cancelled, crashed, discarded, revived, state-loss, wrong-target, trace-finalization, cleanup, and profile-isolation cases in the denominator",
+    "separate mixed-state 30-tab and all-live isolation-stress samples so hidden discarding cannot masquerade as equivalent active-page performance"
+  ],
+  "statistical_methods": [
+    {
+      "id": "noise-study",
+      "method": "measure baseline variance on the selected hardware, OS image, browser pins, corpus, and runner before accepting thresholds",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No fixed-hardware noise study exists."
+    },
+    {
+      "id": "sample-count",
+      "method": "derive repetitions from noise, metric family, failure rate, and practical impact instead of using a single arbitrary run",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No sample-size rationale exists for browser-run metrics."
+    },
+    {
+      "id": "confidence-interval",
+      "method": "report uncertainty statements or confidence intervals for medians, percentiles, means where used, ratios, and differences",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No measured browser-run dataset exists for interval estimation."
+    },
+    {
+      "id": "effect-size",
+      "method": "report effect size and practical significance alongside statistical significance",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No owner-reviewed practical-impact threshold exists."
+    },
+    {
+      "id": "outlier-policy",
+      "method": "declare outlier, retry, cancellation, crash, and invalid-run policy before running, then retain rejected samples in the artifact bundle",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No browser-run outlier or retry policy has been executed."
+    },
+    {
+      "id": "multiple-comparison",
+      "method": "account for multiple metrics, browsers, scenarios, and hardware tiers when interpreting public comparisons",
+      "required_for_claim": true,
+      "current_status": "not_generated",
+      "missing_proof": "No comparison analysis plan has been owner-reviewed."
+    }
+  ],
+  "metric_families": [
+    {
+      "id": "latency",
+      "required_summaries": ["p50", "p95", "p99", "confidence interval or uncertainty", "effect size", "failure denominator"],
+      "units": ["milliseconds"],
+      "failure_policy": "Timeout, cancellation, crash, unsupported, wrong-target, and cleanup failures stay in the denominator."
+    },
+    {
+      "id": "memory",
+      "required_summaries": ["median", "p95", "physical total", "semantic charged total", "GPU memory", "unknown bucket", "failure denominator"],
+      "units": ["bytes"],
+      "failure_policy": "Discarded, frozen, shared, compressed, swapped, GPU, unknown memory states, and memory-accounting failure cases remain visible in the denominator instead of collapsed into one favorable number."
+    },
+    {
+      "id": "energy",
+      "required_summaries": ["median", "p95", "power or energy units", "thermal state", "display state", "failure denominator"],
+      "units": ["joules", "watts", "platform counter"],
+      "failure_policy": "Power-source, thermal, display, background-service, GPU, local-model, missing-counter, and energy-counter failure cases stay visible in the denominator."
+    },
+    {
+      "id": "thirty-tab",
+      "required_summaries": ["mixed-state result", "all-live result", "process topology", "tab state counts", "revival latency", "state-loss denominator"],
+      "units": ["milliseconds", "bytes", "counts"],
+      "failure_policy": "Mixed-state and all-live runs are reported separately; hidden discard, state loss, protected-tab override, crash, and revival failure are denominator events."
+    },
+    {
+      "id": "compatibility-failure",
+      "required_summaries": ["unsupported count", "failed count", "crashed count", "omitted count", "reason code", "claim invalidator"],
+      "units": ["count"],
+      "failure_policy": "Unsupported pages, failed pages, suite subtests, and compatibility failure cases cannot be dropped from claim denominators."
+    }
+  ],
+  "denominator_controls": [
+    "publish denominator size for every browser, corpus, suite, scenario, hardware tier, and cache state",
+    "publish unsupported behavior, failed cases, omitted cases, invalidated samples, and residual risk",
+    "block comparisons when unsupported cases, security settings, lifecycle settings, profile state, cache state, extension state, account state, process topology, or benchmark suite versions differ outside the reviewed claim scope",
+    "retain raw artifacts and hashes for samples that are excluded from a summary",
+    "treat validation, no-claim templates, no-browser self-tests, smoke output, and diagnostic browser-pin captures as planning evidence only"
+  ],
+  "rejection_rules": [
+    {
+      "id": "reject_no_raw_samples",
+      "condition": "Runner-generated raw samples, sample order, warmup records, or raw-artifact hashes are missing.",
+      "outcome": "Reject benchmark result, public performance, Chrome-class, faster, lower-memory, lower-energy, competitor-result, production, and daily-driver claims."
+    },
+    {
+      "id": "reject_missing_noise_or_uncertainty",
+      "condition": "Noise study, sample-size rationale, confidence interval, uncertainty statement, effect size, or practical-significance threshold is missing.",
+      "outcome": "Reject public comparison and performance-claim language."
+    },
+    {
+      "id": "reject_hidden_denominator",
+      "condition": "Unsupported, failed, timed-out, cancelled, crashed, discarded, revived, state-loss, wrong-target, trace-finalization, cleanup, or profile-isolation cases are hidden or dropped.",
+      "outcome": "Reject benchmark-ready status and public claims."
+    },
+    {
+      "id": "reject_unequal_conditions",
+      "condition": "Hardware, OS image, driver, firmware, display, power, thermal, browser version, security setting, sandbox, site isolation, cache, profile, account, extension, lifecycle, route, viewport, or suite version differs outside reviewed scope.",
+      "outcome": "Reject competitor-result and Chrome-class claims."
+    },
+    {
+      "id": "reject_validation_as_result",
+      "condition": "This contract, schema validation, no-browser self-tests, no-claim templates, smoke runner output, or diagnostic browser-pin captures are cited as benchmark results.",
+      "outcome": "Reject all benchmark, product, production, and implementation claims."
+    }
+  ],
+  "unsupported_behavior": [
+    "no browser benchmark run exists",
+    "no runner-generated raw sample exists",
+    "no real statistical summary exists",
+    "no confidence interval from measured browser data exists",
+    "no benchmark result exists",
+    "no competitor result exists",
+    "no memory result exists",
+    "no energy result exists",
+    "no Chrome-class claim is supported",
+    "no faster claim is supported",
+    "no lower-memory claim is supported",
+    "no lower-energy claim is supported",
+    "no public performance, production, release, stable, beta, daily-driver, or implementation claim is supported"
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_benchmark_statistics_analysis.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ]
+}

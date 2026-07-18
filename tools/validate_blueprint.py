@@ -316,6 +316,7 @@ REQUIRED_DOCS = [
     RESEARCH / "wp-003-sandbox-probe-plan-2026-07.md",
     RESEARCH / "full-implementation-game-plan-audit-2026-07.md",
     RESEARCH / "agent-execution-production-readiness-audit-2026-07.md",
+    RESEARCH / "benchmark-statistics-analysis-contract-2026-07.md",
     RESEARCH / "servo-unsafe-ffi-contract-review-2026-07.md",
     DOCS / "templates" / "agent-task.md",
     DOCS / "templates" / "agent-run-review.md",
@@ -347,6 +348,10 @@ REQUIRED_MACHINE_FILES = [
     MACHINE
     / "benchmark-readiness-reviews"
     / "no-claim-benchmark-readiness-template.json",
+    MACHINE / "benchmark-statistics-analysis.schema.json",
+    MACHINE
+    / "benchmark-statistics-analyses"
+    / "no-claim-statistics-analysis-plan.json",
     MACHINE / "benchmark-manifest.schema.json",
     MACHINE / "process-capabilities.json",
     MACHINE / "requirements.json",
@@ -689,6 +694,15 @@ REQUIRED_BENCHMARK_READINESS_REVIEW_FILES = [
     / "no-claim-benchmark-readiness-template.json",
 ]
 
+REQUIRED_BENCHMARK_STATISTICS_ANALYSIS_FILES = [
+    ROOT / "tools" / "validate_benchmark_statistics_analysis.py",
+    MACHINE / "benchmark-statistics-analysis.schema.json",
+    MACHINE
+    / "benchmark-statistics-analyses"
+    / "no-claim-statistics-analysis-plan.json",
+    RESEARCH / "benchmark-statistics-analysis-contract-2026-07.md",
+]
+
 REQUIRED_UI_ADAPTER_CONTRACT_FILES = [
     ROOT / "tools" / "validate_ui_adapter_contract.py",
     RESEARCH / "toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
@@ -979,6 +993,7 @@ def check_required_files() -> None:
             *REQUIRED_BENCHMARK_LAUNCH_RUNNER_FILES,
             *REQUIRED_BENCHMARK_CLAIM_BUNDLE_FILES,
             *REQUIRED_BENCHMARK_READINESS_REVIEW_FILES,
+            *REQUIRED_BENCHMARK_STATISTICS_ANALYSIS_FILES,
             *REQUIRED_UI_ADAPTER_CONTRACT_FILES,
             *REQUIRED_UI_COMPONENT_FIXTURE_FILES,
             *REQUIRED_FRAMEWORK_BAKEOFF_FILES,
@@ -5704,6 +5719,175 @@ def check_benchmark_readiness_review() -> None:
         fail(detail or "benchmark readiness-review validation failed")
 
 
+def check_benchmark_statistics_analysis() -> None:
+    validator = ROOT / "tools" / "validate_benchmark_statistics_analysis.py"
+    result = subprocess.run(
+        [sys.executable, "-B", str(validator)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = "\n".join(
+            line for line in [result.stdout.strip(), result.stderr.strip()] if line
+        )
+        fail(detail or "benchmark statistics-analysis validation failed")
+
+    required_paths = [
+        "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+        "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+        "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
+        "tools/validate_benchmark_statistics_analysis.py",
+    ]
+    readiness = load_json(MACHINE / "pre-build-readiness.json")
+    items = readiness.get("items")
+    if not isinstance(items, list):
+        fail("pre-build-readiness.json must contain an items array")
+    pb013 = next(
+        (item for item in items if isinstance(item, dict) and item.get("id") == "PB-013"),
+        None,
+    )
+    if not isinstance(pb013, dict):
+        fail("pre-build-readiness.json is missing PB-013")
+    evidence = pb013.get("evidence")
+    if not isinstance(evidence, list):
+        fail("PB-013 evidence must be an array")
+    missing_evidence = [path for path in required_paths if path not in evidence]
+    if missing_evidence:
+        fail(
+            "PB-013 evidence is missing statistics-analysis paths: "
+            + ", ".join(missing_evidence)
+        )
+    evidence_required = pb013.get("evidence_required")
+    if not isinstance(evidence_required, list) or not any(
+        "checked no-claim statistics-analysis contract" in str(item)
+        and "owner-reviewed statistics analysis" in str(item)
+        for item in evidence_required
+    ):
+        fail("PB-013 evidence_required must keep owner-reviewed statistics analysis proof missing")
+
+    crosswalk = load_json(MACHINE / "research-readiness-crosswalk.json")
+    lanes = crosswalk.get("lanes")
+    if not isinstance(lanes, list):
+        fail("research-readiness-crosswalk.json must contain lanes")
+    benchmark_lane = next(
+        (
+            lane
+            for lane in lanes
+            if isinstance(lane, dict)
+            and lane.get("id") == "research-lane-benchmark-extreme-performance-lab"
+        ),
+        None,
+    )
+    if not isinstance(benchmark_lane, dict):
+        fail("research-readiness-crosswalk.json is missing benchmark lane")
+    lane_evidence = benchmark_lane.get("evidence_start")
+    if not isinstance(lane_evidence, list):
+        fail("benchmark lane evidence_start must be an array")
+    for required in required_paths:
+        if required not in lane_evidence:
+            fail(f"benchmark lane evidence_start is missing {required}")
+    next_proof = benchmark_lane.get("next_proof")
+    if not isinstance(next_proof, list) or not any(
+        "owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract"
+        in str(item)
+        for item in next_proof
+    ):
+        fail("benchmark lane next_proof must require owner-reviewed statistics analysis")
+
+    task_queue = load_json(MACHINE / "build-readiness-task-queue.json")
+    tasks = task_queue.get("tasks")
+    if not isinstance(tasks, list):
+        fail("build-readiness-task-queue.json must contain tasks")
+    task = next(
+        (
+            item
+            for item in tasks
+            if isinstance(item, dict) and item.get("id") == "TASK-000005"
+        ),
+        None,
+    )
+    if not isinstance(task, dict):
+        fail("build-readiness-task-queue.json is missing TASK-000005")
+    allowed_paths = task.get("allowed_paths")
+    if not isinstance(allowed_paths, list):
+        fail("TASK-000005 allowed_paths must be an array")
+    for required in [
+        "docs/blueprint-v1/machine/benchmark-statistics-analyses/",
+        "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+        "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+        "tools/validate_benchmark_statistics_analysis.py",
+    ]:
+        if required not in allowed_paths:
+            fail(f"TASK-000005 allowed_paths is missing {required}")
+    acceptance = task.get("acceptance_criteria")
+    if not isinstance(acceptance, list) or not any(
+        "checked no-claim statistics-analysis contract" in str(item)
+        and "owner-reviewed analysis evidence" in str(item)
+        for item in acceptance
+    ):
+        fail("TASK-000005 acceptance criteria must carry checked statistics-analysis contract")
+
+    doc_requirements = {
+        DOCS / "README.md": ["Benchmark statistics analysis contract"],
+        RESEARCH / "README.md": [
+            "Benchmark statistics analysis contract",
+            "checked no-claim statistics-analysis contract",
+            "owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract",
+        ],
+        DOCS / "repository-map.md": [
+            "validate_benchmark_statistics_analysis.py",
+            "benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
+        ],
+        RESEARCH / "performance-benchmark-readiness-packet-2026-07.md": [
+            "Benchmark Statistics Analysis Contract",
+            "PB13-EV-006",
+            "checked no-claim statistics-analysis contract",
+        ],
+        RESEARCH / "chrome-class-performance-runbook-2026-07.md": [
+            "checked no-claim statistics-analysis contract",
+            "owner-reviewed statistics analysis",
+        ],
+        DOCS / "project-buildout" / "13-build-readiness-operating-board.md": [
+            "Benchmark statistics analysis contract",
+            "checked no-claim statistics-analysis contract",
+            "owner-reviewed statistics analysis",
+        ],
+        DOCS / "project-buildout" / "18-documentation-readiness-evidence-matrix.md": [
+            "Benchmark statistics analysis contract",
+            "statistics-analysis sample design, uncertainty, denominator, and rejection contract",
+            "validate_benchmark_statistics_analysis.py",
+        ],
+        BLUEPRINT / "09-performance-memory.md": [
+            "checked no-claim statistics-analysis contract",
+            "no confidence interval from measured browser data",
+        ],
+        DOCS / "benchmark-lab" / "07-statistics-artifacts-regressions-and-claims.md": [
+            "Current No-Claim Statistics-Analysis Contract",
+            "validate_benchmark_statistics_analysis.py",
+        ],
+        DOCS / "benchmark-lab" / "README.md": [
+            "Benchmark statistics analysis contract",
+        ],
+        DOCS / "performance" / "05-benchmarks-statistics-and-regression-governance.md": [
+            "Versioned statistics-analysis contracts",
+            "validate_benchmark_statistics_analysis.py",
+        ],
+        DOCS / "performance" / "README.md": [
+            "Benchmark statistics analysis contract",
+        ],
+    }
+    for path, phrases in doc_requirements.items():
+        text = path.read_text(encoding="utf-8")
+        missing = [phrase for phrase in phrases if phrase not in text]
+        if missing:
+            fail(
+                f"{relative(path)} is missing benchmark statistics-analysis coverage: "
+                + ", ".join(missing)
+            )
+
+
 def check_benchmark_browser_launch_runner_self_test() -> None:
     runner = ROOT / "tools" / "run_benchmark_browser_launch.py"
     result = subprocess.run(
@@ -5998,6 +6182,11 @@ def check_research_log_chronology() -> None:
         )
 
     required_phrases = [
+        "## 2026-07-18 — Benchmark statistics-analysis contract",
+        "`PB13-EV-006` have a checked no-claim statistics-analysis contract",
+        "sample design, warmup, randomization or paired order, noise study, uncertainty, effect size, outlier policy, multiple-comparison interpretation, metric-family summaries, denominator publication, and rejection rules",
+        "The raw-result lane needs a checked analysis contract before a runner can turn raw samples into benchmark evidence",
+        "does not analyze measured browser performance, produce confidence intervals from real samples, approve thresholds, or support benchmark-ready, public performance, Chrome-class, faster, lower-memory, lower-energy, competitor-result, production, or implementation claims",
         "## 2026-07-18 — GitHub issue handoff snapshot",
         "post-cleanup GitHub issue and stale-PR state be recorded as a checked offline handoff",
         "Captured the cleaned-up issue/PR state after closing issue #1, updating issue #3, closing stale PRs #42/#43",
@@ -6966,6 +7155,7 @@ def main() -> int:
         check_benchmark_launch_runners()
         check_benchmark_claim_bundles()
         check_benchmark_readiness_review()
+        check_benchmark_statistics_analysis()
         check_benchmark_browser_launch_runner_self_test()
         check_benchmark_profile_server_self_test()
         check_benchmark_server_profile_runner_self_test()
@@ -7028,11 +7218,11 @@ def main() -> int:
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
         "27 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 118 core machine-readable registries, "
+        "18 work packages, 120 core machine-readable registries, "
         "research-readiness crosswalk, ADR-0009 decision-review template, benchmark manifest, hardware, OS-control, resource attribution, "
         "competitor versions, competitor local installs, browser-pin capture, "
         "browser-pin capture self-test, browser-pin diagnostics, corpus, "
-        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, implementation master plan, GitHub issue handoff, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
+        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, benchmark statistics-analysis contract, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, implementation master plan, GitHub issue handoff, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
         "research-log chronology, repository-map core registries, index/root/start machine-registry navigation, "
         "research-index lanes/crosswalk, start-here continuation, "
         "documentation-readiness evidence/DoD, "

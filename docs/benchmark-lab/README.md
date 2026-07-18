@@ -74,6 +74,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 - [Benchmark 30-tab scenario contract](../research/benchmark-30-tab-scenario-contract-2026-07.md)
 - [Benchmark trace/artifact package contract](../research/benchmark-trace-artifact-package-contract-2026-07.md)
 - [Benchmark browser launch-runner contract](../research/benchmark-browser-launch-runner-contract-2026-07.md)
+- [Benchmark statistics analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md)
 - [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
 - [No-claim benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json)
 - [Benchmark readiness-review validator](../../tools/validate_benchmark_readiness_review.py)
@@ -100,6 +101,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 - [Benchmark artifact-package validator](../../tools/validate_benchmark_artifact_packages.py)
 - [No-claim browser launch-runner plan](../blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json)
 - [Benchmark launch-runner validator](../../tools/validate_benchmark_launch_runners.py)
+- [No-claim statistics-analysis plan](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json)
+- [Benchmark statistics-analysis validator](../../tools/validate_benchmark_statistics_analysis.py)
 - [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
 - [Benchmark profile static-server self-test](../../tools/serve_benchmark_profile.py)
 - [Benchmark smoke runner self-test](../../tools/run_benchmark_smoke.py)
@@ -108,7 +111,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
 
-The checked no-claim benchmark readiness-review template is a future owner-review shape only. It does not provide owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
+The checked no-claim statistics-analysis contract and benchmark readiness-review template are future evidence shapes only. They do not provide owner-reviewed statistics analysis, owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Product workflow laboratory

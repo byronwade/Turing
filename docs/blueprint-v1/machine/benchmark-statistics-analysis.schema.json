@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Turing benchmark statistics-analysis contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "analysis_id",
+    "status",
+    "updated",
+    "evidence_id",
+    "task",
+    "claim_status",
+    "source_records",
+    "registry_references",
+    "analysis_scope",
+    "required_inputs",
+    "sample_design_controls",
+    "statistical_methods",
+    "metric_families",
+    "denominator_controls",
+    "rejection_rules",
+    "unsupported_behavior",
+    "validation_commands"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "analysis_id": {
+      "type": "string",
+      "pattern": "^TURING\\.BENCHMARK\\.STATISTICS_ANALYSIS\\.[A-Z0-9._-]+$"
+    },
+    "status": { "const": "no_claim_statistics_analysis_contract" },
+    "updated": { "type": "string", "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$" },
+    "evidence_id": { "const": "PB13-EV-006" },
+    "task": { "const": "TASK-000005" },
+    "claim_status": { "type": "string", "minLength": 1 },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "registry_references": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "analysis_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "actual_samples_present",
+        "statistical_summary_present",
+        "claim_supported",
+        "future_runner_required",
+        "owner_review_required"
+      ],
+      "properties": {
+        "level": { "const": "contract_only_no_result" },
+        "actual_samples_present": { "const": false },
+        "statistical_summary_present": { "const": false },
+        "claim_supported": { "const": false },
+        "future_runner_required": { "const": true },
+        "owner_review_required": { "const": true }
+      }
+    },
+    "required_inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "input",
+          "required_for_real_analysis",
+          "current_status",
+          "missing_proof"
+        ],
+        "properties": {
+          "input": { "type": "string", "minLength": 1 },
+          "required_for_real_analysis": { "type": "boolean" },
+          "current_status": { "type": "string", "minLength": 1 },
+          "missing_proof": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "sample_design_controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "statistical_methods": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "method",
+          "required_for_claim",
+          "current_status",
+          "missing_proof"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "method": { "type": "string", "minLength": 1 },
+          "required_for_claim": { "type": "boolean" },
+          "current_status": { "type": "string", "minLength": 1 },
+          "missing_proof": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "metric_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "required_summaries",
+          "units",
+          "failure_policy"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "required_summaries": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "units": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "failure_policy": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "denominator_controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "rejection_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "condition", "outcome"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "condition": { "type": "string", "minLength": 1 },
+          "outcome": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "unsupported_behavior": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

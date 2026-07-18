@@ -42,6 +42,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/research/benchmark-30-tab-scenario-contract-2026-07.md",
     "docs/research/benchmark-trace-artifact-package-contract-2026-07.md",
     "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
+    "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
     "docs/benchmark-lab/README.md",
     "docs/performance/README.md",
     "docs/blueprint-v1/09-performance-memory.md",
@@ -67,8 +68,11 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json",
     "docs/blueprint-v1/machine/benchmark-readiness-review.schema.json",
     "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+    "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+    "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
     "tools/validate_benchmark_claim_bundles.py",
     "tools/validate_benchmark_readiness_review.py",
+    "tools/validate_benchmark_statistics_analysis.py",
     "tools/validate_blueprint.py",
     "tools/check.ps1",
 }
@@ -252,6 +256,7 @@ REQUIRED_REJECTION_TERMS = [
 ]
 
 REQUIRED_VALIDATION_COMMANDS = [
+    "python3 -B tools/validate_benchmark_statistics_analysis.py",
     "python3 -B tools/validate_benchmark_claim_bundles.py",
     "python3 -B tools/validate_benchmark_readiness_review.py",
     "python3 -B tools/validate_blueprint.py",

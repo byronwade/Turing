@@ -152,7 +152,7 @@ Required evidence bundle:
 - Level 2 artifacts for at least Tier L, Tier M, and Tier H hardware or an explicit narrower platform claim;
 - reviewed representative offline corpus and selected live/replay corpus policy;
 - raw samples, runner-generated trace package with ETW or equivalent traces, Perfetto-compatible traces where applicable, logs, screenshots/video where relevant, memory snapshots, power/energy artifacts, process topology, and artifact hashes;
-- statistical method, sample count, warmup policy, outlier policy, confidence intervals or uncertainty statements, and failure denominator;
+- owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract, including statistical method, sample count, warmup policy, randomization or paired order, outlier policy, confidence intervals or uncertainty statements, effect size, multiple-comparison interpretation, metric-family summaries, and failure denominator;
 - equal-security and equal-workload statement;
 - accessibility, recovery, DevTools, extension, profile, and agent overhead included when the claim touches those workflows;
 - claim owner, reviewer, expiration date, rerun triggers, supported platform, unsupported behavior, and public wording.
@@ -199,6 +199,8 @@ The checked [Benchmark trace/artifact package contract](benchmark-trace-artifact
 
 The checked [Benchmark browser launch-runner contract](benchmark-browser-launch-runner-contract-2026-07.md) records the planned command path, required and forbidden arguments, stage contract, timeout/cancellation policy, cache/profile policy, failure finalization, trace/artifact policy, and no-claim finalization requirements for `PB13-EV-005`. The companion [`tools/run_benchmark_browser_launch.py --self-test`](../../tools/run_benchmark_browser_launch.py) path is a checked no-browser browser launch-runner self-test for command parsing, forbidden arguments, registry references, artifact-root handling, and no-claim finalization. Both are no-claim evidence only. Level 1 or higher evidence still requires an implemented browser launch runner, reviewed browser pins, runner-managed server artifacts, real browser-run artifacts, negative tests, timeout/cancellation behavior, cleanup records, and result finalization.
 
+The checked [Benchmark statistics analysis contract](benchmark-statistics-analysis-contract-2026-07.md) records the sample-design, warmup, randomization or paired order, noise-study, uncertainty, effect-size, outlier, multiple-comparison, metric-family, denominator, and rejection requirements for `PB13-EV-006`. It is a checked no-claim statistics-analysis contract only. Level 3 evidence still requires runner-generated raw samples and owner-reviewed statistics analysis before any public performance, Chrome-class, faster, lower-memory, lower-energy, or competitor-result claim can be considered.
+
 ## Claim Expiry Policy
 
 Every candidate public performance claim must include:
@@ -239,6 +241,7 @@ The remaining `PB-013` implementation blockers are:
 - runner-generated raw result files;
 - runner-generated trace package with ETW or equivalent traces, Perfetto-compatible traces where applicable, logs, screenshots, memory snapshots, power data, raw samples, failure records, redaction review, retention decision, and SHA-256 manifest;
 - runner-generated 30-tab mixed/all-live raw artifacts from the checked no-claim scenario manifest;
+- owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract;
 - semantic resource attribution;
 - owner-reviewed benchmark-ready browser pins plus locally pinned competitor-version manifests with isolated browser-reported versions, channel proof, profiles, settings, and command lines; the current release-catalog, local executable, capture-plan, browser-pin no-browser self-test, launch-runner no-browser self-test, and no-claim Chrome/Edge diagnostic artifacts are only candidate evidence;
 - accessibility, recovery, DevTools, and agent workload fixtures;
@@ -250,4 +253,5 @@ The remaining `PB-013` implementation blockers are:
 2. Capture Tier M and Tier L hardware manifests and decide whether the current Tier H candidate is approved or replaced.
 3. Define approved clean OS image and update-control manifests for each approved hardware tier.
 4. Owner-review the no-claim Chrome/Edge browser-pin diagnostic artifacts, fill channel/settings evidence, then extend the checked browser launch-runner contract and checked no-browser browser launch-runner self-test into an implemented browser launch runner that can produce Level 1 evidence.
-5. Keep every output labeled no-claim until Level 3 owner review passes.
+5. Extend the checked no-claim statistics-analysis contract into owner-reviewed analysis only after runner-generated raw samples, noise-study, uncertainty, denominator, and practical-impact evidence exists.
+6. Keep every output labeled no-claim until Level 3 owner review passes.

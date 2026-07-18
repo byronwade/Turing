@@ -96,6 +96,7 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 - fixed-hardware latency, memory, energy, and longevity baselines;
 - benchmark manifests validated by [`tools/validate_benchmark_manifests.py`](../../tools/validate_benchmark_manifests.py), with raw-artifact hashes that fail closed when checked-in fixture bytes drift;
 - trace/artifact package contracts validated by [`tools/validate_benchmark_artifact_packages.py`](../../tools/validate_benchmark_artifact_packages.py), with runner-owned roots, required trace classes, required artifact classes, redaction/retention fields, prohibited-content rules, and SHA-256 manifest records;
+- statistics-analysis contracts validated by [`tools/validate_benchmark_statistics_analysis.py`](../../tools/validate_benchmark_statistics_analysis.py), with sample design, warmup, randomization or paired order, noise study, uncertainty, effect size, outlier policy, multiple-comparison interpretation, metric-family summaries, denominator publication, and rejection rules;
 - explicit residual risks, owner, revisit trigger, and unsupported matrix.
 
 ## Current No-Claim Artifact Package Contract
@@ -103,6 +104,12 @@ Each experiment records commit, platform, hardware, build flags, corpus, securit
 The checked [Benchmark trace/artifact package contract](../research/benchmark-trace-artifact-package-contract-2026-07.md) and [no-claim trace/artifact package plan](../blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json) define the current `PB13-EV-007` package shape. This is not a captured trace bundle, not a benchmark result, and not a memory, energy, Chrome-class, or performance result.
 
 The contract exists so a future runner cannot treat partial files as evidence. A real package still needs ETW or equivalent host traces, Perfetto-compatible traces where applicable, logs, screenshots when relevant, raw samples, memory snapshots, power or energy samples, failure denominator records, redaction review, retention decisions, and SHA-256 hashes.
+
+## Current No-Claim Statistics-Analysis Contract
+
+The checked [Benchmark statistics analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md) and [no-claim statistics-analysis plan](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json) define the current `PB13-EV-006` analysis shape. This is not a browser benchmark run, not a runner-generated raw sample set, not a confidence interval from measured browser data, not a competitor result, and not a Chrome-class or public performance claim.
+
+The contract exists so a future runner cannot treat raw artifacts as statistical evidence by themselves. A real analysis still needs runner-generated raw samples, sample order, warmup records, raw-artifact hashes, a noise study, sample-size rationale, uncertainty or confidence interval treatment, effect-size and practical-impact thresholds, outlier policy, multiple-comparison interpretation, denominator publication, and owner-reviewed analysis.
 
 ## Risks
 

@@ -198,9 +198,13 @@
           "docs/blueprint-v1/machine/benchmark-artifact-packages/no-claim-trace-package.plan.json",
         "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
         "docs/blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json",
+        "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+        "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+        "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
         "docs/blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json",
         "docs/blueprint-v1/machine/benchmark-readiness-review.schema.json",
         "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+        "tools/validate_benchmark_statistics_analysis.py",
         "tools/validate_benchmark_claim_bundles.py",
         "tools/validate_benchmark_readiness_review.py",
         "tools/run_benchmark_browser_launch.py",
@@ -214,7 +218,7 @@
           "implemented browser launch runner beyond the checked no-browser self-test",
         "runner-generated trace package with raw artifacts and runner-generated 30-tab results",
         "complete local competitor pins",
-        "equal-workload runs, raw results, statistics, and reviewed claim bundles beyond the checked no-claim claim-bundle template",
+        "equal-workload runs, raw results, owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract, and reviewed claim bundles beyond the checked no-claim claim-bundle template",
         "owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template"
       ],
       "claim_boundary": [

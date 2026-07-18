@@ -2,6 +2,37 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — Benchmark statistics-analysis contract
+
+Question:
+
+Can `PB13-EV-006` have a checked no-claim statistics-analysis contract before runner-generated raw samples, confidence intervals, owner-reviewed benchmark readiness, benchmark results, competitor results, or public performance claims exist?
+
+Inputs:
+
+- [Benchmark Statistics Analysis Contract](research/benchmark-statistics-analysis-contract-2026-07.md);
+- [`benchmark-statistics-analysis.schema.json`](blueprint-v1/machine/benchmark-statistics-analysis.schema.json);
+- [`no-claim-statistics-analysis-plan.json`](blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json);
+- [`tools/validate_benchmark_statistics_analysis.py`](../tools/validate_benchmark_statistics_analysis.py);
+- [Performance Benchmark Readiness Packet](research/performance-benchmark-readiness-packet-2026-07.md);
+- [Chrome-Class Performance Runbook](research/chrome-class-performance-runbook-2026-07.md).
+
+Method:
+
+Added a checked no-claim analysis plan and validator for sample design, warmup, randomization or paired order, noise study, uncertainty, effect size, outlier policy, multiple-comparison interpretation, metric-family summaries, denominator publication, and rejection rules.
+
+Decision:
+
+The raw-result lane needs a checked analysis contract before a runner can turn raw samples into benchmark evidence. Keep `PB-013` partial and `TASK-000005` proposed.
+
+Impact:
+
+Future benchmark work can now distinguish raw artifact shape from statistical evidence and public-claim eligibility. This does not analyze measured browser performance, produce confidence intervals from real samples, approve thresholds, or support benchmark-ready, public performance, Chrome-class, faster, lower-memory, lower-energy, competitor-result, production, or implementation claims.
+
+Next question:
+
+Which `PB-013` blocker should produce executable evidence first: Tier M/Tier L hardware capture, clean OS controls, browser-run server evidence, implemented browser launch runner, or runner-generated raw samples?
+
 ## 2026-07-18 — GitHub issue handoff snapshot
 
 Question:

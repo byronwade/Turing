@@ -77,6 +77,8 @@ The checked [no-claim trace and artifact package contract](machine/benchmark-art
 
 The checked [no-claim browser launch-runner contract](machine/benchmark-launch-runners/no-claim-browser-launch.plan.json) records the current command, stage, timeout/cancellation, cache/profile, failure-finalization, trace/artifact, resource-attribution, and no-claim controls for `PB13-EV-005`. The checked no-browser browser launch-runner self-test validates command parsing, forbidden arguments, registry references, artifact-root handling, and no-claim finalization. This is not a browser launch, trace, raw-sample, memory, energy, Chrome-class, or performance result.
 
+The checked no-claim statistics-analysis contract in [no-claim statistics-analysis plan](machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json) records the current sample-design, warmup, randomization or paired order, noise-study, confidence or uncertainty, effect-size, outlier, multiple-comparison, metric-family, denominator, and rejection controls for `PB13-EV-006`. This is not a browser benchmark run, not a runner-generated raw sample set, and no confidence interval from measured browser data, memory result, energy result, Chrome-class result, competitor result, or performance claim exists.
+
 ### 5.2 Required disclosure
 
 For each run publish:
@@ -254,7 +256,7 @@ Local models are loaded on demand and unloadable. A dormant agent feature must n
 - competitor comparisons use current stable builds, default security settings, clean equivalent profiles, and the same workload;
 - failed/unsupported pages count; they are not dropped silently.
 
-The checked no-claim [benchmark readiness-review template](machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json) defines the future `PB-013` owner-review handoff across hardware, OS controls, corpus, servers, runners, artifacts, browser pins, statistics, denominators, and claim bundles. It is not owner-reviewed benchmark readiness: there is no owner-reviewed benchmark readiness, benchmark-ready status, public performance claim, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, competitor-result claim, production claim, or implementation claim from the template.
+The checked no-claim [statistics-analysis contract](machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json) and [benchmark readiness-review template](machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json) define future `PB-013` analysis and owner-review handoffs across sample design, uncertainty, denominators, hardware, OS controls, corpus, servers, runners, artifacts, browser pins, statistics, and claim bundles. They are not owner-reviewed statistics analysis or benchmark readiness: there is no owner-reviewed benchmark readiness, benchmark-ready status, public performance claim, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, competitor-result claim, production claim, or implementation claim from either checked no-claim record.
 
 ## 15. Performance gates
 

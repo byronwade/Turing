@@ -20,6 +20,7 @@
     "docs/research/benchmark-30-tab-scenario-contract-2026-07.md",
     "docs/research/benchmark-trace-artifact-package-contract-2026-07.md",
     "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
+    "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
     "docs/benchmark-lab/README.md",
     "docs/performance/README.md",
     "docs/blueprint-v1/09-performance-memory.md",
@@ -58,6 +59,8 @@
     "docs/blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json",
     "docs/blueprint-v1/machine/benchmark-readiness-review.schema.json",
     "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json",
+    "docs/blueprint-v1/machine/benchmark-statistics-analysis.schema.json",
+    "docs/blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json",
     "tools/validate_benchmark_manifests.py",
     "tools/validate_benchmark_hardware.py",
     "tools/validate_benchmark_os_controls.py",
@@ -73,6 +76,7 @@
     "tools/validate_benchmark_launch_runners.py",
     "tools/validate_benchmark_claim_bundles.py",
     "tools/validate_benchmark_readiness_review.py",
+    "tools/validate_benchmark_statistics_analysis.py",
     "tools/run_benchmark_browser_launch.py",
     "tools/run_benchmark_server_profile.py",
     "tools/run_benchmark_smoke.py",
@@ -180,7 +184,7 @@
   ],
   "statistics_denominator_axes": [
     { "axis": "sample count", "required_evidence": "Recorded sample count, repetitions, warmup policy, measured sample order, randomization, cold/warm state, and cache state beyond the checked no-claim benchmark-readiness-review template.", "template_status": "missing in template" },
-    { "axis": "statistics", "required_evidence": "Confidence intervals, uncertainty statement, variance, effect size, practical significance, outlier policy, noise study, and raw-sample retention beyond the checked no-claim benchmark-readiness-review template.", "template_status": "missing in template" },
+    { "axis": "statistics", "required_evidence": "Confidence intervals, uncertainty statement, variance, effect size, practical significance, outlier policy, noise study, multiple-comparison interpretation, metric-family summaries, and raw-sample retention beyond the checked no-claim statistics-analysis contract and benchmark-readiness-review template.", "template_status": "missing in template" },
     { "axis": "failure denominator", "required_evidence": "Failure denominator records for failed, unsupported, timed-out, cancelled, crashed, discarded, revived, state-loss, wrong-target, trace-finalization, cleanup, and profile-isolation cases beyond the checked no-claim benchmark-readiness-review template.", "template_status": "missing in template" },
     { "axis": "30-tab denominator", "required_evidence": "Separate mixed-state and all-live 30-tab denominator records covering live, throttled, frozen, serialized, discarded, crashed, protected, audio, unsaved-work, and state-loss cases beyond the checked no-claim benchmark-readiness-review template.", "template_status": "missing in template" },
     { "axis": "memory accounting", "required_evidence": "Physical, resident, committed, reserved, shared, compressed, swapped, semantic charged memory, GPU memory, and unknown-bucket accounting beyond the checked no-claim benchmark-readiness-review template.", "template_status": "missing in template" },
@@ -235,6 +239,7 @@
     "no faster, lower-memory, lower-energy, Chrome-class, competitor-result, daily-driver, production, or implementation claim is supported"
   ],
   "validation_commands": [
+    "python3 -B tools/validate_benchmark_statistics_analysis.py",
     "python3 -B tools/validate_benchmark_claim_bundles.py",
     "python3 -B tools/validate_benchmark_readiness_review.py",
     "python3 -B tools/validate_blueprint.py",
