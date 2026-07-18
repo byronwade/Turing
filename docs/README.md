@@ -19,6 +19,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Blueprint v1](blueprint-v1/README.md) | Normative product and architecture baseline |
 | [Pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md) | Current M0 build authorization and remaining blockers |
 | [Build readiness board](project-buildout/13-build-readiness-operating-board.md) | Current continuation path across `PB-*`, `WP-*`, `RQ-*`, and `ADR-*` records |
+| [Build continuity readiness pack](project-buildout/20-build-continuation-readiness-pack.md) | Bounded one-page continuation status for contained-M0 work and first hard stop-gates before broader implementation |
 | [Documentation readiness matrix](project-buildout/18-documentation-readiness-evidence-matrix.md) | Evidence matrix for the current documentation-readiness and contained-M0 continuation claim |
 | [Chrome-class capability traceability map](research/chrome-class-capability-traceability-map-2026-07.md) | No-claim cross-domain routing map from the Chrome-class target to current requirements, blockers, owners, next proof, and prohibited claims |
 | [Implementation master plan](project-buildout/implementation-plan/README.md) | Dependency-ordered execution documentation for reviewed, bounded tasks; not broad implementation approval |
@@ -38,7 +39,7 @@ Documentation changes are part of implementation. Every change must update every
 Use this path before expanding implementation:
 
 1. Read [Start here](start-here.md) for status, definitions, and the current no-claim boundary.
-2. Confirm gate truth in the [Build readiness board](project-buildout/13-build-readiness-operating-board.md), [pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md), [documentation readiness matrix](project-buildout/18-documentation-readiness-evidence-matrix.md), and [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
+2. Confirm gate truth in the [Build continuation readiness pack](project-buildout/20-build-continuation-readiness-pack.md), the [Build readiness board](project-buildout/13-build-readiness-operating-board.md), [pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md), [documentation readiness matrix](project-buildout/18-documentation-readiness-evidence-matrix.md), and [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
 3. Use the checked [Implementation Kickoff Review Inventory](research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved lanes; it is a no-claim stop/resume inventory, not task approval or readiness promotion.
 4. Use the checked [Build Readiness Dependency Graph](research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
 5. Use the checked [Documentation Readiness Completion Audit](research/documentation-readiness-completion-audit-2026-07.md) and checked no-claim [build-readiness closure-review template](project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json) before calling documentation preparation complete; they are not an all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, or accessibility claim.
