@@ -17,6 +17,7 @@ This audit covers the current documentation and machine-control surface for:
 - human and machine registry synchronization;
 - research lane mapping;
 - proposed task handoff;
+- contained M0 session-start routing;
 - dependency sequencing;
 - unsupported-claim boundaries;
 - validation commands;
@@ -27,7 +28,7 @@ The machine companion is [`documentation-readiness-completion-audit.json`](../pr
 
 ## Method
 
-The audit reconciles the root [README](../../README.md), [Start Here](../start-here.md), [documentation index](../README.md), [documentation policy](../documentation-policy.md), [repository map](../repository-map.md), [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md), [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json), checked `PB-020` kickoff, dependency graph, and build-readiness closure-review template records, the [research index](README.md), the [Pre-build Readiness Gap Audit](pre-build-readiness-gap-audit-2026-07.md), the [Definition of Done](../blueprint-v1/20-definition-of-done.md), and validation tools.
+The audit reconciles the root [README](../../README.md), [Start Here](../start-here.md), [documentation index](../README.md), [documentation policy](../documentation-policy.md), [repository map](../repository-map.md), [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md), [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json), checked `PB-020` kickoff, dependency graph, contained M0 start-state, and build-readiness closure-review template records, the [research index](README.md), the [Pre-build Readiness Gap Audit](pre-build-readiness-gap-audit-2026-07.md), the [Definition of Done](../blueprint-v1/20-definition-of-done.md), and validation tools.
 
 The focused validator checks that:
 
@@ -37,6 +38,7 @@ The focused validator checks that:
 - no criterion uses a completion status;
 - missing-evidence fields still name broad M1, Chrome-class, performance, security, compatibility, accessibility, source-strategy, fresh-host, IPC, sandbox, benchmark readiness, native-shell, profile/session, package/update, incident-response, and backup-ownership gaps;
 - task handoff evidence includes the checked no-claim task approval template before any proposed `TASK-*` row can become an immutable reviewed execution manifest;
+- contained M0 start-state evidence keeps proposed tasks owner-approval-required and `TASK-000011` review-pending until reviewed evidence changes those states;
 - evidence references exist;
 - unsupported-boundary text preserves no-claim language;
 - the documentation-readiness evidence matrix names every current focused `tools/validate_*.py` command before direct Cargo and diff checks;
@@ -44,7 +46,7 @@ The focused validator checks that:
 
 ## Current Result
 
-The documentation set is organized enough for contained M0 continuation. A maintainer or agent can find the current gate posture, first continuation path, research lane set, proposed task queue, machine registries, dependency graph, validation commands, owner-only decisions, and unsupported-claim boundaries without relying on chat history.
+The documentation set is organized enough for contained M0 continuation. A maintainer or agent can find the current gate posture, first continuation path, research lane set, proposed task queue, contained M0 start-state answer, machine registries, dependency graph, validation commands, owner-only decisions, and unsupported-claim boundaries without relying on chat history.
 
 Separately, [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json) records the contained `WP-002` M0 reference implementation as `review_pending`. The proposed build-readiness queue still reserves `TASK-000001` through `TASK-000010` for future handoff records; those queue rows are not approved, running, accepted, or release-gated.
 

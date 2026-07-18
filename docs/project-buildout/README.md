@@ -27,9 +27,10 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 17. [17 Build Readiness Task Queue](17-build-readiness-task-queue.md)
 18. [18 Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md)
 19. [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md)
-20. [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
-21. [Implementation Master Plan](implementation-plan/README.md)
-22. [19 GitHub Issue Handoff](19-github-issue-handoff.md)
+20. [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md)
+21. [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
+22. [Implementation Master Plan](implementation-plan/README.md)
+23. [19 GitHub Issue Handoff](19-github-issue-handoff.md)
 
 ## Machine-readable companions
 
@@ -43,6 +44,8 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 - [Implementation kickoff review](machine/implementation-kickoff-review.json)
 - [Build readiness dependency graph](machine/build-readiness-dependency-graph.json)
 - [Documentation readiness completion audit](machine/documentation-readiness-completion-audit.json)
+- [Contained M0 start state](machine/contained-m0-start-state.json)
+- [Contained M0 start-state schema](machine/contained-m0-start-state.schema.json)
 - [Implementation execution graph](../blueprint-v1/machine/implementation-execution-graph.json)
 - [Implementation milestone gates](../blueprint-v1/machine/implementation-milestone-gates.json)
 - [Implementation interface freezes](../blueprint-v1/machine/implementation-interface-freezes.json)
@@ -76,13 +79,14 @@ Use this section as the fast continuation path after reading [Start Here](../sta
 3. Use the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes.
 4. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
 5. Use the checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md) before calling documentation preparation complete; it confirms contained M0 continuation only and keeps all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
-6. Use the checked [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md) to route Chrome-class product, engine, runtime, security, accessibility, DevTools, AI, update, build, and performance domains to current owners, blockers, next proof, and no-claim boundaries.
-7. Use the [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) to verify that the entry points, registries, research crosswalk, task controls, and validation commands still support contained M0 continuation.
-8. Use the [Implementation Master Plan](implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks.
-9. Use the [GitHub Issue Handoff](19-github-issue-handoff.md) after issue or branch cleanup to keep open and closed coordination items mapped to durable project records.
-10. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
-11. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
-12. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
+6. Use the checked [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) and [`contained-m0-start-state.json`](machine/contained-m0-start-state.json) before answering whether a session may start building; they allow no-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance only.
+7. Use the checked [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md) to route Chrome-class product, engine, runtime, security, accessibility, DevTools, AI, update, build, and performance domains to current owners, blockers, next proof, and no-claim boundaries.
+8. Use the [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) to verify that the entry points, registries, research crosswalk, task controls, and validation commands still support contained M0 continuation.
+9. Use the [Implementation Master Plan](implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks.
+10. Use the [GitHub Issue Handoff](19-github-issue-handoff.md) after issue or branch cleanup to keep open and closed coordination items mapped to durable project records.
+11. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
+12. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
+13. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
 
 ### Source-strategy lane
 

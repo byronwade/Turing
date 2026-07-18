@@ -6,7 +6,7 @@ Last updated: 2026-07-18
 
 ## Purpose
 
-This queue turns the current build-readiness blockers into explicit `TASK-*` handoff records. It does not replace the [Build Readiness Operating Board](13-build-readiness-operating-board.md), checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md), checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md), checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md), checked no-claim [build-readiness closure-review template](machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`backlog.json`](../blueprint-v1/machine/backlog.json), or the [Agent Execution book](../agent-execution/README.md).
+This queue turns the current build-readiness blockers into explicit `TASK-*` handoff records. It does not replace the [Build Readiness Operating Board](13-build-readiness-operating-board.md), checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md), checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md), checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md), checked no-claim [build-readiness closure-review template](machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json), checked [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md), machine [`contained-m0-start-state.json`](machine/contained-m0-start-state.json), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`backlog.json`](../blueprint-v1/machine/backlog.json), or the [Agent Execution book](../agent-execution/README.md).
 
 The machine companion is [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json). Tasks in that registry use the execution-task shape from [`execution-task.schema.json`](../agent-execution/machine/execution-task.schema.json).
 The checked no-claim [Task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json), validated by [`validate_task_approval_templates.py`](../../tools/validate_task_approval_templates.py), defines what an owner must fill before any proposed row becomes an immutable reviewed execution manifest.
@@ -14,6 +14,8 @@ The checked no-claim [Task approval template](../agent-execution/machine/task-ap
 ## Authorization Boundary
 
 Every task is currently `proposed`. A proposed task is not approved, not running, not accepted, and not release-gated. Before execution, an owner must convert the task into an immutable reviewed task manifest, assign an independent reviewer, confirm allowed paths and resource budgets, and define the evidence bundle location.
+
+The checked contained M0 start-state record makes this explicit in machine-readable form: proposed `TASK-000001` through `TASK-000010` are owner-approval-required, while no-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance may continue under contained M0 boundaries.
 
 These task records cannot authorize:
 
@@ -131,11 +133,12 @@ The exact owners, reviewers, allowed paths, prohibited paths, budgets, dependenc
 Use the queue this way:
 
 1. Select the first task whose preconditions can be satisfied.
-2. Create or approve an immutable task manifest using the [agent task template](../templates/agent-task.md) and checked [Task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json).
-3. Confirm the owner, independent reviewer, allowed paths, prohibited paths, resource budget, rollback plan, and evidence bundle location.
-4. Execute only the approved task scope.
-5. Update every affected Blueprint chapter, detailed book, readiness record, risk, requirement, backlog item, registry, and validation rule in the same change.
-6. Keep task status as proposed until owner review changes it.
+2. Check [`contained-m0-start-state.json`](machine/contained-m0-start-state.json) and confirm the selected queue row is still not executable from proposed status alone.
+3. Create or approve an immutable task manifest using the [agent task template](../templates/agent-task.md) and checked [Task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json).
+4. Confirm the owner, independent reviewer, allowed paths, prohibited paths, resource budget, rollback plan, and evidence bundle location.
+5. Execute only the approved task scope.
+6. Update every affected Blueprint chapter, detailed book, readiness record, risk, requirement, backlog item, registry, and validation rule in the same change.
+7. Keep task status as proposed until owner review changes it.
 
 ## Evidence Requirements
 

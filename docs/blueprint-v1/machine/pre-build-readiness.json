@@ -591,10 +591,14 @@
         "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
         "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
         "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
+        "docs/research/contained-m0-start-state-inventory-2026-07.md",
+        "docs/project-buildout/machine/contained-m0-start-state.schema.json",
+        "docs/project-buildout/machine/contained-m0-start-state.json",
         "docs/research/m0-build-foundation-2026-07.md",
         "tools/validate_implementation_kickoff_review.py",
         "tools/validate_build_readiness_dependency_graph.py",
         "tools/validate_documentation_readiness_completion_audit.py",
+        "tools/validate_contained_m0_start_state.py",
         "tools/validate_blueprint.py",
         "tools/check.ps1"
       ],
@@ -602,6 +606,7 @@
         "owner-reviewed implementation kickoff review inventory beyond the checked no-claim inventory",
         "owner-reviewed build-readiness dependency graph beyond the checked no-claim graph",
         "owner-reviewed documentation-readiness completion audit beyond the checked no-claim completion audit, proving that all-information-ready-for-building language remains unsupported until remaining blockers close",
+        "owner review of the contained M0 start-state beyond the checked no-claim start-state inventory before any proposed tasks, task approval, TASK-000011 acceptance, broad M1, all-information-ready-for-building, or readiness-promotion claim",
         "owner-reviewed build-readiness closure review beyond the checked no-claim build-readiness closure-review template before any all-information-ready-for-building, broad M1, release, production, Chrome-class, performance, compatibility, security, accessibility, daily-driver, task approval, or readiness-promotion claim",
         "remaining P0 items before M1 expansion across source strategy, fresh-host reproduction, IPC boundary, sandbox probes, benchmark claims, native-shell toolkit and page-surface selection, profile/session behavior, package/update authority, incident response, backup ownership, owner review, and release authority"
       ]

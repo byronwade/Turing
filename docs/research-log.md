@@ -2,6 +2,38 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 - Contained M0 start-state control
+
+Question:
+
+Can the current "can we start building now?" answer become machine-checkable without approving proposed tasks, accepting `TASK-000011`, or promoting broad implementation readiness?
+
+Inputs:
+
+- [Contained M0 Start State Inventory](research/contained-m0-start-state-inventory-2026-07.md);
+- [`contained-m0-start-state.json`](project-buildout/machine/contained-m0-start-state.json);
+- [`contained-m0-start-state.schema.json`](project-buildout/machine/contained-m0-start-state.schema.json);
+- [`validate_contained_m0_start_state.py`](../tools/validate_contained_m0_start_state.py);
+- [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json);
+- [`build-readiness-task-queue.json`](blueprint-v1/machine/build-readiness-task-queue.json);
+- [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json).
+
+Method:
+
+Added a checked no-claim start-state record and validator. The validator cross-checks that contained M0 continuation remains allowed, broad implementation remains blocked, proposed `TASK-000001` through `TASK-000010` remain proposed, and `TASK-000011` remains `review_pending`. Wired the validator into `xtask check` and linked the new record from the start-here path, docs index, operating board, task queue, readiness matrix, research index, repository map, and `PB-020` readiness evidence.
+
+Decision:
+
+Use the start-state record as a session router. No-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance can continue. Proposed queue tasks still need owner-approved immutable manifests before execution, and broad product work remains blocked.
+
+Impact:
+
+Future maintainers can answer the start question from one checked artifact before reading the full readiness stack. The artifact does not approve tasks, accept `TASK-000011`, promote readiness, prove all information is ready for building, or support Chrome-class, production, release, performance, compatibility, security, accessibility, beta, stable, or daily-driver claims.
+
+Next question:
+
+Should the owner convert one proposed queue row, most likely fresh-host reproduction or IPC hardening, into a reviewed immutable task manifest so implementation can proceed beyond no-claim preparation?
+
 ## 2026-07-18 - TASK-000011 no-claim evidence capture
 
 Question:

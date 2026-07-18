@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "state_id": "PB020.CONTAINED_M0_START_STATE.NO_CLAIM.2026_07",
+  "status": "no_claim_contained_m0_start_state",
+  "updated": "2026-07-18",
+  "claim_status": "Contained M0 start-state inventory only; no proposed task approval, no TASK-000011 acceptance, no readiness promotion, no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no performance claim, no compatibility claim, no security claim, no accessibility claim, no release readiness claim, no daily-driver claim, and no all-information-ready-for-building claim.",
+  "source_records": [
+    "README.md",
+    "docs/start-here.md",
+    "docs/README.md",
+    "docs/project-buildout/README.md",
+    "docs/project-buildout/11-pre-build-readiness-checklist.md",
+    "docs/project-buildout/13-build-readiness-operating-board.md",
+    "docs/project-buildout/17-build-readiness-task-queue.md",
+    "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/machine/implementation-kickoff-review.json",
+    "docs/project-buildout/machine/build-readiness-dependency-graph.json",
+    "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
+    "docs/research/contained-m0-start-state-inventory-2026-07.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/agent-execution/README.md",
+    "docs/agent-execution/machine/tasks/TASK-000011.json",
+    "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+    "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json"
+  ],
+  "current_state": {
+    "contained_m0_continuation_allowed": true,
+    "proposed_task_execution_authorized": false,
+    "task_000011_acceptance_authorized": false,
+    "broad_m1_authorized": false,
+    "production_authorized": false,
+    "chrome_class_claim_supported": false,
+    "all_information_ready_for_building": false
+  },
+  "task_status_requirements": {
+    "proposed_queue_tasks": [
+      "TASK-000001",
+      "TASK-000002",
+      "TASK-000003",
+      "TASK-000004",
+      "TASK-000005",
+      "TASK-000006",
+      "TASK-000007",
+      "TASK-000008",
+      "TASK-000009",
+      "TASK-000010"
+    ],
+    "review_pending_tasks": ["TASK-000011"]
+  },
+  "start_classes": [
+    {
+      "id": "START-NO_CLAIM_DOC_RESEARCH",
+      "state": "allowed_now",
+      "may_start_execution": true,
+      "allowed_actions": [
+        "Continue documentation, research, registry synchronization, validators, no-claim evidence captures, and task-approval preparation that preserve current gate truth.",
+        "Run validation, fix stale links or drift, and add no-claim handoff artifacts when they make the stop/resume path clearer."
+      ],
+      "required_before_start": [
+        "Map the work to a current PB, RQ, WP, TASK, requirement, risk, ADR, or documented handoff lane before editing.",
+        "Keep unsupported behavior, owner-only decisions, and no-claim boundaries beside every new evidence statement."
+      ],
+      "must_stop_before": [
+        "Stop before treating no-claim research, a proposed task row, or a template as execution approval or readiness promotion.",
+        "Stop before changing product, security, compatibility, accessibility, performance, Chrome-class, release, production, or daily-driver claims."
+      ],
+      "evidence_refs": [
+        "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+        "docs/research/README.md",
+        "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+        "docs/blueprint-v1/machine/pre-build-readiness.json"
+      ],
+      "prohibited_claims": [
+        "No complete documentation claim.",
+        "No all-information-ready-for-building claim.",
+        "No broad M1 implementation claim.",
+        "No readiness promotion claim."
+      ]
+    },
+    {
+      "id": "START-TASK_000011_REVIEW_HANDOFF",
+      "state": "review_pending_only",
+      "may_start_execution": true,
+      "allowed_actions": [
+        "Maintain the TASK-000011 review handoff, non-accepting evidence capture, source-commit binding, and validation links while the task remains review_pending.",
+        "Prepare independent-review inputs without changing task status, accepting the task, or promoting PB-011."
+      ],
+      "required_before_start": [
+        "Verify TASK-000011 remains review_pending and that any evidence capture records needs_independent_review unless an independent reviewer creates a separate accepted bundle.",
+        "Keep TASK-000011 scope limited to the contained M0 WP-002 reference and documented limitations."
+      ],
+      "must_stop_before": [
+        "Stop before changing TASK-000011 to accepted, complete, or release-gated without an independent accepted evidence bundle.",
+        "Stop before claiming owner-reviewed IPC readiness, renderer security, agent security, process isolation, site isolation, production IPC, or implementation readiness."
+      ],
+      "evidence_refs": [
+        "docs/agent-execution/machine/tasks/TASK-000011.json",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
+        "docs/research/wp-002-kernel-ipc-2026-07.md"
+      ],
+      "prohibited_claims": [
+        "No TASK-000011 acceptance claim.",
+        "No accepted independent evidence-bundle claim.",
+        "No PB-011 readiness promotion.",
+        "No production IPC or security claim."
+      ]
+    },
+    {
+      "id": "START-PROPOSED_TASKS_000001_000010",
+      "state": "owner_approval_required",
+      "may_start_execution": false,
+      "allowed_actions": [
+        "Prepare owner-review material, task manifests, evidence-bundle targets, and scope clarification for proposed TASK-000001 through TASK-000010.",
+        "Update the task queue, dependency graph, and readiness docs when a proposed task's preconditions, allowed paths, or evidence requirements drift."
+      ],
+      "required_before_start": [
+        "A proposed task must become an immutable reviewed task manifest with owner approval, independent reviewer assignment, allowed paths, prohibited paths, resource budget, rollback plan, expiry, and evidence bundle location.",
+        "The checked no-claim task approval template must be replaced with task-specific reviewed evidence before execution starts."
+      ],
+      "must_stop_before": [
+        "Stop before implementing TASK-000001 through TASK-000010 from the proposed queue alone.",
+        "Stop before treating task queue presence, dependency-graph edges, or templates as owner-approved execution authority or a task approval claim."
+      ],
+      "evidence_refs": [
+        "docs/project-buildout/17-build-readiness-task-queue.md",
+        "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+        "docs/project-buildout/machine/build-readiness-dependency-graph.json",
+        "docs/agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json"
+      ],
+      "prohibited_claims": [
+        "No proposed task approval claim.",
+        "No task running claim.",
+        "No task acceptance claim.",
+        "No release-gated task claim."
+      ]
+    },
+    {
+      "id": "START-BROAD_M1_OR_PRODUCT",
+      "state": "blocked",
+      "may_start_execution": false,
+      "allowed_actions": [
+        "Continue no-claim research, planning, validation, and owner-decision packet preparation for broad implementation blockers.",
+        "Keep Chrome-class and extreme-performance goals traced to evidence requirements without representing them as current capability."
+      ],
+      "required_before_start": [
+        "Broad M1 or product implementation requires owner-reviewed closure of source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, build-readiness closure, and release-authority gates.",
+        "Chrome-class, speed, memory, energy, compatibility, security, accessibility, production, release, or daily-driver claims require retained raw evidence and owner-reviewed claim bundles."
+      ],
+      "must_stop_before": [
+        "Stop before starting broad browser construction, developer preview, beta, stable, production, or Chrome-class implementation from current contained M0 evidence.",
+        "Stop before importing release-path browser engine code, selecting a release UI toolkit, or publishing performance and security claims."
+      ],
+      "evidence_refs": [
+        "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
+        "docs/project-buildout/machine/implementation-kickoff-review.json",
+        "docs/research/chrome-class-capability-traceability-map-2026-07.md",
+        "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json"
+      ],
+      "prohibited_claims": [
+        "No broad M1 implementation claim.",
+        "No production claim.",
+        "No Chrome-class claim.",
+        "No performance, compatibility, security, or accessibility claim."
+      ]
+    }
+  ],
+  "validation_commands": [
+    "python3 -B tools/validate_contained_m0_start_state.py",
+    "python3 -B tools/validate_blueprint.py",
+    ".\\tools\\check.ps1"
+  ],
+  "unsupported_boundaries": [
+    "No proposed task approval claim.",
+    "No TASK-000011 acceptance claim.",
+    "No accepted independent evidence-bundle claim.",
+    "No readiness promotion claim.",
+    "No broad M1 implementation claim.",
+    "No developer preview claim.",
+    "No beta claim.",
+    "No stable claim.",
+    "No production claim.",
+    "No Chrome-class claim.",
+    "No performance claim.",
+    "No compatibility claim.",
+    "No security claim.",
+    "No accessibility claim.",
+    "No release readiness claim.",
+    "No daily-driver claim.",
+    "No all-information-ready-for-building claim."
+  ]
+}

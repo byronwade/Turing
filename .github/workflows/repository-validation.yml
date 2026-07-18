@@ -58,6 +58,15 @@ jobs:
           cat github-issue-handoff-validation.log
           exit "$status"
 
+      - name: Validate contained M0 start state
+        shell: bash
+        run: |
+          set +e
+          python3 -B tools/validate_contained_m0_start_state.py > contained-m0-start-state-validation.log 2>&1
+          status=$?
+          cat contained-m0-start-state-validation.log
+          exit "$status"
+
       - name: Validate ADR-0009 evidence records
         shell: bash
         run: |
@@ -109,6 +118,7 @@ jobs:
           path: |
             repository-validation.log
             github-issue-handoff-validation.log
+            contained-m0-start-state-validation.log
             adr-0009-evidence-validation.log
             diff-whitespace.log
             build-foundation-validation.log

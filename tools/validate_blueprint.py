@@ -6820,6 +6820,7 @@ def check_xtask_aggregate_check() -> None:
         '["-B", "tools/validate_blueprint.py"]',
         '["-B", "tools/validate_implementation_plan.py"]',
         '["-B", "tools/validate_github_issue_handoff.py"]',
+        '["-B", "tools/validate_contained_m0_start_state.py"]',
         '["-B", "tools/validate_adr_0009_evidence.py"]',
         '["-B", "tools/validate_build_foundation.py"]',
         '["-B", "tools/validate_evidence_bundles.py"]',
@@ -6838,6 +6839,9 @@ def check_xtask_aggregate_check() -> None:
         "Validate GitHub issue handoff records",
         "python3 -B tools/validate_github_issue_handoff.py > github-issue-handoff-validation.log",
         "github-issue-handoff-validation.log",
+        "Validate contained M0 start state",
+        "python3 -B tools/validate_contained_m0_start_state.py > contained-m0-start-state-validation.log",
+        "contained-m0-start-state-validation.log",
         "Validate ADR-0009 evidence records",
         "python3 -B tools/validate_adr_0009_evidence.py > adr-0009-evidence-validation.log",
         "adr-0009-evidence-validation.log",
@@ -6855,18 +6859,20 @@ def check_xtask_aggregate_check() -> None:
 
     doc_requirements = {
         ROOT / "README.md": [
-            "CI for documentation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
+            "CI for documentation, implementation-plan validation, GitHub issue handoff validation, contained M0 start-state validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
             "`xtask check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
+            "contained M0 start-state validation",
             "local unstaged and staged diff whitespace checks",
             "cargo run --locked -p xtask -- check",
         ],
         DOCS / "prototype.md": [
             "cargo fmt --manifest-path prototype/Cargo.toml -- --check",
             "cargo test --manifest-path prototype/Cargo.toml --all-targets",
-            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, diff whitespace checks, and `xtask check`",
+            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, evidence-bundle validation, contained M0 start-state validation, diff whitespace checks, and `xtask check`",
         ],
         RESEARCH / "m0-build-foundation-2026-07.md": [
             "`check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
+            "contained M0 start-state validation",
             "local unstaged and staged diff whitespace checks",
         ],
     }

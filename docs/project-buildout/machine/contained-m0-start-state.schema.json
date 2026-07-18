@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/contained-m0-start-state-v1.json",
+  "title": "Turing Contained M0 Start State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "state_id",
+    "status",
+    "updated",
+    "claim_status",
+    "source_records",
+    "current_state",
+    "task_status_requirements",
+    "start_classes",
+    "validation_commands",
+    "unsupported_boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "state_id": {
+      "type": "string",
+      "pattern": "^PB020\\.CONTAINED_M0_START_STATE\\.[A-Z0-9._-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["no_claim_contained_m0_start_state", "reviewed", "superseded"]
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "claim_status": {
+      "type": "string",
+      "minLength": 120
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "current_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contained_m0_continuation_allowed",
+        "proposed_task_execution_authorized",
+        "task_000011_acceptance_authorized",
+        "broad_m1_authorized",
+        "production_authorized",
+        "chrome_class_claim_supported",
+        "all_information_ready_for_building"
+      ],
+      "properties": {
+        "contained_m0_continuation_allowed": {
+          "type": "boolean"
+        },
+        "proposed_task_execution_authorized": {
+          "type": "boolean"
+        },
+        "task_000011_acceptance_authorized": {
+          "type": "boolean"
+        },
+        "broad_m1_authorized": {
+          "type": "boolean"
+        },
+        "production_authorized": {
+          "type": "boolean"
+        },
+        "chrome_class_claim_supported": {
+          "type": "boolean"
+        },
+        "all_information_ready_for_building": {
+          "type": "boolean"
+        }
+      }
+    },
+    "task_status_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposed_queue_tasks", "review_pending_tasks"],
+      "properties": {
+        "proposed_queue_tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          }
+        },
+        "review_pending_tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^TASK-[0-9]{6}$"
+          }
+        }
+      }
+    },
+    "start_classes": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state",
+          "may_start_execution",
+          "allowed_actions",
+          "required_before_start",
+          "must_stop_before",
+          "evidence_refs",
+          "prohibited_claims"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^START-[A-Z0-9_]+$"
+          },
+          "state": {
+            "type": "string",
+            "minLength": 3
+          },
+          "may_start_execution": {
+            "type": "boolean"
+          },
+          "allowed_actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "required_before_start": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "must_stop_before": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 20
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 3
+            }
+          },
+          "prohibited_claims": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 10
+            }
+          }
+        }
+      }
+    },
+    "validation_commands": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "unsupported_boundaries": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    }
+  }
+}
