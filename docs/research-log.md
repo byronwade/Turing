@@ -2,6 +2,37 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — Servo generated-output generator manifest
+
+Question:
+
+Which first-party Servo and pinned Stylo generators, inputs, outputs, and environment sensitivities shape `ADR9-EV-007`, and what still prevents generated outputs from becoming decision-grade source-strategy evidence?
+
+Inputs:
+
+- [Servo Generated-Output Generator Manifest](research/servo-generated-output-generator-manifest-2026-07.md);
+- [Servo Build-Script and Generated-Output Audit](research/servo-build-script-generated-output-audit-2026-07.md);
+- [Servo Clean Generated-Output Reproduction Probe](research/servo-clean-generated-output-reproduction-2026-07.md);
+- [ADR-0009 Evidence Traceability Matrix](project-buildout/15-adr-0009-evidence-traceability-matrix.md);
+- [`adr-0009-evidence.json`](blueprint-v1/machine/adr-0009-evidence.json);
+- external Servo checkout `C:\ts\servo` at commit `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe` and pinned Stylo commit `d3de91cbac7bba38e159239b3c0a360783fce2ee`.
+
+Method:
+
+Inspected first-party Servo and pinned Stylo `build.rs` families, linked Python generators, retained warm and package-scoped clean output-family observations, WebIDL feature gates, and source-family directory digests.
+
+Decision:
+
+Record the manifest as partial `ADR9-EV-007` evidence only. It replaces the broad "generator manifest missing" gap with a sharper owner-reviewed generator-manifest blocker tied to selected baseline, feature profile, target profile, output families, generator versions, environment policy, clean regeneration, and source-to-output provenance.
+
+Impact:
+
+`PB-002` remains blocked. The report does not prove generated-output determinism, source-to-output license/provenance, generated-code approval, component approval, source approval, or release-code authorization.
+
+Next question:
+
+Can the manifest be owner-reviewed for a selected source baseline and feature profile, then replayed through a feature-correct full clean target and independent host with source-to-output provenance?
+
 ## 2026-07-18 — Servo clean generated-output reproduction probe
 
 Question:

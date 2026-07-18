@@ -28,13 +28,15 @@
         "tools/serve_servo_local_compatibility_corpus.py",
         "docs/research/servo-source-strategy-inventory-2026-07.md",
         "docs/research/servo-build-script-generated-output-audit-2026-07.md",
-        "docs/research/servo-clean-generated-output-reproduction-2026-07.md"
+        "docs/research/servo-clean-generated-output-reproduction-2026-07.md",
+        "docs/research/servo-generated-output-generator-manifest-2026-07.md"
       ],
       "next_proof": [
         "owner-selected source baseline",
         "accepted provenance and equivalence policy",
         "legal, advisory, and SBOM decisions",
         "independent clean-target build replay",
+        "owner-reviewed generated-output generator manifest tied to selected baseline, feature profile, target profile, output families, generator versions, and environment policy",
         "feature-correct full clean generated-output regeneration beyond the package-scoped dummy-media probe",
         "owner-reviewed component boundaries and JavaScript-runtime decision",
         "local compatibility corpus HTTPS/browser execution beyond the checked harness plan, WPT/Test262 denominator, and fixed-hardware performance baseline",

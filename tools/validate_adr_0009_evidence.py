@@ -22,6 +22,9 @@ READINESS = MACHINE / "pre-build-readiness.json"
 CLEAN_GENERATED_OUTPUT_REPORT = (
     "docs/research/servo-clean-generated-output-reproduction-2026-07.md"
 )
+GENERATED_OUTPUT_GENERATOR_MANIFEST = (
+    "docs/research/servo-generated-output-generator-manifest-2026-07.md"
+)
 
 EVIDENCE_ID = re.compile(r"^ADR9-EV-\d{3}$")
 DECISION_REVIEW_ID = re.compile(r"^ADR0009\.DECISION_REVIEW\.[A-Z0-9._-]+$")
@@ -42,6 +45,7 @@ REQUIRED_DECISION_REVIEW_SOURCES = {
     "docs/blueprint-v1/17-architecture-decisions.md",
     "docs/blueprint-v1/20-definition-of-done.md",
     CLEAN_GENERATED_OUTPUT_REPORT,
+    GENERATED_OUTPUT_GENERATOR_MANIFEST,
     "tools/validate_adr_0009_evidence.py",
     "tools/validate_blueprint.py",
     "tools/check.ps1",
@@ -284,20 +288,29 @@ def validate_registry(payload: dict[str, object], scopes: set[str]) -> list[dict
     by_id = {str(item["id"]): item for item in items}
     ev007 = by_id["ADR9-EV-007"]
     ev007_evidence = require_string_array(ev007, "existing_evidence", "ADR9-EV-007")
-    if CLEAN_GENERATED_OUTPUT_REPORT not in ev007_evidence:
-        fail(f"ADR9-EV-007 existing_evidence must include {CLEAN_GENERATED_OUTPUT_REPORT}")
+    for required in [
+        CLEAN_GENERATED_OUTPUT_REPORT,
+        GENERATED_OUTPUT_GENERATOR_MANIFEST,
+    ]:
+        if required not in ev007_evidence:
+            fail(f"ADR9-EV-007 existing_evidence must include {required}")
     ev007_missing = "\n".join(
         require_string_array(ev007, "missing_outputs", "ADR9-EV-007")
     )
     for phrase in [
         "feature-correct full clean-target",
         "independent-host comparison",
+        "owner-reviewed generator manifest",
         "source-to-output",
     ]:
         if phrase not in ev007_missing:
             fail(f"ADR9-EV-007 missing_outputs must mention {phrase}")
     ev007_next_action = require_string(ev007, "next_action", "ADR9-EV-007")
-    for phrase in ["feature-correct full clean target", "independent host"]:
+    for phrase in [
+        "owner-review the generator manifest",
+        "feature-correct full clean target",
+        "independent host",
+    ]:
         if phrase not in ev007_next_action:
             fail(f"ADR9-EV-007 next_action must mention {phrase}")
     return items
@@ -341,7 +354,9 @@ def validate_matrix(items: list[dict[str, object]]) -> None:
         fail(f"{relative(MATRIX)}: handoff rule must mention adr-0009-evidence.json")
     for phrase in [
         "clean generated-output reproduction probe",
+        "generated-output generator manifest",
         "feature-correct full clean-target regeneration diff",
+        "owner-reviewed generator manifest",
     ]:
         if phrase not in text:
             fail(f"{relative(MATRIX)}: matrix must mention {phrase}")
@@ -366,12 +381,15 @@ def validate_readiness() -> None:
         "docs/blueprint-v1/machine/adr-0009-decision-review.schema.json",
         "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
         CLEAN_GENERATED_OUTPUT_REPORT,
+        GENERATED_OUTPUT_GENERATOR_MANIFEST,
     ]:
         if required not in evidence:
             fail(f"PB-002 evidence must include {required}")
     evidence_required = require_string_array(pb002, "evidence_required", "PB-002")
     if not any("feature-correct full clean generated-output regeneration" in item for item in evidence_required):
         fail("PB-002 evidence_required must retain the feature-correct clean generated-output blocker")
+    if not any("owner-reviewed generated-output generator manifest" in item for item in evidence_required):
+        fail("PB-002 evidence_required must retain the owner-reviewed generated-output generator manifest blocker")
 
 
 def validate_decision_review() -> None:

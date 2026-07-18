@@ -247,7 +247,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 
 `PB-002` remains blocked.
 
-`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, generated-output provenance, feature-correct full clean-target regeneration beyond the package-scoped dummy-media probe, independent replay, and owner approval remain missing.
+`ADR9-EV-008` remains partial. Existing evidence now includes this side-effect audit, and adjacent `ADR9-EV-007` evidence now includes a first-pass generated-output generator manifest, but the selected baseline/profile/component boundary, accepted side-effect policy, dynamic tracing, proc-macro expansion review, generated-output provenance, feature-correct full clean-target regeneration beyond the package-scoped dummy-media probe, independent replay, and owner approval remain missing.
 
 ## Affected Records
 
@@ -263,6 +263,7 @@ Proc macros execute in the compiler context. Turing needs expansion-risk review 
 - [`docs/blueprint-v1/machine/pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json)
 - [`docs/research/servo-build-script-generated-output-audit-2026-07.md`](servo-build-script-generated-output-audit-2026-07.md)
 - [`docs/research/servo-clean-generated-output-reproduction-2026-07.md`](servo-clean-generated-output-reproduction-2026-07.md)
+- [`docs/research/servo-generated-output-generator-manifest-2026-07.md`](servo-generated-output-generator-manifest-2026-07.md)
 - [`docs/research/servo-generated-native-unsafe-classification-2026-07.md`](servo-generated-native-unsafe-classification-2026-07.md)
 
 ## Next Experiments

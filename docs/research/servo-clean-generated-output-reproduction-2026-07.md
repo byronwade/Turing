@@ -11,6 +11,8 @@ Can selected Servo generated outputs be regenerated from a clean external target
 
 This probe does not import Servo source, generated Rust, Cargo output, native binaries, build logs, Cargo timing HTML, or target directories into Turing. It does not approve Servo, generated outputs, build scripts, proc macros, native packages, dependencies, or any `ADR-0009` option.
 
+Follow-up: the [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md) maps first-party Servo and pinned Stylo generator families, inputs, outputs, and environment sensitivity for `ADR9-EV-007`. It does not replace the owner-reviewed manifest, feature-correct full clean regeneration, independent-host comparison, or source-to-output provenance evidence still required below.
+
 ## Inputs
 
 External checkout:
@@ -151,7 +153,7 @@ Before `ADR9-EV-007` can close, produce:
 2. a feature-correct full clean-target generated-output regeneration run for that baseline and profile, not only a package-scoped dummy-media probe;
 3. retained success and failure logs with wrapper exit handling, `mach` exit status, stdout and stderr hashes, target-directory hashes, environment records, and source-tree cleanliness proof;
 4. an independent-host or clean-VM comparison for the same commit, feature set, target, profile, environment policy, and generator inputs;
-5. generator manifests for Web IDL, CSS properties, WebGPU, DevTools build IDs, C API headers, bindgen outputs, proc macros, shaders, native build glue, and SDK-driven outputs;
+5. owner-reviewed generated-output generator manifest beyond the first-pass manifest, tied to selected baseline, feature profile, target profile, output families, generator versions, and environment policy;
 6. source-to-output license, notice, and provenance mapping for each generated-output family;
 7. accepted policy for GStreamer presence or exclusion, MozJS/SpiderMonkey feature selection, JIT posture, `SOURCE_DATE_EPOCH`, Python or `uv` discovery, git-derived versions, `OUT_DIR` profile inference, nested Cargo, native copying, SDK discovery, and platform resource tools;
 8. dynamic build-script and proc-macro tracing tied to the selected baseline and profile.
@@ -168,6 +170,7 @@ This probe adds evidence for `PB-002` and `ADR9-EV-007`, but it does not change 
 - [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md);
 - [Servo Source Strategy Inventory - July 2026](servo-source-strategy-inventory-2026-07.md);
 - [Servo Build-Script and Generated-Output Audit - July 2026](servo-build-script-generated-output-audit-2026-07.md);
+- [Servo Generated-Output Generator Manifest - July 2026](servo-generated-output-generator-manifest-2026-07.md);
 - [Servo Build-Script and Proc-Macro Side-Effect Audit - July 2026](servo-build-script-proc-macro-side-effect-audit-2026-07.md);
 - [Servo Generated, Native, Unsafe, and FFI Classification - July 2026](servo-generated-native-unsafe-classification-2026-07.md);
 - [Servo Native Bootstrap Provenance and Source-Build Audit - July 2026](servo-native-bootstrap-provenance-audit-2026-07.md);
