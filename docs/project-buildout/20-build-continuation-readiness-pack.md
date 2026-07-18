@@ -6,7 +6,20 @@ Last reviewed: 2026-07-18
 
 This pack exists so any engineer can resume work with the same evidence context and stop/restart safely without inferring gate state from stale notes.
 
-## 1) Read this before touching implementation
+## 1) Build decision snapshot (as of 2026-07-18)
+
+Current gate decision: **do not start broad implementation now**.
+
+- **Contained M0 continuity:** allowed
+- **Broad M1 build / Chrome-class/extreme-performance claims:** not allowed
+- **Primary blocked gates:** `PB-002`, `PB-019`
+- **Gate evidence check:**
+  - `status` in [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json) is `not_ready_for_broad_implementation`
+  - `PB-002` remains blocked and `PB-019` remains blocked in the same registry
+  - `PB-020` still requires owner-reviewed closure across remaining P0 items
+  - checked [build-information readiness ledger](../research/build-information-readiness-ledger-2026-07.md) still shows unresolved source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, and ownership evidence gaps
+
+## 2) Read this before touching implementation
 
 Before making any scope change, confirm all of these are true:
 
@@ -21,7 +34,7 @@ Before making any scope change, confirm all of these are true:
   - [`docs/research/contained-m0-start-state-inventory-2026-07.md`](../research/contained-m0-start-state-inventory-2026-07.md)
 - Broad claims (Chrome-class, speed, memory, energy, compatibility, security, accessibility, production, release, beta/stable, implementation) remain unsupported until owner reviews and evidence acceptance records explicitly promote them.
 
-## 2) What you can do now (contained M0 scope)
+## 3) What you can do now (contained M0 scope)
 
 - Continue docs/research indexing and continuity work.
 - Maintain no-claim task-shape work for `TASK-000011` review handoff maintenance.
@@ -30,7 +43,7 @@ Before making any scope change, confirm all of these are true:
 
 You cannot start broad M1 expansion, benchmark claims, or implementation tasks outside the allowed contained-M0 scope without approved `TASK-*` manifests and owner-reviewed readiness promotions.
 
-## 3) Hard stop gates for broad execution
+## 4) Hard stop gates for broad execution
 
 The following remain the first gates for wide implementation:
 
@@ -45,7 +58,7 @@ The following remain the first gates for wide implementation:
 
 These gates must be accepted through owner-reviewed artifacts before broad production or Chrome-class claims move forward.
 
-## 4) Deep research lanes tied to continuity
+## 5) Deep research lanes tied to continuity
 
 - Source strategy lane: `RQ-44`, `RQ-46`, `RQ-47`, `RQ-15`, `RQ-16`, `RQ-25`, `RQ-31`
 - Fresh-host lane: `RQ-46`, `RQ-47`, `RQ-31`
@@ -58,7 +71,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - Incident/security lane: `RQ-31`, `RQ-60`, `RQ-66`
 - Ownership/authority lane: `RQ-25`, `RQ-31`, `RQ-45`, `RQ-47`, `RQ-48`, `RQ-60`, `RQ-66`
 
-## 5) Where deep research evidence is indexed
+## 6) Where deep research evidence is indexed
 
 - `docs/research/README.md` (implementation lanes and current status)
 - `docs/project-buildout/11-pre-build-readiness-checklist.md` (lane evidence and no-claim boundary)
@@ -68,7 +81,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - `docs/research/implementation-kickoff-review-inventory-2026-07.md` (stop/resume claims and blocked lanes)
 - `docs/research/build-readiness-dependency-graph-inventory-2026-07.md` (task and gate dependency map)
 
-## 6) What is still missing before broad M1/extreme-performance work
+## 7) What is still missing before broad M1/extreme-performance work
 
 - Independent fresh-host evidence with full logs and clean-host policy.
 - Transport-level IPC implementation plus wire codec, handle transfer, and timeout/cancellation proofs.
@@ -78,7 +91,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - Named qualified backup maintainers and two-person control for owner coverage and release authority paths.
 - Owner-reviewed implementation kickoff closure across all lane blockers before broad implementation.
 
-## 7) Claim boundary (for any session)
+## 8) Claim boundary (for any session)
 
 This pack is a continuity artifact only. It documents evidence-tracking state, but it does not promote:
 
@@ -88,4 +101,3 @@ This pack is a continuity artifact only. It documents evidence-tracking state, b
 - Chrome-class or extreme-performance public claims,
 - security/accessibility/compliance claims,
 - implementation or release-readiness claims.
-
