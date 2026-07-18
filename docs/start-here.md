@@ -104,7 +104,11 @@ sh tools/check.sh
 .\tools\check.ps1
 ```
 
-Both wrappers delegate to the same locked `xtask check` path and keep Cargo build output outside the repository when `CARGO_TARGET_DIR` is unset. The direct command family is listed in the [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md#validation-commands). A passing check proves only the current M0 repository validation scope, not broad implementation readiness or product support.
+Both wrappers delegate to the same locked `xtask check` path and keep Cargo build
+output outside the repository when `CARGO_TARGET_DIR` is unset. If a direct
+`xtask check` still fails with `forbidden legacy paths remain: target`, remove
+the stale local `target` directory first and rerun. The direct command family is
+listed in the [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md#validation-commands). A passing check proves only the current M0 repository validation scope, not broad implementation readiness or product support.
 
 ## Current safety statement
 

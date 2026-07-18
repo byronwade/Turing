@@ -84,6 +84,24 @@ Windows PowerShell wrappers are equivalent and delegate to the same `xtask` comm
 .\tools\check.ps1
 ```
 
+Direct `cargo run --locked -p xtask -- check` is a valid path only when
+`CARGO_TARGET_DIR` is set to an out-of-repo directory. When this variable is
+unset, the xtask check compiles to `./target` and fails with "forbidden legacy
+paths remain: target". Before running it directly, set a workspace-safe target
+dir:
+
+```powershell
+$env:CARGO_TARGET_DIR = "C:\Users\<you>\AppData\Local\Temp\turing-check-target"
+cargo run --locked -p xtask -- check
+```
+
+If you still see `forbidden legacy paths remain: target`, clear stale in-repo
+build artifacts first:
+
+```powershell
+if (Test-Path target) { cmd /c "rmdir /s /q target" }
+```
+
 ## PB-GATE-0
 
 ## Review

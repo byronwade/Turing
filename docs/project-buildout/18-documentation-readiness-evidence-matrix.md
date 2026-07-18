@@ -135,7 +135,18 @@ cargo run --manifest-path prototype/Cargo.toml --quiet
 cargo run --locked -p xtask -- check
 ```
 
-Use the aggregate wrappers for handoff validation when possible. The direct Cargo commands above inherit the caller's `CARGO_TARGET_DIR`; set it outside the repository when source-tree cleanliness evidence matters. On Windows PowerShell, `.\tools\check.ps1` runs the aggregate `xtask check` path and keeps Cargo build output outside the repository when `CARGO_TARGET_DIR` is unset.
+Use the aggregate wrappers for handoff validation when possible. The direct Cargo commands above inherit the caller's `CARGO_TARGET_DIR`; set it outside the repository when source-tree cleanliness evidence matters.
+
+If `cargo run --locked -p xtask -- check` reports stale legacy target output,
+clear local target artifacts first:
+
+```powershell
+if (Test-Path target) { cmd /c "rmdir /s /q target" }
+```
+
+On Windows PowerShell, `.\tools\check.ps1` runs the aggregate `xtask check` path
+and keeps Cargo build output outside the repository when `CARGO_TARGET_DIR` is
+unset.
 
 ## Claim Boundary
 
