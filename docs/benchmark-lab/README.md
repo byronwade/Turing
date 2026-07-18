@@ -102,6 +102,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 - [Benchmark artifact-package validator](../../tools/validate_benchmark_artifact_packages.py)
 - [No-claim browser launch-runner plan](../blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json)
 - [Benchmark launch-runner validator](../../tools/validate_benchmark_launch_runners.py)
+- [Chrome-class performance readiness lane map](chrome-class-performance-readiness-lane.md)
 - [No-claim statistics-analysis plan](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json)
 - [Benchmark statistics-analysis validator](../../tools/validate_benchmark_statistics_analysis.py)
 - [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)

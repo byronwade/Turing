@@ -469,7 +469,8 @@ These reports must remain linked from the research index and mapped back to the 
 - [`docs/research/benchmark-trace-artifact-package-contract-2026-07.md`](research/benchmark-trace-artifact-package-contract-2026-07.md);
 - [`docs/research/benchmark-browser-launch-runner-contract-2026-07.md`](research/benchmark-browser-launch-runner-contract-2026-07.md);
 - [`docs/research/benchmark-statistics-analysis-contract-2026-07.md`](research/benchmark-statistics-analysis-contract-2026-07.md);
-- [`docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md`](research/benchmark-engine-baseline-harness-readiness-map-2026-07.md).
+- [`docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md`](research/benchmark-engine-baseline-harness-readiness-map-2026-07.md);
+- [`docs/benchmark-lab/chrome-class-performance-readiness-lane.md`](benchmark-lab/chrome-class-performance-readiness-lane.md).
 
 ### Servo and source-strategy research reports
 

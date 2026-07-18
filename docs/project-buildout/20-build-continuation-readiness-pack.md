@@ -53,7 +53,7 @@ The following remain the first gates for wide implementation:
 | `PB-009` (fresh-host confidence) | **partial** | `research/fresh-host-reproduction-inventory-2026-07.md`, run-record template, fresh-host readiness-review template |
 | `PB-011` (IPC readiness) | **partial** | `research/ipc-capability-boundary-inventory-2026-07.md`, `research/wp-002-kernel-ipc-2026-07.md`, `research/task-000011-wp002-review-handoff-2026-07.md`, `tools/validate_ipc_readiness_review.py` |
 | `PB-012` (sandbox probes) | **partial** | `research/sandbox-probe-inventory-2026-07.md`, `research/wp-003-sandbox-probe-plan-2026-07.md`, `tools/validate_sandbox_contracts.py`, `tools/validate_sandbox_readiness_review.py` |
-| `PB-013` (benchmark/Chrome-class prep) | **partial** | `research/performance-benchmark-readiness-packet-2026-07.md`, benchmark manifest/network profile/tool contracts, and browser pin/sample validators |
+| `PB-013` (benchmark/Chrome-class prep) | **partial** | `../benchmark-lab/chrome-class-performance-readiness-lane.md`, `research/performance-benchmark-readiness-packet-2026-07.md`, benchmark manifest/network profile/tool contracts, and browser pin/sample validators |
 | `PB-019` (backup ownership) | **blocked** | `research/backup-ownership-gap-inventory-2026-07.md`, no-claim qualification and readiness-review templates |
 
 These gates must be accepted through owner-reviewed artifacts before broad production or Chrome-class claims move forward.
@@ -76,6 +76,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - `docs/research/README.md` (implementation lanes and current status)
 - `docs/project-buildout/11-pre-build-readiness-checklist.md` (lane evidence and no-claim boundary)
 - `docs/project-buildout/18-documentation-readiness-evidence-matrix.md` (objective-to-evidence mapping)
+- `docs/benchmark-lab/chrome-class-performance-readiness-lane.md` (competitor/extreme-performance sequencing and claim gates)
 - `docs/project-buildout/13-build-readiness-operating-board.md` (gated continuation path)
 - `docs/research/chrome-class-capability-traceability-map-2026-07.md` (Chrome-class and extreme-performance route map)
 - `docs/research/implementation-kickoff-review-inventory-2026-07.md` (stop/resume claims and blocked lanes)

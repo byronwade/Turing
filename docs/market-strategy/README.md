@@ -23,6 +23,15 @@ Current claim boundary:
 
 This means market strategy can prioritize performance opportunities, but pricing, marketing, and roadmap claims must stay out-of-scope until evidence gates are complete.
 
+## Chrome-class performance evidence lane
+
+Competitiveness is tracked through explicit benchmark-readiness gates rather than feature-list parity:
+
+- [Chrome-class and extreme-performance readiness lane map](../benchmark-lab/chrome-class-performance-readiness-lane.md)
+- [Performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md)
+- [Chrome-class performance runbook](../research/chrome-class-performance-runbook-2026-07.md)
+- [Benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md)
+
 ## Reading order
 
 1. [Market Method, Segments, and Positioning](01-market-method-and-segments.md)

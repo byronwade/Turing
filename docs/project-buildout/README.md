@@ -115,6 +115,7 @@ Before treating fixed-hardware measurement, Chrome-class comparison, low-memory,
 - [Benchmark Hardware and OS Manifest](../research/benchmark-hardware-os-manifest-2026-07.md);
 - [Benchmark OS and Update-Control Manifest](../research/benchmark-os-update-control-manifest-2026-07.md);
 - [Semantic Resource Attribution Taxonomy](../research/semantic-resource-attribution-taxonomy-2026-07.md);
+- [Chrome-class performance readiness lane map](../benchmark-lab/chrome-class-performance-readiness-lane.md);
 - [Benchmark Competitor Version Manifest](../research/benchmark-competitor-version-manifest-2026-07.md);
 - [Benchmark Competitor Local Install Inventory](../research/benchmark-competitor-local-install-inventory-2026-07.md);
 - [Benchmark Browser Pin Capture Contract](../research/benchmark-browser-pin-capture-contract-2026-07.md);
