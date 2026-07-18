@@ -18,8 +18,8 @@ Documentation changes are part of implementation. Every change must update every
 | [Research index](research/README.md) | Dated evidence, implementation-research lane map, build-readiness research crosswalk backed by [`research-readiness-crosswalk.json`](blueprint-v1/machine/research-readiness-crosswalk.json), and experiment queue |
 | [Blueprint v1](blueprint-v1/README.md) | Normative product and architecture baseline |
 | [Pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md) | Current M0 build authorization and remaining blockers |
-| [Build readiness board](project-buildout/13-build-readiness-operating-board.md) | Current continuation path across `PB-*`, `WP-*`, `RQ-*`, and `ADR-*` records |
-| [Build continuity readiness pack](project-buildout/20-build-continuation-readiness-pack.md) | Bounded one-page continuation status for contained-M0 work and first hard stop-gates before broader implementation |
+| [Build continuity readiness pack](project-buildout/20-build-continuation-readiness-pack.md) | First continuation stop with compact hard-stop gating for contained-M0 work |
+| [Build readiness board](project-buildout/13-build-readiness-operating-board.md) | Ongoing continuation path and sequencing across `PB-*`, `WP-*`, `RQ-*`, and `ADR-*` records |
 | [Documentation readiness matrix](project-buildout/18-documentation-readiness-evidence-matrix.md) | Evidence matrix for the current documentation-readiness and contained-M0 continuation claim |
 | [Chrome-class capability traceability map](research/chrome-class-capability-traceability-map-2026-07.md) | No-claim cross-domain routing map from the Chrome-class target to current requirements, blockers, owners, next proof, and prohibited claims |
 | [Implementation master plan](project-buildout/implementation-plan/README.md) | Dependency-ordered execution documentation for reviewed, bounded tasks; not broad implementation approval |

@@ -78,11 +78,11 @@ Use this section as the fast continuation path after reading [Start Here](../sta
 
 ### Build-readiness control path
 
-1. Read the [Build Readiness Operating Board](13-build-readiness-operating-board.md) before expanding implementation.
-2. Check [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json) for the authoritative gate state.
-3. Use the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes.
-4. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
-5. Use the [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) to keep continuation claims bounded.
+1. Read the [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) as the first continuation stop.
+2. Read the [Build Readiness Operating Board](13-build-readiness-operating-board.md) before expanding implementation.
+3. Check [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json) for the authoritative gate state.
+4. Use the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes.
+5. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
 6. Use the checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md) before calling documentation preparation complete; it confirms contained M0 continuation only and keeps all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
 7. Use the checked [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) and [`contained-m0-start-state.json`](machine/contained-m0-start-state.json) before answering whether a session may start building; they allow no-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance only.
 8. Use the checked [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md) and [`build-information-readiness-ledger.json`](machine/build-information-readiness-ledger.json) before claiming all information is ready for broad building; they collect missing information across source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident response, backup ownership, task authority, and Chrome-class product evidence.
@@ -92,7 +92,7 @@ Use this section as the fast continuation path after reading [Start Here](../sta
 12. Use the [GitHub Issue Handoff](19-github-issue-handoff.md) after issue or branch cleanup to keep open and closed coordination items mapped to durable project records.
 13. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
 14. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
-14. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
+15. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
 
 ### Source-strategy lane
 
