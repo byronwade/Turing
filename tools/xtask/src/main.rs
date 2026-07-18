@@ -82,6 +82,7 @@ fn doctor(require_exact_toolchain: bool) -> Result<(), String> {
         "rust-toolchain.toml",
         "docs/README.md",
         "docs/project-buildout/implementation-plan/README.md",
+        "docs/project-buildout/19-github-issue-handoff.md",
         "schemas/ipc/control-plane.json",
         "schemas/sandbox/probe-catalog.json",
         "schemas/sandbox/probe-evidence.schema.json",
@@ -115,6 +116,11 @@ fn check() -> Result<(), String> {
         &root,
         "python3",
         ["-B", "tools/validate_implementation_plan.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_github_issue_handoff.py"],
     )?;
     command(&root, "python3", ["-B", "tools/generate_ipc.py", "--check"])?;
     command(
@@ -166,7 +172,7 @@ fn check() -> Result<(), String> {
         ],
     )?;
 
-    println!("check: all M0 repository and implementation-plan checks passed");
+    println!("check: all M0 repository, implementation-plan, and issue-handoff checks passed");
     Ok(())
 }
 

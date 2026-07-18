@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "snapshot": {
+    "repository": "byronwade/Turing",
+    "observed_date": "2026-07-18",
+    "baseline_commit": "ff114a26b4240c9756ba168b5eb226e8f74ff97a",
+    "commands": [
+      "gh issue list --state all --limit 100 --json number,title,state,url,closedAt,createdAt,updatedAt",
+      "gh pr list --state all --limit 100 --json number,title,state,mergedAt,headRefName,url",
+      "git rev-parse HEAD"
+    ],
+    "canonical_issue_numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14],
+    "shared_numbering_notes": [
+      {
+        "number": 13,
+        "reason": "GitHub's shared issue and pull-request sequence assigned number 13 to the bootstrap pull request, not to a missing backlog issue."
+      }
+    ]
+  },
+  "claim_boundary": "GitHub issues and PRs are coordination records only. This handoff does not approve tasks, promote readiness, prove implementation, prove benchmark results, or support Chrome-class, production, release, compatibility, performance, security, accessibility, beta, stable, daily-driver, or public product claims.",
+  "issues": [
+    {
+      "number": 1,
+      "state": "closed",
+      "title": "[M0] Validate Blueprint v1, schemas, CI, and repository evidence",
+      "url": "https://github.com/byronwade/Turing/issues/1",
+      "canonical_records": ["WP-001", "PB-001", "M0"],
+      "disposition": "Closed after the M0 repository validation and evidence foundation landed on main.",
+      "next_proof": ["Reopen only if validation, CI, required docs, or source hygiene drift."],
+      "must_not_claim": ["broad M1 readiness", "production readiness", "release readiness", "Chrome-class claim", "daily-driver readiness"]
+    },
+    {
+      "number": 2,
+      "state": "open",
+      "title": "[M1] Implement kernel identities, process roles, capabilities, and bounded IPC",
+      "url": "https://github.com/byronwade/Turing/issues/2",
+      "canonical_records": ["WP-002", "PB-011", "TASK-000003"],
+      "disposition": "M0 reference exists, but the machine backlog keeps WP-002 in progress.",
+      "next_proof": ["authenticated operating-system transport", "canonical wire codec", "shared-memory and handle-transfer contracts", "compromised-process negative harness", "independent security review"],
+      "must_not_claim": ["WP-002 complete", "production IPC", "process-isolation readiness", "renderer-security readiness"]
+    },
+    {
+      "number": 3,
+      "state": "open",
+      "title": "[M1] Build cross-platform renderer sandbox probe harnesses",
+      "url": "https://github.com/byronwade/Turing/issues/3",
+      "canonical_records": ["WP-003", "PB-012", "TASK-000004"],
+      "disposition": "Contract, catalog, schema, templates, and issue body are current on main; executable probes are still missing.",
+      "next_proof": ["packaged expected-deny probes", "unsandboxed controls", "effective platform-policy capture", "broker fixtures", "compromised-client harnesses", "owner-reviewed sandbox readiness"],
+      "must_not_claim": ["sandbox readiness", "site-isolation safety", "hostile-browsing safety", "SEC-GATE evidence", "production safety"]
+    },
+    {
+      "number": 4,
+      "state": "open",
+      "title": "[M1] Prototype the native accessible shell and crash-resilient browser chrome",
+      "url": "https://github.com/byronwade/Turing/issues/4",
+      "canonical_records": ["WP-004", "PB-003", "PB-004", "PB-005", "PB-014", "PB-015", "TASK-000006"],
+      "disposition": "Native-shell lane has checked no-claim inventories and review template only.",
+      "next_proof": ["toolkit-neutral contracts", "equivalent reference shells", "ADR-0013", "ADR-0014", "ADR-0016", "rendered fixtures", "accessibility transcripts"],
+      "must_not_claim": ["toolkit selection", "trusted-chrome readiness", "accessibility readiness", "page-surface approval", "release-path UI"]
+    },
+    {
+      "number": 5,
+      "state": "open",
+      "title": "[M1/M5] Implement tab lifecycle, resource attribution, and the 30-tab simulator",
+      "url": "https://github.com/byronwade/Turing/issues/5",
+      "canonical_records": ["WP-005", "PB-013", "TASK-000005"],
+      "disposition": "Prototype has lifecycle concepts; full resource attribution and 30-tab evidence remain open.",
+      "next_proof": ["executable simulator", "mixed-state and all-live 30-tab artifacts", "resource attribution", "pressure behavior", "state-loss checks"],
+      "must_not_claim": ["low-memory leadership", "lower-energy claim", "30-tab leadership", "Chrome-class performance"]
+    },
+    {
+      "number": 6,
+      "state": "open",
+      "title": "[M2] Build the static document engine: HTML, DOM, CSS, layout, paint, and accessibility",
+      "url": "https://github.com/byronwade/Turing/issues/6",
+      "canonical_records": ["WP-006", "WP-007", "WP-008", "WP-009", "M2"],
+      "disposition": "Static engine work is sequenced but not started as an accepted build task.",
+      "next_proof": ["HTML tokenizer", "DOM arena", "CSS parser", "layout", "display list", "raster", "accessibility tree", "WPT and fuzz evidence"],
+      "must_not_claim": ["web compatibility", "page rendering support", "accessibility support", "safe hostile browsing"]
+    },
+    {
+      "number": 7,
+      "state": "open",
+      "title": "[M3/M6] Implement the JavaScript interpreter, exact GC, Web IDL, and tiering gates",
+      "url": "https://github.com/byronwade/Turing/issues/7",
+      "canonical_records": ["WP-010", "WP-011", "M3", "M6"],
+      "disposition": "Runtime work remains future milestone scope.",
+      "next_proof": ["interpreter", "Test262 harness", "exact GC", "Web IDL bindings", "WebAssembly track", "JIT gates", "differential tests"],
+      "must_not_claim": ["JavaScript support", "WebAssembly support", "JIT readiness", "application compatibility"]
+    },
+    {
+      "number": 8,
+      "state": "open",
+      "title": "[M4] Implement navigation, site assignment, scoped networking, and partitioned storage",
+      "url": "https://github.com/byronwade/Turing/issues/8",
+      "canonical_records": ["WP-012", "WP-013", "WP-014", "M4"],
+      "disposition": "Network, storage, and navigation work remain gated by process, IPC, sandbox, and schema decisions.",
+      "next_proof": ["navigation transactions", "site assignment", "scoped network service", "HTTP/TLS subset", "cookies and cache", "storage broker", "migration and fault tests"],
+      "must_not_claim": ["safe browsing", "network compatibility", "storage safety", "production profile behavior"]
+    },
+    {
+      "number": 9,
+      "state": "open",
+      "title": "[M2/M5] Define the versioned DevTools, tracing, headless, and automation platform",
+      "url": "https://github.com/byronwade/Turing/issues/9",
+      "canonical_records": ["WP-015", "M2", "M5"],
+      "disposition": "Protocol and tooling are planned but not executable product capability.",
+      "next_proof": ["versioned schemas", "trace causality", "headless profile security", "WebDriver BiDi coverage", "generated clients", "conformance tests"],
+      "must_not_claim": ["stable DevTools", "automation compatibility", "remote-control safety"]
+    },
+    {
+      "number": 10,
+      "state": "open",
+      "title": "[M6] Build the capability-safe agent reference and adversarial evaluation suite",
+      "url": "https://github.com/byronwade/Turing/issues/10",
+      "canonical_records": ["WP-016", "M6"],
+      "disposition": "Agent architecture is documented; reference implementation and adversarial suite remain open.",
+      "next_proof": ["observation and action schemas", "provider adapters", "prompt-injection corpus", "confirmation tests", "stale-target tests", "audit records"],
+      "must_not_claim": ["autonomous browser authority", "safe consequential actions", "provider trust", "production AI-agent readiness"]
+    },
+    {
+      "number": 11,
+      "state": "open",
+      "title": "[M5] Build the signed update, rollback, migration, and release-evidence laboratory",
+      "url": "https://github.com/byronwade/Turing/issues/11",
+      "canonical_records": ["WP-017", "PB-017", "TASK-000009"],
+      "disposition": "Research package/update lab has checked no-claim templates only.",
+      "next_proof": ["executable package manifest", "metadata parser", "fake-key signature verification", "staged install", "rollback and migration tests", "owner-reviewed package/update readiness"],
+      "must_not_claim": ["stable channel", "production updater", "supported security", "signing readiness", "release readiness"]
+    },
+    {
+      "number": 12,
+      "state": "open",
+      "title": "[M5/M7] Establish the fixed-hardware compatibility, performance, memory, and energy laboratory",
+      "url": "https://github.com/byronwade/Turing/issues/12",
+      "canonical_records": ["WP-018", "PB-013", "TASK-000005"],
+      "disposition": "Benchmark planning evidence exists; no browser benchmark result exists.",
+      "next_proof": ["owner-approved hardware tiers", "clean OS controls", "benchmark-ready browser pins", "implemented launch runner", "raw artifacts", "statistics", "claim bundles"],
+      "must_not_claim": ["faster", "lower memory", "lower energy", "competitor result", "Chrome-class", "public performance claim"]
+    },
+    {
+      "number": 14,
+      "state": "open",
+      "title": "[research] Build the fixed-hardware browser engine baseline harness",
+      "url": "https://github.com/byronwade/Turing/issues/14",
+      "canonical_records": ["RQ-16", "PB-013", "TASK-000005", "EXP-ENGINE-001"],
+      "disposition": "Research issue remains open because the harness has not produced browser-run evidence.",
+      "next_proof": ["equivalent workload harness", "offline corpus", "competitor pins", "process topology capture", "raw samples", "unsupported denominators", "reproducible analysis"],
+      "must_not_claim": ["engine winner", "competitor result", "Chrome-class comparison", "speed", "memory", "energy", "production claim"]
+    }
+  ],
+  "pull_request_cleanup": [
+    {
+      "number": 42,
+      "state": "closed",
+      "merged": false,
+      "title": "Specify WP-003 cross-platform sandbox probes",
+      "branch": "agent/wp-003-sandbox-plan",
+      "remote_branch_deleted": true,
+      "superseding_commits": ["1af4b61c75bd33012148e603cfe0108051def74b"],
+      "reason": "Raw merge was unsafe because the draft branch was stale and would delete current repository state; additive evidence was ported onto main."
+    },
+    {
+      "number": 43,
+      "state": "closed",
+      "merged": false,
+      "title": "Add complete implementation master plan",
+      "branch": "docs/full-implementation-game-plan",
+      "remote_branch_deleted": true,
+      "superseding_commits": ["ff114a26b4240c9756ba168b5eb226e8f74ff97a"],
+      "reason": "Raw merge was unsafe because the draft branch was stale and would delete current repository state; additive implementation-plan artifacts were ported onto main."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "title": "GitHub issue handoff snapshot schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "snapshot",
+    "claim_boundary",
+    "issues",
+    "pull_request_cleanup"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "repository",
+        "observed_date",
+        "baseline_commit",
+        "commands",
+        "canonical_issue_numbers",
+        "shared_numbering_notes"
+      ],
+      "properties": {
+        "repository": { "type": "string" },
+        "observed_date": { "type": "string" },
+        "baseline_commit": { "type": "string" },
+        "commands": { "type": "array", "items": { "type": "string" } },
+        "canonical_issue_numbers": { "type": "array", "items": { "type": "integer" } },
+        "shared_numbering_notes": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "claim_boundary": { "type": "string" },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "number",
+          "state",
+          "title",
+          "url",
+          "canonical_records",
+          "disposition",
+          "next_proof",
+          "must_not_claim"
+        ],
+        "properties": {
+          "number": { "type": "integer" },
+          "state": { "enum": ["open", "closed"] },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "canonical_records": { "type": "array", "items": { "type": "string" } },
+          "disposition": { "type": "string" },
+          "next_proof": { "type": "array", "items": { "type": "string" } },
+          "must_not_claim": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "pull_request_cleanup": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "number",
+          "state",
+          "merged",
+          "title",
+          "branch",
+          "remote_branch_deleted",
+          "superseding_commits",
+          "reason"
+        ],
+        "properties": {
+          "number": { "type": "integer" },
+          "state": { "enum": ["closed"] },
+          "merged": { "type": "boolean" },
+          "title": { "type": "string" },
+          "branch": { "type": "string" },
+          "remote_branch_deleted": { "type": "boolean" },
+          "superseding_commits": { "type": "array", "items": { "type": "string" } },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

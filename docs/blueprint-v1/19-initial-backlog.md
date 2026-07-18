@@ -35,6 +35,8 @@ Each issue must reference stable requirement/risk/ADR IDs, define negative and f
 
 The [implementation master plan](../project-buildout/implementation-plan/README.md) provides dependency-ordered execution documentation for `WP-001` through `WP-018`. It does not approve any work package, promote broad implementation readiness, or replace reviewed `TASK-*` manifests.
 
+The checked [GitHub Issue Handoff](../project-buildout/19-github-issue-handoff.md) maps the current issue and stale-PR cleanup snapshot back to these `WP-*`, `PB-*`, and `TASK-*` records. It is a coordination handoff only and does not approve work packages, approve tasks, promote readiness, or replace live GitHub verification.
+
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Agent execution and production-readiness preparation
 

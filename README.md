@@ -17,6 +17,7 @@ Before continuing implementation work:
 - use the checked [Build Readiness Dependency Graph](docs/research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing;
 - use the checked [Documentation Readiness Completion Audit](docs/research/documentation-readiness-completion-audit-2026-07.md) and checked no-claim [build-readiness closure-review template](docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json) before calling the documentation preparation complete; they prove contained-M0 continuation only and explicitly keep all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported;
 - use the [Implementation Master Plan](docs/project-buildout/implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks; it does not approve broad implementation or any release path;
+- use the checked [GitHub Issue Handoff](docs/project-buildout/19-github-issue-handoff.md) after issue or branch cleanup to map live coordination issues to `WP-*`, `PB-*`, and `TASK-*` records without treating open or closed issues as task approval or readiness promotion;
 - use the [core program registries](docs/repository-map.md#core-program-registries) before changing requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas;
 - choose the next source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, or ownership evidence lane and `RQ-*` crosswalk from the [Research Index](docs/research/README.md#current-implementation-research-lanes);
 - use the proposed [Build Readiness Task Queue](docs/project-buildout/17-build-readiness-task-queue.md) and checked no-claim [task approval template](docs/agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests;
@@ -50,9 +51,9 @@ Implemented foundation:
 - an M0 `turing-shell` laboratory that exercises the kernel/IPC reference model without a native UI or web runtime;
 - repository `xtask`, bootstrap, doctor, generation, and full-check commands;
 - machine-readable workspace, toolchain, dependency, unsafe-code, native-code, generated-code, provenance, capability, and traceability records;
-- CI for documentation, ADR-0009 evidence validation, deterministic generation, committed-diff whitespace, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
+- CI for documentation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, deterministic generation, committed-diff whitespace, build-foundation validation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
 
-Aggregate checks include CI for documentation, implementation-plan validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation, deterministic generation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
+Aggregate checks include CI for documentation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation, deterministic generation, formatting, Clippy, workspace tests, shell self-test, and the architecture prototype.
 
 Run on POSIX shells:
 
@@ -82,7 +83,7 @@ cargo run --locked -p turing-shell -- --self-test
 
 Use the wrappers for handoff validation when possible. Direct Cargo commands are behavior-equivalent, but they inherit the caller's `CARGO_TARGET_DIR`; set it outside the repository when source-tree cleanliness evidence matters.
 
-`xtask check` runs documentation validation, implementation-plan validation, ADR-0009 evidence validation, build-foundation validation, local unstaged and staged diff whitespace checks, Rust formatting, Clippy with warnings denied, workspace tests, the shell self-test, and the architecture prototype smoke path.
+`xtask check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, build-foundation validation, local unstaged and staged diff whitespace checks, Rust formatting, Clippy with warnings denied, workspace tests, the shell self-test, and the architecture prototype smoke path.
 
 The current shell is a command-line laboratory only. It does not create native windows, render pages, connect to the network, persist profiles, run Plug-ins, or execute AI models.
 
@@ -218,6 +219,7 @@ Contained tasks can proceed; broad parallel implementation and production claims
 - [Build readiness operating board](docs/project-buildout/13-build-readiness-operating-board.md)
 - [Pre-build readiness](docs/project-buildout/11-pre-build-readiness-checklist.md)
 - [Build readiness task queue](docs/project-buildout/17-build-readiness-task-queue.md)
+- [GitHub issue handoff](docs/project-buildout/19-github-issue-handoff.md)
 - [M0 build-foundation report](docs/research/m0-build-foundation-2026-07.md)
 - [WP-002 kernel and IPC report](docs/research/wp-002-kernel-ipc-2026-07.md)
 - [Blueprint v1](docs/blueprint-v1/README.md)

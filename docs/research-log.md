@@ -2,6 +2,38 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-18 — GitHub issue handoff snapshot
+
+Question:
+
+Can post-cleanup GitHub issue and stale-PR state be recorded as a checked offline handoff without treating issue state as task approval, implementation proof, or readiness promotion?
+
+Inputs:
+
+- [GitHub Issue Handoff](project-buildout/19-github-issue-handoff.md);
+- [`github-issue-handoff.json`](project-buildout/machine/github-issue-handoff.json);
+- [`github-issue-handoff.schema.json`](project-buildout/machine/github-issue-handoff.schema.json);
+- [`tools/validate_github_issue_handoff.py`](../tools/validate_github_issue_handoff.py);
+- `gh issue list --state all --limit 100 --json number,title,state,url,closedAt,createdAt,updatedAt`;
+- `gh pr list --state all --limit 100 --json number,title,state,mergedAt,headRefName,url`;
+- `git rev-parse HEAD`.
+
+Method:
+
+Captured the cleaned-up issue/PR state after closing issue #1, updating issue #3, closing stale PRs #42/#43, deleting their branches, and verifying no open PRs. Added a machine snapshot and validator that require the canonical issue set, explain missing issue number #13, record stale PR branch cleanup, and retain unsupported-claim boundaries.
+
+Decision:
+
+Use GitHub issues as coordination pointers only. The handoff maps current issue state to `WP-*`, `PB-*`, `TASK-*`, `RQ-*`, and milestone records but does not approve tasks, promote readiness, prove implementation, or replace live GitHub checks.
+
+Impact:
+
+A maintainer can now resume after branch or issue cleanup without re-opening stale draft branches or mistaking open/closed issue state for canonical project status. Remaining active issues #2-#12 and #14 stay open because their acceptance evidence remains incomplete.
+
+Next question:
+
+Which open issue should receive the next owner-reviewed task manifest: `#2`/`WP-002` IPC completion, `#3`/`WP-003` sandbox probes, or `#12`/`#14`/`PB-013` benchmark harness evidence?
+
 ## 2026-07-18 — Implementation master plan import
 
 Question:

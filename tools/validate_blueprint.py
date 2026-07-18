@@ -226,6 +226,7 @@ DETAILED_BOOKS = {'engine': ['01-pipeline-and-artifacts.md',
                        '16-adr-0009-decision-draft.md',
                        '17-build-readiness-task-queue.md',
                        '18-documentation-readiness-evidence-matrix.md',
+                       '19-github-issue-handoff.md',
                       'README.md'],
  'market-strategy': ['01-market-method-and-segments.md',
                      '02-competitive-feature-matrix.md',
@@ -505,6 +506,8 @@ REQUIRED_MACHINE_FILES = [
     / "project-buildout"
     / "machine"
     / "documentation-readiness-completion-audit.json",
+    DOCS / "project-buildout" / "machine" / "github-issue-handoff.schema.json",
+    DOCS / "project-buildout" / "machine" / "github-issue-handoff.json",
     DOCS / "project-buildout" / "machine" / "build-readiness-closure-review.schema.json",
     DOCS
     / "project-buildout"
@@ -852,6 +855,13 @@ REQUIRED_IMPLEMENTATION_PLAN_FILES = [
     MACHINE / "implementation-task-sequence.json",
 ]
 
+REQUIRED_GITHUB_ISSUE_HANDOFF_FILES = [
+    ROOT / "tools" / "validate_github_issue_handoff.py",
+    DOCS / "project-buildout" / "19-github-issue-handoff.md",
+    DOCS / "project-buildout" / "machine" / "github-issue-handoff.schema.json",
+    DOCS / "project-buildout" / "machine" / "github-issue-handoff.json",
+]
+
 REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES = [
     ROOT / "tools" / "validate_ipc_capability_boundaries.py",
     RESEARCH / "ipc-capability-boundary-inventory-2026-07.md",
@@ -989,6 +999,7 @@ def check_required_files() -> None:
             *REQUIRED_BUILD_READINESS_DEPENDENCY_GRAPH_FILES,
             *REQUIRED_DOCUMENTATION_READINESS_COMPLETION_AUDIT_FILES,
             *REQUIRED_IMPLEMENTATION_PLAN_FILES,
+            *REQUIRED_GITHUB_ISSUE_HANDOFF_FILES,
             *REQUIRED_IPC_CAPABILITY_BOUNDARY_FILES,
             *REQUIRED_IPC_READINESS_REVIEW_FILES,
             *REQUIRED_SANDBOX_PROBE_INVENTORY_FILES,
@@ -2963,6 +2974,22 @@ def check_implementation_plan() -> None:
             line for line in [result.stdout.strip(), result.stderr.strip()] if line
         )
         fail(detail or "implementation plan validation failed")
+
+
+def check_github_issue_handoff() -> None:
+    validator = ROOT / "tools" / "validate_github_issue_handoff.py"
+    result = subprocess.run(
+        [sys.executable, "-B", str(validator)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = "\n".join(
+            line for line in [result.stdout.strip(), result.stderr.strip()] if line
+        )
+        fail(detail or "GitHub issue handoff validation failed")
 
 
 def check_sandbox_contracts() -> None:
@@ -5971,6 +5998,11 @@ def check_research_log_chronology() -> None:
         )
 
     required_phrases = [
+        "## 2026-07-18 — GitHub issue handoff snapshot",
+        "post-cleanup GitHub issue and stale-PR state be recorded as a checked offline handoff",
+        "Captured the cleaned-up issue/PR state after closing issue #1, updating issue #3, closing stale PRs #42/#43",
+        "Use GitHub issues as coordination pointers only",
+        "does not approve tasks, promote readiness, prove implementation, or replace live GitHub checks",
         "## 2026-07-18 — Benchmark server lifecycle self-test",
         "`PB13-EV-004` have checked runner-managed server startup, route-check, shutdown, and artifact-hash evidence",
         "starts the local HTTP/1.1 loopback server on an ephemeral port",
@@ -6095,6 +6127,9 @@ def check_repository_map_core_registries() -> None:
         "Dependency and sequencing records only; not task execution approval",
         "pre-build-readiness.json",
         "`PB-GATE-0` contained/no-claim M0 authorization only",
+        "GitHub issue handoff",
+        "github-issue-handoff.json",
+        "Coordination snapshot only; no task approval",
         "build-readiness-task-queue.json",
         "Proposed `TASK-*` handoffs only; no execution approval",
         "process-capabilities.json",
@@ -6266,6 +6301,8 @@ def check_start_here_continuation() -> None:
         "Use this stop/resume map before continuing:",
         "Status and gate truth:",
         "Documentation readiness completion audit:",
+        "GitHub issue handoff:",
+        "project-buildout/19-github-issue-handoff.md",
         "Core registry navigation:",
         "core program registries](repository-map.md#core-program-registries)",
         "requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas",
@@ -6301,6 +6338,8 @@ def check_root_readme_continuation() -> None:
         "[`docs/start-here.md`](docs/start-here.md)",
         "Build Readiness Operating Board",
         "Documentation Readiness Completion Audit",
+        "GitHub Issue Handoff",
+        "GitHub issue handoff validation",
         "core program registries](docs/repository-map.md#core-program-registries)",
         "requirements, risks, work packages, readiness gates, proposed tasks, process authority, workspace/toolchains, professional controls, or agent action schemas",
         "Research Index",
@@ -6329,6 +6368,7 @@ def check_docs_index_continuation() -> None:
         "Use this path before expanding implementation:",
         "Confirm gate truth",
         "Documentation Readiness Completion Audit",
+        "GitHub Issue Handoff",
         "research index lane map",
         "source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, or ownership",
         "proposed `TASK-*` entries are not execution approval",
@@ -6364,6 +6404,7 @@ def check_documentation_readiness_matrix() -> None:
         "Coherent first-entry documentation",
         "Stop/resume continuity",
         "Documentation readiness completion audit",
+        "GitHub issue and stale-PR cleanup handoff",
         "not complete enough for broad M1 expansion",
         "research lane set",
         "package/update and incident-response boundaries",
@@ -6378,6 +6419,7 @@ def check_documentation_readiness_matrix() -> None:
         "Documentation topology and links are enforceable",
         "Build and compile gates remain reproducible for M0",
         "validate_documentation_readiness_completion_audit.py",
+        "validate_github_issue_handoff.py",
         "Definition of Done",
         "documentation-readiness DoD coverage",
         "## Required Continuation Checks",
@@ -6584,6 +6626,7 @@ def check_xtask_aggregate_check() -> None:
     xtask_required = [
         '["-B", "tools/validate_blueprint.py"]',
         '["-B", "tools/validate_implementation_plan.py"]',
+        '["-B", "tools/validate_github_issue_handoff.py"]',
         '["-B", "tools/validate_adr_0009_evidence.py"]',
         '["-B", "tools/validate_build_foundation.py"]',
         '["diff", "--check"]',
@@ -6598,6 +6641,9 @@ def check_xtask_aggregate_check() -> None:
         )
 
     workflow_required = [
+        "Validate GitHub issue handoff records",
+        "python3 -B tools/validate_github_issue_handoff.py > github-issue-handoff-validation.log",
+        "github-issue-handoff-validation.log",
         "Validate ADR-0009 evidence records",
         "python3 -B tools/validate_adr_0009_evidence.py > adr-0009-evidence-validation.log",
         "adr-0009-evidence-validation.log",
@@ -6615,18 +6661,18 @@ def check_xtask_aggregate_check() -> None:
 
     doc_requirements = {
         ROOT / "README.md": [
-            "CI for documentation, implementation-plan validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
-            "`xtask check` runs documentation validation, implementation-plan validation, ADR-0009 evidence validation",
+            "CI for documentation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, committed-diff whitespace, build-foundation validation",
+            "`xtask check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
             "local unstaged and staged diff whitespace checks",
             "cargo run --locked -p xtask -- check",
         ],
         DOCS / "prototype.md": [
             "cargo fmt --manifest-path prototype/Cargo.toml -- --check",
             "cargo test --manifest-path prototype/Cargo.toml --all-targets",
-            "documentation validation, implementation-plan validation, ADR-0009 evidence validation, diff whitespace checks, and `xtask check`",
+            "documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation, diff whitespace checks, and `xtask check`",
         ],
         RESEARCH / "m0-build-foundation-2026-07.md": [
-            "`check` runs documentation validation, implementation-plan validation, ADR-0009 evidence validation",
+            "`check` runs documentation validation, implementation-plan validation, GitHub issue handoff validation, ADR-0009 evidence validation",
             "local unstaged and staged diff whitespace checks",
         ],
     }
@@ -6946,6 +6992,7 @@ def main() -> int:
         check_build_readiness_dependency_graph()
         check_documentation_readiness_completion_audit()
         check_implementation_plan()
+        check_github_issue_handoff()
         check_ipc_capability_boundaries()
         check_ipc_readiness_review()
         check_sandbox_probe_inventory()
@@ -6981,11 +7028,11 @@ def main() -> int:
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
         "27 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 116 core machine-readable registries, "
+        "18 work packages, 118 core machine-readable registries, "
         "research-readiness crosswalk, ADR-0009 decision-review template, benchmark manifest, hardware, OS-control, resource attribution, "
         "competitor versions, competitor local installs, browser-pin capture, "
         "browser-pin capture self-test, browser-pin diagnostics, corpus, "
-        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, implementation master plan, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
+        "network profile fixtures, tab scenarios, artifact packages, launch runners, benchmark claim-bundle template, benchmark readiness-review template, launch-runner self-test, server self-test, server lifecycle self-test, smoke runner self-test, fresh-host reproduction, fresh-host run-record template, fresh-host readiness-review template, UI adapter contract, UI component fixtures, framework bake-off, window/input/accessibility spike, page-surface composition, native UI readiness-review template, profile/session formats, profile/session schema-package template, profile/session readiness-review template, research package/update lab, research package/update lab-package template, research package/update readiness-review template, incident patch rehearsal, incident patch rehearsal-record template, incident/patch readiness-review template, backup ownership gap, backup-owner qualification template, backup ownership readiness-review template, implementation kickoff review, build-readiness dependency graph, documentation-readiness completion audit, implementation master plan, GitHub issue handoff, build-readiness closure-review template, task approval template, IPC capability boundary, IPC schema-source template, IPC readiness-review template, sandbox probe inventory, sandbox probe contract, sandbox probe-package template, sandbox readiness-review template, Servo local compatibility corpus route self-test, Servo local compatibility HTTPS harness plan, "
         "research-log chronology, repository-map core registries, index/root/start machine-registry navigation, "
         "research-index lanes/crosswalk, start-here continuation, "
         "documentation-readiness evidence/DoD, "

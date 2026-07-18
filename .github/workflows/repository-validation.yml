@@ -49,6 +49,15 @@ jobs:
           cat repository-validation.log
           exit "$status"
 
+      - name: Validate GitHub issue handoff records
+        shell: bash
+        run: |
+          set +e
+          python3 -B tools/validate_github_issue_handoff.py > github-issue-handoff-validation.log 2>&1
+          status=$?
+          cat github-issue-handoff-validation.log
+          exit "$status"
+
       - name: Validate ADR-0009 evidence records
         shell: bash
         run: |
@@ -99,6 +108,7 @@ jobs:
           name: repository-validation-${{ github.run_id }}
           path: |
             repository-validation.log
+            github-issue-handoff-validation.log
             adr-0009-evidence-validation.log
             diff-whitespace.log
             build-foundation-validation.log
