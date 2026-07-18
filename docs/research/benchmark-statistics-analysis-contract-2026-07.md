@@ -9,7 +9,7 @@ Confidence: high for required analysis controls; low for benchmark readiness unt
 
 What statistical-analysis contract must exist before future raw benchmark samples can support a Turing benchmark result, Chrome-class comparison, low-memory statement, energy statement, or public performance claim?
 
-This report turns the current "raw results and statistics" requirement into a checked no-claim handoff. It adds [`benchmark-statistics-analysis.schema.json`](../blueprint-v1/machine/benchmark-statistics-analysis.schema.json), checked no-claim [`no-claim-statistics-analysis-plan.json`](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json), and [`tools/validate_benchmark_statistics_analysis.py`](../../tools/validate_benchmark_statistics_analysis.py). The contract does not run a browser, analyze measured samples, approve a threshold, or support a benchmark result.
+This report turns the current "raw results and statistics" requirement into a checked no-claim handoff. It adds [`benchmark-statistics-analysis.schema.json`](../blueprint-v1/machine/benchmark-statistics-analysis.schema.json), checked no-claim [`no-claim-statistics-analysis-plan.json`](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json), and [`tools/validate_benchmark_statistics_analysis.py`](../../tools/validate_benchmark_statistics_analysis.py). The public claim-bundle template also carries a checked `statistics_analysis_plan_id` registry reference so future claim bundles cannot bypass the analysis plan. The contract does not run a browser, analyze measured samples, approve a threshold, or support a benchmark result.
 
 ## Inputs
 
@@ -50,7 +50,7 @@ What exists:
 - checked trace/artifact package contract;
 - checked browser launch-runner contract and no-browser self-test;
 - checked 30-tab scenario contract;
-- checked claim-bundle template requiring raw samples, statistics, failure denominators, and owner review;
+- checked claim-bundle template requiring raw samples, the referenced statistics-analysis plan, failure denominators, and owner review;
 - checked benchmark readiness-review template that keeps raw result review, statistics review, denominator review, and claim-bundle review false.
 
 What was missing before this change:
@@ -71,6 +71,8 @@ The checked no-claim plan requires future real analysis records to carry:
 
 The contract explicitly covers latency, memory, energy, 30-tab behavior, and compatibility/failure metric families. Each family must retain units, summaries, uncertainty, effect size or practical impact where relevant, and failure denominator treatment.
 
+The checked claim-bundle template consumes this contract through `registry_references.statistics_analysis_plan_id`. `tools/validate_benchmark_claim_bundles.py` cross-checks that field against the checked no-claim analysis plan, and the template also lists `tools/validate_benchmark_statistics_analysis.py` in its validation commands. A future claim bundle that omits or drifts from the analysis plan is invalid before public text is reviewed.
+
 ## Claim Boundary
 
 This contract is planning evidence only. It supports no browser benchmark run, no runner-generated raw sample, no real statistical summary, no confidence interval from measured browser data, no benchmark result, no competitor result, no memory result, no energy result, no Chrome-class claim, no faster claim, no lower-memory claim, no lower-energy claim, no public performance claim, no production claim, and no daily-driver claim.
@@ -79,7 +81,7 @@ Validation, no-claim templates, no-browser self-tests, smoke output, and diagnos
 
 ## Impact
 
-The benchmark lane now has a checked bridge between raw-result schema shape and future public-claim bundles. A future runner cannot produce persuasive-looking summaries unless it also records enough analysis context to explain noise, sample count, uncertainty, effect size, outliers, failures, unsupported behavior, and denominator scope.
+The benchmark lane now has a checked bridge between raw-result schema shape and future public-claim bundles. A future runner cannot produce persuasive-looking summaries unless it also records enough analysis context to explain noise, sample count, uncertainty, effect size, outliers, failures, unsupported behavior, and denominator scope, and any future public claim bundle must name the statistics-analysis plan it used.
 
 `PB-013` remains `documented_no_runner`. `TASK-000005` remains proposed. This change makes future benchmark evidence harder to overstate; it does not make the benchmark lab ready.
 

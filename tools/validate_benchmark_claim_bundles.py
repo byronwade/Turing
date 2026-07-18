@@ -25,6 +25,7 @@ REFERENCE_FILES = {
     "resource_attribution_id": (MACHINE / "benchmark-resource-attribution" / "semantic-owners.v1.json", "resource_attribution_id"),
     "tab_scenario_set_id": (MACHINE / "benchmark-tab-scenarios" / "no-claim-30-tab-smoke.scenarios.json", "scenario_set_id"),
     "artifact_package_id": (MACHINE / "benchmark-artifact-packages" / "no-claim-trace-package.plan.json", "package_id"),
+    "statistics_analysis_plan_id": (MACHINE / "benchmark-statistics-analyses" / "no-claim-statistics-analysis-plan.json", "analysis_id"),
     "launch_runner_id": (MACHINE / "benchmark-launch-runners" / "no-claim-browser-launch.plan.json", "launch_runner_id"),
     "browser_pin_capture_plan_id": (MACHINE / "benchmark-browser-pin-captures" / "current-windows-high-end.no-claim.plan.json", "capture_plan_id"),
     "browser_pin_diagnostic_id": (MACHINE / "benchmark-browser-pin-diagnostics" / "current-windows-high-end.chrome-edge.no-claim.2026-07.json", "diagnostic_id"),
@@ -77,6 +78,7 @@ TERM_REQUIREMENTS = {
         "denominator",
         "effect size",
         "hardware",
+        "statistics-analysis plan",
     ],
     "equivalence_controls": [
         "workload versions",
@@ -131,6 +133,7 @@ TERM_REQUIREMENTS = {
         "security",
         "different benchmark suite versions",
         "sample count",
+        "statistics-analysis plan",
         "public text",
         "owner",
         "expired",
@@ -161,6 +164,7 @@ TERM_REQUIREMENTS = {
         "raw samples",
         "30-tab",
         "statistics",
+        "statistics-analysis plan",
         "equal-workload",
         "public claim text",
     ],
@@ -168,6 +172,7 @@ TERM_REQUIREMENTS = {
 
 REQUIRED_VALIDATION_COMMANDS = [
     "python3 -B tools/validate_benchmark_claim_bundles.py",
+    "python3 -B tools/validate_benchmark_statistics_analysis.py",
     "python3 -B tools/validate_blueprint.py",
 ]
 
@@ -292,8 +297,8 @@ def validate_docs() -> None:
         DOCS / "README.md": ["claim-bundle template", "owner-reviewed claim bundles"],
         DOCS / "project-buildout" / "README.md": ["claim-bundle template", "owner-reviewed claim bundles"],
         DOCS / "project-buildout" / "18-documentation-readiness-evidence-matrix.md": ["claim-bundle template", "validate_benchmark_claim_bundles.py"],
-        DOCS / "repository-map.md": ["Benchmark claim bundles", "validate_benchmark_claim_bundles.py"],
-        DOCS / "research" / "chrome-class-performance-runbook-2026-07.md": ["claim-bundle template", "validate_benchmark_claim_bundles.py"],
+        DOCS / "repository-map.md": ["Benchmark claim bundles", "validate_benchmark_claim_bundles.py", "statistics-analysis plan"],
+        DOCS / "research" / "chrome-class-performance-runbook-2026-07.md": ["claim-bundle template", "validate_benchmark_claim_bundles.py", "statistics-analysis plan"],
     }
     for path, phrases in requirements.items():
         content = path.read_text(encoding="utf-8")

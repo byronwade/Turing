@@ -17,6 +17,7 @@
     "resource_attribution_id": "TURING.BENCHMARK.RESOURCE_ATTRIBUTION.SEMANTIC_OWNERS.2026_07",
     "tab_scenario_set_id": "TURING.BENCHMARK.TAB_SCENARIOS.NOCLAIM_30_TAB_SMOKE.2026_07",
     "artifact_package_id": "TURING.BENCHMARK.ARTIFACT_PACKAGE.NOCLAIM_TRACE_PACKAGE.2026_07",
+    "statistics_analysis_plan_id": "TURING.BENCHMARK.STATISTICS_ANALYSIS.NOCLAIM_PLAN.2026_07",
     "launch_runner_id": "TURING.BENCHMARK.LAUNCH_RUNNER.NOCLAIM_BROWSER_LAUNCH.2026_07",
     "browser_pin_capture_plan_id": "TURING.BENCHMARK.BROWSER_PIN_CAPTURE.CURRENT_WINDOWS_HIGH_END.2026_07",
     "browser_pin_diagnostic_id": "TURING.BENCHMARK.BROWSER_PIN_DIAGNOSTIC.CURRENT_WINDOWS_HIGH_END.CHROME_EDGE.2026_07",
@@ -69,8 +70,8 @@
     {
       "input": "raw samples and statistics",
       "required_for_public_claim": true,
-      "current_status": "not_generated",
-      "missing_proof": "No raw sample set, sample count, warmup record, confidence interval, uncertainty statement, outlier policy, or statistical summary exists."
+      "current_status": "checked_no_claim_statistics_analysis_contract_only",
+      "missing_proof": "No runner-generated raw sample set, sample count, warmup record, confidence interval from measured browser data, uncertainty statement, outlier policy execution, owner-reviewed statistics analysis, or statistical summary from real samples exists."
     },
     {
       "input": "equal-workload and equal-security review",
@@ -93,7 +94,8 @@
     "record outlier policy before the run and retain rejected samples in the artifact bundle",
     "record failed, unsupported, timed-out, cancelled, crashed, discarded, and revived cases in the denominator",
     "record effect size, variance, and practical significance instead of ranking by one synthetic score",
-    "record hardware, OS, driver, firmware, power, thermal, display, and network control IDs beside every statistic"
+    "record hardware, OS, driver, firmware, power, thermal, display, and network control IDs beside every statistic",
+    "record the statistics-analysis plan ID used to interpret raw samples and block claim bundles when that plan is missing, stale, or broader than the evidence"
   ],
   "equivalence_controls": [
     "compare only equivalent workload versions, fixture hashes, routes, viewports, DPR, refresh rate, and input scripts",
@@ -148,6 +150,7 @@
     "reject any claim bundle that hides security, sandbox, site-isolation, cache, lifecycle, profile, extension, or account differences",
     "reject any claim bundle that uses different benchmark suite versions, corpus hashes, viewport classes, refresh rates, OS images, drivers, or hardware outside the approved scope",
     "reject any claim bundle with missing sample count, uncertainty, outlier policy, warmup policy, or raw artifact hash",
+    "reject any claim bundle without a registry reference to the statistics-analysis plan used to interpret raw samples",
     "reject any claim bundle with public text broader than the approved evidence",
     "reject any claim bundle without owner and independent reviewer approval after the latest artifact change",
     "reject any expired claim bundle"
@@ -177,12 +180,13 @@
     "owner-reviewed benchmark-ready browser pins and complete competitor local/version evidence",
     "runner-generated raw samples, trace package, memory snapshots, power/energy samples, failure records, and artifact hashes",
     "runner-generated 30-tab mixed-state and all-live artifacts",
-    "statistics, sample count, uncertainty, outlier policy, warmup policy, and failure denominator",
+    "owner-reviewed statistics analysis generated from the referenced statistics-analysis plan, sample count, uncertainty, outlier policy, warmup policy, and failure denominator",
     "equal-workload and equal-security review",
     "owner-approved exact public claim text, expiry, rerun triggers, and public copy diff"
   ],
   "validation_commands": [
     "python3 -B tools/validate_benchmark_claim_bundles.py",
+    "python3 -B tools/validate_benchmark_statistics_analysis.py",
     "python3 -B tools/validate_blueprint.py",
     ".\\tools\\check.ps1"
   ]
