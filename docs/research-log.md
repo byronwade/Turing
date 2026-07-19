@@ -7866,3 +7866,21 @@ Added both packets to the checked completion-audit source set and `DOC-READY-RES
 Next question:
 
 Which remaining active research route should receive the next source-backed packet without duplicating an existing closure preparation or bypassing task authority?
+
+# 2026-07-19 - Nova native build-entry criteria
+
+Question:
+
+Can the supplied Nova visual/layout source become an unambiguous future native-build input without allowing React, JSX, page content, or visual previews to own trusted browser behavior?
+
+Method:
+
+Compared the Nova source manifest and surface-contract map with the UI runtime book, token authoring workflow, component-fixture inventory, page-surface contract, native UI closure preparation, trusted UI rules, and current `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020` boundaries.
+
+Decision:
+
+Added a no-claim Nova Native Build Entry Criteria packet defining source identity, visual-versus-behavioral authority, semantic token and surface extraction, typed state/command mapping, native fixture requirements, page-surface identity, build-entry gates, review artifacts, and rejection rules. Linked it from the UI runtime book, research indexes, progress snapshot, repository map, and chronology. Nova remains the primary visual/layout reference, React remains design-lab-only, and no toolkit, native adapter, UI gate, page-surface, accessibility, performance, or implementation decision changed.
+
+Next question:
+
+When the native UI predecessors and task authority are accepted, which owner-approved extraction manifest and toolkit-neutral fixture package will be used to start the Nova handoff?

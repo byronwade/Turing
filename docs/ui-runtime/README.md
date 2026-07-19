@@ -8,6 +8,8 @@ This book defines a small native browser shell without Electron, Tauri, a system
 
 The current visual and layout source of truth is the [Turing Nova design source](design-lab/README.md), backed by the checked [`design-source-manifest.json`](machine/design-source-manifest.json) and [`validate_design_source.py`](../../tools/validate_design_source.py). It is a separate React design-lab reference; it does not change the native-runtime boundary.
 
+The [Nova Native Build Entry Criteria](../research/nova-native-build-entry-criteria-2026-07.md) is the canonical future handoff for extracting tokens, surface/state/command mappings, authority boundaries, native fixtures, page-surface contracts, and review evidence before Nova can inform authorized native implementation.
+
 ## Working hypothesis
 
 > Keep browser state, commands, identity, policy, recovery, and resource accounting in pure Rust; place a compiled native toolkit behind a narrow replaceable adapter; evaluate Slint first against Vizia and Floem or GPUI; use React only in a development design lab that never ships.
