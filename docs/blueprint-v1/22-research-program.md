@@ -6,7 +6,7 @@ The checked [research-question coverage audit](machine/research-question-coverag
 
 ## RQ-01 — Can compact Rust data structures materially reduce engine memory?
 
-Compare DOM, style, fragment, display-list, and protocol representations using generated and captured legal corpora. Measure live bytes, reserved bytes, pointer/metadata overhead, allocation count, construction, mutation, traversal, destruction, and cache behavior. Compare arena handles, intrusive indexes, reference counting, and alternative compact layouts. Include safety and implementation complexity.
+Compare DOM, style, fragment, display-list, and protocol representations using generated and captured legal corpora. Measure live bytes, reserved bytes, pointer/metadata overhead, allocation count, construction, mutation, traversal, destruction, and cache behavior. Compare arena handles, intrusive indexes, reference counting, and alternative compact layouts. Include safety and implementation complexity. The [Memory Object Representation and Tab Lifecycle Research](../research/memory-object-representation-and-tab-lifecycle-research-2026-07.md) defines the deferred experiment and evidence handoff.
 
 Decision output: accepted representations and size/performance budgets by object class.
 
@@ -18,7 +18,7 @@ Decision output: process assignment and pressure policy; never a cross-site coal
 
 ## RQ-03 — How much memory can freezing reclaim without discard?
 
-Instrument allocator pages, JS heap, DOM/style/layout/display list, images/fonts, network buffers, workers, and GPU resources before and after throttling/freeze. Test working-set trimming and safe cache dropping. Measure revival latency and semantic effects.
+Instrument allocator pages, JS heap, DOM/style/layout/display list, images/fonts, network buffers, workers, and GPU resources before and after throttling/freeze. Test working-set trimming and safe cache dropping. Measure revival latency and semantic effects. The [Memory Object Representation and Tab Lifecycle Research](../research/memory-object-representation-and-tab-lifecycle-research-2026-07.md) defines the no-claim lifecycle, recovery, and user-protection evidence route.
 
 Decision output: frozen-state budget and eligible resource-release contract.
 
@@ -233,7 +233,7 @@ The no-claim local static network profile, `tools/validate_benchmark_network_pro
 
 ## RQ-35 — Which data-layout, allocator, virtual-memory, and reclamation strategies minimize sustained working set and latency?
 
-Compare compact handles, field splitting, arrays, arenas, slabs, general allocators, page release, huge/guard pages, frozen-tab trimming, cache locality, and hardware tiers. Decision output: representation budgets, allocator classes, page policy, and unsafe boundaries.
+Compare compact handles, field splitting, arrays, arenas, slabs, general allocators, page release, huge/guard pages, frozen-tab trimming, cache locality, and hardware tiers. The [Memory Object Representation and Tab Lifecycle Research](../research/memory-object-representation-and-tab-lifecycle-research-2026-07.md) defines the source-backed experiment matrix and rejection rules. Decision output: representation budgets, allocator classes, page policy, and unsafe boundaries.
 
 ## RQ-36 — Which IPC, shared-memory, serialization, copy, batching, and backpressure choices dominate isolation-adjusted performance?
 

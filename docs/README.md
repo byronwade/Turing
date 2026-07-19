@@ -133,6 +133,7 @@ The profile/session lane also has a checked no-claim [profile/session source man
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |
 | [Documentation expansion audit — July 2026](research/documentation-expansion-audit-2026-07.md) | Historical first detailed-book expansion and gap analysis |
 | [Performance, security, developer, and systems audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Historical nineteen-book subsystem expansion |
+| [Memory Object Representation and Tab Lifecycle Research — July 2026](research/memory-object-representation-and-tab-lifecycle-research-2026-07.md) | Deferred `RQ-01`/`RQ-03`/`RQ-35` source-backed experiment handoff for compact representations, allocation safety, freeze/discard/revival, resource attribution, and performance evidence; no architecture or performance decision |
 | [Professional buildout audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, operations, legal, and sustainability |
 | [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | `OP-001` through `OP-014` product hypotheses |
 | [Native UI framework evaluation — July 2026](research/native-ui-framework-evaluation-2026-07.md) | Slint-first comparison hypothesis and browser-specific risks |

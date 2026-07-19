@@ -376,6 +376,7 @@ Use these files to resume work without mistaking evidence for approval:
 - [`docs/README.md`](README.md): documentation index and top-level navigation;
 - [`docs/start-here.md`](start-here.md): scope, maturity, definitions, current implementation state, and current build-readiness state;
 - [`docs/research/README.md`](research/README.md): dated research studies plus the required implementation-research lane map and build-readiness research crosswalk;
+- [`docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md`](research/memory-object-representation-and-tab-lifecycle-research-2026-07.md): deferred performance research handoff for compact representations, lifecycle reclamation, and measurement evidence;
 - [`docs/project-buildout/21-build-readiness-start-guide.md`](project-buildout/21-build-readiness-start-guide.md): first continuation stop, session posture reset, and in-session boundary router;
 - [`docs/project-buildout/20-build-continuation-readiness-pack.md`](project-buildout/20-build-continuation-readiness-pack.md): continuation scorecard and compact hard-stop boundary summary for session startup;
 - [`docs/project-buildout/22-build-readiness-progress-snapshot.md`](project-buildout/22-build-readiness-progress-snapshot.md): one-screen continuation state summary and current deep-research lane picture;

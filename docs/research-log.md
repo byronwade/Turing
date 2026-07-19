@@ -7812,3 +7812,21 @@ The Windows doctor wrapper is executable in this checkout and uses an external t
 Next question:
 
 When will the owner provide the named independent reviewer and fresh reference host or explicitly scoped clean VM required to execute `TASK-000002`?
+
+# 2026-07-19 - Memory representation and tab lifecycle research handoff
+
+Question:
+
+Can the deferred memory/object-representation and tab-lifecycle questions be made executable as a source-backed experiment route without turning compactness or lifecycle vocabulary into a performance claim?
+
+Method:
+
+Checked the Rust type-layout and allocation documentation and Chromium's public tab-discard/lifecycle documentation and source on 2026-07-19. Reconciled those observations with `RQ-01`, `RQ-03`, `RQ-35`, `REQ-PERF-002`, `REQ-PERF-003`, the performance engineering book, the benchmark closure route, resource attribution, security identity rules, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim research packet defining representation families, legal corpus and 5/15/30/100-tab workloads, memory categories, lifecycle/recovery/accessibility measures, safety and authority constraints, required artifacts, statistical treatment, and rejection rules. The packet explicitly rejects relying on unspecified default Rust layout, a single memory number, silent tab discard, hidden failures, or reduced security/accessibility/recovery workloads. No representation, allocator, process model, lifecycle policy, benchmark result, performance claim, or readiness gate changed.
+
+Next question:
+
+After source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark authority prerequisites are resolved, which owner-approved experiment manifest and synthetic fixture package will execute this lane?

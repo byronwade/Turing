@@ -78,6 +78,7 @@ Turing should claim performance leadership only from an evidence package showing
 - [Benchmark browser launch-runner contract](../research/benchmark-browser-launch-runner-contract-2026-07.md)
 - [Benchmark statistics analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md)
 - [Benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md)
+- [Memory Object Representation and Tab Lifecycle Research](../research/memory-object-representation-and-tab-lifecycle-research-2026-07.md)
 - [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
 - [Benchmark browser launch-runner self-test](../../tools/run_benchmark_browser_launch.py)
 - [No-claim benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json)

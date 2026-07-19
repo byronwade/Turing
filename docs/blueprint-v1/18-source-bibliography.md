@@ -65,6 +65,8 @@ These sources support comparative research and falsifiable hypotheses. They do n
 - Chromium RenderingNG key data structures — https://developer.chrome.com/docs/chromium/renderingng-data-structures
 - Chromium LayoutNG — https://developer.chrome.com/docs/chromium/layoutng
 - Chromium process model and site isolation — https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md
+- Chromium tab discarding and reloading — https://chromium.googlesource.com/playground/chromium-org-site/%2B/refs/heads/main/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading.md
+- Chromium tab lifecycle source — https://chromium.googlesource.com/chromium/src/%2B/720dadbc215c229ce100bc408edb3aee03b0697e8/chrome/browser/resource_coordinator/tab_lifecycle_unit.h
 - Chromium sandbox — https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md
 - Chrome DevTools Protocol — https://chromedevtools.github.io/devtools-protocol/
 - V8 Sparkplug baseline compiler — https://v8.dev/blog/sparkplug
@@ -211,6 +213,8 @@ Product references support dated UX, privacy, workflow, distribution, and govern
 ## Rust and compiler infrastructure
 
 - Rust language documentation — https://doc.rust-lang.org/
+- Rust Reference type layout — https://doc.rust-lang.org/stable/reference/type-layout.html
+- Rust allocation APIs and `Layout` — https://doc.rust-lang.org/stable/alloc/alloc/
 - Rustonomicon — https://doc.rust-lang.org/nomicon/
 - Rustup toolchain concepts — https://rust-lang.github.io/rustup/concepts/toolchains.html
 - Miri — https://github.com/rust-lang/miri
