@@ -2,7 +2,7 @@
 
 Status: `PB13-EV-009` release-catalog evidence; no local browser pins, benchmark output, competitor result, or performance claim
 Owner: performance measurement, benchmark operations, release operations, and quality
-Research date: 2026-07-18
+Research date: 2026-07-19
 Confidence: high for official release-catalog observations at retrieval time; low for benchmark readiness until local installed browser pins and runner artifacts exist
 
 ## Question
@@ -13,7 +13,7 @@ This report does not inspect a local browser executable, run a benchmark, choose
 
 ## Primary Sources Checked
 
-Retrieved on 2026-07-18:
+Retrieved and rechecked on 2026-07-19:
 
 - Chrome Releases: https://chromereleases.googleblog.com/
 - Microsoft Edge Stable release notes: https://learn.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel
@@ -32,6 +32,7 @@ Retrieved on 2026-07-18:
 - Apple Developer release-note search metadata identified Safari `26.5 (20624.2.5)`, released 2026-05-11. The page is JavaScript-rendered, so this observation is catalog metadata and still requires local Safari version capture before use in a benchmark.
 - Apple Safari resources listed Safari Technology Preview Release `247`, posted 2026-07-01.
 - BrowserBench identifies Speedometer 3.1, JetStream 3.0, and MotionMark as useful diagnostic surfaces. They do not replace local corpus, raw artifacts, failure accounting, security equivalence, accessibility coverage, or owner-reviewed claim bundles.
+- The 2026-07-19 recheck found no catalog-version change for the registry entries above. This is a freshness observation only; it does not create local executable pins or benchmark eligibility.
 
 ## Machine Registry
 

@@ -3,7 +3,7 @@
   "competitor_version_manifest_id": "TURING.BENCHMARK.COMPETITOR_VERSIONS.CURRENT_DESKTOP.2026_07",
   "status": "release_catalog_no_local_install_pins",
   "claim_status": "Official release-catalog candidate only; no installed browser path, no executable hash, no local profile, no benchmark run, no competitor result, no comparison result, and no performance claim.",
-  "retrieved_at": "2026-07-18T00:00:00-04:00",
+  "retrieved_at": "2026-07-19T00:00:00-04:00",
   "source_policy": [
     "Use official browser vendor release notes or release pages before any competitor comparison.",
     "Treat release-catalog entries as candidates only until a local benchmark manifest records executable path, executable hash, channel, command line, profile, settings, update state, and security posture.",
