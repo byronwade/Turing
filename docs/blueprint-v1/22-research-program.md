@@ -12,7 +12,7 @@ Decision output: accepted representations and size/performance budgets by object
 
 ## RQ-02 — What process topology gives the best isolation-adjusted memory?
 
-Simulate and later measure per-site, per-browsing-context-group, and security-equivalent process pools. Vary 8/16/32 GiB systems, 5/15/30/100 tabs, iframe composition, workers, media, extensions, and agent hosts. Report security equivalence, process overhead, shared resources, crash blast radius, IPC latency, and revival.
+Simulate and later measure per-site, per-browsing-context-group, and security-equivalent process pools. Vary 8/16/32 GiB systems, 5/15/30/100 tabs, iframe composition, workers, media, extensions, and agent hosts. Report security equivalence, process overhead, shared resources, crash blast radius, IPC latency, and revival. The [Process Topology and Isolation-Adjusted Memory Research](../research/process-topology-isolation-adjusted-memory-research-2026-07.md) defines the active no-claim experiment and evidence handoff.
 
 Decision output: process assignment and pressure policy; never a cross-site coalescing shortcut.
 

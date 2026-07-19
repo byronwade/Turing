@@ -7830,3 +7830,21 @@ Added a deferred no-claim research packet defining representation families, lega
 Next question:
 
 After source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark authority prerequisites are resolved, which owner-approved experiment manifest and synthetic fixture package will execute this lane?
+
+# 2026-07-19 - Process topology and isolation-adjusted memory research handoff
+
+Question:
+
+Can the process-topology question be made executable without confusing lower process count or lower memory with security-equivalent performance?
+
+Method:
+
+Checked the official Chromium process-model/site-isolation, process-model, and RenderingNG documentation plus Firefox process-model, process-role, and accessibility architecture documentation on 2026-07-19. Reconciled those observations with `RQ-02`, `RQ-20`, `RQ-36`, `PB-011`, `PB-012`, `PB-013`, the IPC and sandbox closure routes, the benchmark 30-tab contract, and the existing memory/lifecycle research packet.
+
+Decision:
+
+Added an active no-claim process-topology research packet defining site-instance identity, candidate sharing models, helper roles, security-equivalence constraints, 8/16/32 GiB and 5/15/30/100-tab workloads, process/resource/IPC/accessibility/recovery measures, required artifacts, and rejection rules. It explicitly prevents site-isolation relaxation, omitted helper processes, hidden failures, or lower process count from becoming an optimization claim. No topology, IPC, sandbox, benchmark, security, performance, or readiness decision changed.
+
+Next question:
+
+After task authority, real transport, sandbox-policy, and benchmark prerequisites are resolved, which owner-approved topology manifest and synthetic process/lifecycle fixture package will execute this route?

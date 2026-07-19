@@ -79,6 +79,7 @@ Crash blast radius, restart behavior, orphaned resources, revocation, audit, and
 
 - Chromium process model and site isolation — https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md
 - WebKit site isolation — https://docs.webkit.org/Deep%20Dive/SiteIsolation.html
+- [Process Topology and Isolation-Adjusted Memory Research](../research/process-topology-isolation-adjusted-memory-research-2026-07.md)
 - Firefox process model — https://firefox-source-docs.mozilla.org/dom/ipc/process_model.html
 - WHATWG HTML Living Standard — https://html.spec.whatwg.org/
 

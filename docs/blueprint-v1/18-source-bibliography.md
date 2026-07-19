@@ -85,6 +85,8 @@ These sources support comparative research and falsifiable hypotheses. They do n
 ### Gecko and SpiderMonkey
 
 - Firefox process model — https://firefox-source-docs.mozilla.org/dom/ipc/process_model.html
+- Firefox process roles — https://firefox-source-docs.mozilla.org/ipc/processes.html
+- Firefox accessibility architecture — https://firefox-source-docs.mozilla.org/accessible/Architecture.html
 - SpiderMonkey overview — https://firefox-source-docs.mozilla.org/js/index.html
 - Firefox performance documentation — https://firefox-source-docs.mozilla.org/performance/index.html
 - Firefox Remote Protocol — https://firefox-source-docs.mozilla.org/remote/index.html
