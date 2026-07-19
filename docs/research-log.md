@@ -7794,3 +7794,21 @@ Recorded that upstream `main` now points to `736ad1bda08c1af419aadc903e82938f861
 Next question:
 
 Will an owner select the historical build baseline, refresh and rebuild upstream `main`, select the release/archive/package surface, or reject Servo as a release-code source?
+
+# 2026-07-19 - Current-host toolchain wrapper diagnostic
+
+Question:
+
+Does the documented Windows doctor entry point execute against the pinned contained-M0 toolchain without changing the fresh-host claim boundary?
+
+Method:
+
+Ran `tools/doctor.ps1 --ci` from the current checkout with `CARGO_TARGET_DIR` set to `%TEMP%\turing-current-host-doctor`. The command reported Rust/Cargo `1.97.1`, rustfmt and Clippy `1.97.1`, Python `3.12.10`, Git `2.52.0.windows.1`, and `doctor: ready for contained M0 development`.
+
+Decision:
+
+The Windows doctor wrapper is executable in this checkout and uses an external target directory as documented. This is same-host diagnostic evidence only: no independent host was provisioned, no fresh-host run record or retained log bundle was created, and `PB-008`, `PB-009`, `PB-020`, and `TASK-000002` remain unchanged. The result does not support a clean-host, reproducibility, release-confidence, production, broad-implementation, or Chrome-class claim.
+
+Next question:
+
+When will the owner provide the named independent reviewer and fresh reference host or explicitly scoped clean VM required to execute `TASK-000002`?

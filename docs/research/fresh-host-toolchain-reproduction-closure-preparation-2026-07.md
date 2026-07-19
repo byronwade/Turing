@@ -24,6 +24,12 @@ The following official documentation was retrieved on 2026-07-19 and is used to 
 
 These observations refine the evidence contract only. They do not establish that the current host or any future host satisfies `PB-008` or `PB-009`.
 
+## Current-host wrapper diagnostic
+
+On 2026-07-19, the current Windows checkout ran `tools/doctor.ps1 --ci` with `CARGO_TARGET_DIR` explicitly set to `%TEMP%\turing-current-host-doctor`. The wrapper completed successfully and reported Rust/Cargo `1.97.1`, rustfmt and Clippy `1.97.1`, Python `3.12.10`, and Git `2.52.0.windows.1`, followed by `doctor: ready for contained M0 development`.
+
+This is a current-host wrapper and toolchain diagnostic only. The output was not retained as a fresh-host run record, the host was not independently provisioned, `bootstrap`, `check`, and direct `xtask` paths were not thereby reproduced, and no gate status changed. It confirms that the documented Windows doctor entry point is executable in this checkout; it does not prove clean-host reproduction, toolchain equivalence, source-tree cleanliness after a complete run, release confidence, or readiness for broad implementation.
+
 `PB-008` and `PB-009` remain `partial`. This report adds a consolidated replay protocol and terminology so that the next run can be reviewed against one stable contract. It does not authorize `TASK-000002`, promote either gate, or change any product, performance, security, compatibility, accessibility, release, or Chrome-class claim.
 
 The [Fresh-Host Reproduction Packet Examples](fresh-host-reproduction-packet-examples-2026-07.md) provides a fictitious field-level packet for host and source identity, attempted-command denominator, retained hashes, failure classification, cleanup, and readiness-review handoff. It is an example only and does not provide a fresh-host run.
