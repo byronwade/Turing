@@ -34,6 +34,8 @@ The audit reconciles the root [README](../../README.md), [Start Here](../start-h
 
 The machine audit source list also names each current lane-specific closure-preparation route: source strategy, fresh host, IPC, sandbox, benchmark, native UI/accessibility, profile/session, package/update, incident response, and backup ownership. It now also names the source-backed [Memory Object Representation and Tab Lifecycle Research](memory-object-representation-and-tab-lifecycle-research-2026-07.md), [Process Topology and Isolation-Adjusted Memory Research](process-topology-isolation-adjusted-memory-research-2026-07.md), and [Nova Native Build Entry Criteria](nova-native-build-entry-criteria-2026-07.md) packets as active performance/security/UI research inputs. The checked no-claim [Reference Platform Support Scorecard](reference-platform-support-scorecard-2026-07.md) separately records `PB-006` platform candidates without attaching them to an existing task manifest. This prevents the central closure board from becoming a substitute for checking the evidence-order document that owns each lane or from widening task scope implicitly.
 
+The active compatibility lane now also has a no-claim [Compatibility Prioritization and Closure Preparation](compatibility-prioritization-and-closure-preparation-2026-07.md) packet for `RQ-15`. It defines priority classes, capability-row fields, complete denominator accounting, differential/standards triage, and rejection rules without selecting a feature, support profile, or compatibility claim.
+
 The focused validator checks that:
 
 - all required source records exist;

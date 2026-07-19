@@ -23,6 +23,7 @@
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
     "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
     "docs/research/web-platform-source-and-conformance-evidence-2026-07.md",
+    "docs/research/compatibility-prioritization-and-closure-preparation-2026-07.md",
     "docs/web-platform/machine/web-platform-source-manifest.json",
     "docs/web-platform/machine/web-platform-source-manifest.schema.json",
     "tools/validate_web_platform_sources.py",

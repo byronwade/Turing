@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Compatibility prioritization and denominator contract added
+
+Question:
+
+Does the compatibility lane tell a maintainer what to prioritize and what evidence is required before a capability becomes a supported or Chrome-class claim, rather than only listing standards and test suites?
+
+Method:
+
+Compared `RQ-15`, the capability-parity matrix, the testing and compatibility chapter, the web-platform source manifest, and official WPT/Test262/Interop documentation observed on 2026-07-19.
+
+Result:
+
+The new no-claim packet defines `P0` release-critical, `P1` high-value, and `P2` experimental planning classes; a capability-row contract; complete pass/fail/timeout/crash/leak/harness-error/not-run/disabled/expected/unsupported accounting; differential and normative-source triage; and promotion/rejection rules. It explicitly separates prioritization from test results and support claims.
+
+Impact:
+
+This closes a compatibility-planning ambiguity and gives `RQ-15` a durable evidence route connected to the parity matrix, WPT/Test262 source work, task sequencing, and support-claim boundaries. It does not select a capability or profile, execute tests, establish compatibility, or change the full-build gate. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Which narrowly scoped supported profile and capability rows should an owner approve for the first executable compatibility manifest after source strategy and task authority are resolved?
+
 ## 2026-07-19 - IPC transport authority ordering made portable
 
 Question:
