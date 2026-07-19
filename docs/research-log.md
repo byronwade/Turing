@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Nova coverage added to primary handoff surfaces
+
+Question:
+
+Can a new maintainer discover the complete Nova component-coverage state from the primary start guide and pre-build checklist without reading the design-lab history first?
+
+Method:
+
+Compared the current 15-surface component-fixture inventory and Nova Surface-to-Contract Map with the native UI status paragraphs in `docs/start-here.md` and `docs/project-buildout/11-pre-build-readiness-checklist.md`.
+
+Decision:
+
+Updated both primary handoff surfaces to name the 9 core shell surfaces plus 6 Nova-specific product groups and linked the Nova map from Start Here. The language remains explicitly no-claim and keeps executable fixtures, accessibility evidence, and UI gates as future proof.
+
+Impact:
+
+Nova design coverage is now discoverable from the main continuation path as well as the UI-runtime book. No readiness percentage, gate, toolkit, or implementation claim changed.
+
 ## 2026-07-19 - Nova source manifest and coverage wording synchronized
 
 Question:
