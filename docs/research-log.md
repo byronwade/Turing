@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Fresh-host reproducibility claim ladder clarified
+
+Question:
+
+Does the `PB-008`/`PB-009` documentation distinguish a repeatable local check, a clean-host replay, a bit-for-bit reproducible build, and independently verified reproduction before using any of those terms in a build or release claim?
+
+Method:
+
+Compared the fresh-host closure preparation, fresh-host reproduction registry and run-record template, repository toolchain standards, and release-operations reproducible-builds book with the Reproducible Builds environment-recording guidance and SLSA's reproducibility FAQ observed on 2026-07-19.
+
+Result:
+
+The documentation now defines a four-level claim ladder: repeatable validation, clean-host replay, reproducible build, and independently verified reproduction. It requires output equality, builder/host independence, provenance, source/dependency review, cache and target controls, and failure accounting to remain separate evidence axes. The fresh-host machine registry now includes an explicit reproducibility-level axis and the toolchain source manifest includes the two official reproducibility sources.
+
+Impact:
+
+This prevents a successful same-host `check.ps1`, a clean-VM run without an approved equivalence record, or a single matching hash from being called independently verified. It strengthens the build-information handoff but does not provide an independent fresh-host run, bit-for-bit artifact comparison, owner-reviewed readiness, release integrity, or production claim. `PB-008`, `PB-009`, `TASK-000002`, and `PB-020` remain unresolved. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can an approved `TASK-000002` run produce a hash-linked build-information record and output comparison on an independent host, while retaining every setup, failure, cleanup, and provenance artifact?
+
 ## 2026-07-19 - ADR-0009 live source identities pinned for observation
 
 Question:

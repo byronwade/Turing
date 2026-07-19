@@ -22,6 +22,17 @@ The study covers:
 - verification parties;
 - and exceptions;
 
+## Reproducibility claim separation
+
+Use these terms precisely:
+
+- **Repeatable validation:** documented checks pass again on a declared host and checkout.
+- **Clean-host replay:** the workflow is repeated on an independent fresh host or an owner-approved clean-VM equivalent with host, source, cache, target, and failure evidence.
+- **Reproducible build:** the same declared inputs produce bit-for-bit identical output.
+- **Independently verified reproduction:** two or more genuinely independent build platforms corroborate the output and provenance for the exact scope.
+
+The [Reproducible Builds project](https://reproducible-builds.org/docs/recording/) requires relevant environment facts to be made irrelevant to output or recorded for exact rebuilding. [SLSA](https://slsa.dev/spec/v1.0/faq) distinguishes bit-for-bit reproducibility from independent verification and warns that reproducibility does not replace source, dependency, or distribution controls. Turing therefore records output identity, builder identity, provenance, source/dependency review, and host independence as separate fields. A green local check is never a reproducible-build or release-integrity claim by itself.
+
 The scope includes normal use, hostile input, compromised-process assumptions, low-memory systems, cancellation, timeout, crash, restart, migration where applicable, accessibility, diagnostics, and operational ownership.
 
 ## Design objectives

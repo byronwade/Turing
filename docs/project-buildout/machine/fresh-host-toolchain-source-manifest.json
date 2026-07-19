@@ -12,6 +12,7 @@
     "sdk_linker",
     "cache_network",
     "host_independence",
+    "reproducibility_levels",
     "source_tree",
     "command_denominator",
     "evidence_integrity"
@@ -70,6 +71,24 @@
       "retrieved": "2026-07-19",
       "observation": "MSVC Build Tools installations and toolsets can coexist, and serviced stable, older, and preview channels are distinct environment choices.",
       "run_record_consequence": "Record the Visual Studio channel and installation instance, workload/component IDs, MSVC toolset, Windows SDK, linker path/version, and preview/stable status rather than recording only that Visual Studio is installed."
+    },
+    {
+      "source_id": "BUILD-SOURCE-REPRODUCIBLE-BUILDS-ENVIRONMENT",
+      "title": "Recording the build environment",
+      "publisher": "Reproducible Builds project",
+      "url": "https://reproducible-builds.org/docs/recording/",
+      "retrieved": "2026-07-19",
+      "observation": "Reproducible Builds requires build-environment facts either to be made irrelevant to output or recorded so the artifact can be rebuilt exactly; the recorded build information should be separable from the artifact itself.",
+      "run_record_consequence": "Record the complete environment and build inputs as a separate hash-linked artifact, and distinguish missing environment facts from a failed rebuild rather than calling a successful local check reproducible."
+    },
+    {
+      "source_id": "BUILD-SOURCE-SLSA-REPRODUCIBLE",
+      "title": "SLSA reproducible and verified reproducible builds FAQ",
+      "publisher": "SLSA",
+      "url": "https://slsa.dev/spec/v1.0/faq",
+      "retrieved": "2026-07-19",
+      "observation": "SLSA distinguishes reproducible builds, where the same inputs produce bit-for-bit identical output, from verified reproducible builds, where two or more independent build platforms corroborate provenance; neither alone addresses every source, dependency, or distribution threat.",
+      "run_record_consequence": "Keep output equality, host independence, provenance, and source/dependency review as separate evidence axes; do not promote a same-host check or a single successful rebuild to verified reproducibility."
     }
   ],
   "source_documents": [

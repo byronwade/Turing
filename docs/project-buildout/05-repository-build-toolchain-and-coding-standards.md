@@ -2,7 +2,7 @@
 
 Status: detailed research and professional operating baseline  
 Owner: architecture, build, security, and language owners  
-Last researched: 2026-07-16
+Last researched: 2026-07-19
 
 ## Purpose
 
@@ -23,6 +23,7 @@ Define the final workspace, dependency direction, reproducible developer environ
 - Machine-check forbidden dependency edges and cycles.
 - Pin Rust, C/C++, SDK, linker, Python, Node, generator, test-suite, and package-tool versions.
 - Provide bootstrap and read-only doctor commands plus offline verified-source builds.
+- Classify evidence separately as repeatable validation, clean-host replay, bit-for-bit reproducibility, and independently verified reproduction; record environment facts and provenance for the claimed level.
 - Use typed IDs, checked arithmetic, bounded channels/collections, explicit lock ordering, structured errors, redacted structured logs, and SAFETY rationale for unsafe code.
 - No general-purpose runtime or framework becomes browser-wide by convenience.
 

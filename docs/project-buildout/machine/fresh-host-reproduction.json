@@ -2,7 +2,7 @@
   "schema_version": 1,
   "inventory_id": "BUILD.FRESH_HOST.NOCLAIM.2026_07",
   "status": "no_claim_fresh_host_reproduction_inventory",
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "claim_status": "no-claim fresh-host reproduction inventory only; no independent fresh-host reproduction, no owner-approved clean-VM equivalent, no owner-reviewed fresh-host readiness, no PB-009 readiness promotion, no broad implementation readiness, no preview readiness, no beta readiness, no stable readiness, no production readiness, no release confidence, no implementation claim, and no Chrome-class claim",
   "source_records": [
     "docs/research/m0-build-foundation-2026-07.md",
@@ -87,6 +87,12 @@
       "name": "Cache And Target Directory Behavior",
       "required_output": "Evidence for CARGO_TARGET_DIR, Cargo/Rustup cache roots, temp directories, source-tree exclusion, cleanup behavior, and no committed tool installers or generated build outputs.",
       "missing_status": "Wrapper policy exists, but clean-host cache and target behavior has not been independently recorded."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-REPRODUCIBILITY_LEVELS",
+      "name": "Reproducibility Level And Independence",
+      "required_output": "A record that distinguishes repeatable validation, clean-host replay, bit-for-bit reproducible output, provenance, and independently verified reproduction, with exact inputs and independent platform facts for any stronger level.",
+      "missing_status": "No clean-host output comparison or independently verified reproducible build has been executed."
     },
     {
       "axis_id": "FRESH-HOST-AXIS-FAILURE_ROLLBACK",

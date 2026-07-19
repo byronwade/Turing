@@ -20,6 +20,7 @@ REQUIRED_AXES = {
     "sdk_linker",
     "cache_network",
     "host_independence",
+    "reproducibility_levels",
     "source_tree",
     "command_denominator",
     "evidence_integrity",
@@ -31,6 +32,8 @@ REQUIRED_SOURCES = {
     "BUILD-SOURCE-MICROSOFT-MSVC",
     "BUILD-SOURCE-MICROSOFT-COMMAND-LINE",
     "BUILD-SOURCE-MICROSOFT-WINDOWS-SDK",
+    "BUILD-SOURCE-REPRODUCIBLE-BUILDS-ENVIRONMENT",
+    "BUILD-SOURCE-SLSA-REPRODUCIBLE",
 }
 REQUIRED_UNSUPPORTED = {
     "No independent fresh-host or owner-approved clean-VM run has been executed.",

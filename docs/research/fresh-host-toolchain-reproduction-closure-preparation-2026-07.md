@@ -27,6 +27,19 @@ The following official documentation was retrieved on 2026-07-19 and is used to 
 
 These observations refine the evidence contract only. They do not establish that the current host or any future host satisfies `PB-008` or `PB-009`.
 
+## Reproducibility vocabulary and claim ladder
+
+The lane uses four deliberately separate levels:
+
+| Level | Evidence required | What it permits | What it does not prove |
+| --- | --- | --- | --- |
+| Repeatable validation | The same checkout passes documented validators or tests on one host, with command output and exit codes | A bounded diagnostic about that host and checkout | Fresh-host independence, bit-for-bit artifact equality, provenance, or release confidence |
+| Clean-host replay | An independent fresh host or explicitly approved clean-VM equivalent repeats the commands with source, toolchain, cache, target, and failure records | Candidate evidence that the declared workflow can be reproduced in the declared environment class | Bit-for-bit identical release artifacts, complete provenance, or owner acceptance |
+| Reproducible build | Same declared source, dependency, toolchain, environment, and build inputs produce bit-for-bit identical output, with comparison artifacts | Evidence of output determinism for the exact profile and platform | Independent trust, source/dependency review, distribution integrity, or cross-platform equivalence |
+| Independently verified reproduction | Two or more genuinely independent build platforms corroborate the declared artifact/provenance and independence assumptions | Stronger provenance corroboration for the exact scope | Complete supply-chain security, owner approval, production support, or release readiness |
+
+This ladder follows the [Reproducible Builds environment-recording guidance](https://reproducible-builds.org/docs/recording/) and SLSA's distinction between reproducible and verified reproducible builds. The run record must name the highest level actually supported and list the missing evidence for every higher level. A passing `check.ps1`, a same-host rerun, a clean-VM run without an approved equivalence record, or a single matching hash must not be labeled independently verified.
+
 ## Current-host wrapper diagnostic
 
 On 2026-07-19, the current Windows checkout ran `tools/doctor.ps1 --ci` with `CARGO_TARGET_DIR` explicitly set to `%TEMP%\turing-current-host-doctor`. The wrapper completed successfully and reported Rust/Cargo `1.97.1`, rustfmt and Clippy `1.97.1`, Python `3.12.10`, and Git `2.52.0.windows.1`, followed by `doctor: ready for contained M0 development`.
