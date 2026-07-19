@@ -390,6 +390,8 @@ Use these machine-readable records to find the current source of truth before ch
 
 ### Machine evidence registries
 
+The checked no-claim [`adr-0009-source-observation-manifest.json`](blueprint-v1/machine/adr-0009-source-observation-manifest.json) and [`adr-0009-source-observation-manifest.schema.json`](blueprint-v1/machine/adr-0009-source-observation-manifest.schema.json) track official upstream source identity and source-strategy observation axes; [`validate_adr_0009_source_observations.py`](../tools/validate_adr_0009_source_observations.py) verifies the records without proving a baseline, equivalence, dependency approval, or release-code authorization.
+
 | Evidence area | Registry or artifact | Validator or runner | Boundary |
 |---|---|---|---|
 | `ADR-0009` source strategy | [`adr-0009-evidence.json`](blueprint-v1/machine/adr-0009-evidence.json), checked no-claim [`decision-review template`](blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json), and [`adr-0009-decision-review.schema.json`](blueprint-v1/machine/adr-0009-decision-review.schema.json) | [`validate_adr_0009_evidence.py`](../tools/validate_adr_0009_evidence.py) and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Source evidence and decision-review template only; no source-strategy decision, source baseline, source import, component approval, release-code authorization, or PB-002 readiness promotion |

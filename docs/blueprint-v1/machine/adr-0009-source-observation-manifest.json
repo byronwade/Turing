@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "manifest_id": "ADR9.SOURCE.OBSERVATIONS.2026_07",
+  "status": "no_claim_source_observation_manifest",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-002", "ADR-0009"],
+  "claim_status": "No-claim upstream source observations only; official project documentation is not a selected source baseline, dependency approval, reproducibility proof, legal approval, component approval, or release-code authorization.",
+  "observation_axes": [
+    "source_identity",
+    "archive_equivalence",
+    "dependency_pinning",
+    "offline_reproducibility",
+    "platform_bootstrap",
+    "binary_artifact_provenance",
+    "support_boundary"
+  ],
+  "sources": [
+    {
+      "source_id": "ADR9-SOURCE-SERVO-REPOSITORY",
+      "title": "Servo source repository",
+      "publisher": "Servo Project",
+      "url": "https://github.com/servo/servo",
+      "retrieved": "2026-07-19",
+      "observation": "The public repository exposes Cargo.lock, rust-toolchain.toml, mach bootstrap/build tooling, platform-specific prerequisites, and multiple source/build control files.",
+      "decision_consequence": "A candidate baseline must identify the exact revision and toolchain inputs; a repository URL or moving branch is insufficient source identity."
+    },
+    {
+      "source_id": "ADR9-SOURCE-SERVO-GETTING-CODE",
+      "title": "Getting the code",
+      "publisher": "The Servo Book",
+      "url": "https://book.servo.org/building/getting-the-code.html",
+      "retrieved": "2026-07-19",
+      "observation": "The documented starting point is cloning the Servo repository, with shallow clone guidance framed as a network/storage option rather than a provenance decision.",
+      "decision_consequence": "The replay packet must retain the exact commit, fetch mode, object availability, and independent verification result."
+    },
+    {
+      "source_id": "ADR9-SOURCE-SERVO-OFFLINE-BUILD",
+      "title": "Building offline",
+      "publisher": "The Servo Book",
+      "url": "https://book.servo.org/building/building-offline.html",
+      "retrieved": "2026-07-19",
+      "observation": "Servo documents vendored source archives for source plus Rust dependencies, while Windows and macOS still require additional bootstrap dependencies; prebuilt SpiderMonkey artifacts are a separate optional input with GitHub attestation verification guidance.",
+      "decision_consequence": "Git trees, vendored archives, platform bootstrap assets, and prebuilt native artifacts must be modeled as separate inputs and compared or approved explicitly."
+    },
+    {
+      "source_id": "ADR9-SOURCE-SERVO-CRATE-DEPENDENCIES",
+      "title": "Crate dependencies",
+      "publisher": "The Servo Book",
+      "url": "https://book.servo.org/contributing/crate-dependencies.html",
+      "retrieved": "2026-07-19",
+      "observation": "Cargo.lock records exact revisions for Git dependencies, and the documented dependency workflow includes explicit update commands and local patching behavior.",
+      "decision_consequence": "Lockfile revision pinning improves replay identity but does not replace source, license, build-script, proc-macro, native-package, or advisory review."
+    },
+    {
+      "source_id": "ADR9-SOURCE-SERVO-PINNED-GIT-DEPENDENCIES",
+      "title": "January in Servo: pinned Git dependencies",
+      "publisher": "Servo Project",
+      "url": "https://servo.org/blog/2026/02/28/january-in-servo/",
+      "retrieved": "2026-07-19",
+      "observation": "The project reported pinning Git dependencies to specific revisions to reduce build failures and described a future goal of forbidding Git dependencies in Servo libraries.",
+      "decision_consequence": "The observation is useful maintenance context only; Turing still needs a selected baseline, complete dependency closure, and owner-reviewed policy for Git and registry sources."
+    }
+  ],
+  "source_documents": [
+    "docs/research/servo-source-strategy-inventory-2026-07.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/research/servo-independent-build-reproduction-2026-07.md",
+    "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md"
+  ],
+  "unsupported": [
+    "No owner-selected ADR-0009 source baseline exists.",
+    "No Git-tree, vendored-archive, bootstrap-asset, or prebuilt-native-artifact equivalence decision exists.",
+    "No independent clean-host reproduction or owner-reviewed replay acceptance exists.",
+    "No dependency, legal, advisory, SBOM, component, compatibility, performance, security, or release-code approval exists."
+  ]
+}

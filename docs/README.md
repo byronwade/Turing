@@ -103,6 +103,8 @@ This index supports contained M0 and no-claim evidence work only. It does not ap
 
 ## Active research and implementation evidence
 
+The source-strategy lane also has a checked no-claim [ADR-0009 source-observation manifest](blueprint-v1/machine/adr-0009-source-observation-manifest.json) and [`validate_adr_0009_source_observations.py`](../tools/validate_adr_0009_source_observations.py); these track official upstream source observations only and do not select a baseline or authorize source import.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |

@@ -35,6 +35,8 @@ This inventory does not approve Servo-derived release code. It prepares the evid
 - Linux Foundation Europe Servo announcement, posted 2023-09-07: https://linuxfoundation.eu/newsroom/servo-web-rendering-engine-joins-linux-foundation-europe
 - Servo WPT pass-rate page, retrieved 2026-07-17: https://servo.org/wpt/
 
+The checked [ADR-0009 source-observation manifest](../blueprint-v1/machine/adr-0009-source-observation-manifest.json), validated by [`validate_adr_0009_source_observations.py`](../../tools/validate_adr_0009_source_observations.py), records the official upstream source identities and decision consequences below. It is a no-claim observation record, not a source-baseline selection.
+
 ## Official documentation refresh — 2026-07-19
 
 A fresh review of Servo's official documentation was performed on 2026-07-19. The retrieval is recorded separately from the 2026-07-17 checkout observations because public project policy can change independently of the locally inspected source objects.
@@ -52,10 +54,12 @@ Observed policy signals:
 - Servo's public overview identifies `servoshell` as the recommended browser path while the WebView library surface is still being developed.
 - Servo's LTS policy describes support as best effort, provides no specific guarantees, limits LTS scope to the `servo` library and dependencies, and explicitly excludes `servoshell`.
 - Servo's offline-build guidance identifies a vendored source archive as the path for source plus Rust dependencies, which is relevant to the archive-equivalence and supply-chain questions but does not establish source approval.
+- The same offline-build guidance says Windows and macOS require additional bootstrap dependencies that are not provided in the vendored source archive, and describes optional prebuilt SpiderMonkey artifacts with GitHub attestation verification. Turing must therefore separate source archives, platform bootstrap inputs, and prebuilt native artifacts in any replay packet.
+- Servo's crate-dependency guidance explains that `Cargo.lock` pins exact Git revisions, while the January 2026 project update describes pinned Git dependencies as a build-stability measure and a future goal of forbidding Git dependencies in Servo libraries. Pinning improves replay identity but does not replace dependency, license, build-script, proc-macro, native-package, or advisory review.
 
 Inference for `ADR-0009`: these official statements increase the importance of a Turing-owned support boundary, an explicit browser-shell ownership decision, and a source/archive equivalence review. They do not by themselves prove that Servo is unsuitable, insecure, incompatible, or unmaintainable, and they do not close `ADR9-EV-016`, `ADR9-EV-017`, or `ADR9-EV-018`.
 
-Required follow-up remains owner-controlled: select or reject the source relationship, define the supported product surface and update/security obligations, and record the decision and synchronized registry changes. No Servo source or dependency was copied into this repository during the refresh.
+Required follow-up remains owner-controlled: select or reject the source relationship, define the supported product surface and update/security obligations, and record the decision and synchronized registry changes. No Servo source or dependency was copied into this repository during the refresh. The observation manifest does not prove Git-tree/archive equivalence, clean-host reproducibility, dependency approval, or release-code authorization.
 
 ## Observations
 

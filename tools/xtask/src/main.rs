@@ -122,6 +122,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_adr_0009_source_observations.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_implementation_plan.py"],
     )?;
     command(

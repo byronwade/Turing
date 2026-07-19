@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 upstream source observations made executable
+
+Question:
+
+Can current official Servo source and build guidance be tracked as stable ADR-0009/PB-002 observations without treating public documentation as a source selection, equivalence proof, or dependency approval?
+
+Method:
+
+Compared the official Servo repository, Servo Book source/build/dependency guidance, the January 2026 Servo update on pinned Git dependencies, the existing source-strategy inventory, ADR-0009 closure route, and evidence matrix. Added a no-claim manifest with five source records, seven observation axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep Git trees, vendored source archives, platform bootstrap inputs, prebuilt native artifacts, and lockfile-pinned dependencies as separate source-strategy inputs requiring explicit equivalence, provenance, legal, and owner-review decisions.
+
+Impact:
+
+PB-002 and ADR-0009 remain blocked with no source baseline, dependency approval, source import, compatibility, performance, security, production, or release-code claim. The source-strategy lane is now machine-tracked against upstream observation drift.
+
 ## 2026-07-19 - Sandbox platform source identity made executable
 
 Question:
