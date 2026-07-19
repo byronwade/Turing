@@ -16,6 +16,8 @@ Yes, for start-state routing only. The checked [`contained-m0-start-state.json`]
 
 It also records that `TASK-000011` remains `review_pending`: its review handoff and non-accepting evidence capture may be maintained, but the task cannot be accepted or used to promote `PB-011` without independent accepted evidence.
 
+For future UI work, the start-state route also points to the [Nova design source](../ui-runtime/design-lab/README.md) as the visual and layout reference. Nova is design-lab input only; it does not authorize a toolkit, native shell, trusted-chrome behavior, accessibility implementation, or release path.
+
 The record does not approve broad M1, developer preview, beta, stable, production, Chrome-class, performance, compatibility, security, accessibility, release, daily-driver, or all-information-ready-for-building claims.
 
 For the broader "what information is still missing?" question, use the checked [Build Information Readiness Ledger](build-information-readiness-ledger-2026-07.md) and [`build-information-readiness-ledger.json`](../project-buildout/machine/build-information-readiness-ledger.json). The start-state record routes the current session; the ledger explains the broad-build information gaps.

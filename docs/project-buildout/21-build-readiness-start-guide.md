@@ -15,6 +15,8 @@ This guide is for people and agents starting or resuming in-session work. It doe
 
 Long-term positioning remains a Chrome-class/extreme-performance competitive target, but this is not yet evidence-approved. Track that lane through the [Chrome-class capability traceability map](../research/chrome-class-capability-traceability-map-2026-07.md), [performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md), and the [Chrome-class performance readiness lane](../benchmark-lab/chrome-class-performance-readiness-lane.md). Do not treat any intermediate artifact in this phase as a Chrome-class or performance claim.
 
+When UI work eventually becomes authorized, use the [Nova design source](../ui-runtime/design-lab/README.md) as the visual and layout reference. It does not own browser behavior: Rust state, typed commands, accessibility, page-surface, security, and accepted ADRs remain authoritative, and React remains confined to the design lab.
+
 Use this in the same order every session:
 
 1. [Start here](../start-here.md) for definitions and scope.
@@ -33,6 +35,7 @@ The repository is organized for continuation, but broad implementation is blocke
 | Lane | Current gate state | Deep research track to expand |
 |---|---|---|
 | `PB-002` Source strategy | blocked | `RQ-31`, `RQ-44`, `RQ-46`, `RQ-47`, `RQ-25`, `RQ-16` | Servo/alternative source selection, provenance equivalence, legal/support boundaries, component baseline decisions, generated-output provenance proofs. |
+| Deferred open-web governance | deferred outside active crosswalk | `RQ-33` and the [feature-lifecycle research packet](../research/open-web-governance-feature-lifecycle-research-2026-07.md) | Feature-specific user need, source identity, interoperability denominator, security/privacy/accessibility review, lifecycle, maintenance, and owner decision before feature selection. |
 | `PB-008`/`PB-009` Toolchain and fresh-host confidence | partial | `RQ-31`, `RQ-47` | Versioned compiler/SDK/linker/toolchain manifests plus independent fresh-host run with source-tree cleanliness proof, cache/target controls, and owner-reviewed readiness review. |
 | `PB-011` IPC and transport boundaries | partial | `RQ-02`, `RQ-13`, `RQ-22`, `RQ-36` | Canonical transport, wire codec, queue/backpressure behavior, malformed/timeout/cancellation negative tests, independent review packet. |
 | `PB-012` Sandbox probes | partial | `RQ-20`, `RQ-38` | Packaged expected-deny probes, unstable-path policy capture, effective platform-policy evidence, and owner review. |
