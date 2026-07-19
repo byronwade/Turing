@@ -65,7 +65,7 @@
       "id": "WAVE-06",
       "name": "M5 developer preview",
       "parallelism": "product engine DevTools release and measurement lanes",
-      "items": ["layout and product breadth","WP-015 productization","WP-017","WP-018","accessibility and emergency update readiness"],
+      "items": ["layout and product breadth","WP-015 productization","WP-017","WP-018","WP-020 product surfaces and browser workflows","accessibility and emergency update readiness"],
       "exit": ["signed developer preview","exact compatibility report","M5 gate"]
     },
     {

@@ -1,4 +1,4 @@
-# 16 — WP-001 Through WP-019 Execution Playbooks
+# 16 — WP-001 Through WP-020 Execution Playbooks
 
 Status: canonical work-package implementation guide
 Owner: program and named subsystem owners
@@ -185,6 +185,20 @@ Every WP has:
 **Negative tests:** writable/executable overlap; malformed stack maps; stale realm or document publication; deoptimization reconstruction failure; inline-cache invalidation race; code-cache version mismatch; compiler cancellation; JIT spraying; OOM; debugger attach; emergency no-JIT transition.
 
 **Handoff:** runtime performance and security evidence to M7 hardening and the benchmark lab. **Not supported:** optimizing-JIT, universal WebAssembly, production runtime, or performance-leadership claims without accepted evidence.
+
+## WP-020 — Everyday product surfaces and browser workflows
+
+**Milestone:** M5. **Dependencies:** WP-004, WP-012, WP-014. **Requirement:** `REQ-PROD-004`.
+
+**Deliver:** browser-owned history, bookmarks, downloads, settings, permissions, and recovery surfaces with explicit profile and Space boundaries; navigation and search workflows; import/export and clear-data controls; keyboard, focus, accessibility, localization, and privacy receipts for supported surfaces.
+
+**Task families:** history records; bookmark model; download quarantine; settings schema; permission surfaces; profile/Space routing; clear-data and export; crash recovery; keyboard and accessibility; localization; diagnostics; migration and corruption handling.
+
+**Acceptance:** every surface has a versioned owner and data class; profile and private-session boundaries are enforced; downloads cannot bypass quarantine; clear-data and export behavior is deterministic; settings changes are auditable and recoverable; keyboard, focus, accessibility, localization, and failure tests pass for the declared scope; no unsupported service or proprietary parity claim is implied.
+
+**Negative tests:** cross-profile history or bookmark access; private-session persistence; malicious download path; partial export; corrupt settings; stale permission state; interrupted migration; renderer crash during navigation; inaccessible focus transition; unsupported locale fallback.
+
+**Handoff:** product-experience evidence to M5 preview integration, profile/session review, accessibility review, and release operations. **Not supported:** complete browser product, sync/accounts, Chrome service parity, or production data-safety claim without accepted evidence.
 
 ## WP-012 — Navigation transactions, site instances, and renderer swaps
 

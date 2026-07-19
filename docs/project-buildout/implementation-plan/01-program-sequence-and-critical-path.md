@@ -93,6 +93,10 @@ Updater research and benchmark infrastructure start in M0. WP-017 and WP-018 bec
 
 Policy schemas and adversarial research can start early. Product-capable agent implementation waits for WP-002, WP-007, and WP-015.
 
+### Lane I — everyday product experience
+
+WP-020 waits for the shell, navigation, and storage/profile foundations from WP-004, WP-012, and WP-014. Its history, bookmarks, downloads, settings, permission, and recovery surfaces remain bounded to the declared profile and product scope.
+
 ## 5. Milestone ordering
 
 - **M0:** repository, schemas, task controls, toolchain, provenance, initial kernel contracts, research harnesses.

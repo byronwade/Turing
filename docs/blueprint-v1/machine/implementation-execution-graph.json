@@ -22,7 +22,8 @@
     {"id":"WP-016","milestone":"M6","title":"Capability-safe agent reference implementation","depends_on":["WP-002","WP-007","WP-015"],"decision_gates":["ADR-0005","agent-provider-review"],"parallel_lane":"agents-plugins"},
     {"id":"WP-017","milestone":"M5","title":"Signed update rollback and profile migration laboratory","depends_on":["WP-001","WP-002","WP-014"],"decision_gates":["ADR-0019","ADR-0020"],"parallel_lane":"release-operations"},
     {"id":"WP-018","milestone":"M5","title":"Fixed-hardware compatibility performance and energy laboratory","depends_on":["WP-005","WP-009","WP-013"],"decision_gates":["reference-hardware-accepted","corpus-provenance-reviewed"],"parallel_lane":"measurement"},
-    {"id":"WP-019","milestone":"M6","title":"Baseline JIT and hardened JavaScript execution","depends_on":["WP-010","WP-011"],"decision_gates":["JS-GATE-4","JS-GATE-5","no-jit-hardening-review"],"parallel_lane":"javascript"}
+    {"id":"WP-019","milestone":"M6","title":"Baseline JIT and hardened JavaScript execution","depends_on":["WP-010","WP-011"],"decision_gates":["JS-GATE-4","JS-GATE-5","no-jit-hardening-review"],"parallel_lane":"javascript"},
+    {"id":"WP-020","milestone":"M5","title":"Everyday product surfaces and browser workflows","depends_on":["WP-004","WP-012","WP-014"],"decision_gates":["product-surface-scope","profile-workflow-review"],"parallel_lane":"product-experience"}
   ],
   "critical_paths": [
     ["WP-001","WP-002","WP-003"],
@@ -31,7 +32,8 @@
     ["WP-001","WP-010","WP-011"],
     ["WP-001","WP-002","WP-012","WP-013","WP-014","WP-017"],
     ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-015","WP-016"],
-    ["WP-001","WP-010","WP-011","WP-019"]
+    ["WP-001","WP-010","WP-011","WP-019"],
+    ["WP-001","WP-002","WP-004","WP-012","WP-013","WP-014","WP-020"]
   ],
   "rule": "A node may begin production implementation only when every depends_on node is accepted and every decision gate is accepted or covered by a reviewed expiring exception."
 }

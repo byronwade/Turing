@@ -45,7 +45,7 @@ Before selecting a milestone or shaping implementation work, read the checked [D
 13. [Cross-cutting verification and evidence](13-cross-cutting-verification-and-evidence.md)
 14. [Staffing, delivery, and capacity model](14-staffing-delivery-and-capacity.md)
 15. [Stop, replan, replace, and abandon criteria](15-stop-replan-and-risk-controls.md)
-16. [WP-001 through WP-019 playbooks](16-work-package-playbooks.md)
+16. [WP-001 through WP-020 playbooks](16-work-package-playbooks.md)
 17. [Task kickoff, evidence, handoff, and release checklists](17-delivery-checklists-and-handoffs.md)
 
 ## Machine-readable companions

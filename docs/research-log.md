@@ -7668,3 +7668,21 @@ Added planned `WP-019` for baseline JIT and hardened JavaScript execution, synch
 Next question:
 
 Which accepted requirement family next lacks a dedicated work-package or verification route after the JavaScript runtime correction?
+
+# 2026-07-19 - Accepted requirement to work-package coverage audit
+
+Question:
+
+Does every accepted requirement have a canonical work-package owner and design route before implementation planning is considered complete?
+
+Method:
+
+Compared all 46 accepted requirements with the work-package backlog, execution graph, implementation plan, professional traceability, and Chrome-class capability map. The audit found six unmapped requirements: web-content accessibility bridging, WebAssembly, CORS/CSP policy, supported-version and emergency-patch capacity, ephemeral private sessions, and history/bookmarks/downloads/settings surfaces.
+
+Decision:
+
+Attached five requirements to their existing domain packages, added design references, and created planned `WP-020` for everyday product surfaces and browser workflows. Synchronized the roadmap, implementation plan, dependency graph, task sequence, traceability records, and capability map. All 46 requirements now have work-package coverage; no implementation, acceptance, compatibility, security, accessibility, product, or performance claim was promoted.
+
+Next question:
+
+Which accepted requirements still lack non-empty verification or evidence plans after their ownership routes are present?
