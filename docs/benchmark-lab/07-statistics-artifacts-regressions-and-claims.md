@@ -105,6 +105,8 @@ The checked [Benchmark trace/artifact package contract](../research/benchmark-tr
 
 The contract exists so a future runner cannot treat partial files as evidence. A real package still needs ETW or equivalent host traces, Perfetto-compatible traces where applicable, logs, screenshots when relevant, raw samples, memory snapshots, power or energy samples, failure denominator records, redaction review, retention decisions, and SHA-256 hashes.
 
+Trace and instrumentation are separate experimental conditions. A future package must retain an otherwise equivalent no-trace control whenever tracing, counters, sampling, logging, or diagnostic hooks can affect CPU, wakeups, allocation, cache behavior, latency, thermal state, or energy. The package records the trace configuration, providers/data sources, buffers, sampling intervals, duration, event-loss indicators, collector/analyzer versions, and measured control delta. An instrumented trace may diagnose a result, but it cannot silently become the result used for a headline performance claim.
+
 ## Current No-Claim Statistics-Analysis Contract
 
 The checked [Benchmark statistics analysis contract](../research/benchmark-statistics-analysis-contract-2026-07.md) and [no-claim statistics-analysis plan](../blueprint-v1/machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json) define the current `PB13-EV-006` analysis shape. This is not a browser benchmark run, not a runner-generated raw sample set, not a confidence interval from measured browser data, not a competitor result, and not a Chrome-class or public performance claim.

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Benchmark observer-effect boundary expanded
+
+Question:
+
+How can Turing use host and browser tracing for extreme-performance diagnosis without treating instrumentation overhead as product performance?
+
+Method:
+
+Compared the [Benchmark Evidence and Claim Closure Preparation](research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), benchmark artifact/statistics contracts, performance and benchmark-lab books, and the checked benchmark-source manifest with [Perfetto trace configuration](https://perfetto.dev/docs/concepts/config) and the existing Microsoft WPR/ETW source records. Added the source identity and a paired no-trace control protocol covering configuration, buffers, event loss, sampling, and measured deltas.
+
+Result:
+
+Trace-enabled runs are diagnostic conditions unless an otherwise equivalent no-trace control demonstrates that the instrumentation effect is understood. Future packets must retain trace configuration, providers/data sources, buffers, clocks, sampling intervals, duration, loss indicators, collector/analyzer versions, artifact hashes, and deltas for latency, CPU, wakeups, memory, GPU, and energy where relevant.
+
+Impact:
+
+The benchmark lane now distinguishes raw measurement conditions from diagnostic instrumentation conditions. `PB-013` and `TASK-000005` remain no-claim and proposed-only; no performance, memory, energy, Chrome-class, or competitor result claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the future Level 1 runner generate paired no-trace and trace-enabled artifacts with the same workload, lifecycle, security, profile, failure-denominator, and cleanup identity?
+
 ## 2026-07-19 - IPC platform transport worksheet added
 
 Question:

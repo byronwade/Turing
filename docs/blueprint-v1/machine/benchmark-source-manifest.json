@@ -107,6 +107,15 @@
       "retrieved": "2026-07-19",
       "observation": "ETW separates controllers, providers, and consumers and supports kernel/application events, real-time consumption, and logged traces; buffer and provider configuration affect what is captured.",
       "run_consequence": "Bind every trace to provider/session configuration, buffer and loss indicators, controller/consumer identity, timestamp/clock facts, process and thread attribution, and an explicit missing-event policy; a trace file without capture-integrity review is not a complete sample."
+    },
+    {
+      "source_id": "BENCH-SOURCE-PERFETTO-TRACE-CONFIG",
+      "title": "Perfetto trace configuration",
+      "publisher": "Perfetto",
+      "url": "https://perfetto.dev/docs/concepts/config",
+      "retrieved": "2026-07-19",
+      "observation": "Perfetto trace configuration controls data sources, buffers, durations, and collection behavior; the resulting trace therefore reflects the selected configuration and can be affected by event volume and capture limits.",
+      "run_consequence": "Retain the exact trace configuration, data sources, buffer sizes, duration, clock and loss indicators, producer/consumer versions, and capture overhead. Pair instrumented diagnostics with an otherwise equivalent no-trace control before interpreting latency, CPU, wakeups, memory, or energy."
     }
   ],
   "source_documents": [
