@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "manifest_id": "BUILD.FRESH_HOST.SOURCES.2026_07",
+  "status": "no_claim_toolchain_source_manifest",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-008", "PB-009"],
+  "claim_status": "No-claim toolchain-source manifest only; official toolchain documentation is not an independent fresh-host run, compiler/SDK/linker equivalence proof, owner-reviewed readiness, release confidence, or implementation evidence.",
+  "evidence_axes": [
+    "compiler_identity",
+    "target_tuple",
+    "dependency_lock",
+    "sdk_linker",
+    "cache_network",
+    "host_independence",
+    "source_tree",
+    "command_denominator",
+    "evidence_integrity"
+  ],
+  "sources": [
+    {
+      "source_id": "BUILD-SOURCE-RUSTUP-TOOLCHAINS",
+      "title": "Rustup toolchains",
+      "publisher": "Rustup project",
+      "url": "https://rust-lang.github.io/rustup/concepts/toolchains.html",
+      "retrieved": "2026-07-19",
+      "observation": "Rustup supports named channels, dated channels, fully versioned toolchains, and host target tuples; a channel name alone is not a stable compiler identity.",
+      "run_record_consequence": "Record the exact toolchain string, host target tuple, rustup version, resolved rustc --version --verbose output, and installation/channel provenance."
+    },
+    {
+      "source_id": "BUILD-SOURCE-CARGO-BUILD",
+      "title": "Cargo build",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/cargo/commands/cargo-build.html",
+      "retrieved": "2026-07-19",
+      "observation": "Cargo --locked requires dependency versions to match the lockfile, while --offline restricts network use to locally available registry and Git state.",
+      "run_record_consequence": "Record the lockfile hash, locked/offline flags, registry and cache roots, network mode, and whether dependencies were fetched before an offline attempt; neither flag proves a clean host or identical native toolchain."
+    },
+    {
+      "source_id": "BUILD-SOURCE-MICROSOFT-MSVC",
+      "title": "Acquire Microsoft C++ Build Tools",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/cpp/overview/acquire-msvc?view=msvc-160",
+      "retrieved": "2026-07-19",
+      "observation": "MSVC Build Tools installations and toolsets can coexist, and serviced stable, older, and preview channels are distinct environment choices.",
+      "run_record_consequence": "Record the Visual Studio channel and installation instance, workload/component IDs, MSVC toolset, Windows SDK, linker path/version, and preview/stable status rather than recording only that Visual Studio is installed."
+    }
+  ],
+  "source_documents": [
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+    "docs/project-buildout/machine/fresh-host-reproduction.json",
+    "docs/project-buildout/machine/build-information-readiness-ledger.json"
+  ],
+  "unsupported": [
+    "No independent fresh-host or owner-approved clean-VM run has been executed.",
+    "No owner-reviewed PB-008 or PB-009 readiness exists.",
+    "No compiler, SDK, linker, cache, or host equivalence claim exists.",
+    "No release-confidence, production, Chrome-class, or implementation claim exists."
+  ]
+}

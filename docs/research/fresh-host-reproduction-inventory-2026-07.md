@@ -9,7 +9,7 @@ Can Turing make the `PB-008` pinned toolchain and `PB-009` fresh-host reproducti
 
 ## Conclusion
 
-Yes, for planning only. The checked [`build-information-readiness-ledger.json`](../project-buildout/machine/build-information-readiness-ledger.json), [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json) registry, checked [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), checked no-claim [`fresh-host readiness-review template`](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), [`validate_fresh_host_reproduction.py`](../../tools/validate_fresh_host_reproduction.py), [`validate_fresh_host_run_records.py`](../../tools/validate_fresh_host_run_records.py), and [`validate_fresh_host_readiness_review.py`](../../tools/validate_fresh_host_readiness_review.py) define the compiler/SDK/linker/toolchain facts, host facts, source identity, command output, cache and target-directory evidence, source-tree cleanliness, failure classification, retained-log hashes, owner-review handoff, and rejection rules required before `PB-008` or `PB-009` can move beyond partial.
+Yes, for planning only. The checked [`build-information-readiness-ledger.json`](../project-buildout/machine/build-information-readiness-ledger.json), [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json) registry, checked no-claim [`fresh-host toolchain-source manifest`](../project-buildout/machine/fresh-host-toolchain-source-manifest.json), checked [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), checked no-claim [`fresh-host readiness-review template`](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), [`validate_fresh_host_reproduction.py`](../../tools/validate_fresh_host_reproduction.py), [`validate_fresh_host_toolchain_sources.py`](../../tools/validate_fresh_host_toolchain_sources.py), [`validate_fresh_host_run_records.py`](../../tools/validate_fresh_host_run_records.py), and [`validate_fresh_host_readiness_review.py`](../../tools/validate_fresh_host_readiness_review.py) define the compiler/SDK/linker/toolchain facts, host facts, source identity, command output, cache and target-directory evidence, source-tree cleanliness, failure classification, retained-log hashes, owner-review handoff, and rejection rules required before `PB-008` or `PB-009` can move beyond partial.
 
 This inventory does not run on a fresh host. It does not prove the project bootstraps from a clean machine, promote `PB-009` to ready, approve broad implementation, approve preview/beta/stable readiness, or support a Chrome-class claim.
 
@@ -71,11 +71,14 @@ The machine-readable control files are:
 
 - [`fresh-host-reproduction.schema.json`](../project-buildout/machine/fresh-host-reproduction.schema.json)
 - [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json)
+- [`fresh-host-toolchain-source-manifest.schema.json`](../project-buildout/machine/fresh-host-toolchain-source-manifest.schema.json)
+- [`fresh-host-toolchain-source-manifest.json`](../project-buildout/machine/fresh-host-toolchain-source-manifest.json)
 - [`fresh-host-run-record.schema.json`](../project-buildout/machine/fresh-host-run-record.schema.json)
 - [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json)
 - [`fresh-host-readiness-review.schema.json`](../project-buildout/machine/fresh-host-readiness-review.schema.json)
 - [`no-claim-fresh-host-readiness-template.json`](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json)
 - [`validate_fresh_host_reproduction.py`](../../tools/validate_fresh_host_reproduction.py)
+- [`validate_fresh_host_toolchain_sources.py`](../../tools/validate_fresh_host_toolchain_sources.py)
 - [`validate_fresh_host_run_records.py`](../../tools/validate_fresh_host_run_records.py)
 - [`validate_fresh_host_readiness_review.py`](../../tools/validate_fresh_host_readiness_review.py)
 

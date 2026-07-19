@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Fresh-host toolchain source identity made executable
+
+Question:
+
+Can the official Rustup, Cargo, and Microsoft toolchain observations already documented for `PB-008`/`PB-009` be tracked as stable run-record inputs without treating them as independent reproduction or readiness evidence?
+
+Method:
+
+Compared the Fresh-Host Toolchain Reproduction Closure Preparation, Fresh Host Reproduction Inventory, build-information ledger, fresh-host registry, and official Rustup, Cargo, and Microsoft documentation. Added a no-claim manifest with three source records, nine evidence axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep exact compiler identity, target tuple, lockfile/network mode, SDK/linker details, cache controls, host independence, source-tree state, command denominator, and retained evidence as separate run-record facts. The source manifest cannot substitute for a real run or owner review.
+
+Impact:
+
+`PB-008` and `PB-009` remain partial; no independent reproduction, compiler/SDK/linker equivalence, release confidence, production, Chrome-class, or implementation claim changed.
+
 ## 2026-07-19 - ADR-0009 upstream source observations made executable
 
 Question:

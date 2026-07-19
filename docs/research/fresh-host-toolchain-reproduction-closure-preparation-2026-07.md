@@ -28,6 +28,8 @@ These observations refine the evidence contract only. They do not establish that
 
 The [Fresh-Host Reproduction Packet Examples](fresh-host-reproduction-packet-examples-2026-07.md) provides a fictitious field-level packet for host and source identity, attempted-command denominator, retained hashes, failure classification, cleanup, and readiness-review handoff. It is an example only and does not provide a fresh-host run.
 
+The checked [fresh-host toolchain-source manifest](../project-buildout/machine/fresh-host-toolchain-source-manifest.json), validated by [`validate_fresh_host_toolchain_sources.py`](../../tools/validate_fresh_host_toolchain_sources.py), records the official Rustup, Cargo, and Microsoft toolchain observations used by this route. It tracks run-record consequences only; it does not prove compiler/SDK/linker equivalence or fresh-host readiness.
+
 ## Evidence classes
 
 The record must identify which environment was used:
