@@ -230,7 +230,7 @@ The web-platform lane now also has a dedicated [open-web governance and feature-
 
 ## Build-readiness research crosswalk
 
-Use this crosswalk when adding or continuing research. It keeps active `RQ-*` work tied to the readiness gate, proposed task handoff, next proof, and unsupported-claim boundary. The machine companion is [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), validated against [`research-readiness-crosswalk.schema.json`](../blueprint-v1/machine/research-readiness-crosswalk.schema.json). The complete-program [research-question coverage audit](../blueprint-v1/machine/research-question-coverage.json) separately records every numbered question, including questions explicitly deferred outside current pre-build closure lanes.
+Use this crosswalk when adding or continuing research. It keeps active `RQ-*` work tied to the readiness gate, proposed task handoff, next proof, and unsupported-claim boundary. The machine companion is [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), validated against [`research-readiness-crosswalk.schema.json`](../blueprint-v1/machine/research-readiness-crosswalk.schema.json). The human-readable [Research-Question Coverage Audit](research-question-coverage-audit-2026-07.md) and its machine [coverage registry](../blueprint-v1/machine/research-question-coverage.json) separately record every numbered question, including questions explicitly deferred outside current pre-build closure lanes.
 
 ### Source Strategy And `ADR-0009`
 
