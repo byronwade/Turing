@@ -92,7 +92,22 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - Named qualified backup maintainers and two-person control for owner coverage and release authority paths.
 - Owner-reviewed implementation kickoff closure across all lane blockers before broad implementation.
 
-## 8) Claim boundary (for any session)
+## 8) Fast lane scorecard (as of 2026-07-18)
+
+| Lane | Block status | Evidence locus | Next required step before broad execution |
+|---|---|---|---|
+| `PB-002` Source strategy | **blocked** | `project-buildout/14-adr-0009-source-strategy-decision-packet.md`, `project-buildout/15-adr-0009-evidence-traceability-matrix.md`, `project-buildout/16-adr-0009-decision-draft.md`, `research/servo-*`, `docs/blueprint-v1/machine/adr-0009-evidence.json` | Keep `PB-002` in partial/blocked decision state until the gate-specific source-baseline, ownership, and generated-output provenance approvals are closed. |
+| `PB-009` Fresh-host confidence | **partial** | `research/fresh-host-reproduction-inventory-2026-07.md`, `project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json`, `project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json` | Close the fresh-host run/review cycle with independent logs, source-tree cleanliness proof, and owner-reviewed readiness beyond the template. |
+| `PB-011` IPC | **partial** | `research/ipc-capability-boundary-inventory-2026-07.md`, `research/wp-002-kernel-ipc-2026-07.md`, `agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json`, `blueprint-v1/machine/ipc-schema-sources/no-claim-control-envelope-template.json` | Accept `TASK-000011`, move past review-handoff capture to production-path transport proof (wire encoding, authentication, transport failures, negative testing, owner-reviewed readiness). |
+| `PB-012` Sandbox probes | **partial** | `research/sandbox-probe-inventory-2026-07.md`, `research/wp-003-sandbox-probe-plan-2026-07.md`, `security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json` | Convert the no-claim contract into executed packaged probes with effective platform-policy capture and owner-reviewed readiness. |
+| `PB-013` Benchmark/Chrome-class prep | **partial** | `benchmark-lab/chrome-class-performance-readiness-lane.md`, `research/performance-benchmark-readiness-packet-2026-07.md`, benchmark harness manifests/contracts | Run fixed-hardware browser lanes with reproducible corpus, traces/artifacts, and owner-reviewed claim and statistics-readiness reviews. |
+| `PB-016` Profile/session formats | **partial** | `research/profile-session-format-inventory-2026-07.md`, `storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json` | Deliver executable profile/session/migration schemas and owner-reviewed fault/recovery evidence beyond the templates. |
+| `PB-017` Research update lab | **partial** | `research/research-package-update-lab-inventory-2026-07.md`, `release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json` | Add signed executable manifests, staged package/install behavior, rollback/migration tests, and owner-reviewed package readiness. |
+| `PB-018` Incident-response rehearsal | **partial** | `research/incident-patch-rehearsal-inventory-2026-07.md`, `security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json` | Execute the private-intake and patch-rehearsal workflows and close owner review for incident-response readiness. |
+| `PB-019` Backup ownership | **blocked** | `research/backup-ownership-gap-inventory-2026-07.md`, `project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json` | Appoint and validate qualified backup owners across build-critical scope before any broad authority or release promotion. |
+| `PB-003`/`PB-004`/`PB-005`/`PB-014`/`PB-015` Native UI path | **partial** | `research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md`, `research/native-ui-framework-bakeoff-inventory-2026-07.md`, `research/page-surface-composition-inventory-2026-07.md`, `research/window-input-accessibility-spike-inventory-2026-07.md`, `research/native-ui-component-fixture-inventory-2026-07.md` | Move from inventory and templates to executable adapter prototypes, toolkit decision, toolkit runtime ownership tests, accessibility/manual AT workflow, and owner-reviewed native UI readiness. |
+
+## 9) Claim boundary (for any session)
 
 This pack is a continuity artifact only. It documents evidence-tracking state, but it does not promote:
 
