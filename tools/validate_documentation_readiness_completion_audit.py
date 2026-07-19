@@ -63,6 +63,8 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/blueprint-v1/machine/research-question-coverage.json",
     "docs/blueprint-v1/machine/research-question-coverage.schema.json",
     "tools/validate_research_question_coverage.py",
+    "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md",
+    "docs/research/process-topology-isolation-adjusted-memory-research-2026-07.md",
     "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
     "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
     "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",

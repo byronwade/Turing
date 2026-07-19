@@ -7848,3 +7848,21 @@ Added an active no-claim process-topology research packet defining site-instance
 Next question:
 
 After task authority, real transport, sandbox-policy, and benchmark prerequisites are resolved, which owner-approved topology manifest and synthetic process/lifecycle fixture package will execute this route?
+
+# 2026-07-19 - Completion-audit research-lane synchronization
+
+Question:
+
+Does the central documentation-readiness completion audit include the newly added performance and process-topology research packets, rather than leaving them discoverable only through the general research index?
+
+Method:
+
+Compared the research index, completion-audit machine source list, completion-audit validator requirements, research-lane evidence references, and the human completion-audit narrative after adding the memory/lifecycle and process-topology packets.
+
+Decision:
+
+Added both packets to the checked completion-audit source set and `DOC-READY-RESEARCH_LANES` evidence references, added them to the validator's required source records, and updated the human audit to name them as active performance/security research inputs. The audit remains `9/10` ready for contained M0 and `0%` full-build closure; this synchronization does not answer a research question, approve a task, or promote a gate.
+
+Next question:
+
+Which remaining active research route should receive the next source-backed packet without duplicating an existing closure preparation or bypassing task authority?
