@@ -2,7 +2,7 @@
 
 Status: dated upstream source-provenance report for `PB-002` and proposed `ADR-0009`; no source, dependency, crate, release archive, or license approval
 Owner: architecture, provenance, release operations, security, legal-review, engine, and documentation owners
-Audit date: 2026-07-17
+Audit date: 2026-07-19 metadata refresh; original evidence capture 2026-07-17
 Confidence: medium for observed upstream object IDs, GitHub release metadata, release source-archive digest, and crates.io package checksum; low for source approval, legal approval, full-history provenance, reproducible-release, compatibility, performance, maintenance, and adoption conclusions until owner reviews run
 
 ## Question
@@ -38,6 +38,22 @@ Evidence was collected outside the Turing repository using:
 8. Python's `tarfile` module for a bounded readability check of the downloaded release source archive.
 
 No upstream source or release artifact was copied into this repository.
+
+## 2026-07-19 official metadata refresh
+
+A read-only refresh of the official GitHub repository, branch, release, and crates.io APIs was performed on 2026-07-19. It changes the freshness boundary for upstream `main` but does not replace the dated build, archive, or package evidence captured on 2026-07-17.
+
+| Field | Refreshed observation |
+|---|---|
+| Repository default branch | `main` |
+| Latest observed `main` commit | `736ad1bda08c1af419aadc903e82938f8610a65d` |
+| Latest observed `main` commit author date | `2026-07-19T19:09:15Z` |
+| Repository pushed/updated timestamps | `2026-07-19T20:13:05Z` / `2026-07-19T20:13:09Z` |
+| Latest published release | `v0.3.0`, published `2026-06-25T15:09:42Z`, target `release/v0.3` |
+| Release immutability | GitHub API reports `immutable: true` |
+| Latest crates.io `servo` version | `0.4.0`, metadata updated `2026-07-16T12:14:01.753698Z` |
+
+The refreshed `main` commit is later than the 2026-07-17 `origin/main` row below. Its tree, build status, dependency graph, generated outputs, licenses, security posture, compatibility, and performance have not been inspected by this refresh. The successful external build baseline must therefore no longer be described as merely two commits behind current upstream without a new comparison run.
 
 ## Current build checkout and upstream main
 
@@ -168,8 +184,8 @@ Interpretation: crates.io exposes a current `servo 0.4.0` package with a verifie
 
 | Candidate | Strength | Limitation |
 |---|---|---|
-| Successful external build baseline `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe` | Built successfully on the reference Windows host; local tree, tracked-file count, manifest digest, and local archive digest are already captured | Two commits behind current `origin/main`; shallow partial clone; not a release tag; no owner-selected source-baseline decision |
-| Current upstream `origin/main` `622600e045c2e5ea688a9b19b8671b6f43112817` | Current fetched upstream main on 2026-07-17; GitHub commit verification reports valid | Not yet bootstrapped or built by Turing; shallow partial clone does not establish full history; moving target |
+| Successful external build baseline `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe` | Built successfully on the reference Windows host; local tree, tracked-file count, manifest digest, and local archive digest are already captured | Two commits behind the historical 2026-07-17 `origin/main` observation; newer 2026-07-19 `main` commit has not been compared; not a release tag; no owner-selected source-baseline decision |
+| Historical upstream `origin/main` `622600e045c2e5ea688a9b19b8671b6f43112817` | Fetched upstream main on 2026-07-17; GitHub commit verification reports valid | Not yet bootstrapped or built by Turing; shallow partial clone does not establish full history; superseded as the current-main observation by the 2026-07-19 refresh |
 | GitHub release `v0.3.0` / `release/v0.3` | Immutable release tag and branch head observed at the same commit; release asset has GitHub digest and local digest match | Lightweight tag, no tag-object signature; release commit is unsigned; release source archive differs from the built main commit |
 | GitHub vendored release source archive | Downloaded locally; size and SHA-256 match GitHub release metadata; archive is readable | Contents-level source/license review and reproducible-generation review are not done; archive is not the previously built source tree |
 | crates.io `servo 0.4.0` | crates.io checksum matches local cached `.crate`; current package metadata is precise | Package is not a whole-repository source baseline; no full dependency, license, generated-output, or release equivalence decision |
@@ -179,7 +195,7 @@ Interpretation: crates.io exposes a current `servo 0.4.0` package with a verifie
 The safest current statement is:
 
 - Turing has one successfully built external Servo source tree, at `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe`.
-- That build baseline is now behind fetched `origin/main` by two commits.
+- That build baseline was two commits behind the historical 2026-07-17 fetched `origin/main` observation; the 2026-07-19 `main` refresh is later and has not been compared to the build baseline.
 - The latest GitHub release is `v0.3.0`, on `release/v0.3`, at `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`.
 - The latest crates.io package is `servo 0.4.0`, published 2026-07-16 with checksum `01a05ffce7829e67e41c5cb4e10849924cbd781d0ea0d6332d81afe8476d8a89`.
 - These are four distinct source-candidate surfaces, and none is approved as Turing's source baseline.
@@ -197,7 +213,8 @@ The safest current statement is:
 This report proves, for the inspected date and host only:
 
 - the successful external build baseline, current fetched upstream `main`, latest GitHub release tag, latest GitHub release source archive, and latest crates.io package are not the same source object;
-- the successful external build baseline is two commits behind fetched `origin/main`;
+- the successful external build baseline was two commits behind the historical 2026-07-17 fetched `origin/main` observation;
+- the 2026-07-17 `origin/main` observation is historical; the 2026-07-19 API refresh identifies `736ad1bda08c1af419aadc903e82938f8610a65d` as a later `main` commit that has not been built or compared in Turing's evidence process;
 - GitHub reports valid commit verification for the build baseline and current `origin/main` commits;
 - `v0.3.0` is a lightweight tag pointing to an unsigned commit that also heads `release/v0.3`;
 - the downloaded `servo-v0.3.0-src-vendored.tar.gz` matches GitHub's asset digest and is readable;

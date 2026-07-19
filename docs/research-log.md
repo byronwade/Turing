@@ -7776,3 +7776,21 @@ Reworded the root README heading from `Implemented foundation` to `Contained M0 
 Next question:
 
 Which remaining human-facing status statement should be reviewed after the next evidence lane changes its maturity state?
+
+# 2026-07-19 - Servo upstream freshness refresh
+
+Question:
+
+Has upstream Servo moved since the dated `ADR-0009` provenance and maintenance evidence, and does that change any Turing source-strategy conclusion?
+
+Method:
+
+Read the official `servo/servo` GitHub repository, `main` branch, latest-release API, and crates.io package metadata on 2026-07-19. Compared the refreshed observations with the 2026-07-17 provenance, security/maintenance, and ADR-0009 packet records. No upstream checkout, source archive, build, dependency extraction, or artifact was copied into Turing.
+
+Decision:
+
+Recorded that upstream `main` now points to `736ad1bda08c1af419aadc903e82938f8610a65d` and that the repository was pushed/updated on 2026-07-19. The latest release remains immutable `v0.3.0` and the latest crates.io package remains `servo 0.4.0`. The prior build comparison is explicitly historical; no build, compatibility, security, performance, license, maintenance, or source-baseline conclusion transfers to the newer `main` commit, and `PB-002` remains blocked.
+
+Next question:
+
+Will an owner select the historical build baseline, refresh and rebuild upstream `main`, select the release/archive/package surface, or reject Servo as a release-code source?

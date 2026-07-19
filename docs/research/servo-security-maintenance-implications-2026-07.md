@@ -3,7 +3,7 @@
 Status: first-pass security and maintenance implications; no security approval, sandbox approval, maintenance commitment, or source-strategy decision
 Owner: security, architecture, program, release operations, documentation, and source-strategy owners
 Related gate: `PB-002`, `ADR-0009`, `ADR9-EV-015`, `ADR9-EV-016`
-Date: 2026-07-17
+Date: 2026-07-19 metadata refresh; original evidence capture 2026-07-17
 
 ## Question
 
@@ -41,6 +41,10 @@ The analysis inspected:
 5. the current Turing security Blueprint, security-engine book, source-strategy packet, and prior Servo provenance/native/component reports.
 
 No Servo sandbox test, compromised-renderer test, WPT security run, fuzz run, negative filesystem/socket/device test, release drill, upstream merge drill, or security-response exercise was executed.
+
+## 2026-07-19 upstream metadata refresh
+
+A read-only refresh of the official GitHub repository, `main` branch, latest release, and crates.io package metadata found that the repository was pushed and updated at `2026-07-19T20:13:05Z` and `2026-07-19T20:13:09Z`, respectively; `main` now points to `736ad1bda08c1af419aadc903e82938f8610a65d`; the latest published release remains immutable `v0.3.0` on `release/v0.3`; and the latest crates.io package remains `servo 0.4.0`. These are freshness observations only. No new checkout, build, sandbox, dependency, compatibility, performance, security, or maintenance evidence was produced.
 
 ## Security and Sandbox Observations
 
@@ -81,7 +85,7 @@ The upstream project has active maintenance signals, but those signals are not T
 
 | Signal | Observation | Turing implication |
 |---|---|---|
-| Repository state | `servo/servo` is public, not archived, and had same-day push/update metadata on 2026-07-17 | Active upstream signal only; not a contractual dependency guarantee |
+| Repository state | `servo/servo` is public, not archived, and the 2026-07-19 refresh observed push/update metadata at `2026-07-19T20:13:05Z` / `2026-07-19T20:13:09Z` | Active upstream signal only; not a contractual dependency guarantee |
 | Release cadence | Recent release list includes `v0.3.0` and LTS-labeled `v0.1.x` releases in 2026 | Useful for monitoring, but Turing needs exact patch/backport expectations |
 | Security reporting | GitHub security policy is enabled and local `SECURITY.md` points to GitHub security reports | Good upstream channel signal; not a Turing vulnerability SLA |
 | CODEOWNERS | `25` path rules cover script, layout, compositing, fonts, servoshell, canvas, WebGPU, WebDriver, XPath, DevTools, CI, and crown | Review ownership exists upstream; Turing still needs its own named owners and backup owners |

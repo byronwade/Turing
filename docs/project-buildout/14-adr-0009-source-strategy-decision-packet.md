@@ -24,7 +24,7 @@ No option is accepted by this document. No Servo-derived release code is authori
 
 ## Current source snapshot
 
-Metadata gathered on 2026-07-17:
+Metadata gathered on 2026-07-17; official metadata refreshed on 2026-07-19:
 
 | Source | Observation |
 |---|---|
@@ -40,6 +40,8 @@ Metadata gathered on 2026-07-17:
 | crates.io `servo 0.4.0` checksum | `01a05ffce7829e67e41c5cb4e10849924cbd781d0ea0d6332d81afe8476d8a89`; local cached crate hash matched |
 | `servo` default features | `baked-in-resources`, `clipboard`, `js_jit` |
 | Notable optional features | `bluetooth`, `gamepad`, `gstreamer`, `media-gstreamer`, `native-bluetooth`, `vello`, `webgpu`, `webxr`, tracing and JS diagnostic features |
+
+The 2026-07-19 refresh identifies a later upstream `main` commit, `736ad1bda08c1af419aadc903e82938f8610a65d` (author date `2026-07-19T19:09:15Z`), while the latest published release remains immutable `v0.3.0` and crates.io remains `servo 0.4.0`. The 2026-07-17 build and source-comparison rows remain historical evidence; no build or source-equivalence conclusion transfers to the newer `main` commit.
 
 This metadata is insufficient for adoption. It only proves that the public project and crate are active and that version identifiers must be pinned precisely.
 
@@ -265,7 +267,7 @@ The dated [Servo Upstream Source Provenance - July 2026](../research/servo-upstr
 Key observations:
 
 - the successful external build baseline remains `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe`;
-- after refreshing tags and `origin`, fetched `origin/main` is `622600e045c2e5ea688a9b19b8671b6f43112817`, two commits ahead of the build baseline;
+- after refreshing tags and `origin` on 2026-07-17, fetched `origin/main` was `622600e045c2e5ea688a9b19b8671b6f43112817`, two commits ahead of the build baseline; the 2026-07-19 official refresh now identifies `736ad1bda08c1af419aadc903e82938f8610a65d` as the later `main` observation;
 - the external build checkout is a shallow partial clone, so it is not full-history provenance evidence;
 - GitHub commit verification reported the build baseline and current `origin/main` commits as valid, but the `v0.3.0` release commit as unsigned;
 - `v0.3.0` and `release/v0.3` point to `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`;
@@ -284,7 +286,7 @@ Key observations:
 - the independent clone is bare, non-shallow, and separate from the successful build checkout;
 - current `main` resolved to `622600e045c2e5ea688a9b19b8671b6f43112817`, with tree `9d71530fe4d36dd9c94a2a411d75f219fde0dfc9`;
 - the successful external build baseline resolved to `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe`, with tree `daa2bc0e189e1981fb021501065fc3466159b00d`;
-- the non-shallow ancestry check confirmed the build baseline is exactly two commits behind current `main`;
+- the non-shallow ancestry check confirmed the build baseline was exactly two commits behind the historical 2026-07-17 `main` observation; it says nothing about the later 2026-07-19 `main` commit;
 - `v0.3.0` and `release/v0.3` resolved to `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`, with tree `c41b1defccd9ed47a5ac2a8ad40929bc34de80a0`;
 - the non-shallow release comparison returned `1 838` for `v0.3.0...main`, showing the release branch is not a simple ancestor of current `main`;
 - local signature checks confirmed `v0.3.0` is not a verifiable tag object and that local Git does not have a configured trust root for the GitHub-merged commit signatures.
@@ -399,7 +401,7 @@ Key observations:
 - macOS and Linux-like sandbox profiles use `gaol` and resource/font file-read allowances, but no Turing effective-policy evidence or negative sandbox tests were run;
 - Servo event-loop routing reuses event loops by registered domain except sandboxed-origin contexts, while public/private resource and storage threads and selected origin checks exist as implementation concepts that still need Turing identity-preservation tests;
 - initial script state carries many security-relevant senders, including resource/storage, DevTools, font service, paint, memory/time profilers, optional Bluetooth, WebGL/WebXR, privileged URLs, and user-content handles;
-- current upstream metadata shows `servo/servo` is public, not archived, security-policy-enabled, pushed and updated on 2026-07-17, with latest GitHub release `v0.3.0` and LTS-labeled `v0.1.x` releases in the release list;
+- the 2026-07-17 upstream metadata snapshot showed `servo/servo` public, not archived, security-policy-enabled, and pushed/updated that day; the 2026-07-19 refresh shows a later `main` commit while the latest GitHub release remains `v0.3.0`;
 - the external checkout contains `22` workflow files, `25` CODEOWNERS rules, `19` Dependabot groups, release workflows with production builds and artifact attestations, and a crates.io publishing path.
 
 Result: `ADR9-EV-015` and `ADR9-EV-016` move from missing to partial. This is not security approval or a maintenance commitment. Turing still needs owner-reviewed process authority maps, Windows/macOS/Linux sandbox deltas with negative tests, origin/site/profile/storage/DevTools/extension/agent identity-preservation evidence, native/media/GPU/runtime/update risk review, fuzzing and compromised-process evidence for any accepted component boundary, patch ownership, upstream cadence policy, security-response expectations, merge-burden estimate, breakage/rollback plan, and named primary/backup owners before any release-path relationship is accepted.
