@@ -72,6 +72,87 @@ Next evidence required:
 
 - continued owner-reviewed evidence for `PB-002`, `PB-011`, `PB-019`, and all remaining `PB-*` items before broad build posture changes.
 
+## 2026-07-19 — Build-readiness documentation validation sweep
+
+Question:
+Are all current continuity and readiness-control documentation invariants still machine-checkable and internally coherent?
+
+Sources and versions:
+
+- `docs/project-buildout/21-build-readiness-start-guide.md`
+- `docs/project-buildout/20-build-continuation-readiness-pack.md`
+- `docs/project-buildout/18-documentation-readiness-evidence-matrix.md`
+- `docs/project-buildout/17-build-readiness-task-queue.md`
+- `docs/project-buildout/machine/contained-m0-start-state.json`
+- `docs/project-buildout/machine/documentation-readiness-completion-audit.json`
+- `docs/README.md`
+- `docs/start-here.md`
+- `README.md`
+
+Method and environment:
+
+- repository root: `C:\\Users\\bcw19\\Documents\\Codex\\2026-07-17\\github-plugin-github-openai-curated-remote`
+- commands:
+  - `python3 -B tools/validate_contained_m0_start_state.py`
+  - `python3 -B tools/validate_documentation_readiness_completion_audit.py`
+  - `python3 -B tools/validate_blueprint.py`
+  - `python3 -B tools/validate_implementation_kickoff_review.py`
+  - `python3 -B tools/validate_implementation_plan.py`
+  - `python3 -B tools/validate_build_readiness_dependency_graph.py`
+  - `python3 -B tools/validate_adr_0009_evidence.py`
+
+Observations:
+
+- start-guide/pack/board/registry ordering is coherent across entrypoints.
+- gate posture is still **not ready for broad M1/Chrome-class/extreme-performance implementation**.
+- hard blockers remain: `PB-002` source strategy and `PB-019` backup ownership.
+- the no-claim continuity and research-tracking posture remains the only safe execution state.
+
+Inference:
+
+The repository’s documentation continuity and readiness-control framework is coherent and verifiable for contained-M0 continuation work only; broad implementation still requires owner-reviewed evidence promotions.
+
+Decision:
+
+- keep all implementation status at contained-M0 scope only;
+- preserve `PB-002` and `PB-019` blocking posture in continuation docs and machine registries;
+- continue deep-research and evidence tracking for all remaining `PB-*` lanes.
+
+Alternatives rejected:
+
+- claiming readiness for broad implementation based on documentation or no-claim templates alone;
+- merging owner approvals into template records without reviewed evidence bundles.
+
+Security/privacy impact:
+
+- no implementation or security posture change.
+
+Compatibility/accessibility impact:
+
+- no implementation claim change.
+
+Performance/memory/energy impact:
+
+- none.
+
+Licensing/operational impact:
+
+- none.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- no requirement/risk/ADR/work-package status changed;
+- verification references now explicitly include `validate_implementation_plan.py` and `validate_implementation_kickoff_review.py` for continuity-state coherence.
+
+Unresolved questions:
+
+- which remaining `PB-*` items should be prioritized to collapse to an owner-reviewed broad-start point with minimal critical-path delay?
+
+Next evidence required:
+
+- accepted `PB-002` evidence pathway (source strategy), followed by `PB-019` owner-coverage and two-person control closure, before broad implementation claims;
+- owner-reviewed fresh-host, transport-level IPC, sandbox, benchmark, native-shell, profile/session, package/update, and incident-response evidence.
+
 ## 2026-07-18 - Build-information readiness ledger
 
 Question:
