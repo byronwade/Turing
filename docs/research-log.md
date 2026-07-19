@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - IPC platform identity evidence added
+
+Question:
+
+What platform transport facts must be recorded before Turing can evaluate authenticated IPC without treating a successful local connection or peer-credential query as proof of principal, capability, or process-isolation authority?
+
+Method:
+
+Compared the IPC capability-boundary inventory, wire-encoding decision preparation, transport closure route, schema-source and readiness templates, Blueprint IPC/security sections, and existing M0 tests with Microsoft's [named-pipe security](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights), Linux [`unix(7)`](https://www.man7.org/linux/man-pages/man7/unix.7.html), and Apple's [XPC peer identity](https://developer.apple.com/documentation/xpc/xpc_connection_set_peer_platform_identity_requirement(_:_:)) documentation. Added three platform source identities to the machine manifest and validator and synchronized the transport route and Blueprint boundaries.
+
+Result:
+
+Platform experiments must retain endpoint ACL/permission policy, transport namespace, peer identity evidence, session/namespace or entitlement context, remote-access policy, principal mapping, process epoch, reconnect/replay behavior, and impersonation or handle-transfer policy. Platform identity is necessary evidence but does not itself authorize a capability, validate a wire payload, or prove process/site isolation.
+
+Impact:
+
+The `PB-011` IPC wire-source manifest now requires eight primary source records across nine evidence axes. No encoding, generator, transport, owner-reviewed readiness, renderer-security, process-isolation, site-isolation, production IPC, or implementation claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the reviewed `TASK-000011` evidence and later `TASK-000003` transport packet bind platform peer identity to Turing principal, channel, and process epoch under negative, replay, timeout, cancellation, and compromised-peer tests?
+
 ## 2026-07-19 - Fresh-host toolchain identity boundary expanded
 
 Question:

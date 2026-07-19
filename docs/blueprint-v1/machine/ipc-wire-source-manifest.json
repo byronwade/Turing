@@ -61,6 +61,33 @@
       "retrieved": "2026-07-19",
       "observation": "FlatBuffers documents additive evolution and deprecated-field practices, but application authority, version rejection, and resource policy remain Turing protocol responsibilities.",
       "decision_consequence": "A candidate experiment must test incompatible fields, variants, capability meanings, document epochs, and resource-owner changes rather than assuming schema evolution preserves authority."
+    },
+    {
+      "source_id": "IPC-SOURCE-WINDOWS-NAMED-PIPE-SECURITY",
+      "title": "Named Pipe Security and Access Rights",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights",
+      "retrieved": "2026-07-19",
+      "observation": "Windows named pipes use security descriptors and access checks for client and server ends; default descriptors and impersonation behavior have security consequences that must be explicitly constrained.",
+      "decision_consequence": "A Windows transport experiment must specify the pipe security descriptor, session/user boundary, requested access, impersonation policy, remote-access denial, endpoint registration, and failure behavior; opening a pipe is not by itself proof of Turing principal or capability authorization."
+    },
+    {
+      "source_id": "IPC-SOURCE-LINUX-UNIX-PEER-CREDENTIALS",
+      "title": "unix(7) Linux manual page",
+      "publisher": "Linux man-pages project",
+      "url": "https://www.man7.org/linux/man-pages/man7/unix.7.html",
+      "retrieved": "2026-07-19",
+      "observation": "Linux Unix-domain sockets provide local transport mechanisms and peer-credential facilities such as SO_PEERCRED, while namespace and abstract-socket behavior has platform-specific semantics.",
+      "decision_consequence": "A Linux transport experiment must capture socket namespace/type, credential lookup, user and mount namespace context, permission policy, peer identity binding, abstract-socket limitations, and restart/replay behavior; a credential query must be bound to the channel and process epoch."
+    },
+    {
+      "source_id": "IPC-SOURCE-MACOS-XPC-PEER-IDENTITY",
+      "title": "XPC peer platform identity requirement",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/xpc/xpc_connection_set_peer_platform_identity_requirement(_:_:)",
+      "retrieved": "2026-07-19",
+      "observation": "Apple XPC exposes a peer-platform-identity requirement mechanism and audit-session identity for the remote peer, making platform identity a connection policy input rather than an implicit application claim.",
+      "decision_consequence": "A macOS transport experiment must record the XPC identity requirement, peer audit/session identity, entitlement or signing assumptions, connection lifecycle, and mapping into Turing principal and epoch checks; XPC identity does not authorize a capability or prove a safe handle transfer by itself."
     }
   ],
   "source_documents": [

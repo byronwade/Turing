@@ -12,6 +12,12 @@ What evidence order lets Turing review the contained `TASK-000011` policy refere
 
 The repository has a review-pending M0 policy reference, a non-accepting `TASK-000011` evidence capture, an IPC capability-boundary inventory, a schema-source template, a wire-encoding decision-preparation report, and a no-claim IPC readiness-review template. These records make the missing work reviewable. They do not establish a canonical wire encoding, a schema generator, a platform transport, peer authentication, handle transfer, timeout/cancellation behavior on a real channel, or production IPC.
 
+## Platform transport identity observations
+
+The [Windows named-pipe security guidance](https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipe-security-and-access-rights) makes security descriptors and access checks explicit for both ends of a pipe, while Windows impersonation introduces a separate client-token policy. Linux's [`unix(7)` documentation](https://www.man7.org/linux/man-pages/man7/unix.7.html) describes Unix-domain transport and peer-credential facilities such as `SO_PEERCRED`, alongside namespace-specific behavior. Apple's [XPC peer-platform-identity API](https://developer.apple.com/documentation/xpc/xpc_connection_set_peer_platform_identity_requirement(_:_:)) exposes platform identity and audit-session information as a connection policy input.
+
+These sources constrain, but do not select, a Turing transport. Each platform experiment must retain the transport object/namespace, endpoint ACL or permission policy, peer identity evidence, session/namespace or entitlement context, remote-access policy, principal mapping, process epoch, reconnect/replay behavior, and impersonation or handle-transfer policy. A successful connection, credential query, audit token, or security descriptor does not independently authorize a capability or establish renderer/process/site isolation.
+
 `TASK-000011` and `TASK-000003` have different scopes:
 
 | Scope | Evidence that may be reviewed | Evidence it must not imply |
@@ -56,7 +62,7 @@ The route is compatible with the [IPC Capability Boundary Inventory](ipc-capabil
 
 The [IPC Transport Packet Examples](ipc-transport-packet-examples-2026-07.md) supplies a fictitious packet covering schema provenance, control-envelope identity, peer/channel binding, negative and lifecycle cases, resource accounting, platform differences, and review rejection rules. It is a handoff example only and does not satisfy `PB-011` evidence.
 
-The checked no-claim [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py) keep the external format observations linked to this closure route. They do not replace the owner-reviewed wire decision, real transport experiment, hostile-wire tests, or readiness review.
+The checked no-claim [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py) keep the external format and platform-identity observations linked to this closure route. They do not replace the owner-reviewed wire decision, real transport experiment, hostile-wire tests, or readiness review.
 
 Any future `PB-011` decision must also be reconciled through the [PB-020 owner-decision closure board](../project-buildout/23-owner-decision-closure-board.md) and [build-readiness closure preparation](build-readiness-closure-and-owner-decision-preparation-2026-07.md). IPC acceptance cannot independently authorize broad implementation, renderer or agent security, site isolation, release, or production claims.
 
