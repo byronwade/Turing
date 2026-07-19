@@ -8,6 +8,8 @@ Last researched: 2026-07-16
 
 Define the authoritative chain from user need to requirement, design, source, tests, evidence, release gate, supported status, and current owner.
 
+The machine-readable [`requirement-verification-matrix.json`](../blueprint-v1/machine/requirement-verification-matrix.json) and its [human handoff](24-requirement-verification-matrix.md) are the planned verification layer for this contract. They map every accepted requirement to a bounded evidence lane without claiming that implementation, tests, reviews, or evidence already exist.
+
 ## Governing principles
 
 - A requirement without verification is an intention.
@@ -33,6 +35,8 @@ Define the authoritative chain from user need to requirement, design, source, te
 5. Run CI validation.
 6. Reconcile stale and waived evidence at milestones.
 7. Invalidate evidence when code or assumptions change.
+
+The verification plan must be present before a task is approved. It must name the requirement lane, work package, evidence classes, positive test layers, negative/failure cases, required artifacts, and next proof. Actual test, review, and evidence references remain separate records and cannot be inferred from the plan.
 
 ## Evidence and exit gates
 

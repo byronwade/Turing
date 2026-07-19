@@ -7740,3 +7740,21 @@ Added the no-claim Requirement Verification Matrix with 11 domain lanes. Each la
 Next question:
 
 Which owner-approved evidence lane should be selected first after the unresolved source-strategy, fresh-host, IPC, sandbox, native-shell, and ownership gates are closed?
+
+# 2026-07-19 - Requirement verification navigation sync
+
+Question:
+
+Can a maintainer reach the planned verification layer from both the requirements handbook and the documentation-readiness evidence matrix without relying on chat history?
+
+Method:
+
+Reconciled the new requirement verification matrix, professional traceability registry, requirements registry, work-package backlog, implementation evidence catalog, project-buildout handbook, documentation-readiness matrix, documentation index, and repository navigation.
+
+Decision:
+
+Added explicit inbound routes from the requirements/evidence handbook, documentation-readiness matrix, and stop/resume documentation index. The synchronization clarifies that planned verification is distinct from actual source, tests, reviews, and evidence and does not change the 90% contained-M0 or 0% full-build measurements.
+
+Next question:
+
+Which planned verification lane should receive the first owner-approved task manifest after the remaining source-strategy and readiness gates are resolved?
