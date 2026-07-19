@@ -40,6 +40,8 @@ A real owner decision must identify:
 
 The checked no-claim closure-review template now provides one structured `decision_records` entry for every canonical PB gate represented on this board. Those entries intentionally remain unresolved with null owner, reviewer, decision, and evidence fields until a real owner-reviewed closure record replaces the template.
 
+The checked [owner-decision synchronization matrix](machine/owner-decision-synchronization.json), [schema](machine/owner-decision-synchronization.schema.json), and [`validate_owner_decision_synchronization.py`](../../tools/validate_owner_decision_synchronization.py) add the required synchronization paths, role boundaries, exception policy, evidence classes, and prohibited claims for each of the 11 decision scopes. The matrix is a control companion, not a status registry or approval.
+
 ## Current boundary
 
 The board supports handoff organization only. It does not authorize proposed tasks, accept `TASK-000011`, promote `PB-*` gates, close `PB-020`, establish all-information-ready-for-building, or support broad M1, Chrome-class, performance, compatibility, security, accessibility, production, release, beta, stable, or daily-driver claims.

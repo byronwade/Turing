@@ -224,7 +224,11 @@
         "docs/blueprint-v1/machine/adr-0009-evidence.json",
         "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
         "docs/research/servo-source-strategy-inventory-2026-07.md",
-        "docs/research/servo-security-maintenance-implications-2026-07.md"
+        "docs/research/servo-security-maintenance-implications-2026-07.md",
+        "docs/research/owner-decision-synchronization-control-2026-07.md",
+        "docs/project-buildout/machine/owner-decision-synchronization.json",
+        "docs/project-buildout/machine/owner-decision-synchronization.schema.json",
+        "tools/validate_owner_decision_synchronization.py"
       ],
       "missing_information": [
         "Selected source baseline and feature profile with owner-reviewed provenance and equivalence policy.",

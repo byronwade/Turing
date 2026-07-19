@@ -228,6 +228,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_owner_decision_synchronization.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         [
             "-B",
             "tools/validate_documentation_readiness_completion_audit.py",
