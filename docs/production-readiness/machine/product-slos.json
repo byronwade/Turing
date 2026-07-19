@@ -25,31 +25,46 @@
       "id": "SLO-004",
       "name": "cold startup to address-field readiness p95",
       "target": null,
-      "blocking": true
+      "blocking": true,
+      "evidence_lane": "startup",
+      "requirements": ["REQ-PERF-001"],
+      "minimum_evidence_level": "1"
     },
     {
       "id": "SLO-005",
       "name": "input-to-present p95 and p99",
       "target": null,
-      "blocking": true
+      "blocking": true,
+      "evidence_lane": "interaction",
+      "requirements": ["REQ-PERF-001"],
+      "minimum_evidence_level": "1"
     },
     {
       "id": "SLO-006",
       "name": "frame pacing under reference workloads",
       "target": null,
-      "blocking": true
+      "blocking": true,
+      "evidence_lane": "frame_pacing",
+      "requirements": ["REQ-PERF-001"],
+      "minimum_evidence_level": "1"
     },
     {
       "id": "SLO-007",
       "name": "30-tab memory by hardware tier",
       "target": null,
-      "blocking": true
+      "blocking": true,
+      "evidence_lane": "memory_lifecycle",
+      "requirements": ["REQ-PERF-002", "REQ-PERF-003"],
+      "minimum_evidence_level": "1"
     },
     {
       "id": "SLO-008",
       "name": "background wakeups and energy",
       "target": null,
-      "blocking": false
+      "blocking": false,
+      "evidence_lane": "energy",
+      "requirements": ["REQ-PERF-001", "REQ-PERF-003"],
+      "minimum_evidence_level": "1"
     },
     {
       "id": "SLO-009",
