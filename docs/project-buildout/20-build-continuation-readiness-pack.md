@@ -62,6 +62,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 ## 5) Deep research lanes tied to continuity
 
 - Source strategy lane: `RQ-44`, `RQ-46`, `RQ-47`, `RQ-15`, `RQ-16`, `RQ-25`, `RQ-31`
+- Compatibility prioritization and conformance lane: `RQ-15`, with [Compatibility Prioritization and Closure Preparation](../research/compatibility-prioritization-and-closure-preparation-2026-07.md) and [Web-Platform Source and Conformance Evidence](../research/web-platform-source-and-conformance-evidence-2026-07.md); no capability selection, test execution, compatibility result, or support claim
 - Fresh-host lane: `RQ-46`, `RQ-47`, `RQ-31`
 - IPC lane: `RQ-02`, `RQ-13`, `RQ-20`, `RQ-22`, `RQ-36`
 - Sandbox lane: `RQ-20`, `RQ-38`, `RQ-31`
@@ -80,6 +81,7 @@ These gates must be accepted through owner-reviewed artifacts before broad produ
 - `docs/benchmark-lab/chrome-class-performance-readiness-lane.md` (competitor/extreme-performance sequencing and claim gates)
 - `docs/project-buildout/13-build-readiness-operating-board.md` (gated continuation path)
 - `docs/research/chrome-class-capability-traceability-map-2026-07.md` (Chrome-class and extreme-performance route map)
+- `docs/research/compatibility-prioritization-and-closure-preparation-2026-07.md` (compatibility priority, denominator, failure-triage, and support-claim route)
 - `docs/research/implementation-kickoff-review-inventory-2026-07.md` (stop/resume claims and blocked lanes)
 - `docs/research/build-readiness-dependency-graph-inventory-2026-07.md` (task and gate dependency map)
 
