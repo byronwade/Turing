@@ -28,6 +28,16 @@
       "probe_consequence": "Capture effective token, package and capability identity, integrity level, ACLs, inherited handles, broker path, and granted resource set for the exact packaged role."
     },
     {
+      "source_id": "SEC-SOURCE-WINDOWS-SANDBOX-SPEC",
+      "platform": "windows",
+      "title": "Create Process In Sandbox APIs",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/createprocessinsandbox",
+      "retrieved": "2026-07-19",
+      "scope": "Parameterized sandbox-launch fields for AppContainer, integrity, capabilities, filesystem, network, UI restrictions, and process mitigations.",
+      "probe_consequence": "Capture effective AppContainer mode and all applied launch restrictions; requested fields must not be treated as effective when the underlying isolation mode is disabled, and the API documentation is not a Turing containment result."
+    },
+    {
       "source_id": "SEC-SOURCE-WINDOWS-MITIGATIONS",
       "platform": "windows",
       "title": "Process mitigation policy",
@@ -56,6 +66,16 @@
       "retrieved": "2026-07-19",
       "scope": "Stackable unprivileged filesystem and, depending on kernel ABI, network restrictions.",
       "probe_consequence": "Capture kernel identity, detected ABI, handled rights, unsupported rights, ruleset digest, and degraded behavior rather than assuming a fixed policy."
+    },
+    {
+      "source_id": "SEC-SOURCE-LINUX-USERNS-RESOURCE-CONTROL",
+      "platform": "linux",
+      "title": "User namespaces and resource control",
+      "publisher": "Linux kernel documentation",
+      "url": "https://docs.kernel.org/admin-guide/namespaces/resource-control.html",
+      "retrieved": "2026-07-19",
+      "scope": "Resource-misuse implications of user namespaces and the recommendation to use memory control groups when they are enabled.",
+      "probe_consequence": "Capture namespace limits and cgroup/resource-control state with the user namespace; namespace creation alone is not bounded-resource or containment evidence."
     },
     {
       "source_id": "SEC-SOURCE-MACOS-APP-SANDBOX",

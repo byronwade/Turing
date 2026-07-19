@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Sandbox platform evidence refreshed
+
+Question:
+
+What additional official platform facts must be captured so Turing does not mistake requested sandbox settings or namespace creation for effective containment or bounded resource control?
+
+Method:
+
+Refreshed the canonical [Sandbox Platform-Evidence Decision Preparation](research/sandbox-platform-evidence-decision-prep-2026-07.md) against Microsoft's [Create Process In Sandbox APIs](https://learn.microsoft.com/en-us/windows/win32/secauthz/createprocessinsandbox) and the Linux kernel's [user namespaces and resource control](https://docs.kernel.org/admin-guide/namespaces/resource-control.html), then synchronized the checked platform-source manifest and validator. Compared the findings with the existing AppContainer, process-mitigation, seccomp, Landlock, App Sandbox, Hardened Runtime, probe inventory, and `PB-012` closure route.
+
+Result:
+
+The Windows source makes the dependency between AppContainer mode and several restriction fields explicit, while the Linux source adds a resource-control caveat for user namespaces. Turing's future probes must capture effective launch mode, applied restrictions, namespace limits, and cgroup state; source documentation and requested configuration remain insufficient evidence.
+
+Impact:
+
+The `PB-012` source manifest now contains eight official platform-source records across Windows, Linux, and macOS, and the validator requires the new Windows sandbox-launch and Linux resource-control identities. No sandbox policy, effective-policy result, security gate, performance claim, readiness promotion, or implementation authority changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future `TASK-000004` package capture these effective states and expected-deny results from the exact constrained process roles on each supported platform without treating unsupported primitives as passes?
+
 ## 2026-07-19 - Servo upstream refresh and source-strategy delta
 
 Question:
