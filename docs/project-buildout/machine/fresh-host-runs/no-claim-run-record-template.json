@@ -201,6 +201,12 @@
       ]
     }
   ],
+  "network_and_cache_modes": [
+    "Acquisition mode: network-enabled dependency and tool acquisition is separately recorded with URLs, refs, mirrors, response or archive hashes, retries, proxy/certificate posture, and downloaded-artifact provenance.",
+    "Replay mode: offline or controlled-network execution declares whether Cargo, Rustup, Git, and package caches are empty, preloaded, or reused under an owner-approved equivalence decision.",
+    "An offline run with preloaded caches is not fresh dependency-acquisition evidence and cannot silently be treated as network-independent reproduction.",
+    "Bootstrap downloads, dependency caches, build outputs, retained logs, and temporary archives have separate roots and cleanup records."
+  ],
   "cache_and_artifact_controls": [
     "record CARGO_TARGET_DIR, Cargo cache root, Rustup toolchain cache, temp directory, and repository root before command execution",
     "hash retained bootstrap, doctor, check, and xtask logs without committing generated build output",

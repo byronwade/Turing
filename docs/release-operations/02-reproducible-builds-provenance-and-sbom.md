@@ -33,6 +33,8 @@ Use these terms precisely:
 
 The [Reproducible Builds project](https://reproducible-builds.org/docs/recording/) requires relevant environment facts to be made irrelevant to output or recorded for exact rebuilding. [SLSA](https://slsa.dev/spec/v1.0/faq) distinguishes bit-for-bit reproducibility from independent verification and warns that reproducibility does not replace source, dependency, or distribution controls. Turing therefore records output identity, builder identity, provenance, source/dependency review, and host independence as separate fields. A green local check is never a reproducible-build or release-integrity claim by itself.
 
+Fresh-host evidence must also separate **acquisition mode** from **replay mode**. Network-enabled dependency and tool acquisition records URLs, refs, mirrors, archive hashes, retries, proxy/certificate posture, and downloaded-artifact provenance. A replay declares empty or preloaded caches and offline or controlled-network behavior. An offline run with preloaded caches is not clean acquisition evidence, and a network-enabled rerun is not an equivalent replay unless the source, tool, dependency, mirror, and cache inputs are captured and reviewed.
+
 The scope includes normal use, hostile input, compromised-process assumptions, low-memory systems, cancellation, timeout, crash, restart, migration where applicable, accessibility, diagnostics, and operational ownership.
 
 ## Design objectives

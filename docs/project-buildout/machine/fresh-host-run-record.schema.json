@@ -18,6 +18,7 @@
     "host_identity",
     "source_checkout",
     "commands",
+    "network_and_cache_modes",
     "cache_and_artifact_controls",
     "source_tree_cleanliness",
     "failure_denominator",
@@ -65,6 +66,11 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/command_record" }
+    },
+    "network_and_cache_modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
     },
     "cache_and_artifact_controls": {
       "type": "array",

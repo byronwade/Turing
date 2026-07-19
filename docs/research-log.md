@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Fresh-host acquisition and replay modes separated
+
+Question:
+
+Does the fresh-host contract distinguish dependency/tool acquisition from reproducibility replay, so preloaded caches or network differences cannot be hidden inside a “clean” run?
+
+Method:
+
+Compared the fresh-host closure preparation, reproduction inventory, run-record schema/template, run-record validator, and reproducible-builds release book.
+
+Result:
+
+The machine inventory now requires a separate network/cache evidence axis. The run-record schema and no-claim template require acquisition and replay mode declarations, including cache state, offline or controlled-network behavior, artifact hashes, proxy/certificate posture, and owner-approved equivalence for reused caches. The closure preparation and release book now reject preloaded offline runs as clean acquisition evidence.
+
+Impact:
+
+This removes a reproducibility ambiguity without creating a fresh-host run, proving toolchain equivalence, promoting `PB-008`/`PB-009`, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Can an approved `TASK-000002` run retain separate acquisition and replay artifacts on an independent host or approved clean VM, including all failures and cleanup evidence?
+
 ## 2026-07-19 - ADR-0009 option comparison normalized
 
 Question:

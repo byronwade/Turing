@@ -81,6 +81,15 @@ CACHE_TERMS = [
     "durable source",
     "cleanup evidence",
 ]
+NETWORK_CACHE_TERMS = [
+    "acquisition mode",
+    "network-enabled",
+    "replay mode",
+    "offline",
+    "preloaded",
+    "owner-approved",
+    "fresh dependency-acquisition",
+]
 PROHIBITED_TERMS = [
     "same-host reruns",
     "current-host diagnostics",
@@ -228,6 +237,12 @@ def validate_record(path: Path, record: Any) -> None:
     validate_requirement_group(path, require_object(path, record, "host_identity"), "host_identity", HOST_TERMS)
     validate_requirement_group(path, require_object(path, record, "source_checkout"), "source_checkout", SOURCE_TERMS)
     validate_commands(path, record.get("commands"))
+    require_terms(
+        path,
+        "network_and_cache_modes",
+        require_string_array(path, record, "network_and_cache_modes"),
+        NETWORK_CACHE_TERMS,
+    )
     require_terms(
         path,
         "cache_and_artifact_controls",

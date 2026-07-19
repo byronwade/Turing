@@ -60,6 +60,7 @@
       "CARGO_TARGET_DIR path, cache root path, temp directory path, and confirmation that build output stayed outside the repository",
       "hashes or retained logs for bootstrap, doctor, check, and xtask command output",
       "source-tree status after all commands plus evidence that no tool installer, temporary archive, credential, local profile, or generated junk was committed",
+      "separate acquisition mode and replay mode records: acquisition is network-enabled with dependency/tool URLs or hashes, while replay records offline or controlled-network behavior and whether caches were empty, preloaded, or reused under an owner-approved equivalence decision; fresh dependency-acquisition evidence must remain distinct",
       "failure logs and rollback notes if any command fails, including whether the failure is environmental, source-controlled, network-dependent, or nondeterministic"
     ]
   },
@@ -87,6 +88,12 @@
       "name": "Cache And Target Directory Behavior",
       "required_output": "Evidence for CARGO_TARGET_DIR, Cargo/Rustup cache roots, temp directories, source-tree exclusion, cleanup behavior, and no committed tool installers or generated build outputs.",
       "missing_status": "Wrapper policy exists, but clean-host cache and target behavior has not been independently recorded."
+    },
+    {
+      "axis_id": "FRESH-HOST-AXIS-NETWORK_CACHE_MODES",
+      "name": "Network Acquisition And Replay Modes",
+      "required_output": "A run record separating network-enabled acquisition from offline or controlled-network replay, with dependency/tool URLs or archive hashes, cache preloading state, mirror/proxy/certificate posture, and an owner-approved equivalence decision for any reused cache.",
+      "missing_status": "No independent run has separated dependency acquisition from replay or proven that preloaded caches and network behavior do not affect the declared result."
     },
     {
       "axis_id": "FRESH-HOST-AXIS-REPRODUCIBILITY_LEVELS",

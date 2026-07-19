@@ -65,6 +65,15 @@ The record must identify which environment was used:
 
 The run record must not use `independent`, `fresh`, `reproducible`, or `equivalent` without naming the class and retaining supporting facts.
 
+## Network and cache modes
+
+The replay must distinguish two related but non-interchangeable modes:
+
+1. **Acquisition mode:** network-enabled setup obtains pinned source, toolchains, and dependencies. Record URLs, refs, mirrors, response or archive hashes, retries, proxy/certificate posture, and downloaded-artifact provenance.
+2. **Replay mode:** the declared commands run with empty, preloaded, or controlled caches and either offline or explicitly controlled network access. Record the cache state, network policy, endpoints, and the owner-approved equivalence rationale for any reused cache.
+
+An offline run with preloaded caches is not clean dependency-acquisition evidence. A network-enabled rerun is not equivalent to an offline replay unless the source, tool, dependency, mirror, and cache inputs are captured and the difference is within the reviewed scope. Bootstrap downloads, dependency caches, build outputs, logs, and temporary archives require separate roots and cleanup records.
+
 ## Required replay protocol
 
 Before execution, the owner must record:
