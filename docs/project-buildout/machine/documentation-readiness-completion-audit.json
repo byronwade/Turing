@@ -41,6 +41,7 @@
     "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json",
     "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
     "docs/research/web-platform-source-and-conformance-evidence-2026-07.md",
+    "docs/research/open-web-governance-feature-lifecycle-research-2026-07.md",
     "docs/web-platform/machine/web-platform-source-manifest.json",
     "docs/web-platform/machine/web-platform-source-manifest.schema.json",
     "tools/validate_web_platform_sources.py",
@@ -183,7 +184,7 @@
       "id": "DOC-READY-RESEARCH_LANES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The research index, crosswalk, checked no-claim source manifests, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
+        "The research index, crosswalk, checked no-claim source manifests, deferred open-web feature-lifecycle packet, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
       ],
       "missing_for_full_goal": [
         "Research lane existence does not answer the remaining research questions or provide accepted decisions, executable proof, raw benchmark results, security evidence, compatibility results, accessibility results, or owner approvals."
@@ -204,6 +205,7 @@
         "docs/security-engine/machine/incident-response-source-manifest.json",
         "docs/project-buildout/machine/ownership-control-source-manifest.json",
         "docs/research/reference-platform-support-scorecard-2026-07.md",
+        "docs/research/open-web-governance-feature-lifecycle-research-2026-07.md",
         "docs/platform/machine/reference-platform-scorecard.json",
         "tools/validate_reference_platform_scorecard.py"
       ]

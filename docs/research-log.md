@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Deferred open-web governance route expanded
+
+Question:
+
+What evidence and review packet must exist before a web-platform feature moves from deferred `RQ-33` research into implementation or compatibility support?
+
+Method:
+
+Compared the checked web-platform source manifest, six-chapter web-platform governance book, research-question coverage audit, active PB-002 crosswalk, WHATWG working mode, W3C Web Platform Design Principles, W3C Privacy Principles, WPT, and Interop sources. Added a dated no-claim research packet with feature-promotion fields, evidence order, lifecycle controls, rejection rules, and explicit separation between active PB-002 questions and deferred `RQ-33` context.
+
+Result:
+
+The future `RQ-33` route is now concrete enough for a maintainer to prepare a feature-specific packet without treating a source list or standards URL as a compatibility decision. `RQ-33` remains deferred, no task or feature was selected, and no readiness or product claim changed.
+
+Impact:
+
+The open-web governance lane now has a durable research artifact, an indexed local link, an explicit promotion trigger, and a claim boundary connected to the existing crosswalk and source manifest. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a real feature-specific packet satisfy the source, test, interoperability, security, privacy, accessibility, lifecycle, maintenance, and owner-review requirements before any feature is selected?
+
 ## 2026-07-19 - Research-question coverage made explicit
 
 Question:

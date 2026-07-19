@@ -65,6 +65,7 @@ These are the headline pre-build gates, not the complete full-goal blocker list.
 ## 4) Deep research lanes currently open
 
 - Source-strategy and engine options: `RQ-31`, `RQ-44`, `RQ-46`, `RQ-47`, `RQ-25`, `RQ-16`
+- Deferred open-web governance and feature lifecycle: `RQ-33`, with the [feature-lifecycle research packet](../research/open-web-governance-feature-lifecycle-research-2026-07.md); this remains outside the active pre-build crosswalk until a real feature-specific decision packet exists
 - Pinned toolchain and fresh-host reproducibility: `PB-008`, `PB-009`, `RQ-31`, `RQ-47`, with the [Fresh-Host Toolchain Reproduction Closure Preparation](../research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md) as the no-claim evidence-order route
 - IPC transport and negative testing: `RQ-02`, `RQ-13`, `RQ-22`, `RQ-36`
 - Sandbox evidence: `RQ-20`, `RQ-38`
