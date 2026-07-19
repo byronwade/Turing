@@ -32,6 +32,8 @@ REQUIRED_SOURCES = {
     "REL-UPDATE-SOURCE-SIGSTORE-BUNDLE",
     "REL-UPDATE-SOURCE-WINDOWS-SIGNTOOL",
     "REL-UPDATE-SOURCE-WINDOWS-CODE-SIGNING",
+    "REL-UPDATE-SOURCE-MACOS-NOTARIZATION",
+    "REL-UPDATE-SOURCE-LINUX-FLATPAK-TRUST",
 }
 REQUIRED_UNSUPPORTED = {
     "No Turing package, updater, installer, metadata parser, signing hierarchy, or stable channel has been implemented or selected.",

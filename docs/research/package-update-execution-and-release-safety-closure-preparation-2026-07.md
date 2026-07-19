@@ -21,6 +21,8 @@ The source-backed decision preparation reviewed on 2026-07-19 remains the canoni
 
 The checked no-claim [package/update source manifest](../release-operations/machine/package-update-source-manifest.json), [manifest schema](../release-operations/machine/package-update-source-manifest.schema.json), and [`validate_package_update_sources.py`](../../tools/validate_package_update_sources.py) preserve these official observations across eight evidence axes. They are source identity and decision-input records only; they do not select TUF, SLSA, in-toto, Sigstore, a Windows package format, a signing hierarchy, an updater, a channel, or a release policy.
 
+Platform release mechanisms remain separate evidence inputs. Apple's [notarization guidance](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) and Flatpak's [usage and deployment documentation](https://docs.flatpak.org/en/latest/using-flatpak.html) add macOS notarization and Linux remote/runtime/scope observations to the source manifest. They do not make macOS or Linux supported, do not choose a package format or distribution route, and do not replace metadata freshness, provenance, installation-transaction, rollback, profile-transition, privacy, or owner-review evidence.
+
 The future fake-key lab must record which source role each assertion uses and keep metadata authorization, provenance, artifact signature, installation transaction, profile transition, and support decision as separate states. No source framework is selected by this route.
 
 ## Required evidence sequence

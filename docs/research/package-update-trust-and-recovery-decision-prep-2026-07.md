@@ -79,6 +79,10 @@ Implications for Turing:
 
 These sources constrain a future Windows experiment; they do not select a package format, certificate authority, signing hierarchy, distribution channel, or release policy.
 
+### macOS and Linux distribution boundaries
+
+Apple's [notarization guidance](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) treats notarization as a distribution-preparation and verification workflow layered on signed macOS software. Flatpak's [usage documentation](https://docs.flatpak.org/en/latest/using-flatpak.html) describes remote repositories, runtime identity, and user/system installation scopes. These platform mechanisms must remain separate from TUF metadata authorization, build provenance, artifact identity, installation atomicity, profile migration, and support policy. Future platform records must retain exact package digest, signing/notarization or remote identity, tool and SDK/runtime versions, permissions or entitlements, offline/network failure behavior, rollback result, and unsupported distribution combinations.
+
 ## Required trust-state separation
 
 The following states must remain distinct in the package/update model:

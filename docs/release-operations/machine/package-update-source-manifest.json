@@ -96,6 +96,24 @@
       "retrieved": "2026-07-19",
       "observation": "Microsoft describes distinct Windows app distribution and code-signing options, including certificate and key-management considerations that vary by distribution route.",
       "decision_consequence": "The Windows release decision must keep package type, distribution route, certificate identity, private-key custody, timestamping, verification policy, and recovery/rotation separate; this source does not select MSIX, MSI, EXE, a certificate authority, or Turing's release channel."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-MACOS-NOTARIZATION",
+      "title": "Notarizing macOS software before distribution",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution",
+      "retrieved": "2026-07-19",
+      "observation": "Apple's notarization guidance describes submitting macOS software for automated checks and stapling or otherwise validating the resulting notarization ticket as part of distribution preparation.",
+      "decision_consequence": "A macOS release experiment must retain signing identity, entitlements, notarization submission/result, ticket or verification evidence, tool/SDK versions, offline and network failure behavior, and package digest; notarization does not decide update freshness, rollback, profile migration, or supported-channel policy."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-LINUX-FLATPAK-TRUST",
+      "title": "Using Flatpak",
+      "publisher": "Flatpak",
+      "url": "https://docs.flatpak.org/en/latest/using-flatpak.html",
+      "retrieved": "2026-07-19",
+      "observation": "Flatpak documentation describes remote repositories, application installation, runtime identity, and user/system scopes whose trust and update behavior depend on the configured remote and deployment context.",
+      "decision_consequence": "A Linux package experiment must record remote identity, repository metadata and signature policy where applicable, runtime/SDK identity, user/system scope, sandbox permissions, update/rollback behavior, and unsupported distribution/backend combinations; a successful Flatpak installation does not prove Turing release or update safety."
     }
   ],
   "source_documents": [

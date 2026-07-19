@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Package and update platform trust coverage expanded
+
+Question:
+
+Does the `PB-017` package/update evidence route cover platform-specific release trust for Windows, macOS, and Linux rather than inferring it from Windows signing alone?
+
+Method:
+
+Compared the [Package/Update Execution and Release-Safety Closure Preparation](research/package-update-execution-and-release-safety-closure-preparation-2026-07.md), package/update decision preparation, release-operations books, and source manifest with Apple's [macOS notarization guidance](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) and Flatpak's [usage documentation](https://docs.flatpak.org/en/latest/using-flatpak.html). Added platform-specific source identities and synchronized the no-claim boundary.
+
+Result:
+
+Future release records must keep Windows signing, macOS notarization, and Linux remote/runtime/scope identity distinct from TUF metadata, provenance, installation atomicity, rollback, profile migration, privacy, and support decisions. Each platform needs exact artifact/package identity, tool/runtime versions, permission or entitlement context, failure behavior, and unsupported distribution rows.
+
+Impact:
+
+The `PB-017` source manifest now carries eleven source records across update metadata, provenance, supply-chain steps, signing/transparency, and Windows/macOS/Linux release inputs. `PB-017` and `TASK-000009` remain unresolved and proposed-only; no package, updater, signing, channel, rollback, migration, supported-security, or release claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future fake-key, local-only package lab exercise platform-specific verification, offline/network failure, staged activation, rollback, and cleanup with identical trust-state accounting across the declared reference platforms?
+
 ## 2026-07-19 - Profile credential-vault boundary expanded
 
 Question:
