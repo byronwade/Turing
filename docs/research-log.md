@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Assistive-technology workflow evidence expanded
+
+Question:
+
+What must a future native UI review retain to distinguish platform accessibility APIs from actual screen-reader workflows and user interaction evidence?
+
+Method:
+
+Compared the native UI/accessibility closure route, accessibility source manifest, platform bridge and assistive-technology test books, UI readiness template, and existing workflow inventory with Microsoft's [Narrator guide](https://support.microsoft.com/en-us/accessibility/windows/narrator/complete-guide-to-narrator), Apple's [VoiceOver User Guide](https://support.apple.com/guide/voiceover/welcome/mac), and GNOME's [Orca guide](https://help.gnome.org/orca/). Added the three assistive-technology source identities to the manifest and validator and synchronized the closure route, evidence matrix, index, and repository map.
+
+Result:
+
+Accessibility evidence must identify the exact assistive technology and configuration, navigation mode, keyboard/braille setup, transcript or action record, focus and announcement timing, structural navigation/live-region behavior, and unsupported workflows. A platform accessibility tree or semantic model alone is not screen-reader workflow evidence.
+
+Impact:
+
+The native UI accessibility manifest now requires seven primary source records across nine evidence axes and still covers Windows, macOS, and Linux. No accessibility workflow, screen-reader coverage, IME correctness, page-tree proof, UI-gate, readiness, production, or implementation claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future `TASK-000006` reference-shell packet produce matching platform tree snapshots, screen-reader transcripts, focus/event timing, IME behavior, page/chrome composition, and fault-denominator evidence under owner review?
+
 ## 2026-07-19 - Benchmark host-trace integrity evidence added
 
 Question:

@@ -56,6 +56,36 @@
       "retrieved": "2026-07-19",
       "observation": "AT-SPI exposes accessible objects, actions, components, documents, text, selections, states, relations, and events through a runtime accessibility bus.",
       "evidence_consequence": "Record distribution/session, AT-SPI runtime and bus state, Orca version/configuration, object tree and relations, states/events, text/selection behavior, timeout handling, and unsupported cases."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-WINDOWS-NARRATOR",
+      "platform": "windows",
+      "title": "Complete guide to Narrator",
+      "publisher": "Microsoft Support",
+      "url": "https://support.microsoft.com/en-us/accessibility/windows/narrator/complete-guide-to-narrator",
+      "retrieved": "2026-07-19",
+      "observation": "The Windows Narrator guide documents keyboard and scan-mode navigation, reading and interaction behavior, configuration, and supported language or input considerations for a built-in screen reader.",
+      "evidence_consequence": "Record Windows build, Narrator guide/configuration revision, scan or navigation mode, keyboard/braille settings where used, spoken transcript, focus and announcement timing, and every unsupported or ambiguous interaction."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-APPLE-VOICEOVER",
+      "platform": "macos",
+      "title": "VoiceOver User Guide",
+      "publisher": "Apple Support",
+      "url": "https://support.apple.com/guide/voiceover/welcome/mac",
+      "retrieved": "2026-07-19",
+      "observation": "Apple's VoiceOver guide defines the keyboard and interaction model used to navigate Mac applications and web content with speech and related assistive controls.",
+      "evidence_consequence": "Record macOS and VoiceOver versions, interaction/navigation mode, keyboard or braille configuration, manual transcript, focus/announcement behavior, rotor or equivalent navigation state, and unsupported workflows."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-LINUX-ORCA",
+      "platform": "linux",
+      "title": "Orca Screen Reader",
+      "publisher": "GNOME",
+      "url": "https://help.gnome.org/orca/",
+      "retrieved": "2026-07-19",
+      "observation": "GNOME's Orca guide covers structural navigation, forms, live regions, object review, profiles, and keyboard commands for speech and refreshable-braille interaction.",
+      "evidence_consequence": "Record distribution/session, Orca and AT-SPI versions, profile and keymap, structural-navigation mode, manual transcript or braille action record, event timing, live-region behavior, and unsupported workflows."
     }
   ],
   "source_documents": [

@@ -114,7 +114,7 @@ The IPC lane also has a checked no-claim [wire-source manifest](blueprint-v1/mac
 
 The performance lane also has a checked no-claim [benchmark-source manifest](blueprint-v1/machine/benchmark-source-manifest.json) and [`validate_benchmark_sources.py`](../tools/validate_benchmark_sources.py); these track official measurement observations only and do not provide benchmark results or Chrome-class evidence.
 
-The native UI lane also has a checked no-claim [accessibility-source manifest](accessibility/machine/accessibility-source-manifest.json) and [`validate_accessibility_sources.py`](../tools/validate_accessibility_sources.py); these track platform accessibility observations only and do not provide screen-reader, IME, page-tree, or readiness evidence.
+The native UI lane also has a checked no-claim [accessibility-source manifest](accessibility/machine/accessibility-source-manifest.json) and [`validate_accessibility_sources.py`](../tools/validate_accessibility_sources.py); these track platform and assistive-technology observations only and do not provide screen-reader workflow, IME, page-tree, or readiness evidence.
 
 The package/update lane also has a checked no-claim [package/update source manifest](release-operations/machine/package-update-source-manifest.json) and [`validate_package_update_sources.py`](../tools/validate_package_update_sources.py); these track official update-trust, provenance, supply-chain, signing, recovery, and privacy observations only and do not select an updater or provide release evidence.
 
