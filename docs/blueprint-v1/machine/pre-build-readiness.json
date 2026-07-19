@@ -188,8 +188,13 @@
       "not_selected_reason": "Intentionally deferred until the M1 product-support scope, native-shell decisions, and reference-platform budget are accepted; the current contained M0 foundation remains platform-neutral.",
       "revisit_trigger": "Revisit before M1 native-shell implementation or any supported-platform, compatibility, accessibility, release, or production claim.",
       "evidence_required": [
-        "platform scorecard",
-        "support/CI availability"
+        "checked no-claim reference-platform scorecard covering Windows, macOS, and Linux candidates",
+        "official platform and CI source observations with retrieval dates and evidence consequences",
+        "versioned reference-platform image, hardware, architecture, toolchain, compositor/windowing, and support scope",
+        "executable native window, display, input, IME, accessibility, page-surface, graphics, sandbox, packaging, recovery, and diagnostic workflows",
+        "independent clean-host or owner-approved clean-VM reproduction and retained logs",
+        "fixed-hardware latency, memory, energy, and stability evidence with benchmark/resource-attribution identity",
+        "named support owners, backup coverage, incident capacity, unsupported matrix, and owner-reviewed platform decision"
       ]
     },
     {
@@ -616,6 +621,7 @@
         "owner-reviewed implementation kickoff review inventory beyond the checked no-claim inventory",
         "owner-reviewed build-readiness dependency graph beyond the checked no-claim graph",
         "owner-reviewed documentation-readiness completion audit beyond the checked no-claim completion audit, proving that all-information-ready-for-building language remains unsupported until remaining blockers close",
+        "reference platform scorecard, platform selection, and owner-reviewed platform support boundary beyond the checked no-claim scorecard",
         "owner review of the contained M0 start-state beyond the checked no-claim start-state inventory before any proposed tasks, task approval, TASK-000011 acceptance, broad M1, all-information-ready-for-building, or readiness-promotion claim",
         "owner review of the build-information readiness ledger beyond the checked no-claim gap ledger before any all-information-ready-for-building, broad M1, Chrome-class, source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident response, backup ownership, or readiness-promotion claim",
         "owner-reviewed build-readiness closure review beyond the checked no-claim build-readiness closure-review template before any all-information-ready-for-building, broad M1, release, production, Chrome-class, performance, compatibility, security, accessibility, daily-driver, task approval, or readiness-promotion claim",

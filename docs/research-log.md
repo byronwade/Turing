@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Reference platform support scorecard made executable
+
+Question:
+
+Can the deferred `PB-006` reference desktop platform choice be made comparable and source-backed without selecting Windows, macOS, or Linux or treating CI availability and platform API documentation as support evidence?
+
+Method:
+
+Compared the Native Platform and Browser Chrome Engineering Book, the platform window/input/IME/accessibility/packaging chapters, the native UI and accessibility closure route, the fresh-host, sandbox, benchmark, package/update, and incident-response closure routes, and official Rust, GitHub, Microsoft, Apple, Wayland, and XDG Desktop Portal sources. Added a no-claim scorecard with eight source records, eleven evidence dimensions, three candidate rows, open questions, unsupported cases, and an `xtask check` validator.
+
+Decision:
+
+Keep Windows x64, macOS arm64, and Linux Wayland x64 as unselected planning candidates. Require platform identity, clean-host reproduction, native workflow execution, accessibility, graphics, sandbox, packaging, recovery, fixed-hardware resource evidence, support ownership, incident capacity, and owner review before any selection or support claim.
+
+Impact:
+
+`PB-006` remains `not_selected`; no platform selection, supported-platform, compatibility, accessibility, security, performance, release, production, or implementation claim changed.
+
 ## 2026-07-19 - Profile/session source identity made executable
 
 Question:

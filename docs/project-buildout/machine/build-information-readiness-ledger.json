@@ -43,6 +43,10 @@
     "docs/project-buildout/machine/ownership-control-source-manifest.json",
     "docs/project-buildout/machine/ownership-control-source-manifest.schema.json",
     "tools/validate_ownership_control_sources.py",
+    "docs/research/reference-platform-support-scorecard-2026-07.md",
+    "docs/platform/machine/reference-platform-scorecard.json",
+    "docs/platform/machine/reference-platform-scorecard.schema.json",
+    "tools/validate_reference_platform_scorecard.py",
     "docs/project-buildout/machine/contained-m0-start-state.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
@@ -422,6 +426,42 @@
         "No toolkit selection claim.",
         "No accessibility readiness claim.",
         "No release-path UI claim."
+      ]
+    },
+    {
+      "id": "INFO-REFERENCE-PLATFORM",
+      "name": "Reference desktop platform support and scope information",
+      "gate_refs": ["PB-006", "PB-020"],
+      "task_refs": ["TASK-000002", "TASK-000004", "TASK-000005", "TASK-000006", "TASK-000009", "TASK-000010"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_platform_selection_and_execution_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Owner-scoped reference platform, architecture, minimum OS/image, compositor/windowing environment, hardware tier, and support boundary.",
+        "Executable native window, display, input, IME, accessibility, page-surface, graphics, sandbox, packaging, recovery, and diagnostic workflows, plus clean-host and fixed-hardware evidence."
+      ],
+      "current_evidence": [
+        "docs/research/reference-platform-support-scorecard-2026-07.md",
+        "docs/platform/machine/reference-platform-scorecard.json",
+        "docs/platform/machine/reference-platform-scorecard.schema.json",
+        "tools/validate_reference_platform_scorecard.py",
+        "docs/platform/README.md",
+        "docs/platform/08-packaging-startup-power-and-support-matrix.md"
+      ],
+      "missing_information": [
+        "Platform selection and owner-approved minimum support scope beyond the no-claim scorecard.",
+        "Reference-platform execution, clean-host reproduction, native workflow, benchmark/resource, packaging/recovery, incident-capacity, and support-owner evidence."
+      ],
+      "owner_only_decisions": [
+        "Owner selects the reference platform and accepts its support, unsupported, maintenance, incident, and release boundaries.",
+        "Owner approves any supported-platform, compatibility, accessibility, security, performance, release, or production claim."
+      ],
+      "next_research_or_review": "Keep PB-006 not_selected and run the scorecard only after the owner defines the M1 product-support scope and an approved platform evidence task.",
+      "prohibited_claims": [
+        "No reference platform selection claim.",
+        "No supported-platform or CI-to-user-support claim.",
+        "No compatibility, accessibility, security, performance, release, or production claim."
       ]
     },
     {

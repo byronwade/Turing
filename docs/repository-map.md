@@ -52,6 +52,10 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   ├── README.md
 │   ├── blueprint-v1/
 │   ├── research/
+│   ├── platform/
+│   │   └── machine/
+│   │       ├── reference-platform-scorecard.json
+│   │       └── reference-platform-scorecard.schema.json
 │   ├── project-buildout/
 │   │   ├── implementation-plan/
 │   │   │   ├── README.md
@@ -108,6 +112,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_incident_response_sources.py
     ├── validate_ownership_control_sources.py
     ├── validate_profile_session_sources.py
+    ├── validate_reference_platform_scorecard.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
     ├── validate_fresh_host_readiness_review.py
@@ -420,6 +425,8 @@ The checked no-claim [`ownership-control-source-manifest.json`](project-buildout
 
 The checked no-claim [`profile-session-source-manifest.json`](storage/machine/profile-session-source-manifest.json) and [`profile-session-source-manifest.schema.json`](storage/machine/profile-session-source-manifest.schema.json) track official WHATWG/W3C web-storage and clearing observations; [`validate_profile_session_sources.py`](../tools/validate_profile_session_sources.py) verifies the records without defining a profile format, proving migration or durability, or providing data-loss readiness evidence.
 
+The checked no-claim [`reference-platform-scorecard.json`](platform/machine/reference-platform-scorecard.json) and [`reference-platform-scorecard.schema.json`](platform/machine/reference-platform-scorecard.schema.json) compare Windows, macOS, and Linux reference-platform planning evidence; [`validate_reference_platform_scorecard.py`](../tools/validate_reference_platform_scorecard.py) verifies the records without selecting a platform or establishing support, compatibility, security, accessibility, performance, or release readiness.
+
 | Evidence area | Registry or artifact | Validator or runner | Boundary |
 |---|---|---|---|
 | `ADR-0009` source strategy | [`adr-0009-evidence.json`](blueprint-v1/machine/adr-0009-evidence.json), checked no-claim [`decision-review template`](blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json), and [`adr-0009-decision-review.schema.json`](blueprint-v1/machine/adr-0009-decision-review.schema.json) | [`validate_adr_0009_evidence.py`](../tools/validate_adr_0009_evidence.py) and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Source evidence and decision-review template only; no source-strategy decision, source baseline, source import, component approval, release-code authorization, or PB-002 readiness promotion |
@@ -430,6 +437,7 @@ The checked no-claim [`profile-session-source-manifest.json`](storage/machine/pr
 | Sandbox probe inventory | [`sandbox-probe-inventory.json`](security-engine/machine/sandbox-probe-inventory.json), [`sandbox-probe-inventory.schema.json`](security-engine/machine/sandbox-probe-inventory.schema.json), [`sandbox-probe-package.schema.json`](security-engine/machine/sandbox-probe-package.schema.json), checked no-claim [probe-package template](security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json), [`sandbox-readiness-review.schema.json`](security-engine/machine/sandbox-readiness-review.schema.json), checked no-claim [sandbox readiness-review template](security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), and [`sandbox-platform-source-manifest.json`](security-engine/machine/sandbox-platform-source-manifest.json) | [`validate_sandbox_probe_inventory.py`](../tools/validate_sandbox_probe_inventory.py), [`validate_sandbox_readiness_review.py`](../tools/validate_sandbox_readiness_review.py), [`validate_sandbox_platform_sources.py`](../tools/validate_sandbox_platform_sources.py), and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Checked `PB-012` no-claim inventory, platform-source identity, package template, and readiness-review template only; no packaged expected-deny probes beyond the template, effective platform policy, owner-reviewed sandbox readiness, sandbox readiness, renderer security, site isolation, hostile-browsing safety, SEC-GATE, production-safety, or implementation claim |
 | WP-003 sandbox probe contract | [`probe-catalog.json`](../schemas/sandbox/probe-catalog.json) and [`probe-evidence.schema.json`](../schemas/sandbox/probe-evidence.schema.json) | [`validate_sandbox_contracts.py`](../tools/validate_sandbox_contracts.py) and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Checked `PB-012` no-claim operation catalog and evidence schema only; no packaged execution, effective policy capture, platform containment, owner-reviewed sandbox readiness, SEC-GATE, production-safety, or implementation claim |
 | Window/input/accessibility spike | [`window-input-accessibility-spike.json`](accessibility/machine/window-input-accessibility-spike.json) and [`window-input-accessibility-spike.schema.json`](accessibility/machine/window-input-accessibility-spike.schema.json) | [`validate_window_input_accessibility_spike.py`](../tools/validate_window_input_accessibility_spike.py) and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Checked `PB-015` no-claim workflow inventory only; no reference-platform workflow execution, manual assistive-technology transcript, screen-reader coverage, page-tree proof, IME correctness, crash/GPU-loss proof, accessibility readiness, UI-GATE evidence, or release-path UI approval |
+| Reference desktop platform scorecard | [`reference-platform-scorecard.json`](platform/machine/reference-platform-scorecard.json) and [`reference-platform-scorecard.schema.json`](platform/machine/reference-platform-scorecard.schema.json) | [`validate_reference_platform_scorecard.py`](../tools/validate_reference_platform_scorecard.py) and [`validate_blueprint.py`](../tools/validate_blueprint.py) | Checked `PB-006` Windows/macOS/Linux planning and source record only; no platform selection, clean-host run, native workflow, support ownership, incident capacity, or supported-platform claim |
 | Benchmark manifests and raw-artifact index | [`benchmark-manifests/no-claim-runner-smoke.sample.json`](blueprint-v1/machine/benchmark-manifests/no-claim-runner-smoke.sample.json) | [`validate_benchmark_manifests.py`](../tools/validate_benchmark_manifests.py) | No benchmark result or public claim |
 | Benchmark hardware | [`benchmark-hardware/current-windows-high-end.candidate.json`](blueprint-v1/machine/benchmark-hardware/current-windows-high-end.candidate.json) | [`validate_benchmark_hardware.py`](../tools/validate_benchmark_hardware.py) | Candidate current-host evidence only |
 | Benchmark OS controls | [`benchmark-os-controls/current-windows-high-end.candidate.json`](blueprint-v1/machine/benchmark-os-controls/current-windows-high-end.candidate.json) | [`validate_benchmark_os_controls.py`](../tools/validate_benchmark_os_controls.py) | No clean lab image or freeze approval |

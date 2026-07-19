@@ -44,6 +44,10 @@ EXPECTED_CLASSES = {
         "gates": {"PB-003", "PB-004", "PB-005", "PB-014", "PB-015"},
         "tasks": {"TASK-000006"},
     },
+    "INFO-REFERENCE-PLATFORM": {
+        "gates": {"PB-006", "PB-020"},
+        "tasks": {"TASK-000002", "TASK-000004", "TASK-000005", "TASK-000006", "TASK-000009", "TASK-000010"},
+    },
     "INFO-PROFILE-SESSION": {"gates": {"PB-016"}, "tasks": {"TASK-000007"}},
     "INFO-PACKAGE-UPDATE": {"gates": {"PB-017"}, "tasks": {"TASK-000009"}},
     "INFO-INCIDENT-RESPONSE": {"gates": {"PB-018"}, "tasks": {"TASK-000010"}},
@@ -76,6 +80,10 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/production-readiness/README.md",
     "docs/research/README.md",
     "docs/research/chrome-class-capability-traceability-map-2026-07.md",
+    "docs/research/reference-platform-support-scorecard-2026-07.md",
+    "docs/platform/machine/reference-platform-scorecard.json",
+    "docs/platform/machine/reference-platform-scorecard.schema.json",
+    "tools/validate_reference_platform_scorecard.py",
 }
 
 REQUIRED_CLAIM_PHRASES = [
@@ -114,6 +122,7 @@ REQUIRED_PB020_TERMS = [
     "sandbox",
     "benchmark",
     "native-shell",
+    "reference platform",
     "profile/session",
     "package/update",
     "incident response",

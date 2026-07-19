@@ -19,6 +19,7 @@ This audit covers the current documentation and machine-control surface for:
 - proposed task handoff;
 - contained M0 session-start routing;
 - build-information gap routing;
+- reference-platform scope and support routing;
 - dependency sequencing;
 - unsupported-claim boundaries;
 - validation commands;
@@ -31,7 +32,7 @@ The machine companion is [`documentation-readiness-completion-audit.json`](../pr
 
 The audit reconciles the root [README](../../README.md), [Start Here](../start-here.md), [documentation index](../README.md), [documentation policy](../documentation-policy.md), [repository map](../repository-map.md), [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md), [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md), the [Implementation Master Plan](../project-buildout/implementation-plan/README.md), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json), checked `PB-020` kickoff, dependency graph, contained M0 start-state, build-information readiness ledger, and build-readiness closure-review template records, the [research index](README.md), the [Pre-build Readiness Gap Audit](pre-build-readiness-gap-audit-2026-07.md), the [Definition of Done](../blueprint-v1/20-definition-of-done.md), and validation tools.
 
-The machine audit source list also names each current lane-specific closure-preparation route: source strategy, fresh host, IPC, sandbox, benchmark, native UI/accessibility, profile/session, package/update, incident response, and backup ownership. This prevents the central closure board from becoming a substitute for checking the evidence-order document that owns each lane.
+The machine audit source list also names each current lane-specific closure-preparation route: source strategy, fresh host, IPC, sandbox, benchmark, native UI/accessibility, profile/session, package/update, incident response, and backup ownership. The checked no-claim [Reference Platform Support Scorecard](reference-platform-support-scorecard-2026-07.md) separately records `PB-006` platform candidates without attaching them to an existing task manifest. This prevents the central closure board from becoming a substitute for checking the evidence-order document that owns each lane or from widening task scope implicitly.
 
 The focused validator checks that:
 
@@ -44,7 +45,7 @@ The focused validator checks that:
 - specified task manifests mirror the queue's immutable `readiness_items` `PB-*` gate mapping, so task scope is directly traceable to readiness scope;
 - every partial, blocked, documented-no-runner, documented-no-source, or not-started `PB-*` item has a research-crosswalk route; intentionally `not_selected` items carry a machine-checked rationale and revisit trigger instead;
 - contained M0 start-state evidence keeps proposed tasks owner-approval-required and `TASK-000011` review-pending until reviewed evidence changes those states;
-- build-information readiness evidence keeps the missing broad-build information visible across source-strategy, pinned toolchain, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, backup-ownership, task-authority, and Chrome-class product lanes;
+- build-information readiness evidence keeps the missing broad-build information visible across source-strategy, pinned toolchain, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, backup-ownership, task-authority, and Chrome-class product lanes;
 - evidence references exist;
 - unsupported-boundary text preserves no-claim language;
 - the documentation-readiness evidence matrix names every current focused `tools/validate_*.py` command before direct Cargo and diff checks;
@@ -58,7 +59,7 @@ The documentation set is organized enough for contained M0 continuation. A maint
 
 Separately, [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json) records the contained `WP-002` M0 reference implementation as `review_pending`. The proposed build-readiness queue now has specified, non-executable manifests for [`TASK-000001`](../agent-execution/machine/tasks/TASK-000001.json) through [`TASK-000010`](../agent-execution/machine/tasks/TASK-000010.json); they remain below `reviewed`, `ready`, approved, running, accepted, and release-gated status. [`TASK-000001`](../agent-execution/TASK-000001-owner-review.md) also has a dedicated owner-review handoff.
 
-The same audit proves the broad goal is not complete. Full build preparation for a Chrome-class browser still requires owner-reviewed closure or approved time-bounded exceptions for source strategy, pinned compiler/SDK/linker toolchain reproduction, fresh-host reproduction, owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template, owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template, owner-reviewed benchmark readiness beyond the checked no-claim benchmark readiness-review template, native shell and accessibility, profile/session, package/update, incident-response, ownership, production, and release controls.
+The same audit proves the broad goal is not complete. Full build preparation for a Chrome-class browser still requires owner-reviewed closure or approved time-bounded exceptions for source strategy, pinned compiler/SDK/linker toolchain reproduction, fresh-host reproduction, reference-platform selection and support scope, owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template, owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template, owner-reviewed benchmark readiness beyond the checked no-claim benchmark readiness-review template, native shell and accessibility, profile/session, package/update, incident-response, ownership, production, and release controls.
 
 ### Progress measurement
 

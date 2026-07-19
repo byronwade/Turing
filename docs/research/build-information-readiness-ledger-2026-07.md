@@ -29,6 +29,7 @@ The ledger groups scattered remaining-information requirements into one continua
 - sandbox probes and containment;
 - benchmark, Chrome-class performance, and raw-result evidence;
 - native shell, page surface, components, and accessibility;
+- reference desktop platform selection and support scope;
 - profile/session formats and migration;
 - package/update lab and signing boundaries;
 - incident response and emergency patching;
@@ -46,6 +47,7 @@ The ledger reads current gate truth from:
 - the checked [Chrome-Class Capability Traceability Map](chrome-class-capability-traceability-map-2026-07.md);
 - the checked [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md).
 - the checked [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md).
+- the checked no-claim [Reference Platform Support Scorecard](reference-platform-support-scorecard-2026-07.md) and [`reference-platform-scorecard.json`](../platform/machine/reference-platform-scorecard.json).
 - the ten checked lane-specific closure-preparation routes: [source strategy](adr-0009-source-strategy-closure-preparation-2026-07.md), [toolchain/fresh host](fresh-host-toolchain-reproduction-closure-preparation-2026-07.md), [IPC](ipc-transport-and-authority-closure-preparation-2026-07.md), [sandbox](sandbox-probe-execution-and-containment-closure-preparation-2026-07.md), [benchmark](benchmark-evidence-and-claim-closure-preparation-2026-07.md), [native UI/accessibility](native-ui-and-accessibility-closure-preparation-2026-07.md), [profile/session](profile-session-execution-and-data-safety-closure-preparation-2026-07.md), [package/update](package-update-execution-and-release-safety-closure-preparation-2026-07.md), [incident response](incident-response-execution-and-disclosure-closure-preparation-2026-07.md), and [backup ownership](backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md).
 
 The validator checks that each critical lane has current evidence, missing information, owner-only decisions, and no-claim prohibited language, and that the task queue remains proposed or review-pending rather than executable.
@@ -63,6 +65,7 @@ The validator checks that each critical lane has current evidence, missing infor
 | `INFO-SANDBOX` | Missing executable evidence | Packaged expected-deny probes, unsandboxed controls, effective platform policy, compromised-client harnesses, platform matrix, and owner-reviewed sandbox readiness |
 | `INFO-BENCHMARK` | Missing executable evidence | Browser-run raw artifacts, trace packages, memory and energy samples, owner-reviewed statistics, claim bundles, and benchmark readiness |
 | `INFO-NATIVE-SHELL` | Missing executable evidence | Accepted native UI ADRs, equivalent adapter prototypes, rendered fixtures, page-surface proof, accessibility workflows, fault evidence, metrics, and owner review |
+| `INFO-REFERENCE-PLATFORM` | Missing platform selection and execution evidence | Owner-scoped platform, clean-host reproduction, native workflows, graphics, sandbox, accessibility, packaging, recovery, fixed-hardware resource evidence, support ownership, incident capacity, and owner review |
 | `INFO-PROFILE-SESSION` | Missing executable evidence | Source manifest is checked; executable profile/session schemas, migration/fault tests, real-profile fixture policy, data-loss safety, and owner review remain missing |
 | `INFO-PACKAGE-UPDATE` | Missing executable evidence | Source manifest is checked; fake-key package/update lab, parser/verifier/staged install, rollback/migration/fault evidence, production-key separation review, and owner review remain missing |
 | `INFO-INCIDENT-RESPONSE` | Missing executable evidence | Source manifest is checked; executed tabletop, emergency patch dry run, role matrix, update capacity, disclosure workflow, backup coverage, and owner review remain missing |

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "scorecard_id": "PLATFORM.PB006.REFERENCE_DESKTOP.2026_07",
+  "status": "no_claim_reference_platform_scorecard",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-006", "PB-003", "PB-004", "PB-005", "PB-008", "PB-009", "PB-012", "PB-013", "PB-015", "PB-017", "PB-018"],
+  "claim_status": "No-claim reference-platform planning and source observations only; no platform is selected, supported, accessible, secure, performant, release-ready, or production-ready by this scorecard.",
+  "evidence_dimensions": [
+    "window_display_and_lifecycle",
+    "input_ime_clipboard_and_drag_drop",
+    "accessibility_and_assistive_technology",
+    "graphics_compositor_and_software_fallback",
+    "sandbox_permissions_and_broker_surfaces",
+    "toolchain_ci_and_reproducibility",
+    "packaging_startup_update_and_recovery",
+    "power_thermal_sleep_and_resume",
+    "benchmark_hardware_and_resource_attribution",
+    "support_scope_ownership_and_incident_capacity",
+    "unsupported_cases_and_claim_review"
+  ],
+  "sources": [
+    {
+      "source_id": "PLAT-SOURCE-RUST-PLATFORM-SUPPORT",
+      "platform": "cross-platform",
+      "title": "Platform Support",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/rustc/platform-support.html",
+      "retrieved": "2026-07-19",
+      "observation": "Rust documents target tiers and platform support status separately; a target triple alone does not establish Turing support or release coverage.",
+      "evidence_consequence": "Record exact target triple, compiler version, linker, SDK, runner image, host architecture, and unsupported target behavior for every build and test record."
+    },
+    {
+      "source_id": "PLAT-SOURCE-GITHUB-RUNNERS",
+      "platform": "cross-platform",
+      "title": "GitHub-hosted runners",
+      "publisher": "GitHub",
+      "url": "https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners",
+      "retrieved": "2026-07-19",
+      "observation": "Hosted runner images and labels describe an execution environment, not a complete product-support or reproducibility guarantee.",
+      "evidence_consequence": "Retain runner image identity, tool versions, image refresh policy, installed dependencies, cache policy, logs, and the gap between CI coverage and supported-user coverage."
+    },
+    {
+      "source_id": "PLAT-SOURCE-WINDOWS-DESKTOP",
+      "platform": "windows",
+      "title": "Windows app development",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/apps/",
+      "retrieved": "2026-07-19",
+      "observation": "Windows application guidance spans windowing, packaging, lifecycle, input, accessibility, and platform integration surfaces that must be mapped to a native adapter and broker policy.",
+      "evidence_consequence": "Run a Windows reference-shell matrix with OS build, architecture, display/DPI, input and IME, accessibility client, graphics path, sandbox policy, packaging, crash recovery, and unsupported rows."
+    },
+    {
+      "source_id": "PLAT-SOURCE-WINDOWS-UIAUTOMATION",
+      "platform": "windows",
+      "title": "UI Automation overview",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview",
+      "retrieved": "2026-07-19",
+      "observation": "Windows UI Automation exposes a tree, control patterns, properties, events, and client interaction behavior; an internal UI model is not platform accessibility evidence.",
+      "evidence_consequence": "Retain UI Automation tree snapshots, control patterns, focus/event traces, client identity, timing, failures, and unsupported cases for the reference platform."
+    },
+    {
+      "source_id": "PLAT-SOURCE-MACOS-APPKIT",
+      "platform": "macos",
+      "title": "AppKit",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/appkit",
+      "retrieved": "2026-07-19",
+      "observation": "AppKit defines macOS application windows, event handling, menus, text input, display integration, and related native application surfaces.",
+      "evidence_consequence": "Run a macOS reference-shell matrix with OS version, architecture, window/display behavior, IME, accessibility client, graphics path, sleep/resume, packaging, signing boundary, and unsupported rows."
+    },
+    {
+      "source_id": "PLAT-SOURCE-MACOS-ACCESSIBILITY",
+      "platform": "macos",
+      "title": "Accessibility",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/accessibility",
+      "retrieved": "2026-07-19",
+      "observation": "Apple accessibility documentation defines platform integration surfaces and assistive-technology behavior that must be tested in the native shell.",
+      "evidence_consequence": "Retain accessibility hierarchy/action evidence, VoiceOver configuration, focus and text behavior, timing, and failure or unsupported rows."
+    },
+    {
+      "source_id": "PLAT-SOURCE-LINUX-WAYLAND",
+      "platform": "linux",
+      "title": "Wayland documentation",
+      "publisher": "Wayland",
+      "url": "https://wayland.freedesktop.org/docs/html/",
+      "retrieved": "2026-07-19",
+      "observation": "Wayland protocol behavior depends on compositor and protocol-extension availability; a Linux label does not identify one uniform windowing environment.",
+      "evidence_consequence": "Declare compositor, protocol versions/extensions, display server, graphics backend, input/IME path, software fallback, and unsupported combinations in every Linux record."
+    },
+    {
+      "source_id": "PLAT-SOURCE-LINUX-DESKTOP-PORTALS",
+      "platform": "linux",
+      "title": "XDG Desktop Portal documentation",
+      "publisher": "freedesktop.org",
+      "url": "https://flatpak.github.io/xdg-desktop-portal/docs/",
+      "retrieved": "2026-07-19",
+      "observation": "Desktop portals broker selected user-facing operations and vary by backend and desktop environment; portal presence is not equivalent to a complete sandbox or support contract.",
+      "evidence_consequence": "Record portal backend/version, permission and user-activation behavior, failure/timeout paths, desktop environment, and the boundary between portal evidence and actual containment."
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "reference-windows-x64",
+      "platform": "windows",
+      "architecture": "x86_64",
+      "selection_status": "not_selected",
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-WINDOWS-DESKTOP", "PLAT-SOURCE-WINDOWS-UIAUTOMATION"],
+      "required_evidence": ["Reference Windows image and update identity", "Window/display/input/IME/accessibility workflow execution", "Graphics, sandbox, packaging, crash, sleep/resume, and resource traces", "CI-to-local reproducibility and support-owner record"],
+      "open_questions": ["Which Windows minimum build and architecture are supportable?", "Which native toolkit and graphics path satisfy the trusted-chrome boundary?", "Which sandbox and packaging controls are effective on the selected image?", "What maintenance and incident capacity supports this platform?" ]
+    },
+    {
+      "candidate_id": "reference-macos-arm64",
+      "platform": "macos",
+      "architecture": "arm64",
+      "selection_status": "not_selected",
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-MACOS-APPKIT", "PLAT-SOURCE-MACOS-ACCESSIBILITY"],
+      "required_evidence": ["Reference macOS version and hardware identity", "Window/display/input/IME/VoiceOver workflow execution", "Graphics, sleep/resume, packaging/signing, crash, and resource traces", "CI-to-local reproducibility and support-owner record"],
+      "open_questions": ["Which macOS version and architecture are supportable?", "How will trusted UI, renderer surfaces, sandboxing, and permissions compose?", "Which signing, packaging, and update boundaries are in scope?", "What independent hardware and incident capacity exists?" ]
+    },
+    {
+      "candidate_id": "reference-linux-wayland-x64",
+      "platform": "linux",
+      "architecture": "x86_64",
+      "selection_status": "not_selected",
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-LINUX-WAYLAND", "PLAT-SOURCE-LINUX-DESKTOP-PORTALS"],
+      "required_evidence": ["Reference distribution, kernel, compositor, desktop, and portal identity", "Window/display/input/IME/accessibility workflow execution", "Graphics, software fallback, sandbox, portal, packaging, crash, and resource traces", "CI-to-local reproducibility and support-owner record"],
+      "open_questions": ["Which distribution, compositor, desktop, and protocol extensions are in scope?", "Which portal and sandbox combinations are supported or rejected?", "How will graphics and software fallback remain deterministic?", "What packaging, update, and incident model is supportable?" ]
+    }
+  ],
+  "source_documents": [
+    "docs/platform/README.md",
+    "docs/platform/01-browser-chrome-scene-graph-and-trusted-surfaces.md",
+    "docs/platform/02-windows-surfaces-displays-and-lifecycle.md",
+    "docs/platform/03-input-ime-clipboard-and-drag-drop.md",
+    "docs/platform/04-macos-integration.md",
+    "docs/platform/05-windows-integration.md",
+    "docs/platform/06-linux-integration.md",
+    "docs/platform/07-credentials-notifications-and-external-protocols.md",
+    "docs/platform/08-packaging-startup-power-and-support-matrix.md",
+    "docs/research/m0-build-foundation-2026-07.md",
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md"
+  ],
+  "unsupported": [
+    "No reference desktop platform is selected.",
+    "No platform scorecard row has been executed on hardware or a clean host.",
+    "No platform is supported, compatible, accessible, secure, performant, or production-ready from this scorecard.",
+    "CI runner availability does not prove local reproducibility, user support, sandbox effectiveness, or incident capacity.",
+    "No PB-006 readiness promotion, native toolkit selection, release-path approval, or supported-platform claim exists."
+  ]
+}
