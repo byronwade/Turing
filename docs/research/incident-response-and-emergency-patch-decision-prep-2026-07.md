@@ -57,6 +57,8 @@ Implications for Turing:
 
 CISA's coordination model does not grant Turing authority, define legal obligations in every jurisdiction, or replace counsel and owner review.
 
+The checked no-claim [incident-response source manifest](../security-engine/machine/incident-response-source-manifest.json), [manifest schema](../security-engine/machine/incident-response-source-manifest.schema.json), and [`validate_incident_response_sources.py`](../../tools/validate_incident_response_sources.py) preserve these official observations across nine evidence axes. They are source identity and decision-input records only; they do not approve a severity policy, disclosure process, incident authority, emergency patch path, supported-security policy, or readiness claim.
+
 ## Required authority separation
 
 The future process must keep these decisions separate:

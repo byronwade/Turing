@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "manifest_id": "SECURITY.INCIDENT.SOURCES.2026_07",
+  "status": "no_claim_incident_response_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-018",
+  "claim_status": "No-claim incident-response source observations only; these sources are not a Turing incident program, severity policy, disclosure authority, emergency patch result, supported-security decision, production evidence, or readiness approval.",
+  "evidence_axes": [
+    "incident_lifecycle_and_recovery",
+    "triage_severity_and_uncertainty",
+    "affected_asset_and_impact_scope",
+    "containment_and_evidence_preservation",
+    "patch_backport_and_recovery",
+    "coordinated_disclosure_and_communications",
+    "authority_separation_and_human_review",
+    "privacy_custody_and_retention",
+    "timing_capacity_and_claim_review"
+  ],
+  "sources": [
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-NIST-SP80061R3",
+      "title": "Incident Response Recommendations and Considerations for Cybersecurity Risk Management, SP 800-61 Revision 3",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r3.pdf",
+      "retrieved": "2026-07-19",
+      "observation": "NIST SP 800-61r3 integrates incident response with cybersecurity risk management and addresses preparation, detection, response, recovery, communications, and improvement.",
+      "decision_consequence": "A Turing rehearsal must preserve lifecycle state, evidence, authority, communications, recovery, and lessons learned as separate records; NIST does not select staffing, severity targets, disclosure dates, signing, or supported-version policy."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-NIST-PROJECT",
+      "title": "NIST Incident Response project",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://csrc.nist.gov/Projects/incident-response",
+      "retrieved": "2026-07-19",
+      "observation": "NIST identifies SP 800-61 Revision 3 as the current incident-response publication and provides the project context for applying incident-response guidance.",
+      "decision_consequence": "The documentation must record the exact guidance revision and retrieval context rather than relying on an undated incident process; the project page does not prove Turing's operational capability or authority."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-FIRST-CVSS-SPEC",
+      "title": "CVSS v4.0 Specification Document",
+      "publisher": "FIRST",
+      "url": "https://www.first.org/cvss/v4.0/specification-document",
+      "retrieved": "2026-07-19",
+      "observation": "CVSS v4.0 separates Base, Threat, Environmental, and Supplemental metric groups, with vectors preserving the metrics used and consumer context affecting interpretation.",
+      "decision_consequence": "Triage records must retain the CVSS version, vector, score, scorer, timestamp, threat and environmental context, and uncertainty; a score cannot by itself authorize containment, disclosure, signing, promotion, or closure."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-FIRST-CVSS-GUIDE",
+      "title": "CVSS v4.0 Consumer Implementation Guide",
+      "publisher": "FIRST",
+      "url": "https://www.first.org/cvss/v4.0/implementation-guide",
+      "retrieved": "2026-07-19",
+      "observation": "The CVSS consumer guidance explains how threat and environmental information enriches a base assessment for a specific deployment and how the result remains an input to broader risk management.",
+      "decision_consequence": "A Turing incident record must keep deployment-specific impact, mitigations, exploitation state, and other business or safety factors visible outside the numeric score; missing context remains an unresolved decision input."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-CISA-CVD",
+      "title": "Information Sharing and Coordinated Vulnerability Disclosure",
+      "publisher": "Cybersecurity and Infrastructure Security Agency",
+      "url": "https://www.cisa.gov/topic/cybersecurity-information-sharing",
+      "retrieved": "2026-07-19",
+      "observation": "CISA describes coordinated vulnerability disclosure as coordination of remediation and public disclosure between a reporter and affected vendors.",
+      "decision_consequence": "Future rehearsal records must separate private intake, remediation coordination, affected-party communication, public disclosure, credit, embargo, and legal review; CISA does not grant Turing disclosure authority or define every jurisdiction's obligations."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-CISA-VDP",
+      "title": "Vulnerability Disclosure Policy Platform fact sheet",
+      "publisher": "Cybersecurity and Infrastructure Security Agency",
+      "url": "https://www.cisa.gov/sites/default/files/publications/FINAL-CSSO-VDP_Platform-Fact_Sheet_PDF_0.pdf",
+      "retrieved": "2026-07-19",
+      "observation": "CISA's vulnerability-disclosure-policy material describes a structured mechanism intended to support good-faith security research and coordinated disclosure.",
+      "decision_consequence": "A future Turing policy must explicitly define intake scope, researcher communication, safe handling, escalation, and public-disclosure boundaries; the CISA platform material is not a Turing policy, legal determination, or executed intake capability."
+    }
+  ],
+  "source_documents": [
+    "docs/research/incident-response-and-emergency-patch-decision-prep-2026-07.md",
+    "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+    "docs/security-engine/05-update-supply-chain-and-vulnerability-response.md",
+    "docs/security-engine/06-security-verification-and-release-gates.md",
+    "docs/release-operations/08-vulnerability-response-and-supported-lifecycle.md",
+    "docs/security-engine/machine/incident-patch-rehearsal.json"
+  ],
+  "unsupported": [
+    "No Turing private intake, incident command process, severity policy, disclosure policy, emergency patch capacity, or supported-security policy has been approved or executed.",
+    "No private tabletop, emergency patch dry run, regression/backport result, signing/update rehearsal, coordinated disclosure rehearsal, postmortem, or owner-reviewed PB-018 readiness decision exists.",
+    "No production signing material, live vulnerability, unreduced exploit details, real user data, credentials, or private-session contents are used by this manifest.",
+    "No incident-response readiness, disclosure authority, signing authority, stable promotion, supported-security, production, Chrome-class, performance, or broad implementation claim follows from these sources."
+  ]
+}

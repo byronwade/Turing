@@ -115,6 +115,8 @@ The native UI lane also has a checked no-claim [accessibility-source manifest](a
 
 The package/update lane also has a checked no-claim [package/update source manifest](release-operations/machine/package-update-source-manifest.json) and [`validate_package_update_sources.py`](../tools/validate_package_update_sources.py); these track official update-trust, provenance, supply-chain, signing, recovery, and privacy observations only and do not select an updater or provide release evidence.
 
+The incident-response lane also has a checked no-claim [incident-response source manifest](security-engine/machine/incident-response-source-manifest.json) and [`validate_incident_response_sources.py`](../tools/validate_incident_response_sources.py); these track official NIST, FIRST, and CISA observations only and do not provide incident execution, disclosure authority, emergency patch capacity, or readiness evidence.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |
