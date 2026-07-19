@@ -13,6 +13,8 @@ MANIFEST = ROOT / "docs" / "web-platform" / "machine" / "web-platform-source-man
 SCHEMA = ROOT / "docs" / "web-platform" / "machine" / "web-platform-source-manifest.schema.json"
 
 REQUIRED_GATES = {"PB-002", "PB-020"}
+ACTIVE_CROSSWALK_QUESTIONS = ["RQ-44", "RQ-46", "RQ-47", "RQ-15", "RQ-16", "RQ-25", "RQ-31"]
+DEFERRED_CONTEXT_QUESTIONS = ["RQ-33"]
 REQUIRED_AXES = {
     "normative_spec_identity_and_revision",
     "test_suite_commit_manifest_and_harness",
@@ -68,6 +70,16 @@ def main() -> int:
         fail("status must remain no_claim_web_platform_source_manifest")
     if set(manifest.get("related_gates", [])) != REQUIRED_GATES:
         fail("related_gates must contain PB-002 and PB-020")
+
+    relationships = manifest.get("research_question_relationships")
+    if not isinstance(relationships, dict):
+        fail("research_question_relationships must be an object")
+    if relationships.get("active_crosswalk_questions") != ACTIVE_CROSSWALK_QUESTIONS:
+        fail("active_crosswalk_questions must match the approved PB-002 source-strategy lane")
+    if relationships.get("deferred_context_questions") != DEFERRED_CONTEXT_QUESTIONS:
+        fail("deferred_context_questions must preserve RQ-33 as deferred context")
+    if set(relationships["active_crosswalk_questions"]) & set(relationships["deferred_context_questions"]):
+        fail("a research question cannot be both active and deferred context")
 
     claim_status = require_string(manifest.get("claim_status"), "claim_status").lower()
     for phrase in ("no-claim", "standards", "compatibility", "security", "accessibility", "performance", "production"):

@@ -4,13 +4,22 @@
   "title": "Turing Web Platform Source Manifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "manifest_id", "status", "updated", "related_gates", "claim_status", "evidence_axes", "sources", "source_documents", "unsupported"],
+  "required": ["schema_version", "manifest_id", "status", "updated", "related_gates", "research_question_relationships", "claim_status", "evidence_axes", "sources", "source_documents", "unsupported"],
   "properties": {
     "schema_version": { "const": 1 },
     "manifest_id": { "type": "string", "pattern": "^WEB_PLATFORM\\.SOURCES\\.[A-Z0-9._-]+$" },
     "status": { "const": "no_claim_web_platform_source_manifest" },
     "updated": { "type": "string", "format": "date" },
     "related_gates": { "type": "array", "minItems": 2, "items": { "enum": ["PB-002", "PB-020"] } },
+    "research_question_relationships": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["active_crosswalk_questions", "deferred_context_questions"],
+      "properties": {
+        "active_crosswalk_questions": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^RQ-[0-9]{2}$" } },
+        "deferred_context_questions": { "type": "array", "items": { "type": "string", "pattern": "^RQ-[0-9]{2}$" } }
+      }
+    },
     "claim_status": { "type": "string", "minLength": 1 },
     "evidence_axes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
     "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },

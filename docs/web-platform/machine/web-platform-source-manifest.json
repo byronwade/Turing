@@ -4,6 +4,10 @@
   "status": "no_claim_web_platform_source_manifest",
   "updated": "2026-07-19",
   "related_gates": ["PB-002", "PB-020"],
+  "research_question_relationships": {
+    "active_crosswalk_questions": ["RQ-44", "RQ-46", "RQ-47", "RQ-15", "RQ-16", "RQ-25", "RQ-31"],
+    "deferred_context_questions": ["RQ-33"]
+  },
   "claim_status": "No-claim web-platform standards, interoperability, and conformance-source observations only; these sources do not establish Turing compatibility, standards conformance, security, accessibility, performance, or production readiness.",
   "evidence_axes": [
     "normative_spec_identity_and_revision",

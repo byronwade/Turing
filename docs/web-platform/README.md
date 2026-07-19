@@ -30,6 +30,8 @@ Turing should not become a private web platform. New behavior starts with user o
 - Accessibility, privacy, localization, developer tooling, and platform differences are designed with the subsystem.
 - Research does not change accepted requirements or support status without the normal decision process.
 
+The machine-checked [web-platform source manifest](machine/web-platform-source-manifest.json) records which research questions are active in the approved PB-002 source-strategy crosswalk and which questions are only deferred context. A deferred context question is not an implementation task, compatibility commitment, or readiness signal.
+
 ## Leadership criteria
 
 Leadership requires a public evidence package combining conformance, adversarial and fault testing, fixed-hardware latency and resource measurements, accessible workflows, recovery, maintenance cost, security review, and explicit failures. A smaller feature set, weaker isolation, hidden discarding, unmatched caches, omitted failures, or vendor marketing cannot establish leadership.
