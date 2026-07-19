@@ -7686,3 +7686,21 @@ Attached five requirements to their existing domain packages, added design refer
 Next question:
 
 Which accepted requirements still lack non-empty verification or evidence plans after their ownership routes are present?
+
+# 2026-07-19 - Work-package playbook completeness control
+
+Question:
+
+Can a maintainer rely on every canonical work package having an executable documentation shape before task manifests are considered?
+
+Method:
+
+Audited all 20 backlog packages against `16-work-package-playbooks.md` for a package section, acceptance criteria, negative tests, handoff, and unsupported-scope statement. Separately checked that the union of package requirement mappings covers all 46 accepted requirements without unknown IDs.
+
+Decision:
+
+The current playbooks satisfy those conditions. Strengthened `validate_implementation_plan.py` to enforce them on every future change. This validates documentation structure and requirement routing only; it does not approve a package, task, implementation, or readiness gate.
+
+Next question:
+
+Which evidence class still has no package-specific collection route beyond generic acceptance prose?

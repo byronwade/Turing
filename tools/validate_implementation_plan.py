@@ -105,6 +105,7 @@ def check_files_and_index() -> None:
 def check_graph() -> None:
     backlog = load_json(MACHINE_FILES["backlog"])
     graph = load_json(MACHINE_FILES["graph"])
+    requirements = load_json(MACHINE / "requirements.json")
     backlog_items = backlog.get("work_packages") or backlog.get("items")
     nodes = graph.get("nodes")
     if not isinstance(backlog_items, list) or not all(isinstance(item, dict) for item in backlog_items):
@@ -135,6 +136,30 @@ def check_graph() -> None:
         for dependency in item["depends_on"]:
             if dependency not in graph_map:
                 fail(f"{identifier}: unknown dependency {dependency}")
+
+    requirement_items = requirements.get("requirements")
+    if not isinstance(requirement_items, list) or not all(isinstance(item, dict) for item in requirement_items):
+        fail("requirements.json must contain requirements")
+    requirement_ids = {str(item.get("id")) for item in requirement_items}
+    covered_requirements: set[str] = set()
+    playbooks = (PLAN / "16-work-package-playbooks.md").read_text(encoding="utf-8")
+    for identifier, item in backlog_map.items():
+        mapped = item.get("requirements")
+        if not isinstance(mapped, list) or not all(isinstance(value, str) for value in mapped):
+            fail(f"{identifier}: requirements must be a string array")
+        unknown = set(mapped) - requirement_ids
+        if unknown:
+            fail(f"{identifier}: unknown requirements: {', '.join(sorted(unknown))}")
+        covered_requirements.update(mapped)
+        section = re.search(rf"(?ms)^## {re.escape(identifier)} .*?(?=^## WP-|\Z)", playbooks)
+        if section is None:
+            fail(f"{identifier}: missing execution playbook section")
+        for label in ("Acceptance:", "Negative tests:", "Handoff:", "Not supported:"):
+            if label not in section.group(0):
+                fail(f"{identifier}: playbook missing {label}")
+    if covered_requirements != requirement_ids:
+        missing = sorted(requirement_ids - covered_requirements)
+        fail("requirements lack work-package coverage: " + ", ".join(missing))
 
 
 def check_milestones() -> None:
