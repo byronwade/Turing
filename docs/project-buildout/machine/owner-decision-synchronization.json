@@ -12,6 +12,7 @@
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/project-buildout/machine/build-information-readiness-ledger.json",
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
+    "docs/platform/machine/reference-platform-scorecard.json",
     "docs/production-readiness/README.md",
     "docs/agent-execution/README.md",
     "tools/validate_build_readiness_closure_review.py"
@@ -140,6 +141,7 @@
     "This matrix does not approve a proposed task or evidence bundle.",
     "This matrix does not grant production, release, signing, legal, or disclosure authority.",
     "This matrix does not establish standards conformance, compatibility, security, accessibility, performance, or production readiness.",
+    "PB-006 is intentionally deferred outside these 11 active synchronization scopes; its not-selected reference-platform decision must be revisited before M1 native-shell implementation or supported-platform, compatibility, accessibility, release, or production claims.",
     "A passing validator is not owner review or independent review.",
     "A future exception must update support boundaries and expire; it cannot silently convert a blocker into readiness."
   ]

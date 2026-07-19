@@ -10,6 +10,8 @@ This board is a human handoff view for the remaining owner-controlled decisions 
 
 Every row is currently unresolved. An owner must record a real decision, evidence references, reviewer identities, any explicit time-bounded exception, and synchronized registry/document changes before the related gate can move. A template, passing validator, research report, or specified task manifest is not an owner decision.
 
+`PB-006` (M1 reference desktop platform) is intentionally outside these 11 active owner-decision scopes because platform selection is deferred until the M1 product-support scope, native-shell decisions, and reference-platform budget are accepted. It remains a separate `not_selected` gate with its own [Reference Platform Support Scorecard](../research/reference-platform-support-scorecard-2026-07.md). Revisit it before M1 native-shell implementation or any supported-platform, compatibility, accessibility, release, or production claim; its exclusion from this board does not make the platform decision complete.
+
 See the [Owner-Decision Closure Record Examples](../research/owner-decision-closure-record-examples-2026-07.md) for a fictitious field-level handoff. It demonstrates record shape only; it does not change any row on this board or grant authority.
 
 ## Decision lanes
