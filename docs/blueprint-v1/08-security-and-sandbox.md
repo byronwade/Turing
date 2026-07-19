@@ -86,6 +86,8 @@ The no-claim [IPC wire-encoding decision preparation](../research/ipc-wire-encod
 
 Privileged receivers authenticate the connection’s process identity and role. They ignore renderer claims that conflict with kernel state. Every capability handle encodes scope, operation set, expiry/epoch where relevant, and revocation.
 
+Authentication and authorization follow one portable ordering: observe the operating-system peer and endpoint context; bind it to the broker-registered process ID, role, and restart epoch; register the channel; authorize the route and attenuated capability per message; then re-check document, profile, site, deadline, cancellation, and resource-charge state before publication or handle use. Reconnect, restart, or endpoint replacement invalidates prior channels, requests, handles, and leases. OS ACLs, credentials, entitlements, and audit tokens are evidence inputs, not substitutes for the broker’s principal, epoch, route, capability, and resource checks.
+
 High-risk messages undergo:
 
 - schema and size validation before allocation;

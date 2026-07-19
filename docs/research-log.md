@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - IPC transport authority ordering made portable
+
+Question:
+
+Does the IPC documentation define one enforceable authority ordering across Windows named pipes, Linux Unix-domain sockets, and macOS XPC rather than treating platform identity signals as authorization by themselves?
+
+Method:
+
+Aligned the system-architecture IPC rules, capability-secure IPC rules, and IPC transport closure preparation with the existing platform transport worksheet and source-backed identity observations.
+
+Result:
+
+The canonical ordering is now explicit: observe the OS peer and endpoint context, bind it to the broker process ID, role, and restart epoch, register the channel, authorize route and attenuated capability per message, and re-check scope, deadline, cancellation, and resource state before publication or handle use. Restart, reconnect, and endpoint replacement invalidate affected channels, requests, handles, and leases. Required negative cases now include pre-binding authorization, stale replay, mismatched peer, route/capability mismatch, and timeout or disconnect cleanup.
+
+Impact:
+
+This closes a documentation ambiguity in the portable IPC contract without claiming an accepted transport, production IPC, process isolation, or stale-epoch proof on a real transport. The existing `PB-011`, `TASK-000011`, `TASK-000003`, and full-build gates remain unchanged; documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can an approved transport task demonstrate this ordering and its negative cases on each supported platform with exact source, raw logs, failure records, and independent review?
+
 ## 2026-07-19 - Fresh-host reproducibility claim ladder clarified
 
 Question:

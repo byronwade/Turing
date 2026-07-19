@@ -30,6 +30,18 @@ The following worksheet keeps the platform-specific mechanism separate from the 
 
 Every future row must use the same control envelope and policy oracle. The packet must retain source/build identity, transport object and namespace, endpoint policy, peer identity output, principal/epoch mapping, channel registration, allowed and rejected operations, malformed/oversized/stale/replay/unauthorized cases, timeout and cancellation timing, crash/reconnect behavior, resource and handle cleanup, and unsupported combinations. A platform-specific transport adapter is not allowed to introduce a second authority model.
 
+### Portable authentication ordering
+
+Every platform experiment must demonstrate the same ordered sequence:
+
+1. observe the operating-system peer, endpoint, session, and policy context;
+2. bind that observation to the broker-registered process ID, role, and restart epoch;
+3. register and bind the channel before accepting application messages;
+4. authorize the route and attenuated capability for each message; and
+5. re-check document, profile, site, deadline, cancellation, and resource-charge state before publication or handle use.
+
+The minimum negative set includes authorization attempted before principal binding, stale-channel replay after restart, mismatched peer identity, route or capability mismatch, and timeout or disconnect cleanup. Reconnect, restart, or endpoint replacement must invalidate affected channels, requests, handles, and leases. Platform ACLs, credentials, entitlements, and audit tokens remain evidence inputs to the Turing policy oracle rather than independent authority.
+
 `TASK-000011` and `TASK-000003` have different scopes:
 
 | Scope | Evidence that may be reviewed | Evidence it must not imply |
