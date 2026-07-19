@@ -61,6 +61,8 @@ The documentation system is organized enough for contained M0 implementation tas
 
 `PB-018` current evidence also includes the checked no-claim [incident-response source manifest](../security-engine/machine/incident-response-source-manifest.json), [`incident-response-source-manifest.schema.json`](../security-engine/machine/incident-response-source-manifest.schema.json), and [`validate_incident_response_sources.py`](../../tools/validate_incident_response_sources.py). The manifest tracks official NIST, FIRST, and CISA observations across nine evidence axes; it does not provide incident execution, disclosure authority, emergency patch capacity, supported-security evidence, or incident-response readiness.
 
+`PB-019`/`PB-020` current evidence also includes the checked no-claim [ownership/control source manifest](machine/ownership-control-source-manifest.json), [`ownership-control-source-manifest.schema.json`](machine/ownership-control-source-manifest.schema.json), and [`validate_ownership_control_sources.py`](../../tools/validate_ownership_control_sources.py). The manifest tracks official NIST and GitHub governance observations across eight evidence axes; it does not name qualified backups, capture effective repository settings, establish two-person control, or close either gate.
+
 ## Required Continuation Checks
 
 The active closure-preparation routes are [source strategy](../research/adr-0009-source-strategy-closure-preparation-2026-07.md), [toolchain/fresh host](../research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md), [IPC](../research/ipc-transport-and-authority-closure-preparation-2026-07.md), [sandbox](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md), [benchmark](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), [native UI/accessibility](../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [profile/session](../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), [package/update](../research/package-update-execution-and-release-safety-closure-preparation-2026-07.md), [incident response](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md), [backup ownership](../research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md), and final [PB-020 closure/owner decision](../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md). They are synchronized no-claim evidence-order documents, not approvals or implementation proof.
@@ -158,6 +160,7 @@ python3 -B tools/validate_benchmark_sources.py
 python3 -B tools/validate_accessibility_sources.py
 python3 -B tools/validate_package_update_sources.py
 python3 -B tools/validate_incident_response_sources.py
+python3 -B tools/validate_ownership_control_sources.py
 python3 -B tools/validate_task_approval_templates.py
 python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py

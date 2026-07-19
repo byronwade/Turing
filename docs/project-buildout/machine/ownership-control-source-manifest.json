@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "manifest_id": "GOVERNANCE.OWNERSHIP.SOURCES.2026_07",
+  "status": "no_claim_ownership_control_source_manifest",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-019", "PB-020"],
+  "claim_status": "No-claim ownership and control source observations only; these sources are not qualified-backup evidence, access approval, branch-protection proof, two-person-control evidence, release authority, production authority, or build-readiness closure.",
+  "evidence_axes": [
+    "roles_responsibilities_and_authorities",
+    "separation_of_duties_and_dual_control",
+    "named_qualification_and_path_coverage",
+    "codeowners_routing_and_team_access",
+    "effective_branch_rules_and_bypass",
+    "least_privilege_and_access_reconciliation",
+    "succession_availability_and_emergency_replacement",
+    "independent_review_expiry_and_claim_boundary"
+  ],
+  "sources": [
+    {
+      "source_id": "GOV-OWNERSHIP-SOURCE-NIST-CSF-GOVERN",
+      "title": "The NIST Cybersecurity Framework 2.0",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+      "retrieved": "2026-07-19",
+      "observation": "The CSF 2.0 Govern function includes organizational context, roles/responsibilities/authorities, policy, oversight, and supply-chain governance outcomes.",
+      "control_consequence": "Turing ownership records must identify accountable roles, authority boundaries, oversight, and scope-specific risk; CSF outcomes do not name Turing owners, backups, or release authorities."
+    },
+    {
+      "source_id": "GOV-OWNERSHIP-SOURCE-NIST-AC5",
+      "title": "SP 800-53 Rev. 5, AC-5 Separation of Duties",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/final",
+      "retrieved": "2026-07-19",
+      "observation": "NIST SP 800-53 includes AC-5 separation of duties, requiring organizations to identify duties requiring separation and define access authorizations that support it.",
+      "control_consequence": "Two-person-control evidence must map separated duties to actual access authorizations and action records; a policy statement or two names without independent access and review evidence is insufficient."
+    },
+    {
+      "source_id": "GOV-OWNERSHIP-SOURCE-GITHUB-CODEOWNERS",
+      "title": "About code owners",
+      "publisher": "GitHub",
+      "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners",
+      "retrieved": "2026-07-19",
+      "observation": "GitHub CODEOWNERS routes review requests for matching paths; code owners and teams need repository write access, and code-owner approval can be required through repository settings.",
+      "control_consequence": "Turing must reconcile path patterns, precedence, team membership, write access, and CODEOWNERS-file ownership with qualified-person records; routing does not prove competence, availability, independence, or backup coverage."
+    },
+    {
+      "source_id": "GOV-OWNERSHIP-SOURCE-GITHUB-PROTECTED-BRANCHES",
+      "title": "About protected branches",
+      "publisher": "GitHub",
+      "url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches",
+      "retrieved": "2026-07-19",
+      "observation": "GitHub protected branches can require approving reviews, status checks, signed commits, restricted pushes, and controls on bypassing protections.",
+      "control_consequence": "Evidence must capture the effective rule, review count, code-owner requirement, stale-review behavior, status checks, push restrictions, deletion/force-push settings, and bypass actors; a rule's existence is not an independent control assessment."
+    },
+    {
+      "source_id": "GOV-OWNERSHIP-SOURCE-GITHUB-BRANCH-API",
+      "title": "REST API endpoints for protected branches",
+      "publisher": "GitHub",
+      "url": "https://docs.github.com/en/rest/branches/branch-protection",
+      "retrieved": "2026-07-19",
+      "observation": "GitHub's protected-branch API exposes required review counts, code-owner review, stale-review dismissal, last-push approval, dismissal restrictions, and bypass allowances as inspectable configuration fields.",
+      "control_consequence": "A future reconciliation packet should retain an authenticated effective-configuration capture and digest it with repository identity and timestamp; API shape alone is not current repository configuration or proof that a control was exercised."
+    }
+  ],
+  "source_documents": [
+    "docs/research/backup-ownership-and-review-capacity-decision-prep-2026-07.md",
+    "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    "docs/research/backup-ownership-gap-inventory-2026-07.md",
+    "docs/project-buildout/02-ownership-codeowners-and-maintainer-ladder.md",
+    "docs/project-buildout/08-release-incident-legal-data-and-support.md",
+    "docs/project-buildout/machine/backup-ownership-gap.json",
+    ".github/CODEOWNERS"
+  ],
+  "unsupported": [
+    "No qualified backup owner is named or verified by this manifest; current PB-019 primary-only/null-backup status remains unchanged.",
+    "No authenticated repository access capture, effective branch-rule capture, CODEOWNERS exercise, two-person-control exercise, succession drill, or independent owner review exists.",
+    "No release, signing, disclosure, legal, incident-closure, profile-migration, production, or build-readiness authority follows from these sources.",
+    "No owner coverage, backup coverage, least-privilege, branch-protection, separation-of-duties, two-person-control, production, Chrome-class, performance, or implementation claim follows from this manifest."
+  ]
+}

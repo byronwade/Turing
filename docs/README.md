@@ -117,6 +117,8 @@ The package/update lane also has a checked no-claim [package/update source manif
 
 The incident-response lane also has a checked no-claim [incident-response source manifest](security-engine/machine/incident-response-source-manifest.json) and [`validate_incident_response_sources.py`](../tools/validate_incident_response_sources.py); these track official NIST, FIRST, and CISA observations only and do not provide incident execution, disclosure authority, emergency patch capacity, or readiness evidence.
 
+The ownership lane also has a checked no-claim [ownership/control source manifest](project-buildout/machine/ownership-control-source-manifest.json) and [`validate_ownership_control_sources.py`](../tools/validate_ownership_control_sources.py); these track official NIST and GitHub governance observations only and do not name qualified backups, prove effective branch controls, establish two-person control, or close `PB-019`/`PB-020`.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |

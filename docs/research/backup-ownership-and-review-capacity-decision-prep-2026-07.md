@@ -51,6 +51,8 @@ Implications for Turing:
 - branch protection must be tested against the actual protected paths and emergency procedures, not inferred from the existence of a rule;
 - a repository control cannot substitute for offline signing key separation or a human release authority ceremony.
 
+The checked no-claim [ownership/control source manifest](../project-buildout/machine/ownership-control-source-manifest.json), [manifest schema](../project-buildout/machine/ownership-control-source-manifest.schema.json), and [`validate_ownership_control_sources.py`](../../tools/validate_ownership_control_sources.py) preserve these governance observations across eight evidence axes. They are source identity and control-input records only; they do not name a backup, prove qualification, capture effective repository settings, establish two-person control, or close `PB-019`/`PB-020`.
+
 ## Required ownership evidence
 
 For every build-critical scope, the future qualification record must contain:

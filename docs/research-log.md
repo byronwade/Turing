@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Ownership and two-person-control source identity made executable
+
+Question:
+
+Can official NIST governance/separation-of-duties and GitHub CODEOWNERS/protected-branch observations be tracked as stable `PB-019`/`PB-020` inputs without treating routing or policy documentation as qualified-backup or authority evidence?
+
+Method:
+
+Compared the Backup Ownership and Review Capacity Decision Preparation, Backup-Ownership Execution and Two-Person-Control Closure Preparation, Backup Ownership Gap Inventory, ownership/review books, repository `CODEOWNERS`, and official NIST and GitHub governance documentation. Added a no-claim manifest with five source records, eight evidence axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep roles and authority, separation of duties, qualification/path coverage, CODEOWNERS routing, effective branch rules/bypass, access reconciliation, succession/replacement, and independent review/expiry as separate evidence axes. No backup is named, no access configuration is captured, and no two-person-control or closure decision is made.
+
+Impact:
+
+`PB-019` remains blocked and `PB-020` remains unresolved; no owner coverage, release, signing, disclosure, legal, incident-closure, production, or implementation claim changed.
+
 ## 2026-07-19 - Incident-response source identity made executable
 
 Question:
