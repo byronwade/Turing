@@ -24,6 +24,8 @@ The following official platform sources were retrieved or checked on 2026-07-19 
 
 These are source and method observations, not accessibility results. A semantic model, screenshot, automated checker, or one platform's tree cannot be generalized into cross-platform accessibility readiness. Every future packet must preserve platform/API/assistive-technology identity, manual transcript or action record, tree snapshots, event timing, unsupported cases, and the complete workflow denominator.
 
+The checked [accessibility-source manifest](../accessibility/machine/accessibility-source-manifest.json), validated by [`validate_accessibility_sources.py`](../../tools/validate_accessibility_sources.py), records these platform source identities and evidence consequences. It is a no-claim source record only; it does not provide accessibility workflow execution, screen-reader coverage, IME correctness, page-tree proof, or UI-gate approval.
+
 The trusted shell remains toolkit-replaceable. A toolkit callback may propose a typed command or render a declared surface, but it cannot own navigation, profile, permission, credential, agent, Plug-in, persistence, update, process, or release authority. Page content and renderer output remain untrusted inputs to the brokered composition path.
 
 ## Required evidence order

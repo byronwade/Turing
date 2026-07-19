@@ -55,6 +55,8 @@ The documentation system is organized enough for contained M0 implementation tas
 
 `PB-013` current evidence also includes the checked no-claim [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), [`benchmark-source-manifest.schema.json`](../blueprint-v1/machine/benchmark-source-manifest.schema.json), and [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py). The manifest tracks official suite methodology, regression policy, telemetry, compatibility, and vendor-context observations across ten measurement axes; it does not provide a browser run, competitor result, statistics approval, or performance claim.
 
+`PB-003`/`PB-005`/`PB-015` current evidence also includes the checked no-claim [accessibility-source manifest](../accessibility/machine/accessibility-source-manifest.json), [`accessibility-source-manifest.schema.json`](../accessibility/machine/accessibility-source-manifest.schema.json), and [`validate_accessibility_sources.py`](../../tools/validate_accessibility_sources.py). The manifest tracks official Windows, macOS, and Linux accessibility API observations across nine evidence axes; it does not provide platform workflow execution, screen-reader coverage, IME correctness, page-tree proof, UI-gate evidence, or accessibility readiness.
+
 ## Required Continuation Checks
 
 The active closure-preparation routes are [source strategy](../research/adr-0009-source-strategy-closure-preparation-2026-07.md), [toolchain/fresh host](../research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md), [IPC](../research/ipc-transport-and-authority-closure-preparation-2026-07.md), [sandbox](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md), [benchmark](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), [native UI/accessibility](../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [profile/session](../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), [package/update](../research/package-update-execution-and-release-safety-closure-preparation-2026-07.md), [incident response](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md), [backup ownership](../research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md), and final [PB-020 closure/owner decision](../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md). They are synchronized no-claim evidence-order documents, not approvals or implementation proof.
@@ -149,6 +151,7 @@ python3 -B tools/validate_adr_0009_source_observations.py
 python3 -B tools/validate_fresh_host_toolchain_sources.py
 python3 -B tools/validate_ipc_wire_sources.py
 python3 -B tools/validate_benchmark_sources.py
+python3 -B tools/validate_accessibility_sources.py
 python3 -B tools/validate_task_approval_templates.py
 python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py

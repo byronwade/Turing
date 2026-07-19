@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Accessibility platform source identity made executable
+
+Question:
+
+Can the official Windows UI Automation, Apple Accessibility, and Linux AT-SPI observations be tracked as stable native UI inputs without treating platform API documentation as accessibility readiness or Nova implementation proof?
+
+Method:
+
+Compared the Native UI and Accessibility Closure Preparation, Window Input Accessibility Spike Inventory, accessibility platform bridge/testing books, UI runtime accessibility guidance, Nova design-lab boundary, and official platform sources. Added a no-claim manifest with four source records, three platforms, nine evidence axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep platform/API/client identity, tree snapshots, role/state/action semantics, focus/events, screen-reader transcripts, IME/text, page-tree composition, timing/failure denominators, and unsupported cases as separate evidence requirements. Nova remains visual authority only.
+
+Impact:
+
+`PB-003`, `PB-005`, and `PB-015` remain partial; no toolkit selection, native adapter, accessibility readiness, UI-gate, release-path, performance, or implementation claim changed.
+
 ## 2026-07-19 - Benchmark source identity made executable
 
 Question:

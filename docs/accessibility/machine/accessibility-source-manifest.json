@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "manifest_id": "UI.ACCESSIBILITY.SOURCES.2026_07",
+  "status": "no_claim_accessibility_source_manifest",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-003", "PB-005", "PB-015"],
+  "claim_status": "No-claim platform accessibility-source observations only; platform API documentation is not native accessibility readiness, screen-reader coverage, IME correctness, page-tree composition proof, UI-GATE evidence, or release-path UI approval.",
+  "evidence_axes": [
+    "platform_api_identity",
+    "tree_snapshot",
+    "role_state_action",
+    "focus_and_events",
+    "screen_reader_transcript",
+    "ime_and_text",
+    "page_tree_composition",
+    "timing_and_failure_denominator",
+    "unsupported_cases"
+  ],
+  "sources": [
+    {
+      "source_id": "UI-A11Y-SOURCE-WINDOWS-GUIDANCE",
+      "platform": "windows",
+      "title": "Accessibility for Windows apps",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/accessibility/",
+      "retrieved": "2026-07-19",
+      "observation": "Windows accessibility guidance describes semantic controls and platform accessibility behavior that must be exposed to users and assistive technologies.",
+      "evidence_consequence": "Record Windows build, framework/API identity, control semantics, keyboard/focus behavior, high contrast/forced color state, and exact assistive-technology configuration."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-WINDOWS-UIAUTOMATION",
+      "platform": "windows",
+      "title": "UI Automation overview",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview",
+      "retrieved": "2026-07-19",
+      "observation": "UI Automation exposes an accessibility tree, control patterns, properties, events, and client interaction behavior; an internal semantic model alone is not a UI Automation result.",
+      "evidence_consequence": "Retain platform tree snapshots, roles/properties/control patterns, focus and event traces, action results, timing, client/version identity, and failure or unsupported rows."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-APPLE-ACCESSIBILITY",
+      "platform": "macos",
+      "title": "Accessibility",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/accessibility",
+      "retrieved": "2026-07-19",
+      "observation": "Apple accessibility documentation defines platform API and assistive-technology integration surfaces, including the exposed accessibility hierarchy and actions.",
+      "evidence_consequence": "Record macOS version, accessibility API/runtime, VoiceOver version and configuration, hierarchy/actions, focus/live-region behavior, text/selection results, timing, and unsupported cases."
+    },
+    {
+      "source_id": "UI-A11Y-SOURCE-LINUX-ATSPI",
+      "platform": "linux",
+      "title": "AT-SPI 2 API",
+      "publisher": "GTK project",
+      "url": "https://docs.gtk.org/atspi2/",
+      "retrieved": "2026-07-19",
+      "observation": "AT-SPI exposes accessible objects, actions, components, documents, text, selections, states, relations, and events through a runtime accessibility bus.",
+      "evidence_consequence": "Record distribution/session, AT-SPI runtime and bus state, Orca version/configuration, object tree and relations, states/events, text/selection behavior, timeout handling, and unsupported cases."
+    }
+  ],
+  "source_documents": [
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+    "docs/accessibility/04-platform-accessibility-bridges.md",
+    "docs/accessibility/07-testing-assistive-technology-matrices-and-release-gates.md",
+    "docs/ui-runtime/07-windowing-input-ime-accessibility-and-platform.md",
+    "docs/ui-runtime/design-lab/README.md"
+  ],
+  "unsupported": [
+    "No reference-platform accessibility workflow has been executed.",
+    "No platform accessibility tree snapshot or manual screen-reader transcript has been reviewed.",
+    "No page/chrome composed accessibility tree, IME correctness, or UI-GATE-10 evidence exists.",
+    "No accessibility readiness, release-path UI approval, production, or implementation claim exists."
+  ]
+}
