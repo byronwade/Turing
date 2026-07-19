@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "docs/project-buildout/machine/owner-decision-synchronization.json"
 SCHEMA = ROOT / "docs/project-buildout/machine/owner-decision-synchronization.schema.json"
+BOARD = ROOT / "docs/project-buildout/23-owner-decision-closure-board.md"
 
 EXPECTED_SCOPES = {
     frozenset({"PB-002", "ADR-0009"}),
@@ -102,6 +104,33 @@ def main() -> int:
                         fail(f"required synchronization file is missing: {path}")
     if seen != EXPECTED_SCOPES:
         fail("decision_scopes do not cover all canonical PB-020 scopes")
+
+    try:
+        board = BOARD.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read owner-decision closure board: {exc}")
+    start_marker = "## Decision lanes"
+    end_marker = "## Required decision record"
+    if start_marker not in board or end_marker not in board:
+        fail("owner-decision closure board is missing the decision-lanes section")
+    lane_section = board.split(start_marker, 1)[1].split(end_marker, 1)[0]
+    lane_rows = [
+        line for line in lane_section.splitlines()
+        if line.startswith("|") and line.count("|") >= 5 and not line.startswith("|---")
+    ]
+    if len(lane_rows) != len(EXPECTED_SCOPES) + 1:
+        fail(f"owner-decision closure board must contain exactly 11 decision-lane rows; found {max(len(lane_rows) - 1, 0)}")
+    board_scopes: set[frozenset[str]] = set()
+    for row in lane_rows[1:]:
+        gate_cell = row.split("|", 2)[1]
+        scope = frozenset(re.findall(r"(?:PB|ADR)-\d+", gate_cell))
+        if scope not in EXPECTED_SCOPES:
+            fail(f"owner-decision closure board has a non-canonical decision-lane scope: {gate_cell.strip()}")
+        if scope in board_scopes:
+            fail(f"owner-decision closure board duplicates a decision-lane scope: {gate_cell.strip()}")
+        board_scopes.add(scope)
+    if board_scopes != EXPECTED_SCOPES:
+        fail("owner-decision closure board does not cover the machine matrix gate scopes")
 
     print("owner-decision synchronization validation passed: 11 canonical scopes, no-claim")
     return 0

@@ -7614,3 +7614,21 @@ The package/update route is now coherent and remains no-claim. `PB-017` remains 
 Next question:
 
 Which fake-key local lab packet can demonstrate metadata and staged-install failure handling without approaching production release authority?
+
+# 2026-07-19 - Owner-decision board scope synchronization
+
+Question:
+
+Does the human owner-decision closure board preserve the same canonical gate scopes as the machine synchronization matrix?
+
+Method:
+
+Compared the owner-decision closure board, synchronization matrix, closure-review template, pre-build readiness, and both owner-decision validators. The check found that the board combined `PB-019` backup ownership and `PB-020` build-readiness closure even though the machine matrix treats them as separate scopes.
+
+Decision:
+
+Split the board into distinct `PB-019` and `PB-020` rows and added a validator check requiring exactly 11 board decision-lane scopes to match the machine matrix. Backup ownership and build-readiness closure remain unresolved and no-claim.
+
+Next question:
+
+Which owner-reviewed evidence packet can close one of the separate scopes without conflating backup coverage with readiness promotion?
