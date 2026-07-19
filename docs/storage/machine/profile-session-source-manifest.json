@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "manifest_id": "STORAGE.PROFILE_SESSION.SOURCES.2026_07",
+  "status": "no_claim_profile_session_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-016",
+  "claim_status": "No-claim profile/session source observations only; these web-platform sources are not a Turing profile format, migration protocol, credential vault, sync design, data-loss result, real-user-data approval, production readiness decision, or implementation evidence.",
+  "evidence_axes": [
+    "origin_and_partition_identity",
+    "storage_bucket_and_state_class",
+    "transaction_commit_and_durability",
+    "abort_failure_and_quota",
+    "origin_scoped_clearing",
+    "browser_owned_state_separation",
+    "migration_journal_and_recovery",
+    "privacy_export_and_secret_exclusion",
+    "unsupported_cases_and_claim_review"
+  ],
+  "sources": [
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-WHATWG-STORAGE",
+      "title": "Storage Standard",
+      "publisher": "WHATWG",
+      "url": "https://storage.spec.whatwg.org/",
+      "retrieved": "2026-07-19",
+      "observation": "The Storage Standard defines storage keys and storage buckets around web-origin identity and related partitioning concepts.",
+      "decision_consequence": "Turing must preserve origin and partition identity at the web-storage boundary and keep browser-owned profile, Space, and session identities distinct; the standard does not define Turing's profile format, credentials, sync, or recovery policy."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-W3C-INDEXEDDB",
+      "title": "Indexed Database API 3.0",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/IndexedDB/",
+      "retrieved": "2026-07-19",
+      "observation": "IndexedDB 3.0 defines transaction commit and abort behavior and exposes default, strict, and relaxed durability hints; strict may flush operating-system I/O before completion at a cost in latency and power.",
+      "decision_consequence": "A Turing data-safety packet must assign durability classes, retain abort/commit outcomes, and test crash or power-loss behavior; a successful completion event or durability hint is not proof of user-data durability."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-W3C-CLEAR-SITE-DATA",
+      "title": "Clear-Site-Data",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/clear-site-data/",
+      "retrieved": "2026-07-19",
+      "observation": "Clear-Site-Data defines origin-scoped clearing categories for cache, cookies, DOM-accessible storage, and execution contexts, with incomplete-clearing and privacy considerations.",
+      "decision_consequence": "Turing must test and report origin clearing separately from browser profile deletion, private-session close, credential revocation, cache pressure, and migration; clearing one class cannot be represented as deleting all browser-owned state."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-W3C-SECURITY-PRIVACY",
+      "title": "Security and Privacy Questionnaire",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/2019/NOTE-security-privacy-questionnaire-20190523/",
+      "retrieved": "2026-07-19",
+      "observation": "The W3C security and privacy guidance treats local browser storage mechanisms as potential sources of persistent user information and asks user agents to consider clearing and privacy effects.",
+      "decision_consequence": "Profile/session design must document persistence, clearing, retention, export, private-session exclusion, and identifier-remanence risks; the questionnaire does not approve a Turing privacy policy or real-profile handling."
+    }
+  ],
+  "source_documents": [
+    "docs/research/profile-session-data-lifecycle-decision-prep-2026-07.md",
+    "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/profile-session-format-inventory-2026-07.md",
+    "docs/storage/README.md",
+    "docs/storage/07-migrations-corruption-disk-full-and-power-loss.md",
+    "docs/storage/08-encryption-credentials-clearing-and-export.md",
+    "docs/storage/machine/profile-session-format-inventory.json"
+  ],
+  "unsupported": [
+    "No executable profile, Space, session, snapshot, or migration schema is approved by this manifest.",
+    "No migration, rollback, crash, power-loss, quota, corruption, deletion, export, private-session, credential, or real-profile execution evidence exists.",
+    "No production profile format, sync protocol, credential storage, data-loss safety, user-data handling readiness, release-path approval, or owner-reviewed PB-016 readiness decision follows from these sources.",
+    "No profile/session, privacy, storage, migration, compatibility, production, Chrome-class, performance, or implementation claim follows from this manifest."
+  ]
+}

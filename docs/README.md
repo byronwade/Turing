@@ -119,6 +119,8 @@ The incident-response lane also has a checked no-claim [incident-response source
 
 The ownership lane also has a checked no-claim [ownership/control source manifest](project-buildout/machine/ownership-control-source-manifest.json) and [`validate_ownership_control_sources.py`](../tools/validate_ownership_control_sources.py); these track official NIST and GitHub governance observations only and do not name qualified backups, prove effective branch controls, establish two-person control, or close `PB-019`/`PB-020`.
 
+The profile/session lane also has a checked no-claim [profile/session source manifest](storage/machine/profile-session-source-manifest.json) and [`validate_profile_session_sources.py`](../tools/validate_profile_session_sources.py); these track official web-storage and clearing observations only and do not define a profile format, prove migration or durability, or provide data-loss readiness evidence.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |

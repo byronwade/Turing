@@ -16,6 +16,8 @@ How should Turing classify, persist, clear, migrate, recover, and report browser
 - W3C [Clear-Site-Data](https://www.w3.org/TR/clear-site-data/), including origin-scoped clearing of caches, cookies, storage, and execution contexts.
 - Turing [Profile Session Format Inventory](profile-session-format-inventory-2026-07.md), [Storage and Recovery book](../storage/README.md), [Blueprint 07](../blueprint-v1/07-network-storage-media.md), and [Product Experience book](../product-experience/README.md).
 
+The checked no-claim [profile/session source manifest](../storage/machine/profile-session-source-manifest.json), [manifest schema](../storage/machine/profile-session-source-manifest.schema.json), and [`validate_profile_session_sources.py`](../../tools/validate_profile_session_sources.py) preserve these web-platform observations across nine evidence axes. They are source identity and decision-input records only; they do not define Turing's profile format, migration journal, credential vault, sync protocol, real-profile policy, or data-loss readiness.
+
 The web specifications define web-visible semantics. They do not define Turing's browser profile format, migration journal, credential vault, sync protocol, or user-data recovery policy.
 
 ## State classes that must not be merged

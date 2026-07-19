@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Profile/session source identity made executable
+
+Question:
+
+Can the official WHATWG Storage, W3C IndexedDB, Clear-Site-Data, and security/privacy observations used by `PB-016` be tracked as stable inputs without treating web-platform semantics as a Turing profile format, migration protocol, or data-safety result?
+
+Method:
+
+Compared the Profile and Session Data-Lifecycle Decision Preparation, Profile/Session Execution and Data-Safety Closure Preparation, Profile Session Format Inventory, storage books, and official WHATWG/W3C sources. Added a no-claim manifest with four source records, nine evidence axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep origin/partition identity, storage buckets/state classes, transaction durability, abort/quota behavior, origin clearing, browser-owned state separation, migration/recovery, privacy/export, and unsupported cases as separate evidence axes. No profile format, migration protocol, credential vault, sync design, or durability policy is selected.
+
+Impact:
+
+`PB-016` remains partial; no profile/session implementation, migration, durability, privacy, credential, sync, data-loss, production, or implementation claim changed.
+
 ## 2026-07-19 - Ownership and two-person-control source identity made executable
 
 Question:

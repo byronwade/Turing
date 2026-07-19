@@ -107,6 +107,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_package_update_sources.py
     ├── validate_incident_response_sources.py
     ├── validate_ownership_control_sources.py
+    ├── validate_profile_session_sources.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
     ├── validate_fresh_host_readiness_review.py
@@ -329,6 +330,7 @@ Repository-owned tools live here.
 - `validate_package_update_sources.py`: dependency-free validation for the checked no-claim PB-017 package/update source manifest, official TUF/SLSA/in-toto/Sigstore source IDs and URLs, eight update-trust evidence axes, source-document links, and unsupported updater/release boundaries; it does not select an updater, package format, signing hierarchy, channel, or release policy;
 - `validate_incident_response_sources.py`: dependency-free validation for the checked no-claim PB-018 incident-response source manifest, official NIST/FIRST/CISA source IDs and URLs, nine incident-response evidence axes, source-document links, and unsupported authority/readiness boundaries; it does not provide incident execution, disclosure authority, emergency patch capacity, or readiness evidence;
 - `validate_ownership_control_sources.py`: dependency-free validation for the checked no-claim PB-019/PB-020 ownership/control source manifest, official NIST/GitHub source IDs and URLs, eight governance evidence axes, source-document links, and unsupported backup/two-person-authority boundaries; it does not name qualified backups, capture effective repository settings, establish two-person control, or close either gate;
+- `validate_profile_session_sources.py`: dependency-free validation for the checked no-claim PB-016 profile/session source manifest, official WHATWG/W3C source IDs and URLs, nine storage/data-safety evidence axes, source-document links, and unsupported format/migration/durability boundaries; it does not define a profile format, prove migration or durability, or provide data-loss readiness evidence;
 - `validate_servo_local_compatibility_corpus.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim local compatibility corpus manifest, generated fixture paths, SHA-256 hashes, byte counts, LF line endings, local-only origins and URLs, required case categories, artifact expectations, failure denominators, and unsupported compatibility/adoption claims;
 - `validate_servo_local_compatibility_https_harness.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim HTTPS host-alias harness plan, corpus origin coverage, SNI/SAN expectations, isolated trust-store policy, host-to-loopback alias controls, cleanup evidence requirements, browser-run record fields, and unsupported compatibility/adoption claims;
 - `serve_servo_local_compatibility_corpus.py`: dependency-free HTTP/1.1 loopback route self-test for the checked `ADR9-EV-013` generated fixtures, Host-header origin mapping, fixture response hashes, shutdown behavior, and no-claim browser/WPT/Test262/HTTPS boundaries;
@@ -415,6 +417,8 @@ The checked no-claim [`package-update-source-manifest.json`](release-operations/
 The checked no-claim [`incident-response-source-manifest.json`](security-engine/machine/incident-response-source-manifest.json) and [`incident-response-source-manifest.schema.json`](security-engine/machine/incident-response-source-manifest.schema.json) track official NIST, FIRST, and CISA incident-response observations; [`validate_incident_response_sources.py`](../tools/validate_incident_response_sources.py) verifies the records without providing incident execution, disclosure authority, emergency patch capacity, or readiness evidence.
 
 The checked no-claim [`ownership-control-source-manifest.json`](project-buildout/machine/ownership-control-source-manifest.json) and [`ownership-control-source-manifest.schema.json`](project-buildout/machine/ownership-control-source-manifest.schema.json) track official NIST and GitHub governance observations; [`validate_ownership_control_sources.py`](../tools/validate_ownership_control_sources.py) verifies the records without naming qualified backups, capturing effective repository settings, establishing two-person control, or closing `PB-019`/`PB-020`.
+
+The checked no-claim [`profile-session-source-manifest.json`](storage/machine/profile-session-source-manifest.json) and [`profile-session-source-manifest.schema.json`](storage/machine/profile-session-source-manifest.schema.json) track official WHATWG/W3C web-storage and clearing observations; [`validate_profile_session_sources.py`](../tools/validate_profile_session_sources.py) verifies the records without defining a profile format, proving migration or durability, or providing data-loss readiness evidence.
 
 | Evidence area | Registry or artifact | Validator or runner | Boundary |
 |---|---|---|---|

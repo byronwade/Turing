@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/profile-session-source-manifest-v1.json",
+  "title": "Turing Profile and Session Source Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "status", "updated", "related_gate", "claim_status", "evidence_axes", "sources", "source_documents", "unsupported"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "manifest_id": { "type": "string", "pattern": "^STORAGE\\.PROFILE_SESSION\\.SOURCES\\.[A-Z0-9._-]+$" },
+    "status": { "const": "no_claim_profile_session_source_manifest" },
+    "updated": { "type": "string", "format": "date" },
+    "related_gate": { "const": "PB-016" },
+    "claim_status": { "type": "string", "minLength": 1 },
+    "evidence_axes": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
+    "source_documents": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "unsupported": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "title", "publisher", "url", "retrieved", "observation", "decision_consequence"],
+      "properties": {
+        "source_id": { "type": "string", "pattern": "^STORAGE-PROFILE-SOURCE-[A-Z0-9._-]+$" },
+        "title": { "type": "string", "minLength": 1 },
+        "publisher": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "retrieved": { "type": "string", "format": "date" },
+        "observation": { "type": "string", "minLength": 1 },
+        "decision_consequence": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
