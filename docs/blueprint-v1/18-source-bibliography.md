@@ -309,6 +309,9 @@ Use of any listed project is not automatic approval. It remains subject to the d
 - in-toto: https://in-toto.io/
 - The Update Framework: https://theupdateframework.io/
 - Sigstore: https://www.sigstore.dev/
+- Git tag and signed-tag semantics: https://git-scm.com/docs/git-tag
+- Git tag signature verification: https://git-scm.com/docs/git-verify-tag
+- GitHub commit and tag signature verification: https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification
 - SPDX and CycloneDX
 - Windows Package Manager and winget package manifests: https://learn.microsoft.com/en-us/windows/package-manager/
 - MSYS2 package and source records: https://www.msys2.org/

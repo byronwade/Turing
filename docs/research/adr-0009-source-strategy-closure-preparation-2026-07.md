@@ -31,6 +31,20 @@ The packet must evaluate the same five options without changing their names betw
 
 The options are not interchangeable. A component reuse decision is not an engine adoption decision, and a charter change is not evidence that the existing independence boundary was satisfied.
 
+## Provenance policy boundary for source identity
+
+The [Git tag documentation](https://git-scm.com/docs/git-tag) distinguishes a lightweight tag, which directly names an object, from an annotated tag object that can carry a message and cryptographic signature; it describes signed annotated tags as the normal release-oriented form. [`git verify-tag`](https://git-scm.com/docs/git-verify-tag) validates signatures on tag objects, so it cannot turn a lightweight tag into a signed release assertion. GitHub's [commit-signature documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification) separately describes verified GPG, SSH, and S/MIME commit or tag signatures and notes that repository policy can enforce signed commits.
+
+Implications for `ADR9-EV-001`:
+
+- the evidence record must state whether the accepted source identity is a signed annotated tag, a signed commit at an independently pinned ref, or another explicitly approved provenance model;
+- a lightweight release tag, a GitHub `Verified` badge, a local `git verify-commit` result, a source archive digest, and a crates.io checksum are separate observations and must not be silently substituted for one another;
+- verification must retain the exact ref, object type, object ID, tree ID, signer identity, verification mechanism, trust-root/key status, retrieval date, revocation or expiry treatment, and independent remote-ref comparison;
+- if a GitHub-verified commit is accepted as an equivalent to a signed release tag, the decision must name the key-identity, repository-control, ref-pinning, and replay protections that make the equivalence bounded and auditable;
+- a failed local key lookup or a lightweight tag is evidence about the verification environment or object form, not proof that the source is malicious; it remains unresolved until the owner-approved provenance policy classifies it.
+
+These sources define the vocabulary and verification boundary. They do not select Servo, accept GitHub as Turing's trust root, or approve any source baseline.
+
 ## Decision criteria
 
 The owner review must score or explicitly disposition every option against the following criteria:

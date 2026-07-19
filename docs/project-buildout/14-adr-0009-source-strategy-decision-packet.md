@@ -291,7 +291,7 @@ Key observations:
 - the non-shallow release comparison returned `1 838` for `v0.3.0...main`, showing the release branch is not a simple ancestor of current `main`;
 - local signature checks confirmed `v0.3.0` is not a verifiable tag object and that local Git does not have a configured trust root for the GitHub-merged commit signatures.
 
-Result: independent Git object and ancestry verification is now captured for `ADR9-EV-001`. Source identity still remains unresolved because this does not select a baseline, verify every blob, define release-archive or crates.io package equivalence, or accept a signed-tag-equivalent provenance policy.
+Result: independent Git object and ancestry verification is now captured for `ADR9-EV-001`. Source identity still remains unresolved because this does not select a baseline, verify every blob, define release-archive or crates.io package equivalence, or accept a signed-tag, signed-commit, or equivalent provenance policy. The [ADR-0009 closure preparation](../research/adr-0009-source-strategy-closure-preparation-2026-07.md) records the Git object-type and verification-policy distinction that the owner review must resolve.
 
 ## Source-baseline equivalence policy prep
 

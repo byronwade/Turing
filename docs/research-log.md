@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 provenance policy boundary clarified
+
+Question:
+
+What exactly must an owner decide before Git, GitHub, release archives, or package checksums can be treated as an accepted Servo source-identity policy for `ADR9-EV-001`?
+
+Method:
+
+Compared the ADR-0009 source packet, independent source verification, source/archive equivalence policy, evidence matrix, closure-preparation route, and source bibliography with the official [Git tag](https://git-scm.com/docs/git-tag), [`git verify-tag`](https://git-scm.com/docs/git-verify-tag), and [GitHub signature-verification](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification) documentation.
+
+Result:
+
+A lightweight tag, signed annotated tag, signed commit, GitHub verification status, local keyring result, archive digest, and package checksum are distinct observations. `ADR9-EV-001` must explicitly select one bounded provenance model and retain object type, ref, object/tree IDs, signer and trust-root status, retrieval date, revocation/expiry treatment, and independent remote-ref comparison before later evidence can be reused.
+
+Impact:
+
+The source-strategy closure route now states the provenance-policy alternatives and rejection conditions, and the evidence matrix and ADR packet point to that route. No source baseline, Servo option, dependency approval, source import, release-code authorization, compatibility, performance, security, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the owner review the bounded provenance alternatives together with the selected source baseline, equivalence policy, and clean-target replay protocol without treating a template or remote verification badge as approval?
+
 ## 2026-07-19 - Windows package-signing evidence added to PB-017
 
 Question:
