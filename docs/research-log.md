@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Profile credential-vault boundary expanded
+
+Question:
+
+Does the `PB-016` profile/session evidence route keep operating-system credential vaults separate from ordinary browser-owned session data?
+
+Method:
+
+Compared the [Profile/Session Execution and Data-Safety Closure Preparation](research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), profile/session format inventory, storage book, schema-package and readiness templates, and source manifest with Microsoft's [Credential Manager](https://learn.microsoft.com/en-us/windows/win32/secauthn/credential-manager), Apple's [Keychain Services](https://developer.apple.com/documentation/security/keychain_services), and freedesktop.org's [Secret Service API](https://specifications.freedesktop.org/secret-service/latest/). Added platform vault source identities and a dedicated evidence row.
+
+Result:
+
+Credential evidence must identify the vault/backend, target or collection identity, access or entitlement boundary, locked/unavailable/prompt behavior, deletion/logout semantics, and unsupported desktop environments. Secret values must remain outside profile/session records, exports, migrations, diagnostics, backups, and fault artifacts. A successful vault lookup is not authorization or durability proof.
+
+Impact:
+
+The `PB-016` source manifest now carries ten source records across web storage, durability, privacy, Windows, macOS, and Linux credential-vault inputs. `PB-016` and `TASK-000007` remain unresolved and proposed-only; no credential, profile, migration, sync, privacy, data-loss, production, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future synthetic profile/session packet exercise vault locked, unavailable, denied, deletion, logout, export, and migration paths without accessing or retaining real credentials?
+
 ## 2026-07-19 - Benchmark observer-effect boundary expanded
 
 Question:

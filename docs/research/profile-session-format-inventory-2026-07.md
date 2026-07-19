@@ -55,6 +55,8 @@ The checked inventory now contains:
 
 The dated [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) adds the state-class and durability distinctions needed before executable schemas, migration, export, deletion, or recovery experiments are accepted.
 
+The checked profile/session source manifest also records Windows Credential Manager, macOS Keychain Services, and freedesktop Secret Service as separate credential-vault inputs. These records keep vault access, locked/unavailable behavior, deletion, migration, export, diagnostics, and backup handling outside ordinary profile/session state; they do not approve a credential implementation or secret-handling policy.
+
 `PB-016` can remain `partial` because the inventory, schema-package template, and validator now exist. The status must not move beyond `partial` until executable schema tests beyond the checked no-claim schema-package template, fault-injection evidence, privacy review, real-profile fixture policy, migration rehearsal, and owner review exist.
 
 ## Unsupported Conclusions

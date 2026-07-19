@@ -79,6 +79,33 @@
       "retrieved": "2026-07-19",
       "observation": "Windows documents that ordinary writes are system-buffered and that applications must use explicit flush or write-through controls when persistence of buffered data matters; flush frequency also affects performance.",
       "decision_consequence": "Windows fault tests must capture the selected flush/write-through policy, error handling, ordering, latency, and recovery result. A successful write or close must not be counted as persistent profile durability."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-WINDOWS-CREDENTIAL-MANAGER",
+      "title": "Credential Manager",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthn/credential-manager",
+      "retrieved": "2026-07-19",
+      "observation": "Windows Credential Manager is a protected operating-system facility for storing and retrieving credentials, distinct from ordinary application profile records.",
+      "decision_consequence": "A Windows profile/session packet must record the vault boundary, target identity, access/error behavior, user or broker mediation, deletion and logout semantics, and the result when the vault is unavailable; session export, migration, diagnostics, and backups must exclude secret material."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-MACOS-KEYCHAIN",
+      "title": "Keychain Services",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/security/keychain_services",
+      "retrieved": "2026-07-19",
+      "observation": "Apple Keychain Services provides protected storage and controlled access for passwords, keys, certificates, and other secrets outside ordinary application documents.",
+      "decision_consequence": "A macOS profile/session packet must identify the keychain access boundary, access-group or entitlement assumptions, authorization and locked-state behavior, deletion/logout semantics, and the result when access is denied; profile migration and diagnostics must not copy secret values."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-LINUX-SECRET-SERVICE",
+      "title": "Secret Service API",
+      "publisher": "freedesktop.org",
+      "url": "https://specifications.freedesktop.org/secret-service/latest/",
+      "retrieved": "2026-07-19",
+      "observation": "The Secret Service specification defines a D-Bus API for storing and retrieving secrets through a desktop service, with collection, item, prompt, and session concepts separate from browser-owned records.",
+      "decision_consequence": "A Linux profile/session packet must record the service/backend and session or prompt behavior, identity and permission boundary, locked/unavailable/error paths, deletion semantics, and unsupported desktop environments; profile export, migration, and diagnostics must exclude secret material."
     }
   ],
   "source_documents": [

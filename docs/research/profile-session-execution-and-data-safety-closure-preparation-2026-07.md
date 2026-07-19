@@ -11,6 +11,8 @@ The [Profile Session Format Inventory](profile-session-format-inventory-2026-07.
 
 The persistence portion of the evidence route must also preserve the SQLite [atomic-commit](https://sqlite.org/atomiccommit.html) and [corruption](https://sqlite.org/howtocorrupt.html) constraints plus Windows [buffered-I/O flush](https://learn.microsoft.com/en-us/windows/win32/fileio/flushing-system-buffered-i-o-data-to-disk) behavior when those technologies are evaluated. These sources constrain the experiment; they do not select SQLite, a journal mode, a flush policy, or a profile format.
 
+Credential state is a separate trust boundary. Microsoft's [Credential Manager](https://learn.microsoft.com/en-us/windows/win32/secauthn/credential-manager), Apple's [Keychain Services](https://developer.apple.com/documentation/security/keychain_services), and freedesktop.org's [Secret Service API](https://specifications.freedesktop.org/secret-service/latest/) describe platform vault mechanisms or interfaces that are distinct from ordinary profile/session records. A future packet must identify the selected vault/backend, access or entitlement boundary, locked/unavailable/prompt behavior, target or collection identity, deletion/logout semantics, and unsupported desktop environments. A vault API, successful lookup, or stored item does not approve Turing credential handling, migration, export, backup, or privacy behavior.
+
 ## Required evidence sequence
 
 1. Freeze versioned record contracts for profile, Space, session, snapshot, and migration records. Each contract must identify its owner, identity and epoch fields, schema window, integrity marker, authority boundary, privacy class, retention, export, deletion, and downgrade behavior.
@@ -31,6 +33,7 @@ The persistence portion of the evidence route must also preserve the SQLite [ato
 | Migration | Forward/resume/rollback/downgrade runs with synthetic fixtures | Real data is used, rollback is assumed, or unsupported input is rewritten |
 | Privacy and partitioning | Redacted manifests, deletion scope, origin and private-session isolation | Secrets, private state, or raw page data enters records or diagnostics |
 | Credentials | Vault boundary and locked/unavailable behavior | Missing vault is treated as an empty credential set |
+| Platform vault integration | Windows Credential Manager, macOS Keychain, or Linux Secret Service identity, access/prompt/locked behavior, deletion/logout, and unsupported backend rows | Secret values enter profile/session records, export, migration, diagnostics, backups, or fault artifacts; a vault lookup is treated as authorization by itself |
 | Recovery and protected work | Per-class loss/restoration/quarantine accounting and user-visible recovery result | Protected work is silently discarded or consequential actions replay automatically |
 | Fixture safety and review | Fixture provenance, retention/destruction record, named independent review | A template, current profile, title-only approval, or self-review is used |
 
