@@ -18,6 +18,18 @@ The [Windows named-pipe security guidance](https://learn.microsoft.com/en-us/win
 
 These sources constrain, but do not select, a Turing transport. Each platform experiment must retain the transport object/namespace, endpoint ACL or permission policy, peer identity evidence, session/namespace or entitlement context, remote-access policy, principal mapping, process epoch, reconnect/replay behavior, and impersonation or handle-transfer policy. A successful connection, credential query, audit token, or security descriptor does not independently authorize a capability or establish renderer/process/site isolation.
 
+### Cross-platform transport worksheet
+
+The following worksheet keeps the platform-specific mechanism separate from the portable Turing authority contract. It is a capture plan, not a recommendation or support matrix.
+
+| Platform | Candidate mechanism and identity signal | Evidence the mechanism may provide | Turing checks that remain mandatory | Unsupported inference |
+|---|---|---|---|---|
+| Windows | Named pipe plus security descriptor, access check, and explicitly constrained impersonation policy | Endpoint ACL, requested access, client/server session and user context, impersonation token behavior, remote-access setting, close/reconnect result | Bind the observed peer to the broker-registered process ID and epoch; re-check role, channel, route, capability, size, deadline, cancellation, and handle lease | Opening a pipe, reading a token, or passing an ACL does not prove the Turing principal, capability, renderer isolation, or sandbox state |
+| Linux | Unix-domain socket with socket namespace/type and peer-credential query such as `SO_PEERCRED` | Socket namespace, credential result, user and mount namespace context, permission policy, abstract-socket behavior, restart and replay result | Bind credentials to the exact channel and process epoch; reject stale/replayed endpoints; retain namespace, broker, route, capability, resource, and cleanup evidence | A peer-credential query or filesystem permission does not prove a stable process identity, capability authorization, or containment across namespaces |
+| macOS | XPC connection with peer-platform-identity requirement and audit-session identity | Identity requirement, peer audit/session context, entitlement or signing assumptions, connection lifecycle, interruption and invalidation behavior | Bind the observed peer to the broker role, process epoch, channel, route, capability, deadline, cancellation, and handle/lease policy | An audit token, entitlement, signing identity, or live XPC connection does not prove Turing authority, safe handle transfer, renderer isolation, or release readiness |
+
+Every future row must use the same control envelope and policy oracle. The packet must retain source/build identity, transport object and namespace, endpoint policy, peer identity output, principal/epoch mapping, channel registration, allowed and rejected operations, malformed/oversized/stale/replay/unauthorized cases, timeout and cancellation timing, crash/reconnect behavior, resource and handle cleanup, and unsupported combinations. A platform-specific transport adapter is not allowed to introduce a second authority model.
+
 `TASK-000011` and `TASK-000003` have different scopes:
 
 | Scope | Evidence that may be reviewed | Evidence it must not imply |

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - IPC platform transport worksheet added
+
+Question:
+
+Can the IPC closure route compare Windows, Linux, and macOS transport identity without allowing an OS credential or connection primitive to become Turing authority by implication?
+
+Method:
+
+Reconciled the [IPC Transport and Authority Closure Preparation](research/ipc-transport-and-authority-closure-preparation-2026-07.md), the checked [IPC wire-source manifest](blueprint-v1/machine/ipc-wire-source-manifest.json), the IPC capability boundary, and the no-claim schema/readiness templates. Converted the existing Windows named-pipe, Linux Unix-domain socket, and macOS XPC source observations into one cross-platform capture worksheet.
+
+Result:
+
+The platform mechanism may provide endpoint, peer, session, namespace, entitlement, audit, or credential observations, but Turing must still bind the observed peer to the broker role, channel, process epoch, route, capability, resource limits, timeout, cancellation, and handle or lease policy. The worksheet now requires the same control envelope and policy oracle across platforms and records unsupported inferences explicitly.
+
+Impact:
+
+The IPC documentation is more directly executable as a future evidence packet, while `PB-011`, `TASK-000003`, `TASK-000011`, wire-encoding selection, transport authorization, and all security/readiness claims remain unchanged. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can an independent `TASK-000011` review packet retain these platform identity outputs together with exact source commit, generated policy records, negative cases, and cleanup evidence without treating the M0 policy reference as real transport proof?
+
 ## 2026-07-19 - Reference-platform assistive-technology evidence synchronized
 
 Question:
