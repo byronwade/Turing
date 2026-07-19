@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "manifest_id": "RELEASE.UPDATE.SOURCES.2026_07",
+  "status": "no_claim_package_update_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-017",
+  "claim_status": "No-claim package/update source observations only; these sources are not a Turing updater, package-format selection, signing decision, rollback result, migration result, release approval, supported-security claim, or production evidence.",
+  "evidence_axes": [
+    "metadata_roles_thresholds_and_freshness",
+    "target_binding_and_rollback",
+    "build_provenance_identity",
+    "authorized_supply_chain_steps",
+    "artifact_signing_and_transparency",
+    "installation_transaction_and_recovery",
+    "profile_transition_and_downgrade",
+    "privacy_retention_and_claim_review"
+  ],
+  "sources": [
+    {
+      "source_id": "REL-UPDATE-SOURCE-TUF-METADATA",
+      "title": "Roles and metadata",
+      "publisher": "The Update Framework",
+      "url": "https://theupdateframework.io/docs/metadata/",
+      "retrieved": "2026-07-19",
+      "observation": "TUF defines Root, Targets, Snapshot, and Timestamp roles; signed metadata carries expiration, thresholds, target hashes and sizes, and consistent repository-state checks.",
+      "decision_consequence": "Future update evidence must keep role authorization, threshold, expiry, target identity, size, channel, platform, architecture, and minimum-secure-version decisions separate; TUF does not select Turing's package, installer, profile, or channel policy."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-TUF-SECURITY",
+      "title": "Security properties of TUF repositories",
+      "publisher": "The Update Framework",
+      "url": "https://theupdateframework.io/docs/security/",
+      "retrieved": "2026-07-19",
+      "observation": "TUF documents arbitrary-installation, rollback, key-compromise, freeze, and related update-system attack classes and uses expiry and compartmentalized trust as design principles.",
+      "decision_consequence": "The lab must retain negative cases for stale or replayed metadata, rollback, compromised keys, arbitrary targets, and freeze-like unavailability; a valid signature alone cannot establish freshness or safe installation."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-SLSA-PROVENANCE",
+      "title": "SLSA v1.2 build provenance",
+      "publisher": "SLSA",
+      "url": "https://slsa.dev/spec/v1.2/build-provenance",
+      "retrieved": "2026-07-19",
+      "observation": "SLSA provenance describes how an artifact was produced through build definition, resolved dependencies, builder identity, invocation metadata, and output subjects.",
+      "decision_consequence": "A future package record must distinguish source, build, dependency, builder, and artifact identity; provenance is production evidence and is not update authorization, installation success, key recovery, or profile migration safety."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-SLSA-VERIFY",
+      "title": "SLSA verifying artifacts",
+      "publisher": "SLSA",
+      "url": "https://slsa.dev/spec/v1.2/verifying-artifacts",
+      "retrieved": "2026-07-19",
+      "observation": "SLSA verification guidance requires consumers to interpret the provenance predicate and verify the artifact and provenance relationship rather than treating an attestation as an unbounded claim.",
+      "decision_consequence": "Future verification fixtures must bind the exact artifact, accepted predicate/version, builder identity, and policy; a provenance check must not be silently promoted into a release or supported-version decision."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-IN-TOTO-LAYOUT",
+      "title": "Getting started",
+      "publisher": "in-toto",
+      "url": "https://in-toto.io/docs/getting-started/",
+      "retrieved": "2026-07-19",
+      "observation": "in-toto uses an owner-signed layout and functionary-signed link metadata to describe authorized supply-chain steps and the materials and products of each step.",
+      "decision_consequence": "Future release evidence must separate authorized step identity, materials/products, layout expiry, and artifact signatures; in-toto does not decide Turing's update roles, installer transaction, or emergency authority."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-SIGSTORE-SIGNING",
+      "title": "Cosign signing overview",
+      "publisher": "Sigstore",
+      "url": "https://docs.sigstore.dev/cosign/signing/overview/",
+      "retrieved": "2026-07-19",
+      "observation": "Sigstore documents identity-bound signing workflows and verification material for software artifacts.",
+      "decision_consequence": "Signing experiments must record signer identity, artifact digest, verification policy, privacy impact, and recovery assumptions; Sigstore remains a candidate evidence model, not a selected Turing trust root or offline-key policy."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-SIGSTORE-BUNDLE",
+      "title": "Sigstore bundle format",
+      "publisher": "Sigstore",
+      "url": "https://docs.sigstore.dev/about/bundle/",
+      "retrieved": "2026-07-19",
+      "observation": "Sigstore bundles can carry signatures, certificates, and transparency-log verification material together with an artifact reference.",
+      "decision_consequence": "A future packet must retain the bundle, artifact digest, verification configuration, transparency evidence, and redaction/access treatment; bundle presence is not proof of channel policy, rollback, migration, or release authority."
+    }
+  ],
+  "source_documents": [
+    "docs/research/package-update-trust-and-recovery-decision-prep-2026-07.md",
+    "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "docs/research/research-package-update-lab-inventory-2026-07.md",
+    "docs/release-operations/05-update-metadata-rollout-and-rollback.md",
+    "docs/release-operations/02-reproducible-builds-provenance-and-sbom.md",
+    "docs/release-operations/03-signing-keys-and-package-attestation.md",
+    "docs/release-operations/machine/research-package-update-lab.json"
+  ],
+  "unsupported": [
+    "No Turing package, updater, installer, metadata parser, signing hierarchy, or stable channel has been implemented or selected.",
+    "No fake-key update lab, installation fault rehearsal, rollback result, profile migration result, or owner-reviewed PB-017 readiness decision exists.",
+    "No production signing keys, offline roots, real updater service, public distribution, or real user profile is used by this manifest.",
+    "No release readiness, supported-security, rollback safety, migration safety, production, Chrome-class, performance, or broad implementation claim follows from these sources."
+  ]
+}

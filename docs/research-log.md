@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Package/update source identity made executable
+
+Question:
+
+Can the official TUF, SLSA, in-toto, and Sigstore observations already used by `PB-017` be tracked as stable release-operation inputs without treating framework documentation as an updater, signing, rollback, migration, or release decision?
+
+Method:
+
+Compared the Package, Update Trust, and Recovery Decision Preparation, Package/Update Execution and Release-Safety Closure Preparation, research package/update lab inventory, release-operations books, and official TUF, SLSA, in-toto, and Sigstore sources. Added a no-claim manifest with seven source records, eight evidence axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep metadata roles/thresholds/freshness, target binding/rollback, build provenance, authorized supply-chain steps, signing/transparency, installation recovery, profile transitions, and privacy/claim review as separate evidence axes. No package/update framework, package format, signing hierarchy, updater, channel, or release policy is selected.
+
+Impact:
+
+`PB-017` remains partial; no package/update execution, rollback or migration result, release readiness, supported-security, production, or implementation claim changed.
+
 ## 2026-07-19 - Accessibility platform source identity made executable
 
 Question:

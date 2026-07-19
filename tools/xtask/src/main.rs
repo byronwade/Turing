@@ -147,6 +147,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_package_update_sources.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_implementation_plan.py"],
     )?;
     command(

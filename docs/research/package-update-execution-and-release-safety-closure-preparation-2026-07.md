@@ -19,6 +19,8 @@ The source-backed decision preparation reviewed on 2026-07-19 remains the canoni
 | Build provenance | [SLSA](https://slsa.dev/) and [in-toto](https://in-toto.io/docs/getting-started/) | Source/build-step/materials provenance and authorized functionaries | Update authorization, platform installation, key recovery, or user-data migration safety |
 | Signing and transparency | [Sigstore signing](https://docs.sigstore.dev/cosign/signing/overview/) and [Sigstore bundles](https://docs.sigstore.dev/about/bundle/) | Identity-bound signing and transparency evidence options | Offline-root suitability, privacy policy, emergency recovery, channel policy, or supported-security scope |
 
+The checked no-claim [package/update source manifest](../release-operations/machine/package-update-source-manifest.json), [manifest schema](../release-operations/machine/package-update-source-manifest.schema.json), and [`validate_package_update_sources.py`](../../tools/validate_package_update_sources.py) preserve these official observations across eight evidence axes. They are source identity and decision-input records only; they do not select TUF, SLSA, in-toto, Sigstore, a package format, a signing hierarchy, an updater, a channel, or a release policy.
+
 The future fake-key lab must record which source role each assertion uses and keep metadata authorization, provenance, artifact signature, installation transaction, profile transition, and support decision as separate states. No source framework is selected by this route.
 
 ## Required evidence sequence

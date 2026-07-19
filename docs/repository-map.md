@@ -104,6 +104,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_benchmark_claim_bundles.py
     ├── validate_benchmark_readiness_review.py
     ├── validate_benchmark_statistics_analysis.py
+    ├── validate_package_update_sources.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
     ├── validate_fresh_host_readiness_review.py
@@ -323,6 +324,7 @@ Repository-owned tools live here.
 - `validate_ipc_wire_sources.py`: dependency-free validation for the checked no-claim PB-011 CBOR, Protocol Buffers, and FlatBuffers wire-source manifest, nine wire-safety evidence axes, source-document links, and unsupported codec/transport boundaries; it does not select an encoding, approve a generator, authenticate a transport, or prove production IPC;
 - `validate_benchmark_sources.py`: dependency-free validation for the checked no-claim PB-013 benchmark-source manifest, official suite/methodology/regression-policy/telemetry/source IDs and URLs, ten measurement evidence axes, source-document links, and unsupported result/claim boundaries; it does not provide a browser run, competitor result, statistics approval, or performance claim;
 - `validate_accessibility_sources.py`: dependency-free validation for the checked no-claim native UI/accessibility platform-source manifest, official Windows/macOS/Linux source IDs and URLs, nine accessibility evidence axes, source-document links, and unsupported workflow/readiness boundaries; it does not provide platform execution, screen-reader coverage, IME proof, page-tree proof, UI-gate evidence, or accessibility readiness;
+- `validate_package_update_sources.py`: dependency-free validation for the checked no-claim PB-017 package/update source manifest, official TUF/SLSA/in-toto/Sigstore source IDs and URLs, eight update-trust evidence axes, source-document links, and unsupported updater/release boundaries; it does not select an updater, package format, signing hierarchy, channel, or release policy;
 - `validate_servo_local_compatibility_corpus.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim local compatibility corpus manifest, generated fixture paths, SHA-256 hashes, byte counts, LF line endings, local-only origins and URLs, required case categories, artifact expectations, failure denominators, and unsupported compatibility/adoption claims;
 - `validate_servo_local_compatibility_https_harness.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim HTTPS host-alias harness plan, corpus origin coverage, SNI/SAN expectations, isolated trust-store policy, host-to-loopback alias controls, cleanup evidence requirements, browser-run record fields, and unsupported compatibility/adoption claims;
 - `serve_servo_local_compatibility_corpus.py`: dependency-free HTTP/1.1 loopback route self-test for the checked `ADR9-EV-013` generated fixtures, Host-header origin mapping, fixture response hashes, shutdown behavior, and no-claim browser/WPT/Test262/HTTPS boundaries;
@@ -403,6 +405,8 @@ The checked no-claim [`ipc-wire-source-manifest.json`](blueprint-v1/machine/ipc-
 The checked no-claim [`benchmark-source-manifest.json`](blueprint-v1/machine/benchmark-source-manifest.json) and [`benchmark-source-manifest.schema.json`](blueprint-v1/machine/benchmark-source-manifest.schema.json) track official benchmark and performance-policy observations; [`validate_benchmark_sources.py`](../tools/validate_benchmark_sources.py) verifies the records without providing a browser run, competitor result, statistics approval, or performance claim.
 
 The checked no-claim [`accessibility-source-manifest.json`](accessibility/machine/accessibility-source-manifest.json) and [`accessibility-source-manifest.schema.json`](accessibility/machine/accessibility-source-manifest.schema.json) track official platform accessibility observations; [`validate_accessibility_sources.py`](../tools/validate_accessibility_sources.py) verifies the records without providing workflow execution, screen-reader coverage, IME correctness, page-tree proof, or accessibility readiness.
+
+The checked no-claim [`package-update-source-manifest.json`](release-operations/machine/package-update-source-manifest.json) and [`package-update-source-manifest.schema.json`](release-operations/machine/package-update-source-manifest.schema.json) track official update-trust, provenance, supply-chain, signing, recovery, and privacy observations; [`validate_package_update_sources.py`](../tools/validate_package_update_sources.py) verifies the records without selecting an updater, package format, signing hierarchy, channel, or release policy.
 
 | Evidence area | Registry or artifact | Validator or runner | Boundary |
 |---|---|---|---|

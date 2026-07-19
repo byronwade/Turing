@@ -113,6 +113,8 @@ The performance lane also has a checked no-claim [benchmark-source manifest](blu
 
 The native UI lane also has a checked no-claim [accessibility-source manifest](accessibility/machine/accessibility-source-manifest.json) and [`validate_accessibility_sources.py`](../tools/validate_accessibility_sources.py); these track platform accessibility observations only and do not provide screen-reader, IME, page-tree, or readiness evidence.
 
+The package/update lane also has a checked no-claim [package/update source manifest](release-operations/machine/package-update-source-manifest.json) and [`validate_package_update_sources.py`](../tools/validate_package_update_sources.py); these track official update-trust, provenance, supply-chain, signing, recovery, and privacy observations only and do not select an updater or provide release evidence.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |
