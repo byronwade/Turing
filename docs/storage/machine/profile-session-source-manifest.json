@@ -52,6 +52,33 @@
       "retrieved": "2026-07-19",
       "observation": "The W3C security and privacy guidance treats local browser storage mechanisms as potential sources of persistent user information and asks user agents to consider clearing and privacy effects.",
       "decision_consequence": "Profile/session design must document persistence, clearing, retention, export, private-session exclusion, and identifier-remanence risks; the questionnaire does not approve a Turing privacy policy or real-profile handling."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-SQLITE-ATOMIC-COMMIT",
+      "title": "Atomic Commit In SQLite",
+      "publisher": "SQLite",
+      "url": "https://sqlite.org/atomiccommit.html",
+      "retrieved": "2026-07-19",
+      "observation": "SQLite documents journal-based atomic commit across interruption and power failure, with storage flushes and hardware/filesystem assumptions as part of the mechanism.",
+      "decision_consequence": "A Turing persistence experiment must record journal/WAL mode, sync policy, filesystem and hardware assumptions, checkpoint behavior, and recovery outcomes; atomic-commit documentation does not prove the selected profile backend or platform configuration is durable."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-SQLITE-CORRUPTION",
+      "title": "How To Corrupt An SQLite Database File",
+      "publisher": "SQLite",
+      "url": "https://sqlite.org/howtocorrupt.html",
+      "retrieved": "2026-07-19",
+      "observation": "SQLite identifies unsafe file access, locking failures, failed sync, filesystem or hardware faults, and configuration errors as corruption or durability risks, while distinguishing consistency from durable persistence.",
+      "decision_consequence": "Profile/session tests must exercise concurrent access, journal pairing, lock and sync failures, direct-file interference controls, corruption detection, quarantine, and the difference between a consistent rollback and a durably committed record."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-WINDOWS-FLUSH",
+      "title": "Flushing System-Buffered I/O Data to Disk",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/flushing-system-buffered-i-o-data-to-disk",
+      "retrieved": "2026-07-19",
+      "observation": "Windows documents that ordinary writes are system-buffered and that applications must use explicit flush or write-through controls when persistence of buffered data matters; flush frequency also affects performance.",
+      "decision_consequence": "Windows fault tests must capture the selected flush/write-through policy, error handling, ordering, latency, and recovery result. A successful write or close must not be counted as persistent profile durability."
     }
   ],
   "source_documents": [

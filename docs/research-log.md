@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Profile/session durability evidence refreshed
+
+Question:
+
+What primary storage evidence must be added before Turing can evaluate profile/session durability, migration, and recovery without treating a successful write or database choice as proof of data safety?
+
+Method:
+
+Compared the existing profile/session lifecycle decision packet, execution closure route, storage migration book, checked profile/session source manifest, and `PB-016` readiness records with SQLite's [atomic commit](https://sqlite.org/atomiccommit.html) and [corruption](https://sqlite.org/howtocorrupt.html) documentation and Microsoft's [buffered-I/O flush guidance](https://learn.microsoft.com/en-us/windows/win32/fileio/flushing-system-buffered-i-o-data-to-disk). Added three source identities to the machine manifest and validator and synchronized the lifecycle, execution, and storage research records.
+
+Result:
+
+Persistence evidence must distinguish atomic consistency from durable persistence and must retain journal/WAL mode, sync/flush policy, locking, filesystem and hardware assumptions, concurrent-access behavior, corruption detection, quarantine, and platform-specific failure results. SQLite or an operating-system flush API may inform the experiment but does not select Turing's profile backend or prove a production profile format.
+
+Impact:
+
+The `PB-016` source manifest now requires seven primary source records and preserves the nine profile/session evidence axes. No profile format, migration, credential, privacy, data-loss, production, performance, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future `TASK-000007` synthetic-fixture package exercise interrupted commits, power-loss boundaries, corruption, migration rollback, privacy exclusion, and recovery accounting with the selected backend and platform policy?
+
 ## 2026-07-19 - Sandbox platform evidence refreshed
 
 Question:

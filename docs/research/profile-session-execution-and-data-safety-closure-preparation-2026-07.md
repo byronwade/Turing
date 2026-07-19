@@ -9,6 +9,8 @@ Research date: 2026-07-19
 
 The [Profile Session Format Inventory](profile-session-format-inventory-2026-07.md) and [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) define the planning vocabulary. This report defines the evidence sequence that must replace those planning artifacts before profile/session work can be treated as executable or release-relevant. It is a closure route, not an implementation authorization.
 
+The persistence portion of the evidence route must also preserve the SQLite [atomic-commit](https://sqlite.org/atomiccommit.html) and [corruption](https://sqlite.org/howtocorrupt.html) constraints plus Windows [buffered-I/O flush](https://learn.microsoft.com/en-us/windows/win32/fileio/flushing-system-buffered-i-o-data-to-disk) behavior when those technologies are evaluated. These sources constrain the experiment; they do not select SQLite, a journal mode, a flush policy, or a profile format.
+
 ## Required evidence sequence
 
 1. Freeze versioned record contracts for profile, Space, session, snapshot, and migration records. Each contract must identify its owner, identity and epoch fields, schema window, integrity marker, authority boundary, privacy class, retention, export, deletion, and downgrade behavior.

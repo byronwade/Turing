@@ -106,6 +106,9 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 - https://w3c.github.io/IndexedDB/
 - https://w3c.github.io/ServiceWorker/
 - https://sqlite.org/
+- https://sqlite.org/atomiccommit.html
+- https://sqlite.org/howtocorrupt.html
+- https://learn.microsoft.com/en-us/windows/win32/fileio/flushing-system-buffered-i-o-data-to-disk
 - https://w3c.github.io/webappsec-clear-site-data/
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
