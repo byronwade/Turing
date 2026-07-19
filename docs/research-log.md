@@ -7632,3 +7632,21 @@ Split the board into distinct `PB-019` and `PB-020` rows and added a validator c
 Next question:
 
 Which owner-reviewed evidence packet can close one of the separate scopes without conflating backup coverage with readiness promotion?
+
+# 2026-07-19 - Research packet ownership metadata audit
+
+Question:
+
+Can a maintainer identify the status and responsible role for every durable research packet without inferring ownership from a linked gate?
+
+Method:
+
+Scanned all 103 indexed durable research Markdown files for explicit `Status` and `Owner` metadata, then compared the missing entries with each packet's gate, scope, and existing governance language.
+
+Decision:
+
+Added role-based owner metadata to the nine previously incomplete packets and the final closure-record example found during validation. Strengthened `validate_research_index.py` so future durable research files cannot enter the index without both fields. This improves handoff metadata only and does not promote any gate or research claim.
+
+Next question:
+
+Which remaining research packets require a dated evidence-refresh trigger beyond their owner and status metadata?
