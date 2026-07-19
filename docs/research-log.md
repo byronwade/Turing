@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Benchmark host-trace integrity evidence added
+
+Question:
+
+What host-trace facts must be retained before Windows CPU, memory, power, or energy observations can be treated as auditable benchmark artifacts rather than unverified trace files?
+
+Method:
+
+Compared the PB-013 benchmark source manifest, benchmark evidence/claim closure route, trace/artifact package contract, resource-attribution taxonomy, Windows reference-host controls, and benchmark readiness review with Microsoft's [Windows Performance Recorder](https://learn.microsoft.com/en-us/windows-hardware/test/wpt/introduction-to-wpr) and [ETW](https://learn.microsoft.com/en-us/windows/win32/etw/about-event-tracing) documentation. Added both source identities to the manifest and validator and synchronized the closure route and documentation-readiness matrix.
+
+Result:
+
+Host-trace evidence must bind tool/profile, start/stop commands, privilege and host controls, provider/session configuration, buffer and event-loss indicators, clock/timestamp facts, process/thread attribution, ETL hash, analysis tool/version, and missing-event policy. Trace-file existence is not capture-integrity proof and cannot replace browser pins, workload, lifecycle, security, or failure-denominator evidence.
+
+Impact:
+
+The `PB-013` benchmark-source manifest now requires ten primary source records across ten evidence axes. No Turing run, competitor result, statistics approval, performance, memory, energy, Chrome-class, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the reviewed `TASK-000005` L1 packet capture browser results and host traces with matching clocks, resource attribution, raw artifacts, failure denominator, cleanup, and owner review?
+
 ## 2026-07-19 - IPC platform identity evidence added
 
 Question:

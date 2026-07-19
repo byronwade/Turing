@@ -89,6 +89,24 @@
       "retrieved": "2026-07-19",
       "observation": "Google reports dated vendor measurements with named hardware, operating system, and suite versions.",
       "run_consequence": "Treat vendor scores as dated context only and retain hardware, OS, suite version, release channel, and disclosure boundaries; they are not Turing results or universal targets."
+    },
+    {
+      "source_id": "BENCH-SOURCE-MICROSOFT-WPR",
+      "title": "Introduction to Windows Performance Recorder",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows-hardware/test/wpt/introduction-to-wpr",
+      "retrieved": "2026-07-19",
+      "observation": "Windows Performance Recorder uses ETW to capture detailed system and application behavior and resource usage, with WPR/WPA roles and recording profiles that affect what the trace can establish.",
+      "run_consequence": "Record WPR/WPA or equivalent tool version, selected profile, start/stop commands, host privilege and controls, collection interval, ETL artifact hash, and any trace gaps before using host traces as performance or resource evidence."
+    },
+    {
+      "source_id": "BENCH-SOURCE-MICROSOFT-ETW",
+      "title": "About Event Tracing",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/etw/about-event-tracing",
+      "retrieved": "2026-07-19",
+      "observation": "ETW separates controllers, providers, and consumers and supports kernel/application events, real-time consumption, and logged traces; buffer and provider configuration affect what is captured.",
+      "run_consequence": "Bind every trace to provider/session configuration, buffer and loss indicators, controller/consumer identity, timestamp/clock facts, process and thread attribution, and an explicit missing-event policy; a trace file without capture-integrity review is not a complete sample."
     }
   ],
   "source_documents": [

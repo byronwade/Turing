@@ -16,6 +16,12 @@ The [Benchmark Claim-Bundle Examples](benchmark-claim-bundle-examples-2026-07.md
 
 The checked [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), validated by [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py), keeps official suite methodology, regression-policy, telemetry, compatibility, and vendor-context observations linked to this closure route. It does not supply a browser run, competitor result, statistics approval, or claim evidence.
 
+## Host-trace integrity boundary
+
+Microsoft's [Windows Performance Recorder guidance](https://learn.microsoft.com/en-us/windows-hardware/test/wpt/introduction-to-wpr) describes WPR/ETW recordings for system and application behavior and resource usage. Microsoft's [ETW overview](https://learn.microsoft.com/en-us/windows/win32/etw/about-event-tracing) separates controllers, providers, and consumers and makes session, buffer, and provider configuration part of the capture model.
+
+For the Windows reference tier, a real L1/L2 package must retain WPR/WPA or equivalent tool identity, profile, start/stop commands, privilege and host controls, provider/session configuration, buffer and event-loss indicators, clock/timestamp facts, process/thread attribution, ETL hash, analysis tool/version, and an explicit missing-event policy. A trace file's existence is not proof that the required events were captured, and a host trace does not replace browser-reported version, workload, lifecycle, security, or failure-denominator evidence.
+
 ## Evidence levels
 
 | Level | Allowed evidence | Required transition proof | Claims prohibited |
