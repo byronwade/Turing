@@ -50,7 +50,7 @@ This path supports contained M0 and no-claim evidence work only. It does not app
 
 The repository is now ready for **contained M0 implementation tasks**. The documentation library currently contains twenty-seven detailed engineering and product books, including native UI, agent-execution, production-readiness, build-readiness, research, and validation controls.
 
-Implemented foundation:
+Contained M0 foundation currently present and validation-backed:
 
 - a root Cargo workspace using resolver 3;
 - Rust `1.97.1`, Rust 2024 for new crates, rustfmt, Clippy, and rust-src pinned by `rust-toolchain.toml`;
@@ -137,7 +137,7 @@ Turing is designed around six differentiators:
 | **Proposed opportunity** | `OP-*` market hypothesis requiring evidence and promotion |
 | **Deferred or gated** | Postponed or dependent on licensing, platform, staffing, or commercial access |
 
-Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [traceability](docs/blueprint-v1/machine/professional-traceability.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
+Canonical status lives in the [requirements](docs/blueprint-v1/machine/requirements.json), [traceability](docs/blueprint-v1/machine/professional-traceability.json), [requirement verification matrix](docs/blueprint-v1/machine/requirement-verification-matrix.json), [roadmap](docs/blueprint-v1/14-roadmap-work-breakdown.md), [pre-build readiness](docs/blueprint-v1/machine/pre-build-readiness.json), [market opportunities](docs/market-strategy/machine/feature-opportunities.json), and [production release gates](docs/production-readiness/machine/release-gates.json).
 
 ## Planned browser surface
 

@@ -7758,3 +7758,21 @@ Added explicit inbound routes from the requirements/evidence handbook, documenta
 Next question:
 
 Which planned verification lane should receive the first owner-approved task manifest after the remaining source-strategy and readiness gates are resolved?
+
+# 2026-07-19 - Semantic maturity-language audit
+
+Question:
+
+Do canonical entry points distinguish the validation-backed M0 foundation from browser implementation, supported capability, production readiness, and Chrome-class claims?
+
+Method:
+
+Scanned the root README, documentation index, project-buildout handbook, Blueprint chapters, readiness records, research packets, and validator policy markers for maturity terms such as implemented, verified, supported, complete, production-ready, compatible, faster, and Chrome-class. Compared each positive statement with its surrounding scope and claim boundary.
+
+Decision:
+
+Reworded the root README heading from `Implemented foundation` to `Contained M0 foundation currently present and validation-backed` and added the requirement verification matrix to the root canonical-status route. No unsupported product, security, compatibility, performance, accessibility, release, or production claim was found or promoted.
+
+Next question:
+
+Which remaining human-facing status statement should be reviewed after the next evidence lane changes its maturity state?
