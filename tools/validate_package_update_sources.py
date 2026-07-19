@@ -30,6 +30,8 @@ REQUIRED_SOURCES = {
     "REL-UPDATE-SOURCE-IN-TOTO-LAYOUT",
     "REL-UPDATE-SOURCE-SIGSTORE-SIGNING",
     "REL-UPDATE-SOURCE-SIGSTORE-BUNDLE",
+    "REL-UPDATE-SOURCE-WINDOWS-SIGNTOOL",
+    "REL-UPDATE-SOURCE-WINDOWS-CODE-SIGNING",
 }
 REQUIRED_UNSUPPORTED = {
     "No Turing package, updater, installer, metadata parser, signing hierarchy, or stable channel has been implemented or selected.",

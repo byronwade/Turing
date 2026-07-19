@@ -66,6 +66,19 @@ Implications for Turing:
 
 Sigstore is a candidate integration or evidence format, not a Turing decision in this report.
 
+### Windows signing and verification are platform-specific evidence
+
+Microsoft's [SignTool verification guidance](https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature) distinguishes the verification policy, signer inspection, and success, warning, and failure outcomes. Microsoft's [Windows app code-signing options](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options) also distinguishes distribution routes and their certificate and key-management implications.
+
+Implications for Turing:
+
+- a Windows artifact record must identify the exact file or package digest, verification policy, signer and certificate-chain result, timestamp state, tool and SDK version, and warning or failure disposition;
+- Authenticode verification is an artifact/platform check, not proof of update-metadata freshness, build provenance, authorized supply-chain steps, installer transaction safety, or profile migration safety;
+- the package-type and distribution-route decision must keep MSIX, MSI, EXE, certificate identity, private-key custody, timestamping, rotation, and recovery as separate owner-reviewed decisions;
+- the existing unsigned native-dependency observations remain a release-input risk and must not be silently converted into a production package or signing claim.
+
+These sources constrain a future Windows experiment; they do not select a package format, certificate authority, signing hierarchy, distribution channel, or release policy.
+
 ## Required trust-state separation
 
 The following states must remain distinct in the package/update model:
@@ -133,3 +146,5 @@ This report does not select TUF, SLSA, in-toto, Sigstore, a package format, an u
 - [in-toto getting started](https://in-toto.io/docs/getting-started/)
 - [Sigstore signing overview](https://docs.sigstore.dev/cosign/signing/overview/)
 - [Sigstore bundle format](https://docs.sigstore.dev/about/bundle/)
+- [Microsoft SignTool verification](https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature)
+- [Microsoft Windows app code-signing options](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options)

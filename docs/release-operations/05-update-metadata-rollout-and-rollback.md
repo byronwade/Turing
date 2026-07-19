@@ -109,6 +109,8 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 - https://www.sigstore.dev/
 - https://spdx.dev/
 - https://cyclonedx.org/
+- https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature
+- https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
 

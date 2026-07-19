@@ -78,6 +78,24 @@
       "retrieved": "2026-07-19",
       "observation": "Sigstore bundles can carry signatures, certificates, and transparency-log verification material together with an artifact reference.",
       "decision_consequence": "A future packet must retain the bundle, artifact digest, verification configuration, transparency evidence, and redaction/access treatment; bundle presence is not proof of channel policy, rollback, migration, or release authority."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-WINDOWS-SIGNTOOL",
+      "title": "Use SignTool to verify a file signature",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature",
+      "retrieved": "2026-07-19",
+      "observation": "Microsoft documents SignTool verification, the Default Authentication Verification Policy option, verbose signer inspection, and distinct success, failure, and warning exit codes.",
+      "decision_consequence": "Windows package experiments must record the verification policy, signer identity, digest/signature result, warning and failure handling, and exact tool configuration; an Authenticode check is one artifact/platform signal and does not replace update metadata, provenance, or channel authorization."
+    },
+    {
+      "source_id": "REL-UPDATE-SOURCE-WINDOWS-CODE-SIGNING",
+      "title": "Code signing options for Windows app developers",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options",
+      "retrieved": "2026-07-19",
+      "observation": "Microsoft describes distinct Windows app distribution and code-signing options, including certificate and key-management considerations that vary by distribution route.",
+      "decision_consequence": "The Windows release decision must keep package type, distribution route, certificate identity, private-key custody, timestamping, verification policy, and recovery/rotation separate; this source does not select MSIX, MSI, EXE, a certificate authority, or Turing's release channel."
     }
   ],
   "source_documents": [

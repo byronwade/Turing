@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Windows package-signing evidence added to PB-017
+
+Question:
+
+What platform-specific signing and verification facts must be preserved before Turing can evaluate Windows package/update behavior without treating an Authenticode result as complete release trust?
+
+Method:
+
+Compared the package/update trust decision packet, execution closure route, signing and update engineering chapters, PB-017 source manifest, and existing unsigned native-dependency observations with Microsoft's [SignTool verification guidance](https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature) and [Windows app code-signing options](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options). Added both source identities to the machine manifest and validator and synchronized the package/update decision, execution, release-book, and documentation-readiness records.
+
+Result:
+
+Windows evidence must preserve verification policy, signer and certificate-chain result, digest, timestamp state, tool/SDK identity, warning and failure disposition, distribution route, package type, private-key custody, rotation, and recovery as separate fields. Authenticode verification is an artifact/platform signal; it does not establish metadata freshness, provenance, authorized supply-chain steps, installer recovery, profile migration safety, or release authority.
+
+Impact:
+
+The `PB-017` source manifest now requires nine primary source records across its eight evidence axes. The existing unsigned native-dependency observations remain an explicit release-input risk. No package format, signing hierarchy, channel, production updater, release, supported-security, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future `TASK-000009` fake-key, local-only lab verify Windows artifacts under an explicitly selected policy while preserving package identity, metadata authorization, provenance, installer recovery, profile-transition, privacy, and owner-review boundaries?
+
 ## 2026-07-19 - Profile/session durability evidence refreshed
 
 Question:
