@@ -4736,6 +4736,23 @@ def check_production_readiness_controls() -> None:
     slo_ids = [item.get("id") for item in slo_items]
     if slo_ids != [f"SLO-{index:03d}" for index in range(1, 17)]:
         fail(f"SLO IDs must be SLO-001 through SLO-016; found {slo_ids}")
+    performance_slo_metadata = {
+        "SLO-004": ("startup", ["REQ-PERF-001"]),
+        "SLO-005": ("interaction", ["REQ-PERF-001"]),
+        "SLO-006": ("frame_pacing", ["REQ-PERF-001"]),
+        "SLO-007": ("memory_lifecycle", ["REQ-PERF-002", "REQ-PERF-003"]),
+        "SLO-008": ("energy", ["REQ-PERF-001", "REQ-PERF-003"]),
+    }
+    for slo_id, (lane, requirements) in performance_slo_metadata.items():
+        item = next(slo for slo in slo_items if slo.get("id") == slo_id)
+        if item.get("target") is not None:
+            fail(f"{slo_id} target must remain unset until reviewed benchmark evidence exists")
+        if item.get("evidence_lane") != lane:
+            fail(f"{slo_id} evidence lane must remain {lane}")
+        if item.get("requirements") != requirements:
+            fail(f"{slo_id} requirement mapping must remain {requirements}")
+        if item.get("minimum_evidence_level") != "1":
+            fail(f"{slo_id} minimum evidence level must remain Level 1")
     gate_items = gates.get("gates") if isinstance(gates, dict) else None
     if not isinstance(gate_items, list):
         fail("release-gates.json must contain gates")
