@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Sandbox platform source identity made executable
+
+Question:
+
+Can the official Windows, Linux, and macOS sandbox source observations be tracked as a stable machine-checked PB-012 input without treating platform documentation as Turing containment evidence?
+
+Method:
+
+Compared the Sandbox Platform-Evidence Decision Preparation report, Sandbox Probe Inventory, security-engine sandbox book, official source URLs, and the PB-012 evidence matrix. Added a no-claim manifest with six source records, three platforms, nine evidence axes, source-document links, and unsupported boundaries, plus a validator wired into xtask check.
+
+Decision:
+
+Treat the manifest as source identity and evidence-axis tracking only. Effective OS policy, packaged expected-deny results, broker fixtures, compromised-client tests, and owner review remain required.
+
+Impact:
+
+Platform research is now machine-tracked and cannot silently lose a platform, source, or evidence axis. PB-012 remains partial; no sandbox, renderer-security, site-isolation, hostile-browsing, production-safety, security-gate, or implementation claim changed.
+
 ## 2026-07-19 - Nova coverage added to primary handoff surfaces
 
 Question:

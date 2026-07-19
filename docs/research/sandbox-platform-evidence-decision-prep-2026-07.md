@@ -20,6 +20,8 @@ What platform-specific facts must be captured before Turing can compare sandbox 
 
 These sources document platform mechanisms and limitations. They do not prove a Turing role is contained, and they do not replace packaged probes, effective-policy capture, or owner review.
 
+The checked [sandbox platform-source manifest](../security-engine/machine/sandbox-platform-source-manifest.json), validated by [`validate_sandbox_platform_sources.py`](../../tools/validate_sandbox_platform_sources.py), is the machine identity record for these observations. It tracks source identity and evidence axes only; it does not make any source an effective policy artifact or Turing result.
+
 ## Findings that affect Turing's evidence contract
 
 - Windows AppContainer is a least-privilege execution environment that can isolate file, registry, network, process, device, credential, and window access, with selected resources granted or brokered. A Turing result must record the effective identity, token/capabilities, inherited handles, job limits, mitigations, package-identity assumptions, and broker behavior; naming AppContainer alone is insufficient.

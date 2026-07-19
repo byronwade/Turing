@@ -29,6 +29,7 @@ This is not a working sandbox harness, platform policy, packaged-build probe res
 - [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json)
 - [WP-003 Sandbox Probe Contract](wp-003-sandbox-probe-plan-2026-07.md)
 - [Sandbox Platform-Evidence Decision Preparation](sandbox-platform-evidence-decision-prep-2026-07.md)
+- [`sandbox-platform-source-manifest.json`](../security-engine/machine/sandbox-platform-source-manifest.json) and [`validate_sandbox_platform_sources.py`](../../tools/validate_sandbox_platform_sources.py)
 - [`probe-catalog.json`](../../schemas/sandbox/probe-catalog.json)
 - [`probe-evidence.schema.json`](../../schemas/sandbox/probe-evidence.schema.json)
 - [`sandbox-probe-package.schema.json`](../security-engine/machine/sandbox-probe-package.schema.json)
@@ -55,7 +56,7 @@ The checked sandbox readiness-review template adds the handoff shape for the fir
 
 The checked WP-003 contract adds a stable no-claim operation catalog and evidence-bundle schema for the first future executable package. It requires three allowed control probes, expected-deny operation records, unsupported-as-not-pass behavior, rejection of application-level stub denials as sandbox proof, redacted evidence, and `research_evidence_only` release-claim status.
 
-The dated [Sandbox Platform-Evidence Decision Preparation](sandbox-platform-evidence-decision-prep-2026-07.md) records the platform-specific evidence differences for Windows, Linux, and macOS, including the rule that seccomp is not a complete sandbox and that Landlock ABI support must be captured explicitly.
+The dated [Sandbox Platform-Evidence Decision Preparation](sandbox-platform-evidence-decision-prep-2026-07.md) records the platform-specific evidence differences for Windows, Linux, and macOS, including the rule that seccomp is not a complete sandbox and that Landlock ABI support must be captured explicitly. The checked [sandbox platform-source manifest](../security-engine/machine/sandbox-platform-source-manifest.json) and [`validate_sandbox_platform_sources.py`](../../tools/validate_sandbox_platform_sources.py) keep the six official source records and nine evidence axes synchronized without turning documentation into containment evidence.
 
 ## Missing Evidence
 
@@ -117,6 +118,7 @@ Run:
 python3 -B tools/validate_sandbox_contracts.py
 python3 -B tools/validate_sandbox_probe_inventory.py
 python3 -B tools/validate_sandbox_readiness_review.py
+python3 -B tools/validate_sandbox_platform_sources.py
 python3 -B tools/validate_blueprint.py
 ```
 

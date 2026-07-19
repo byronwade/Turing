@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "manifest_id": "SEC.SANDBOX.PLATFORM_SOURCES.2026_07",
+  "status": "no_claim_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-012",
+  "claim_status": "No-claim platform-source manifest only; platform documentation is not Turing sandbox evidence, effective-policy capture, containment proof, security-gate approval, production-safety evidence, or implementation evidence.",
+  "evidence_axes": [
+    "identity_and_launch",
+    "effective_policy",
+    "allowed_control",
+    "expected_deny",
+    "broker_authority",
+    "hostile_client",
+    "lifecycle_and_resources",
+    "platform_matrix",
+    "evidence_integrity"
+  ],
+  "sources": [
+    {
+      "source_id": "SEC-SOURCE-WINDOWS-APPCONTAINER",
+      "platform": "windows",
+      "title": "AppContainer isolation",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation",
+      "retrieved": "2026-07-19",
+      "scope": "Process, file, registry, network, device, credential, and brokered-access isolation model.",
+      "probe_consequence": "Capture effective token, package and capability identity, integrity level, ACLs, inherited handles, broker path, and granted resource set for the exact packaged role."
+    },
+    {
+      "source_id": "SEC-SOURCE-WINDOWS-MITIGATIONS",
+      "platform": "windows",
+      "title": "Process mitigation policy",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/procthread/process-mitigation-policy",
+      "retrieved": "2026-07-19",
+      "scope": "Effective process mitigation policy, including dynamic-code, image-load, child-process, and control-flow restrictions.",
+      "probe_consequence": "Capture queried effective mitigations and distinguish an expected denial from a role that fails to launch or silently falls back."
+    },
+    {
+      "source_id": "SEC-SOURCE-LINUX-SECCOMP",
+      "platform": "linux",
+      "title": "Seccomp BPF",
+      "publisher": "Linux kernel documentation",
+      "url": "https://www.kernel.org/doc/html/latest/userspace-api/seccomp_filter.html",
+      "retrieved": "2026-07-19",
+      "scope": "System-call filtering as one restriction layer, not a complete sandbox or information-flow policy.",
+      "probe_consequence": "Record filter hash, architecture checks, no-new-privileges state, namespaces, filesystem policy, broker rules, and residual surfaces; a syscall denial alone cannot pass PB-012."
+    },
+    {
+      "source_id": "SEC-SOURCE-LINUX-LANDLOCK",
+      "platform": "linux",
+      "title": "Landlock",
+      "publisher": "Linux kernel documentation",
+      "url": "https://www.kernel.org/doc/html/latest/userspace-api/landlock.html",
+      "retrieved": "2026-07-19",
+      "scope": "Stackable unprivileged filesystem and, depending on kernel ABI, network restrictions.",
+      "probe_consequence": "Capture kernel identity, detected ABI, handled rights, unsupported rights, ruleset digest, and degraded behavior rather than assuming a fixed policy."
+    },
+    {
+      "source_id": "SEC-SOURCE-MACOS-APP-SANDBOX",
+      "platform": "macos",
+      "title": "App Sandbox",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/security/app-sandbox",
+      "retrieved": "2026-07-19",
+      "scope": "Entitlement-based restriction of system resources and user data.",
+      "probe_consequence": "Bind signed executable identity, entitlement set, container state, helper relationship, inherited descriptors, broker path, and unavailable-entitlement behavior to the tested role."
+    },
+    {
+      "source_id": "SEC-SOURCE-MACOS-HARDENED-RUNTIME",
+      "platform": "macos",
+      "title": "Hardened Runtime",
+      "publisher": "Apple",
+      "url": "https://developer.apple.com/documentation/security/hardened-runtime",
+      "retrieved": "2026-07-19",
+      "scope": "Code-signing and runtime restrictions relevant to library validation, executable memory, debugging, and JIT policy.",
+      "probe_consequence": "Capture signature and hardened-runtime state, library-validation and JIT exceptions, loaded-library policy, and negative debug or code-loading results."
+    }
+  ],
+  "source_documents": [
+    "docs/research/sandbox-platform-evidence-decision-prep-2026-07.md",
+    "docs/research/sandbox-probe-inventory-2026-07.md",
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/security-engine/02-sandbox-brokers-and-platform-containment.md"
+  ],
+  "unsupported": [
+    "No effective platform policy has been captured.",
+    "No packaged expected-deny probe has been executed.",
+    "No owner-reviewed PB-012 readiness exists.",
+    "No sandbox, renderer-security, site-isolation, hostile-browsing, security-gate, production-safety, or implementation claim exists."
+  ]
+}
