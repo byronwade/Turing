@@ -2,7 +2,7 @@
 
 Status: architecture research plus buildable toolkit-neutral M0 model; no UI framework adopted  
 Owner: UI runtime, product, platform, accessibility, performance, security, and build engineering  
-Last reviewed: 2026-07-18
+Last reviewed: 2026-07-19
 
 This book defines a small native browser shell without Electron, Tauri, a system webview, a second browser engine, or a JavaScript runtime in trusted chrome.
 
@@ -33,7 +33,7 @@ The component boundary is recorded in [`workspace-components.json`](../blueprint
 
 `PB-004` framework-selection planning evidence is recorded in [`framework-bakeoff-inventory.json`](machine/framework-bakeoff-inventory.json), checked by [`validate_framework_bakeoff.py`](../../tools/validate_framework_bakeoff.py), and summarized in the [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md). This is not `ADR-0014`, toolkit selection, equivalent adapter evidence, accessibility readiness, IME or keyboard proof, page-surface approval, trusted-chrome readiness, release-path UI approval, performance/memory/energy proof, license/provenance approval, or production approval.
 
-`PB-014` design-token and component-fixture planning evidence is recorded in [`component-fixture-inventory.json`](machine/component-fixture-inventory.json), checked by [`validate_ui_component_fixtures.py`](../../tools/validate_ui_component_fixtures.py), and summarized in the [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md). This is not a rendered fixture pack, toolkit selection, accessibility-readiness claim, trusted-chrome-readiness claim, or release-path UI approval.
+`PB-014` design-token and component-fixture planning evidence is recorded in [`component-fixture-inventory.json`](machine/component-fixture-inventory.json), checked by [`validate_ui_component_fixtures.py`](../../tools/validate_ui_component_fixtures.py), and summarized in the [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md). The inventory now covers the nine core shell surfaces plus six Nova-specific product surfaces; it remains a no-claim planning record, not a rendered fixture pack, toolkit selection, accessibility-readiness claim, trusted-chrome-readiness claim, or release-path UI approval.
 
 `PB-005` page-surface/compositor planning evidence is recorded in [`page-surface-composition.json`](machine/page-surface-composition.json), checked by [`validate_page_surface_composition.py`](../../tools/validate_page_surface_composition.py), and summarized in the [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md). This is not `UI-GATE-7`, page-surface approval, compositor ownership, typed page-surface handle implementation, brokered handle proof, renderer-texture composition proof, software-fallback proof, latency/frame-pacing proof, toolkit selection, or release-path UI approval.
 

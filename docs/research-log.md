@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Nova surface contracts expanded
+
+Question:
+
+Can the six Nova surface groups previously identified as missing from the native component inventory be represented in the same checked, no-claim contract system before implementation begins?
+
+Method:
+
+Compared the Nova source surface map with the component-fixture schema and validator, then added records for Shield, password vault/autofill, DevTools, history/bookmarks/reading/downloads/extensions, split/reader/capture/find tools, and agent activity. Each record carries states, commands, all required fixture axes, accessibility obligations, and an explicit authority boundary.
+
+Decision:
+
+Expanded `component-fixture-inventory.json` from 9 to 15 component surfaces and synchronized the Nova surface map, UI Runtime book, and component-fixture research record. Kept the inventory at no-claim planning status; visual presence and contract presence do not equal implementation, accessibility readiness, security readiness, or release approval.
+
+Impact:
+
+Nova now has machine-checked planning coverage for the full identified surface delta. Remaining proof is executable native fixtures, page-surface/protocol integration, storage/credential/agent/security behavior, accessibility evidence, and owner review. `PB-014`, the native UI gates, and the 90% contained-M0 / 0% full-build documentation measures remain unchanged.
+
 ## 2026-07-19 - Chrome-class benchmark source refresh
 
 Question:

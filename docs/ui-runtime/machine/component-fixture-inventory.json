@@ -2,7 +2,7 @@
   "schema_version": 1,
   "inventory_id": "UI.FIXTURE.NOCLAIM_SHELL_COMPONENTS.2026_07",
   "status": "no_claim_planning_inventory",
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "claim_status": "no-claim planning inventory only; no UI toolkit selection, no rendered fixture, no accessibility readiness, no trusted-chrome readiness, no release-path UI approval, and no implementation claim",
   "token_groups": [
     {
@@ -589,6 +589,268 @@
         "safe default action"
       ],
       "authority_boundary": "Recovery UI exercises no authority to replay state, migrate profiles, roll back updates, or delete data directly; recovery services validate snapshots, versions, and risk."
+    },
+    {
+      "component_id": "UI-COMPONENT-SHIELD",
+      "surface": "shield",
+      "name": "Turing Shield",
+      "purpose": "Origin-bound privacy, tracker, permission, download, and security-receipt surfaces.",
+      "required_states": [
+        "protected",
+        "tracker blocked",
+        "permission pending",
+        "permission denied",
+        "download screened",
+        "receipt redacted",
+        "policy unavailable"
+      ],
+      "required_commands": [
+        "open receipt",
+        "inspect category",
+        "allow once",
+        "deny",
+        "revoke permission",
+        "manage site policy",
+        "report issue"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "security state exposed as text and icon",
+        "origin and document identity announced",
+        "blocked category count exposed",
+        "permission consequence described",
+        "receipt actions keyboard reachable"
+      ],
+      "authority_boundary": "Shield UI presents policy and receipt state; network, permission, download, and security services decide enforcement and never accept page content as authority."
+    },
+    {
+      "component_id": "UI-COMPONENT-VAULT",
+      "surface": "password_vault",
+      "name": "Password Vault And Autofill",
+      "purpose": "Profile-scoped credential unlock, origin binding, autofill confirmation, and breach-warning surfaces.",
+      "required_states": [
+        "locked",
+        "unlocked",
+        "origin mismatch",
+        "fill confirmation",
+        "save confirmation",
+        "breach warning",
+        "redacted"
+      ],
+      "required_commands": [
+        "unlock",
+        "cancel fill",
+        "confirm fill",
+        "save credential",
+        "reject save",
+        "open credential details",
+        "lock vault"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "credential values never exposed in accessible names",
+        "origin binding and mismatch announced",
+        "unlock state exposed",
+        "fill consequence described",
+        "destructive or save actions clearly named"
+      ],
+      "authority_boundary": "Vault UI never reads or fills credentials directly; a profile-scoped credential service validates unlock, origin, document epoch, user confirmation, redaction, and authority."
+    },
+    {
+      "component_id": "UI-COMPONENT-DEVTOOLS",
+      "surface": "devtools",
+      "name": "Developer Tools",
+      "purpose": "Page and process diagnostics for inspector, network, sources, performance, storage, and causal trace workflows.",
+      "required_states": [
+        "detached",
+        "docked",
+        "recording",
+        "paused",
+        "redacted",
+        "target gone",
+        "trace export available"
+      ],
+      "required_commands": [
+        "inspect element",
+        "pause script",
+        "resume script",
+        "start recording",
+        "stop recording",
+        "clear data",
+        "export trace",
+        "close tools"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "panel and tool roles exposed",
+        "target origin, frame, and process identity announced",
+        "recording state announced",
+        "redaction state exposed",
+        "target-loss recovery reachable"
+      ],
+      "authority_boundary": "DevTools UI emits typed diagnostic requests; protocol, page, process, storage, and trace services enforce target identity, redaction, capability, export policy, and authority."
+    },
+    {
+      "component_id": "UI-COMPONENT-LIBRARY",
+      "surface": "library",
+      "name": "History Bookmarks Reading Downloads Extensions",
+      "purpose": "Profile and Space-owned browsing records, saved items, downloads, notes, and extension management surfaces.",
+      "required_states": [
+        "empty",
+        "loading",
+        "available",
+        "selected",
+        "deleting",
+        "download blocked",
+        "extension disabled"
+      ],
+      "required_commands": [
+        "search",
+        "open item",
+        "move to Space",
+        "delete item",
+        "clear range",
+        "pause download",
+        "remove extension",
+        "open details"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "list and tree roles expose item counts",
+        "profile and Space ownership announced",
+        "download status and blocking reason exposed",
+        "deletion consequence described",
+        "extension permission state exposed"
+      ],
+      "authority_boundary": "Library UI requests profile, storage, download, and extension operations; owning services enforce partition, deletion, download screening, extension capability, recovery policy, and authority."
+    },
+    {
+      "component_id": "UI-COMPONENT-VIEW-TOOLS",
+      "surface": "view_tools",
+      "name": "Split Reader Capture Find And Link Hints",
+      "purpose": "Document-scoped view, selection, search, capture, reading, and keyboard navigation tools.",
+      "required_states": [
+        "single view",
+        "split view",
+        "reader mode",
+        "find active",
+        "capture pending",
+        "selection changed",
+        "target stale"
+      ],
+      "required_commands": [
+        "split view",
+        "close pane",
+        "enter reader",
+        "find text",
+        "capture selection",
+        "next link hint",
+        "cancel tool",
+        "restore view"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "pane and document identity announced",
+        "selection and match count exposed",
+        "reader transformation state exposed",
+        "capture permission and scope described",
+        "stale-target recovery reachable"
+      ],
+      "authority_boundary": "View-tool UI emits document-epoch-bound commands; page-surface, selection, capture, and input services reject stale targets and enforce permission, origin, and authority policy."
+    },
+    {
+      "component_id": "UI-COMPONENT-AGENT-ACTIVITY",
+      "surface": "agent_activity",
+      "name": "Nova Assistant Activity",
+      "purpose": "Agent observations, watched pages, schedules, provider state, approvals, and audit history.",
+      "required_states": [
+        "idle",
+        "observing",
+        "waiting approval",
+        "running reversible action",
+        "stopped",
+        "provider unavailable",
+        "grant expired"
+      ],
+      "required_commands": [
+        "inspect observation",
+        "approve action",
+        "reject action",
+        "stop run",
+        "revoke grant",
+        "edit watch",
+        "disable schedule",
+        "open audit"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "agent state and risk class announced",
+        "observation source and redaction state exposed",
+        "approval consequence described",
+        "stop and revoke controls always reachable",
+        "provider and schedule failures announced"
+      ],
+      "authority_boundary": "Agent activity UI cannot grant authority; brokered agent services revalidate principal, page identity, risk, grant expiry, provider policy, schedule scope, and confirmation authority before action."
     }
   ],
   "unsupported": [

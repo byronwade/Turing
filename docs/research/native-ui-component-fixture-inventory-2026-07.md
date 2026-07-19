@@ -2,7 +2,7 @@
 
 Status: no-claim planning evidence for `PB-014`; no rendered fixture or toolkit selection
 Owner: UI runtime, product, accessibility, platform, and quality
-Date: 2026-07-18
+Date: 2026-07-19
 
 ## Question
 
@@ -17,6 +17,7 @@ This evidence does not render a fixture, select Slint, Vizia, Floem, GPUI, or an
 ## Inputs
 
 - [Native UI Runtime book](../ui-runtime/README.md)
+- [Nova Surface-to-Contract Map](../ui-runtime/design-lab/surface-contract-map.md)
 - [Product Experience book](../product-experience/README.md)
 - [Accessibility book](../accessibility/README.md)
 - [Blueprint 11 product UI and DevTools](../blueprint-v1/11-product-ui-devtools.md)
@@ -40,12 +41,12 @@ The inventory was shaped as a dependency-free machine registry with a validator 
 The checked inventory now contains:
 
 - 5 required token groups;
-- 9 required shell component surfaces;
+- 15 required component surfaces: 9 core shell surfaces and 6 Nova-specific product surfaces;
 - 9 required fixture axes;
 - component-level required states, commands, accessibility contracts, and authority boundaries;
 - no-claim language that blocks toolkit selection, rendered-fixture, accessibility-readiness, trusted-chrome-readiness, release-path UI, and implementation claims.
 
-`PB-014` can move from `not_started` to `partial` because the inventory and validator now exist. The status must not move beyond `partial` until rendered or equivalent adapter-specific fixtures and owner review exist.
+`PB-014` remains `partial`. The inventory now covers the Nova surface delta, but status must not move beyond `partial` until rendered or equivalent adapter-specific fixtures, native accessibility evidence, and owner review exist.
 
 ## Unsupported Conclusions
 
@@ -65,7 +66,7 @@ This report does not support any of these conclusions:
 
 `PB-014` still requires:
 
-- a rendered fixture pack generated from the semantic design-token registry and component inventory;
+- a rendered fixture pack generated from the semantic design-token registry, Nova surface map, and component inventory;
 - equivalent adapter-specific fixture evidence for the selected bake-off scope;
 - real keyboard, focus, screen-reader, forced-color, high-contrast, reduced-motion, density, localization, and error-state fixture outputs on the reference platform or owner-approved equivalent;
 - screenshots or semantic snapshots that prove visual, text-fit, focus, accessible-name, state, and error behavior;
