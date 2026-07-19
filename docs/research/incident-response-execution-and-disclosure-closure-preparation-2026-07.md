@@ -11,6 +11,8 @@ The [Incident Patch Rehearsal Inventory](incident-patch-rehearsal-inventory-2026
 
 The [Incident-Response and Patch-Rehearsal Packet Examples](incident-response-patch-rehearsal-packet-examples-2026-07.md) provides a fictitious field-level packet for the sequence below. It is sample-only and does not count as an executed rehearsal or owner decision.
 
+Repository coordination is a separate control surface. GitHub's [repository security advisory guidance](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories) describes private vulnerability discussion, collaboration, and publication states governed by repository permissions. Future Turing records must capture advisory/repository access, private patch or fork scope, collaborator identities, state transitions, disclosure timing, and audit evidence, while keeping GitHub workflow state separate from human decisions about severity, signing, release, and incident closure.
+
 ## Required evidence sequence
 
 1. Establish a private, access-controlled synthetic incident fixture with fake identities, fake keys, non-exploitable payload markers, disposable builds, and bounded retention. Do not use a live vulnerability, production signing material, real user data, or unreduced exploit details.

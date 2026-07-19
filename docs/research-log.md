@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Incident repository-coordination boundary expanded
+
+Question:
+
+Does the `PB-018` incident route document how private vulnerability coordination on GitHub relates to, but does not replace, human security and release authority?
+
+Method:
+
+Compared the [Incident-Response Execution and Disclosure Closure Preparation](research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md), incident decision preparation, security-engine and release-operations books, and incident source manifest with GitHub's [repository security advisory guidance](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories). Added the source identity and synchronized the private-access, patch-scope, disclosure, audit, and authority boundary.
+
+Result:
+
+Future rehearsals must retain advisory/repository access, private patch or fork scope, collaborator identities, state transitions, disclosure timing, and audit evidence. GitHub workflow state remains coordination evidence only; severity, containment, signing, release promotion, disclosure, and incident closure require explicit human authority.
+
+Impact:
+
+The `PB-018` source manifest now carries seven source records across incident lifecycle, severity, coordinated disclosure, and repository advisory coordination. `PB-018` and `TASK-000010` remain unresolved and proposed-only; no incident-response, disclosure, signing, supported-security, production, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a private synthetic rehearsal retain repository advisory state, protected patch-branch evidence, fake-key update dry-run data, and redacted disclosure records with a complete timing and failure denominator?
+
 ## 2026-07-19 - Package and update platform trust coverage expanded
 
 Question:

@@ -70,6 +70,15 @@
       "retrieved": "2026-07-19",
       "observation": "CISA's vulnerability-disclosure-policy material describes a structured mechanism intended to support good-faith security research and coordinated disclosure.",
       "decision_consequence": "A future Turing policy must explicitly define intake scope, researcher communication, safe handling, escalation, and public-disclosure boundaries; the CISA platform material is not a Turing policy, legal determination, or executed intake capability."
+    },
+    {
+      "source_id": "SEC-INCIDENT-SOURCE-GITHUB-SECURITY-ADVISORIES",
+      "title": "About repository security advisories",
+      "publisher": "GitHub Docs",
+      "url": "https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories",
+      "retrieved": "2026-07-19",
+      "observation": "GitHub documents repository security advisories as a mechanism for privately discussing, collaborating on, and publishing vulnerability information, with repository permissions and advisory state affecting who can access or act on the record.",
+      "decision_consequence": "A Turing incident rehearsal must record repository/advisory access, private-fork or patch-branch scope, collaborator identities, state transitions, disclosure timing, audit evidence, and the boundary between GitHub coordination and human authority for severity, signing, release, and closure."
     }
   ],
   "source_documents": [

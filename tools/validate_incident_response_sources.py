@@ -30,6 +30,7 @@ REQUIRED_SOURCES = {
     "SEC-INCIDENT-SOURCE-FIRST-CVSS-GUIDE",
     "SEC-INCIDENT-SOURCE-CISA-CVD",
     "SEC-INCIDENT-SOURCE-CISA-VDP",
+    "SEC-INCIDENT-SOURCE-GITHUB-SECURITY-ADVISORIES",
 }
 REQUIRED_UNSUPPORTED = {
     "No Turing private intake, incident command process, severity policy, disclosure policy, emergency patch capacity, or supported-security policy has been approved or executed.",

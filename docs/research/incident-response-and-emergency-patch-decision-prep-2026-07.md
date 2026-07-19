@@ -57,6 +57,10 @@ Implications for Turing:
 
 CISA's coordination model does not grant Turing authority, define legal obligations in every jurisdiction, or replace counsel and owner review.
 
+### Repository advisory and patch coordination
+
+GitHub's [repository security advisory guidance](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories) provides a repository-host workflow for private vulnerability collaboration and later publication. It is a coordination mechanism, not a severity decision, legal determination, signing approval, release promotion, or incident closure. A future rehearsal must record access permissions, advisory state, private patch/fork scope, collaborators, audit trail, disclosure transition, and the human authority that accepts each consequential decision.
+
 The checked no-claim [incident-response source manifest](../security-engine/machine/incident-response-source-manifest.json), [manifest schema](../security-engine/machine/incident-response-source-manifest.schema.json), and [`validate_incident_response_sources.py`](../../tools/validate_incident_response_sources.py) preserve these official observations across nine evidence axes. They are source identity and decision-input records only; they do not approve a severity policy, disclosure process, incident authority, emergency patch path, supported-security policy, or readiness claim.
 
 ## Required authority separation
