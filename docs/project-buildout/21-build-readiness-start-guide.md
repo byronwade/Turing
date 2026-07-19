@@ -15,7 +15,7 @@ This guide is for people and agents starting or resuming in-session work. It doe
 
 Long-term positioning remains a Chrome-class/extreme-performance competitive target, but this is not yet evidence-approved. Track that lane through the [Chrome-class capability traceability map](../research/chrome-class-capability-traceability-map-2026-07.md), [performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md), and the [Chrome-class performance readiness lane](../benchmark-lab/chrome-class-performance-readiness-lane.md). Do not treat any intermediate artifact in this phase as a Chrome-class or performance claim.
 
-When UI work eventually becomes authorized, use the [Nova design source](../ui-runtime/design-lab/README.md) as the visual and layout reference. It does not own browser behavior: Rust state, typed commands, accessibility, page-surface, security, and accepted ADRs remain authoritative, and React remains confined to the design lab.
+When UI work eventually becomes authorized, use the [Nova design source](../ui-runtime/design-lab/README.md) as the visual and layout reference and follow the [Nova Native Build Entry Criteria](../research/nova-native-build-entry-criteria-2026-07.md) plus the [Native UI and Accessibility Closure Preparation](../research/native-ui-and-accessibility-closure-preparation-2026-07.md). Nova does not own browser behavior: Rust state, typed commands, accessibility, page-surface, security, and accepted ADRs remain authoritative, and React remains confined to the design lab.
 
 Use this in the same order every session:
 
