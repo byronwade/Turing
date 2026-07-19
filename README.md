@@ -3,8 +3,9 @@
 Turing is an independent, Rust-first browser and web-engine program focused on minimalism, speed, security, developer experience, accessibility, open integration, and capability-scoped AI.
 
 > **Current status:** M0 research and implementation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, a buildable workspace, and the first generated kernel/IPC policy reference. The active WP-002 execution manifest is `TASK-000011` and remains `review_pending`, not accepted; its [review handoff](docs/research/task-000011-wp002-review-handoff-2026-07.md) is an evidence map, not an approval. Turing is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
+> **Continuity checkpoint:** The first continuation stop is the [Build Readiness Start Guide](docs/project-buildout/21-build-readiness-start-guide.md), then the [Build Continuation Readiness Pack](docs/project-buildout/20-build-continuation-readiness-pack.md) scorecard.
 
-### Build readiness decision (as of 2026-07-18)
+### Build readiness decision (as of 2026-07-19)
 
 - **Can we start broad implementation now?** **No.**
 - **Allowed continuation:** contained M0 continuity work, validators, documentation/research indexing, and no-claim task-handoff maintenance.
@@ -15,7 +16,7 @@ Release paths must not embed Chromium, WebKit, Gecko, Electron, CEF, an operatin
 
 ## Current stop/resume path
 
-Start with [`docs/start-here.md`](docs/start-here.md). It is the first human entry point for the current build-preparation state.
+Start with [`docs/project-buildout/21-build-readiness-start-guide.md`](docs/project-buildout/21-build-readiness-start-guide.md), then [`docs/start-here.md`](docs/start-here.md). It is the first human entry point for the current build-preparation state.
 
 Before continuing implementation work:
 

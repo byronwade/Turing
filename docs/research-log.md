@@ -2,6 +2,76 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-19 — Documentation continuity path normalization
+
+Question:
+Can any maintainer or agent resume with the same continuity truth after the latest handoff documentation reorganization?
+
+Sources and versions:
+
+- `README.md`
+- `docs/README.md`
+- `docs/repository-map.md`
+- `docs/start-here.md`
+- `docs/project-buildout/11-pre-build-readiness-checklist.md`
+- `docs/project-buildout/13-build-readiness-operating-board.md`
+- `docs/project-buildout/20-build-continuation-readiness-pack.md`
+- `docs/project-buildout/21-build-readiness-start-guide.md`
+
+Method and environment:
+
+- local repository under `C:\\Users\\bcw19\\Documents\\Codex\\2026-07-17\\github-plugin-github-openai-curated-remote`
+- required documentation and startup-checker commands listed in `AGENTS.md`.
+
+Observations:
+
+- handoff path is now ordered consistently to start at the Build Readiness Start Guide;
+- pre-build and continuation docs were synchronized so the pack/board sequence is the same everywhere;
+- hard blockers (`PB-002`, `PB-019`) and broad claim boundaries remain unchanged.
+
+Inference:
+
+Documentation continuity improved for session transfer, and the allowed scope remains contained-M0 only.
+
+Decision:
+
+- normalize handoff ordering and references first;
+- keep blockers and boundary wording unchanged;
+- continue gated evidence work before any broad M1 posture changes.
+
+Alternatives rejected:
+
+- updating readiness declarations or product claims from documentation rewrites alone.
+
+Security/privacy impact:
+
+- no implementation or security posture change.
+
+Compatibility/accessibility impact:
+
+- no implementation claim change.
+
+Performance/memory/energy impact:
+
+- none.
+
+Licensing/operational impact:
+
+- none.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- no requirement/risk/ADR/work-package status changed;
+- updated continuity and index prose in the listed documents.
+
+Unresolved questions:
+
+- which evidence lane should close first to reduce dependency blocking with minimal risk?
+
+Next evidence required:
+
+- continued owner-reviewed evidence for `PB-002`, `PB-011`, `PB-019`, and all remaining `PB-*` items before broad build posture changes.
+
 ## 2026-07-18 - Build-information readiness ledger
 
 Question:

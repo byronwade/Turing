@@ -2,7 +2,7 @@
 
 Status: detailed research and professional operating baseline
 Owner: program architecture and engineering operations
-Last researched: 2026-07-18
+Last researched: 2026-07-19
 
 This handbook is the control plane for turning Turing's research into a multi-year, multi-maintainer implementation. It defines who decides, how work becomes accepted, how evidence is traced, how the repository is structured, how contributors reproduce the environment, and how the product is released and maintained.
 
@@ -27,12 +27,13 @@ This handbook is the control plane for turning Turing's research into a multi-ye
 17. [17 Build Readiness Task Queue](17-build-readiness-task-queue.md)
 18. [18 Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md)
 19. [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md)
-20. [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md)
-21. [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md)
-22. [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md)
-23. [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
-24. [Implementation Master Plan](implementation-plan/README.md)
-25. [GitHub Issue Handoff](19-github-issue-handoff.md)
+20. [Build Readiness Start Guide](21-build-readiness-start-guide.md)
+21. [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md)
+22. [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md)
+23. [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md)
+24. [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md)
+25. [Implementation Master Plan](implementation-plan/README.md)
+26. [GitHub Issue Handoff](19-github-issue-handoff.md)
 
 ## Machine-readable companions
 
@@ -78,21 +79,22 @@ Use this section as the fast continuation path after reading [Start Here](../sta
 
 ### Build-readiness control path
 
-1. Read the [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) as the first continuation stop.
-2. Read the [Build Readiness Operating Board](13-build-readiness-operating-board.md) before expanding implementation.
-3. Check [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json) for the authoritative gate state.
-4. Use the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes.
-5. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
-6. Use the checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md) before calling documentation preparation complete; it confirms contained M0 continuation only and keeps all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
-7. Use the checked [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) and [`contained-m0-start-state.json`](machine/contained-m0-start-state.json) before answering whether a session may start building; they allow no-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance only.
-8. Use the checked [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md) and [`build-information-readiness-ledger.json`](machine/build-information-readiness-ledger.json) before claiming all information is ready for broad building; they collect missing information across source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident response, backup ownership, task authority, and Chrome-class product evidence.
-9. Use the checked [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md) to route Chrome-class product, engine, runtime, security, accessibility, DevTools, AI, update, build, and performance domains to current owners, blockers, next proof, and no-claim boundaries.
-10. Use the [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) to verify that the entry points, registries, research crosswalk, task controls, and validation commands still support contained M0 continuation.
-11. Use the [Implementation Master Plan](implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks.
-12. Use the [GitHub Issue Handoff](19-github-issue-handoff.md) after issue or branch cleanup to keep open and closed coordination items mapped to durable project records.
-13. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
-14. Convert no proposed `TASK-*` item into execution without the owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
-15. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
+1. Read the [Build Readiness Start Guide](21-build-readiness-start-guide.md) first for the session start posture and no-claim route.
+2. Read the [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) as the fast-stop gate summary.
+3. Read the [Build Readiness Operating Board](13-build-readiness-operating-board.md) before expanding implementation.
+4. Check [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json) for the authoritative gate state.
+5. Use the checked [Implementation Kickoff Review Inventory](../research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes.
+6. Use the checked [Build Readiness Dependency Graph](../research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, or cross-lane sequencing.
+7. Use the checked [Documentation Readiness Completion Audit](../research/documentation-readiness-completion-audit-2026-07.md) before calling documentation preparation complete; it confirms contained M0 continuation only and keeps all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
+8. Use the checked [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) and [`contained-m0-start-state.json`](machine/contained-m0-start-state.json) before answering whether a session may start building; they allow no-claim documentation, research, validation, task-manifest preparation, and `TASK-000011` review-handoff maintenance only.
+9. Use the checked [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md) and [`build-information-readiness-ledger.json`](machine/build-information-readiness-ledger.json) before claiming all information is ready for broad building; they collect missing information across source strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident response, backup ownership, task authority, and Chrome-class product evidence.
+10. Use the checked [Chrome-Class Capability Traceability Map](../research/chrome-class-capability-traceability-map-2026-07.md) to route Chrome-class product, engine, runtime, security, accessibility, DevTools, AI, update, build, and performance domains to current owners, blockers, next proof, and no-claim boundaries.
+11. Use the [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) to verify that the entry points, registries, research crosswalk, task controls, and validation commands still support contained M0 continuation.
+12. Use the [Implementation Master Plan](implementation-plan/README.md) only as dependency-ordered execution documentation for reviewed, bounded tasks.
+13. Use the [GitHub Issue Handoff](19-github-issue-handoff.md) after issue or branch cleanup to keep open and closed coordination items mapped to durable project records.
+14. Use the proposed [Build Readiness Task Queue](17-build-readiness-task-queue.md) and checked no-claim [task approval template](../agent-execution/machine/task-approval-templates/no-claim-task-approval-template.json) only to shape reviewed task manifests.
+15. Do not convert any proposed `TASK-*` item into execution without owner, reviewer, allowed-path, prohibited-path, budget, rollback, and evidence-bundle controls described in [Agent Execution](../agent-execution/README.md).
+16. Keep source strategy, fresh-host reproducibility, IPC boundaries, benchmark claims, native-shell toolkit and page-surface selection, sandbox policy, profile/session behavior, package/update authority, incident-response decisions, backup ownership, readiness promotion, and release authority as owner-only decisions.
 
 ### Source-strategy lane
 

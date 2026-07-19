@@ -19,14 +19,15 @@ This repository is an architecture, research, and execution baseline, not a prod
 9. [AI and agent platform](blueprint-v1/10-ai-agent-platform.md)
 10. [Roadmap and work breakdown](blueprint-v1/14-roadmap-work-breakdown.md)
 11. [Pre-build readiness checklist](project-buildout/11-pre-build-readiness-checklist.md)
-12. [Build continuity readiness pack](project-buildout/20-build-continuation-readiness-pack.md)
-13. [Build readiness operating board](project-buildout/13-build-readiness-operating-board.md)
-14. [Build readiness task queue](project-buildout/17-build-readiness-task-queue.md)
-15. [Implementation master plan](project-buildout/implementation-plan/README.md)
-16. [Risk register](blueprint-v1/15-risk-register.md)
-17. [Detailed engineering books](README.md#detailed-engineering-books)
-18. [Active research](research/README.md)
-19. [Repository map](repository-map.md)
+12. [Build readiness start guide](project-buildout/21-build-readiness-start-guide.md)
+13. [Build continuity readiness pack](project-buildout/20-build-continuation-readiness-pack.md)
+14. [Build readiness operating board](project-buildout/13-build-readiness-operating-board.md)
+15. [Build readiness task queue](project-buildout/17-build-readiness-task-queue.md)
+16. [Implementation master plan](project-buildout/implementation-plan/README.md)
+17. [Risk register](blueprint-v1/15-risk-register.md)
+18. [Detailed engineering books](README.md#detailed-engineering-books)
+19. [Active research](research/README.md)
+20. [Repository map](repository-map.md)
 
 The Blueprint is the normative overview. The detailed books expand implementation research and evidence requirements without silently changing accepted decisions.
 
@@ -68,7 +69,7 @@ Turing is ready for contained M0 implementation tasks only. It is not ready for 
 
 Use this stop/resume map before continuing:
 
-- Status and gate truth: use the [Build Continuation Readiness Pack](project-buildout/20-build-continuation-readiness-pack.md), [Build Readiness Operating Board](project-buildout/13-build-readiness-operating-board.md), [Pre-build Readiness Checklist](project-buildout/11-pre-build-readiness-checklist.md), [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md), and machine [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
+- Status and gate truth: use the [Build Readiness Start Guide](project-buildout/21-build-readiness-start-guide.md) first, then the [Build Continuation Readiness Pack](project-buildout/20-build-continuation-readiness-pack.md), [Build Readiness Operating Board](project-buildout/13-build-readiness-operating-board.md), [Pre-build Readiness Checklist](project-buildout/11-pre-build-readiness-checklist.md), [Documentation Readiness Evidence Matrix](project-buildout/18-documentation-readiness-evidence-matrix.md), and machine [`pre-build-readiness.json`](blueprint-v1/machine/pre-build-readiness.json).
 - Implementation kickoff continuity: use the checked [Implementation Kickoff Review Inventory](research/implementation-kickoff-review-inventory-2026-07.md) before broadening work across unresolved `PB-*` lanes. It records first next actions, owner-only decisions, prohibited claims, and release-authority boundaries without approving tasks or promoting readiness.
 - Sequencing control: use the checked [Build Readiness Dependency Graph](research/build-readiness-dependency-graph-inventory-2026-07.md) before changing task order, task dependencies, decision-gate relationships, or parallel no-claim lane boundaries.
 - Documentation readiness completion audit: use the checked [Documentation Readiness Completion Audit](research/documentation-readiness-completion-audit-2026-07.md) and checked no-claim [build-readiness closure-review template](project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json) before calling documentation preparation complete. They confirm contained-M0 continuation only and keep all-information-ready-for-building, broad M1, Chrome-class, production, release, performance, compatibility, security, and accessibility claims unsupported.
