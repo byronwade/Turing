@@ -14,6 +14,8 @@ The repository has a performance readiness packet, Chrome-class runbook, benchma
 
 The [Benchmark Claim-Bundle Examples](benchmark-claim-bundle-examples-2026-07.md) adds a fictitious human-facing handoff for exact claim wording, evidence hashes, metric and denominator reconciliation, equivalence and safety review, expiry, rerun triggers, publication controls, and rejection rules. It is sample-only and does not satisfy `PB-013` evidence.
 
+The checked [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), validated by [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py), keeps official suite methodology, regression-policy, telemetry, compatibility, and vendor-context observations linked to this closure route. It does not supply a browser run, competitor result, statistics approval, or claim evidence.
+
 ## Evidence levels
 
 | Level | Allowed evidence | Required transition proof | Claims prohibited |

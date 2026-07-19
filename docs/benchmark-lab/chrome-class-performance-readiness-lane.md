@@ -25,6 +25,7 @@ Establish reproducible, fixed-hardware, claim-grade evidence for startup, memory
   - [Benchmark OS and update-control manifest](../research/benchmark-os-update-control-manifest-2026-07.md)
   - [Benchmark competitor version manifest](../research/benchmark-competitor-version-manifest-2026-07.md)
   - [Benchmark competitor local install inventory](../research/benchmark-competitor-local-install-inventory-2026-07.md)
+- Official suite methodology and benchmark-policy sources are tracked by the checked no-claim [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json) and [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py). This is source identity and measurement-contract evidence only; it is not a browser run or performance claim.
 - Tooling and contracts are in place for no-claim execution planning:
   - [Performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md)
   - [Benchmark corpus expansion](../research/benchmark-corpus-expansion-2026-07.md)

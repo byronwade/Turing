@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "manifest_id": "BENCHMARK.SOURCES.2026_07",
+  "status": "no_claim_benchmark_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-013",
+  "claim_status": "No-claim benchmark-source observations only; benchmark and vendor documentation is not a Turing benchmark result, competitor comparison, statistical approval, performance claim, or Chrome-class evidence.",
+  "evidence_axes": [
+    "suite_identity_version",
+    "workload_integrity",
+    "harness_controls",
+    "warmup_and_statistics",
+    "hardware_os_controls",
+    "browser_pin",
+    "trace_artifact",
+    "failure_denominator",
+    "equal_security_lifecycle",
+    "claim_review_and_expiry"
+  ],
+  "sources": [
+    {
+      "source_id": "BENCH-SOURCE-SPEEDOMETER-METHODOLOGY",
+      "title": "Speedometer 3.1 methodology",
+      "publisher": "BrowserBench",
+      "url": "https://www.browserbench.org/Speedometer3.1/about.html",
+      "retrieved": "2026-07-19",
+      "observation": "Speedometer is an interaction-driven web-application responsiveness diagnostic with suite-specific harness and workload rules.",
+      "run_consequence": "Pin the exact suite revision and harness, focused page, viewport, profile, host state, repetitions, and every subtest outcome; missing duration is a failed run, not zero."
+    },
+    {
+      "source_id": "BENCH-SOURCE-SPEEDOMETER-INSTRUCTIONS",
+      "title": "Speedometer 3.1 run instructions",
+      "publisher": "BrowserBench",
+      "url": "https://www.browserbench.org/Speedometer3.1/instructions.html",
+      "retrieved": "2026-07-19",
+      "observation": "The official instructions require a clean profile, focused benchmark page, quiet host, and controlled power and thermal conditions.",
+      "run_consequence": "Record profile isolation, page focus, host noise, power mode, thermal state, and deviations before accepting a suite run."
+    },
+    {
+      "source_id": "BENCH-SOURCE-JETSTREAM-METHODOLOGY",
+      "title": "JetStream 3.0 in-depth methodology",
+      "publisher": "BrowserBench",
+      "url": "https://browserbench.org/JetStream3.0/in-depth.html",
+      "retrieved": "2026-07-19",
+      "observation": "JetStream reports per-workload behavior and combines workloads with a geometric mean while distinguishing startup, worst-case, and average behavior.",
+      "run_consequence": "Retain per-workload output, exact suite version, first-iteration treatment, unsupported-workload classification, and aggregate calculation; do not combine suite versions or silently reduce the denominator."
+    },
+    {
+      "source_id": "BENCH-SOURCE-MOTIONMARK-METHODOLOGY",
+      "title": "MotionMark methodology",
+      "publisher": "BrowserBench",
+      "url": "https://browserbench.org/MotionMark/about.html",
+      "retrieved": "2026-07-19",
+      "observation": "MotionMark warms up, adjusts drawing complexity around a target frame rate, estimates a change point, and uses bootstrap confidence intervals and a geometric mean.",
+      "run_consequence": "Normalize and record refresh rate, viewport class, orientation, GPU and power state, warmup, repetitions, and the suite's statistical outputs before comparison."
+    },
+    {
+      "source_id": "BENCH-SOURCE-CHROMIUM-REGRESSION-POLICY",
+      "title": "Benchmark performance regressions",
+      "publisher": "Chromium",
+      "url": "https://chromium.googlesource.com/chromium/src/+/main/docs/benchmark_performance_regressions.md",
+      "retrieved": "2026-07-19",
+      "observation": "Chromium treats competitive benchmark regressions as actionable engineering signals and names Speedometer, MotionMark, and JetStream among its benchmark surfaces.",
+      "run_consequence": "Use regression triage as an engineering control only; preserve Turing's equal-security, failure-denominator, resource-attribution, and independent-review requirements."
+    },
+    {
+      "source_id": "BENCH-SOURCE-CHROMIUM-TELEMETRY",
+      "title": "Chromium Telemetry documentation",
+      "publisher": "Chromium",
+      "url": "https://chromium.googlesource.com/catapult/+/HEAD/telemetry/",
+      "retrieved": "2026-07-19",
+      "observation": "Telemetry frames browser performance measurement as automation plus trace and metric collection over story sets, with replay controls available for reducing page drift.",
+      "run_consequence": "A Turing runner must retain story/workload identity, browser command and profile, trace/artifact hashes, lifecycle state, and replay/local-server controls rather than only a score."
+    },
+    {
+      "source_id": "BENCH-SOURCE-WPT-DOCUMENTATION",
+      "title": "Web Platform Tests documentation",
+      "publisher": "Web Platform Tests",
+      "url": "https://web-platform-tests.org/",
+      "retrieved": "2026-07-19",
+      "observation": "WPT provides shared cross-browser test-runner documentation, but browser-in-browser execution does not cover all crash and hang edge cases.",
+      "run_consequence": "Keep compatibility and performance denominators separate, retain out-of-process crash/hang evidence, and never convert a WPT pass rate alone into a Chrome-class claim."
+    },
+    {
+      "source_id": "BENCH-SOURCE-CHROME-PERFORMANCE-REPORT",
+      "title": "Chrome Speedometer 3.1 and JetStream 3 performance announcement",
+      "publisher": "Google Chromium",
+      "url": "https://blog.google/chromium/a-double-victory-for-web-speed-chrome-breaks-records-again-on-speedometer-31-and-jetstream-3/",
+      "retrieved": "2026-07-19",
+      "observation": "Google reports dated vendor measurements with named hardware, operating system, and suite versions.",
+      "run_consequence": "Treat vendor scores as dated context only and retain hardware, OS, suite version, release channel, and disclosure boundaries; they are not Turing results or universal targets."
+    }
+  ],
+  "source_documents": [
+    "docs/research/chrome-class-performance-runbook-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+    "docs/benchmark-lab/chrome-class-performance-readiness-lane.md",
+    "docs/blueprint-v1/09-performance-memory.md"
+  ],
+  "unsupported": [
+    "No Turing browser benchmark has been run.",
+    "No owner-reviewed benchmark readiness or statistics analysis exists.",
+    "No competitor comparison, fastest/lower-memory/lower-energy, Chrome-class, or public performance claim exists.",
+    "No browser-run trace, raw sample, or claim bundle is supplied by this manifest."
+  ]
+}

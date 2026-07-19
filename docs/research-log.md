@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Benchmark source identity made executable
+
+Question:
+
+Can the official BrowserBench, Chromium, Web Platform Tests, and vendor-performance observations be tracked as stable `PB-013` inputs without treating methodology or vendor context as a Turing benchmark result?
+
+Method:
+
+Compared the Chrome-Class Performance Runbook, Benchmark Evidence and Claim Closure Preparation, performance readiness packet, benchmark-lab readiness lane, and the official suite, telemetry, regression-policy, compatibility, and vendor-context sources. Added a no-claim manifest with eight source records, ten measurement axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep suite identity, workload integrity, harness controls, statistics, hardware/OS, browser pins, trace artifacts, failure denominator, equal security/lifecycle, and claim expiry as separate evidence axes. Vendor-reported scores remain dated context, not Turing results or universal targets.
+
+Impact:
+
+`PB-013` remains partial; no browser benchmark, competitor comparison, fastest/lower-memory/lower-energy, Chrome-class, or public performance claim changed.
+
 ## 2026-07-19 - IPC wire-source identity made executable
 
 Question:

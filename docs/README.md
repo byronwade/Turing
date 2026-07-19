@@ -109,6 +109,8 @@ The fresh-host lane also has a checked no-claim [toolchain-source manifest](proj
 
 The IPC lane also has a checked no-claim [wire-source manifest](blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../tools/validate_ipc_wire_sources.py); these track external format observations only and do not select a codec or authorize transport implementation.
 
+The performance lane also has a checked no-claim [benchmark-source manifest](blueprint-v1/machine/benchmark-source-manifest.json) and [`validate_benchmark_sources.py`](../tools/validate_benchmark_sources.py); these track official measurement observations only and do not provide benchmark results or Chrome-class evidence.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |

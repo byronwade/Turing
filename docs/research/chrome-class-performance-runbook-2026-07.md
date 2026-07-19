@@ -53,6 +53,8 @@ Updated release-catalog check on 2026-07-18:
 
 These sources define useful measurement surfaces and competitor-version capture points. They do not prove anything about Turing's performance.
 
+The checked [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), validated by [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py), records the official suite, methodology, regression-policy, telemetry, compatibility, and vendor-context sources used by this runbook. It tracks measurement consequences only; it does not provide a Turing run, competitor result, statistical approval, or performance claim.
+
 ### 2026-07-19 official methodology findings
 
 - Speedometer 3.1 is an interaction-driven web-application responsiveness diagnostic. The 3.1 release corrected harness measurement issues, so the runner must pin the exact suite version and record the harness revision. A subtest that produces no duration is a failed run, not a zero or an omitted sample. Official instructions also require a clean profile, a focused benchmark page, a quiet host, and controlled power and thermal conditions.

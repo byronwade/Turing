@@ -53,6 +53,8 @@ The documentation system is organized enough for contained M0 implementation tas
 
 `PB-011` current evidence also includes the checked no-claim [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json), [`ipc-wire-source-manifest.schema.json`](../blueprint-v1/machine/ipc-wire-source-manifest.schema.json), and [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py). The manifest tracks official CBOR, Protocol Buffers, and FlatBuffers source observations across nine wire-safety axes; it does not select an encoding, approve a generator, authenticate a transport, or establish production IPC.
 
+`PB-013` current evidence also includes the checked no-claim [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), [`benchmark-source-manifest.schema.json`](../blueprint-v1/machine/benchmark-source-manifest.schema.json), and [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py). The manifest tracks official suite methodology, regression policy, telemetry, compatibility, and vendor-context observations across ten measurement axes; it does not provide a browser run, competitor result, statistics approval, or performance claim.
+
 ## Required Continuation Checks
 
 The active closure-preparation routes are [source strategy](../research/adr-0009-source-strategy-closure-preparation-2026-07.md), [toolchain/fresh host](../research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md), [IPC](../research/ipc-transport-and-authority-closure-preparation-2026-07.md), [sandbox](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md), [benchmark](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), [native UI/accessibility](../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [profile/session](../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), [package/update](../research/package-update-execution-and-release-safety-closure-preparation-2026-07.md), [incident response](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md), [backup ownership](../research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md), and final [PB-020 closure/owner decision](../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md). They are synchronized no-claim evidence-order documents, not approvals or implementation proof.
@@ -146,6 +148,7 @@ python3 -B tools/validate_sandbox_platform_sources.py
 python3 -B tools/validate_adr_0009_source_observations.py
 python3 -B tools/validate_fresh_host_toolchain_sources.py
 python3 -B tools/validate_ipc_wire_sources.py
+python3 -B tools/validate_benchmark_sources.py
 python3 -B tools/validate_task_approval_templates.py
 python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py
