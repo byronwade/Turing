@@ -6261,6 +6261,47 @@ def check_research_question_ids() -> None:
         )
 
 
+def check_professional_traceability_design_routes() -> None:
+    path = MACHINE / "professional-traceability.json"
+    payload = load_json(path)
+    items = payload.get("requirements")
+    if not isinstance(items, list):
+        fail("professional-traceability.json must contain requirements")
+
+    requirements_payload = load_json(MACHINE / "requirements.json")
+    requirements = requirements_payload.get("requirements")
+    if not isinstance(requirements, list):
+        fail("requirements.json must contain requirements")
+    expected_ids = [
+        item.get("id")
+        for item in requirements
+        if isinstance(item, dict)
+    ]
+    actual_ids = [
+        item.get("id")
+        for item in items
+        if isinstance(item, dict)
+    ]
+    if actual_ids != expected_ids:
+        fail("professional traceability requirement order differs from requirements.json")
+
+    for item in items:
+        if not isinstance(item, dict):
+            fail("professional-traceability requirements must be objects")
+        requirement_id = item.get("id")
+        design = item.get("design")
+        if not isinstance(design, list) or not design:
+            fail(f"{requirement_id}: design route is missing")
+        if not all(isinstance(ref, str) and ref for ref in design):
+            fail(f"{requirement_id}: design routes must be non-empty strings")
+        for ref in design:
+            if not (ROOT / ref).is_file():
+                fail(f"{requirement_id}: design route is missing: {ref}")
+        for field in ("source", "tests", "reviews", "evidence"):
+            if not isinstance(item.get(field), list):
+                fail(f"{requirement_id}: {field} must be an array")
+
+
 def check_research_log_chronology() -> None:
     path = DOCS / "research-log.md"
     text = path.read_text(encoding="utf-8")
@@ -7352,6 +7393,7 @@ def main() -> int:
         check_production_readiness_controls()
         markdown_count, links_checked = check_markdown()
         check_research_question_ids()
+        check_professional_traceability_design_routes()
         check_research_log_chronology()
         check_repository_map_core_registries()
         check_index_machine_registry_navigation()

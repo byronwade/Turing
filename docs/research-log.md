@@ -7704,3 +7704,21 @@ The current playbooks satisfy those conditions. Strengthened `validate_implement
 Next question:
 
 Which evidence class still has no package-specific collection route beyond generic acceptance prose?
+
+# 2026-07-19 - Professional requirement design-route audit
+
+Question:
+
+Can every accepted requirement be traced from the stable registry to canonical design sources before implementation begins?
+
+Method:
+
+Compared all 46 requirements in `professional-traceability.json` with the owning Blueprint and detailed engineering books. Thirty-six requirements had empty design arrays despite existing canonical design material.
+
+Decision:
+
+Added existing canonical design sources for all 46 requirements. Implementation, source adoption, tests, reviews, and evidence remain empty unless separately supported. Strengthened `validate_blueprint.py` so future changes cannot omit design routes or point at missing files.
+
+Next question:
+
+Which requirement-specific verification or evidence route should be formalized first after design routing is complete?
