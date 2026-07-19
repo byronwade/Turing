@@ -2,6 +2,92 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-19 — Full M0 repository and documentation validation pass
+
+Question:
+Can the repository be verified as coherently organized for contained-M0 continuation right now, with no false pre-build promotion from documentation drift?
+
+Sources and versions:
+
+- `tools/check.ps1`
+- `tools/validate_blueprint.py` (run output in this turn)
+- `tools/validate_implementation_kickoff_review.py` (run output in this turn)
+- `tools/validate_adr_0009_evidence.py` (run output in this turn)
+- `tools/validate_documentation_readiness_completion_audit.py` (run output in this turn)
+- `tools/validate_build_information_readiness.py` (run output in this turn)
+- `cargo fmt --all -- --check`
+- `cargo fmt --manifest-path prototype/Cargo.toml -- --check`
+- `cargo test --manifest-path prototype/Cargo.toml --all-targets`
+- `cargo run --manifest-path prototype/Cargo.toml --quiet`
+- `cargo run --locked -p xtask -- check` (invoked via `tools/check.ps1`)
+- linked continuation docs listed in the root `README.md` and `docs/project-buildout/*` handoff index
+
+Method and environment:
+
+- local repository: `C:\\Users\\bcw19\\Documents\\Codex\\2026-07-17\\github-plugin-github-openai-curated-remote`
+- cleared legacy repository-local `target/` before rerunning aggregate checks (so `xtask` validation used isolated temp target)
+- ran required documentation and repository checks from the root `AGENTS.md` validation list
+
+Observations:
+
+- `pre-build-readiness.json` remains `status: not_ready_for_broad_implementation` with `PB-002` and `PB-019` blocked;
+- all pre-build readiness/machine/documentation validators passed:
+  - `validate_blueprint.py`
+  - `validate_implementation_kickoff_review.py`
+  - `validate_adr_0009_evidence.py`
+  - `validate_documentation_readiness_completion_audit.py`
+  - `validate_build_information_readiness.py`
+- formatting and test gates passed:
+  - `cargo fmt --all -- --check`
+  - `cargo fmt --manifest-path prototype/Cargo.toml -- --check`
+  - `cargo test --manifest-path prototype/Cargo.toml --all-targets`
+  - `tools/check.ps1` full aggregate check, including implementation-plan, issue-handoff, IPC/registry validators, and all-prototype crate tests
+- no broad implementation authority was granted; `PB-020` and task manifests remain non-executed, no `TASK-*` status moved to approved in this pass
+- no implementation claims were added or promoted by this validation pass
+
+Inference:
+
+The repository remains organized for coherent contained-M0 continuation and can proceed with further execution planning from the same documented gate posture.
+
+Decision:
+
+- keep broad implementation blocked until owner-reviewed `PB-002` and `PB-019` evidence closure + `PB-020` closure-review promotion requirements are met;
+- keep all continuation docs and task queue in no-claim scope without changing gate truth from checks alone;
+- continue deep-research and task-shape work in the documented lane order.
+
+Alternatives rejected:
+
+- changing `PB-002`/`PB-019` to ready from tooling output alone;
+- using successful contained-M0 checks as evidence for production, Chrome-class, performance, security, accessibility, or release readiness.
+
+Security/privacy impact:
+
+- none introduced by this validation sequence.
+
+Compatibility/accessibility impact:
+
+- unchanged (validation checks do not alter compatibility or accessibility assumptions).
+
+Performance/memory/energy impact:
+
+- none introduced; aggregate check was successfully executed using temporary `CARGO_TARGET_DIR`.
+
+Licensing/operational impact:
+
+- no code/documentation licensing changes; reduced local repository state noise by removing legacy `target/` before full check.
+
+Affected requirements, risks, ADRs, work packages, and documents:
+
+- no status changes to requirements, risks, ADRs, or work packages;
+- updated continuity evidence in this log only.
+
+Next evidence required:
+
+- owner-approved readiness promotion evidence for:
+  - `PB-002` source-strategy decision trail;
+  - `PB-019` backup ownership closure;
+  - `PB-020` all-information-ready-for-building decision.
+
 ## 2026-07-19 — Readiness coherence and deep-research tracking sweep
 
 Question:
