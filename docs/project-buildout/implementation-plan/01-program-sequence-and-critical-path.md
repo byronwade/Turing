@@ -37,8 +37,10 @@ WP-001 Repository and evidence foundation
   │
   └── WP-010 JavaScript parser, bytecode, interpreter, Test262
         └── WP-011 Exact GC and Web IDL bindings
+              └── WP-019 Baseline JIT and hardened JavaScript execution
 
 WP-018 additionally depends on WP-005 and WP-013.
+WP-019 additionally depends on WP-010 and WP-011.
 WP-016 additionally depends on WP-015.
 ```
 
@@ -73,7 +75,7 @@ WP-006 → WP-007 → WP-008 → WP-009. It may proceed in parallel with the she
 
 ### Lane D — JavaScript runtime
 
-WP-010 may proceed after WP-001. WP-011 waits for both WP-007 and WP-010 so GC roots, wrappers, and Web IDL are designed against real DOM and runtime contracts.
+WP-010 may proceed after WP-001. WP-011 waits for both WP-007 and WP-010 so GC roots, wrappers, and Web IDL are designed against real DOM and runtime contracts. WP-019 waits for WP-010 and WP-011 plus its M6 executable-memory, differential, and no-JIT review gates.
 
 ### Lane E — navigation and services
 

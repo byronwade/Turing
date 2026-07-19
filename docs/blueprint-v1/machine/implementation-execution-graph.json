@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-19",
   "status": "canonical_dependency_order",
   "authoritative_work_package_source": "docs/blueprint-v1/machine/backlog.json",
   "nodes": [
@@ -21,7 +21,8 @@
     {"id":"WP-015","milestone":"M2","title":"Versioned DevTools automation protocol and trace viewer","depends_on":["WP-002","WP-009"],"decision_gates":["IF-001","IF-003"],"parallel_lane":"developer-observability"},
     {"id":"WP-016","milestone":"M6","title":"Capability-safe agent reference implementation","depends_on":["WP-002","WP-007","WP-015"],"decision_gates":["ADR-0005","agent-provider-review"],"parallel_lane":"agents-plugins"},
     {"id":"WP-017","milestone":"M5","title":"Signed update rollback and profile migration laboratory","depends_on":["WP-001","WP-002","WP-014"],"decision_gates":["ADR-0019","ADR-0020"],"parallel_lane":"release-operations"},
-    {"id":"WP-018","milestone":"M5","title":"Fixed-hardware compatibility performance and energy laboratory","depends_on":["WP-005","WP-009","WP-013"],"decision_gates":["reference-hardware-accepted","corpus-provenance-reviewed"],"parallel_lane":"measurement"}
+    {"id":"WP-018","milestone":"M5","title":"Fixed-hardware compatibility performance and energy laboratory","depends_on":["WP-005","WP-009","WP-013"],"decision_gates":["reference-hardware-accepted","corpus-provenance-reviewed"],"parallel_lane":"measurement"},
+    {"id":"WP-019","milestone":"M6","title":"Baseline JIT and hardened JavaScript execution","depends_on":["WP-010","WP-011"],"decision_gates":["JS-GATE-4","JS-GATE-5","no-jit-hardening-review"],"parallel_lane":"javascript"}
   ],
   "critical_paths": [
     ["WP-001","WP-002","WP-003"],
@@ -29,7 +30,8 @@
     ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-018"],
     ["WP-001","WP-010","WP-011"],
     ["WP-001","WP-002","WP-012","WP-013","WP-014","WP-017"],
-    ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-015","WP-016"]
+    ["WP-001","WP-006","WP-007","WP-008","WP-009","WP-015","WP-016"],
+    ["WP-001","WP-010","WP-011","WP-019"]
   ],
   "rule": "A node may begin production implementation only when every depends_on node is accepted and every decision gate is accepted or covered by a reviewed expiring exception."
 }

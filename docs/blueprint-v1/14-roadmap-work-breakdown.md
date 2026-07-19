@@ -249,6 +249,7 @@ The following list is synchronized with [`backlog.json`](machine/backlog.json):
 16. **WP-016 — Capability-safe agent reference implementation.**
 17. **WP-017 — Signed update, rollback, and profile migration laboratory.**
 18. **WP-018 — Fixed-hardware compatibility, performance, and energy lab.**
+19. **WP-019 — Baseline JIT and hardened JavaScript execution.**
 
 Detailed dependencies, task families, negative tests, evidence, handoffs, and non-goals are in the [work-package playbooks](../project-buildout/implementation-plan/16-work-package-playbooks.md) and [`implementation-execution-graph.json`](machine/implementation-execution-graph.json).
 
@@ -274,7 +275,7 @@ The long-term vision is fixed; implementation choices remain empirical.
 
 ## Professional buildout prerequisite
 
-Before substantial production implementation, resolve ADR-0009, accept the pinned workspace/compiler/SDK/linker/toolchain and interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, staff backup ownership, and use the [implementation master plan](../project-buildout/implementation-plan/README.md) only as execution documentation for reviewed, bounded tasks. The checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) document the current `PB-019` blocker but do not provide named qualified backups, two-person control, or owner-reviewed backup ownership readiness. This refines M0 without changing WP-001 through WP-018 status.
+Before substantial production implementation, resolve ADR-0009, accept the pinned workspace/compiler/SDK/linker/toolchain and interface contracts, activate ownership/traceability/review records, reproduce bootstrap on fresh hosts, staff backup ownership, and use the [implementation master plan](../project-buildout/implementation-plan/README.md) only as execution documentation for reviewed, bounded tasks. The checked [Backup Ownership Gap Inventory](../research/backup-ownership-gap-inventory-2026-07.md), checked no-claim [backup-owner qualification template](../project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json), and checked no-claim [backup-ownership readiness-review template](../project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) document the current `PB-019` blocker but do not provide named qualified backups, two-person control, or owner-reviewed backup ownership readiness. This refines M0 without changing WP-001 through WP-019 status.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-opportunity sequencing

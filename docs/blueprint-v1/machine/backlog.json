@@ -18,6 +18,7 @@
     {"id":"WP-015","title":"Versioned DevTools automation protocol and trace viewer","milestone":"M2","depends_on":["WP-002","WP-009"],"requirements":["REQ-DEV-001","REQ-DEV-002","REQ-DEV-003"]},
     {"id":"WP-016","title":"Capability-safe agent reference implementation","milestone":"M6","depends_on":["WP-002","WP-007","WP-015"],"requirements":["REQ-AI-001","REQ-AI-002","REQ-AI-003","REQ-AI-004","REQ-AI-005"]},
     {"id":"WP-017","title":"Signed update rollback and profile migration laboratory","milestone":"M5","depends_on":["WP-001","WP-002","WP-014"],"requirements":["REQ-SEC-004","REQ-SEC-005","REQ-OPS-001"]},
-    {"id":"WP-018","title":"Fixed-hardware compatibility performance and energy lab","milestone":"M5","depends_on":["WP-005","WP-009","WP-013"],"requirements":["REQ-PERF-001","REQ-PERF-002","REQ-PERF-003"]}
+    {"id":"WP-018","title":"Fixed-hardware compatibility performance and energy lab","milestone":"M5","depends_on":["WP-005","WP-009","WP-013"],"requirements":["REQ-PERF-001","REQ-PERF-002","REQ-PERF-003"]},
+    {"id":"WP-019","title":"Baseline JIT and hardened JavaScript execution","milestone":"M6","depends_on":["WP-010","WP-011"],"requirements":["REQ-JS-004","REQ-JS-005"]}
   ]
 }

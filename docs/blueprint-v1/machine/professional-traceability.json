@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-19",
   "requirements": [
     {
       "id": "REQ-A11Y-001",
@@ -289,12 +289,12 @@
       "specification_status": "accepted",
       "implementation_status": "not_started",
       "verification_status": "none",
-      "design": [],
+      "design": ["docs/blueprint-v1/06-javascript-runtime.md", "docs/javascript/04-jit-tiering-ir-and-deoptimization.md", "docs/javascript/06-runtime-security-testing-and-performance.md", "docs/project-buildout/implementation-plan/09-m6-jit-media-plugins-agents.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
       "source": [],
       "tests": [],
       "reviews": [],
       "evidence": [],
-      "note": "Populate without hiding absence as implementation begins."
+      "note": "Design and work-package routing recorded; implementation, tests, reviews, and evidence remain absent until WP-019 is authorized."
     },
     {
       "id": "REQ-JS-005",
@@ -303,12 +303,12 @@
       "specification_status": "accepted",
       "implementation_status": "not_started",
       "verification_status": "none",
-      "design": [],
+      "design": ["docs/blueprint-v1/06-javascript-runtime.md", "docs/javascript/04-jit-tiering-ir-and-deoptimization.md", "docs/javascript/06-runtime-security-testing-and-performance.md", "docs/project-buildout/implementation-plan/09-m6-jit-media-plugins-agents.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
       "source": [],
       "tests": [],
       "reviews": [],
       "evidence": [],
-      "note": "Populate without hiding absence as implementation begins."
+      "note": "Design and work-package routing recorded; implementation, tests, reviews, and evidence remain absent until WP-019 is authorized."
     },
     {
       "id": "REQ-JS-006",

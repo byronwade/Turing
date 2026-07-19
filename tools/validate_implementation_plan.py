@@ -114,11 +114,11 @@ def check_graph() -> None:
 
     backlog_map = {str(item.get("id")): item for item in backlog_items}
     graph_map = {str(item.get("id")): item for item in nodes}
-    expected_ids = [f"WP-{index:03d}" for index in range(1, 19)]
+    expected_ids = [f"WP-{index:03d}" for index in range(1, 20)]
     if list(backlog_map) != expected_ids:
-        fail(f"backlog work packages must be WP-001 through WP-018; found {list(backlog_map)}")
+        fail(f"backlog work packages must be WP-001 through WP-019; found {list(backlog_map)}")
     if list(graph_map) != expected_ids:
-        fail(f"execution graph nodes must be WP-001 through WP-018; found {list(graph_map)}")
+        fail(f"execution graph nodes must be WP-001 through WP-019; found {list(graph_map)}")
 
     for identifier in expected_ids:
         backlog_item = backlog_map[identifier]
@@ -202,9 +202,9 @@ def check_roadmap_numbering() -> None:
     if len(section) != 2:
         fail("roadmap lacks canonical work-package section")
     ids = re.findall(r"\*\*(WP-\d{3}) —", section[1])
-    expected = [f"WP-{index:03d}" for index in range(1, 19)]
-    if ids[:18] != expected:
-        fail(f"roadmap WP numbering is not synchronized: {ids[:18]}")
+    expected = [f"WP-{index:03d}" for index in range(1, 20)]
+    if ids[:19] != expected:
+        fail(f"roadmap WP numbering is not synchronized: {ids[:19]}")
 
 
 def main() -> int:
@@ -220,7 +220,7 @@ def main() -> int:
         return 1
     print(
         "implementation plan validation passed: "
-        "18 work packages, 10 milestones, 8 interface freezes, "
+        "19 work packages, 10 milestones, 8 interface freezes, "
         "11 evidence classes, 11 planned waves"
     )
     return 0

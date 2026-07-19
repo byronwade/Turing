@@ -7650,3 +7650,21 @@ Added role-based owner metadata to the nine previously incomplete packets and th
 Next question:
 
 Which remaining research packets require a dated evidence-refresh trigger beyond their owner and status metadata?
+
+# 2026-07-19 - JavaScript JIT requirement routing audit
+
+Question:
+
+Can accepted baseline-JIT and hardened no-JIT requirements be followed from the requirements registry into design, work-package, milestone, dependency, and evidence planning without implying implementation?
+
+Method:
+
+Compared `REQ-JS-004` and `REQ-JS-005` across the requirements registry, professional traceability, Blueprint 06, the JavaScript engineering book, M6 implementation plan, work-package playbooks, backlog, execution graph, task sequence, and Chrome-class traceability map. The audit found that the M6 prose existed but no canonical work package or design references routed the two requirements.
+
+Decision:
+
+Added planned `WP-019` for baseline JIT and hardened JavaScript execution, synchronized the backlog, dependency graph, roadmap, M6 sequence, playbook, and traceability records, and preserved explicit no-claim status. `WP-019` remains non-executable until its interpreter/GC, W^X, differential, no-JIT, security, and owner-review gates are satisfied.
+
+Next question:
+
+Which accepted requirement family next lacks a dedicated work-package or verification route after the JavaScript runtime correction?

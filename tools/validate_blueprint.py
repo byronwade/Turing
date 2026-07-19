@@ -1105,8 +1105,8 @@ def check_json_registries() -> None:
         fail(f"expected 46 requirements, found {len(requirement_ids)}")
     if len(risk_ids) != 40:
         fail(f"expected 40 risks, found {len(risk_ids)}")
-    if len(work_ids) != 18:
-        fail(f"expected 18 work packages, found {len(work_ids)}")
+    if len(work_ids) != 19:
+        fail(f"expected 19 work packages, found {len(work_ids)}")
     if len(requirement_ids) != len(set(requirement_ids)):
         fail("duplicate requirement IDs")
     if len(risk_ids) != len(set(risk_ids)):
@@ -1117,8 +1117,8 @@ def check_json_registries() -> None:
         fail("requirements must be sorted by stable ID")
     if risk_ids != [f"R-{index:03d}" for index in range(1, 41)]:
         fail("risk IDs must be contiguous R-001 through R-040")
-    if work_ids != [f"WP-{index:03d}" for index in range(1, 19)]:
-        fail("work-package IDs must be contiguous WP-001 through WP-018")
+    if work_ids != [f"WP-{index:03d}" for index in range(1, 20)]:
+        fail("work-package IDs must be contiguous WP-001 through WP-019")
 
     requirement_set = set(requirement_ids)
     work_set = set(work_ids)
@@ -7374,7 +7374,7 @@ def main() -> int:
         "validation passed: "
         f"{markdown_count} Markdown files, {links_checked} relative links, "
         "27 detailed engineering books, 46 requirements, 40 risks, "
-        "18 work packages, 120 core machine-readable registries, "
+        "19 work packages, 120 core machine-readable registries, "
         "research-readiness crosswalk, ADR-0009 decision-review template, benchmark manifest, hardware, OS-control, resource attribution, "
         "competitor versions, competitor local installs, browser-pin capture, "
         "browser-pin capture self-test, browser-pin diagnostics, corpus, "

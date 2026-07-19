@@ -20,27 +20,28 @@ The GitHub issues created with Blueprint v1 are the executable front door for th
 16. Agent principal, grant, observation, action, policy, confirmation, and adversarial test reference.
 17. Signed package/update laboratory with rollback and profile migration fault injection.
 18. Fixed-hardware compatibility/performance/memory/energy lab.
+19. Baseline JIT, W^X, differential tiering, and no-JIT hardened execution.
 
 Each issue must reference stable requirement/risk/ADR IDs, define negative and failure tests, and state what the completion does **not** support. Work should not leapfrog a missing security boundary merely to produce a more impressive demo.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-opportunity research queue
 
-`OP-001` through `OP-014` remain outside the accepted `WP-001` through `WP-018` executable backlog. The first candidate additions are a market-validation harness, Space data-model prototype, migration/export corpus, Time Machine journal experiment, and Resource Truth usability study. New `WP-*` entries require reviewed promotion and dependency mapping.
+`OP-001` through `OP-014` remain outside the accepted `WP-001` through `WP-019` executable backlog. The first candidate additions are a market-validation harness, Space data-model prototype, migration/export corpus, Time Machine journal experiment, and Resource Truth usability study. New `WP-*` entries require reviewed promotion and dependency mapping.
 
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native shell work-package refinement
 
-`WP-004` remains the native accessible browser-shell spike. Before its implementation hardens around a framework, it produces a toolkit-neutral Rust state/command contract, equivalent Slint/Vizia/Floem-or-GPUI reference shells, page-surface and accessibility composition evidence, a reference-platform decision, and proposed ADR-0013 through ADR-0016. This refinement does not change the 18-work-package registry or claim WP-004 has started.
+`WP-004` remains the native accessible browser-shell spike. Before its implementation hardens around a framework, it produces a toolkit-neutral Rust state/command contract, equivalent Slint/Vizia/Floem-or-GPUI reference shells, page-surface and accessibility composition evidence, a reference-platform decision, and proposed ADR-0013 through ADR-0016. This refinement does not change the 19-work-package registry or claim WP-004 has started.
 
-The [implementation master plan](../project-buildout/implementation-plan/README.md) provides dependency-ordered execution documentation for `WP-001` through `WP-018`. It does not approve any work package, promote broad implementation readiness, or replace reviewed `TASK-*` manifests.
+The [implementation master plan](../project-buildout/implementation-plan/README.md) provides dependency-ordered execution documentation for `WP-001` through `WP-019`. It does not approve any work package, promote broad implementation readiness, or replace reviewed `TASK-*` manifests.
 
 The checked [GitHub Issue Handoff](../project-buildout/19-github-issue-handoff.md) maps the current issue and stale-PR cleanup snapshot back to these `WP-*`, `PB-*`, and `TASK-*` records. It is a coordination handoff only and does not approve work packages, approve tasks, promote readiness, or replace live GitHub verification.
 
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Agent execution and production-readiness preparation
 
-Before decomposing WP-001 through WP-018 into agent tasks, create the `TASK-*` graph, protected review policy, run/evidence storage, tool and secret boundaries, stable-scope draft, SLO measurement methods, update laboratory, incident exercises, supported-platform evidence, and release review procedure. This does not change existing work-package status.
+Before decomposing WP-001 through WP-019 into agent tasks, create the `TASK-*` graph, protected review policy, run/evidence storage, tool and secret boundaries, stable-scope draft, SLO measurement methods, update laboratory, incident exercises, supported-platform evidence, and release review procedure. This does not change existing work-package status.
 
 <!-- WP-002-KERNEL-IPC-2026-07 -->
 ## WP-002 current evidence

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-19",
   "status": "planning_sequence_not_task_acceptance",
   "rule": "Only a separately reviewed TASK manifest with status ready authorizes implementation. This sequence does not promote any task or branch.",
   "waves": [
@@ -72,7 +72,7 @@
       "id": "WAVE-07",
       "name": "M6 advanced capabilities",
       "parallelism": "separate gated tracks",
-      "items": ["baseline JIT","WebAssembly","media PDF printing","Plug-in preview","WP-016","real 30-tab integration"],
+      "items": ["WP-019 baseline JIT and no-JIT hardening","WebAssembly","media PDF printing","Plug-in preview","WP-016","real 30-tab integration"],
       "exit": ["IF-006","JIT media Plug-in and agent gates"]
     },
     {

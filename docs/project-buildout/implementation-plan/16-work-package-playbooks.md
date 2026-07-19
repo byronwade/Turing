@@ -1,4 +1,4 @@
-# 16 — WP-001 Through WP-018 Execution Playbooks
+# 16 — WP-001 Through WP-019 Execution Playbooks
 
 Status: canonical work-package implementation guide
 Owner: program and named subsystem owners
@@ -171,6 +171,20 @@ Every WP has:
 **Negative tests:** missing root; stale wrapper; resurrection; finalizer reentrancy; external-memory undercount; cross-realm identity; navigation during callback.
 
 **Handoff:** dynamic DOM/runtime foundation to M4 and JIT. **Not supported:** concurrent/generational GC unless reference-equivalent.
+
+## WP-019 — Baseline JIT and hardened JavaScript execution
+
+**Milestone:** M6. **Dependencies:** WP-010, WP-011. **Requirements:** `REQ-JS-004`, `REQ-JS-005`.
+
+**Deliver:** versioned Turing-owned IR and verifier; baseline bytecode compiler; W^X code allocation and platform mitigation integration; precise stack maps; inline-cache invalidation; interpreter-equivalent deoptimization; bounded code cache; complete no-JIT execution mode; emergency disable path; compiler, metadata, and code-memory diagnostics.
+
+**Task families:** IR and verifier; baseline lowering; executable-memory policy; stack maps; safepoints; inline caches; deoptimization; debugger integration; code-cache invalidation; no-JIT mode; emergency feature disable; differential fuzzing.
+
+**Acceptance:** every supported operation remains equivalent to the interpreter; malformed IR and metadata are rejected; W^X and platform mitigation evidence exists for the selected platform profile; deoptimization and cancellation preserve realm/document identity; no-JIT mode covers the declared runtime subset; code cache is discardable and version-bound; all evidence is retained under `JS-GATE-4` and `JS-GATE-5` review.
+
+**Negative tests:** writable/executable overlap; malformed stack maps; stale realm or document publication; deoptimization reconstruction failure; inline-cache invalidation race; code-cache version mismatch; compiler cancellation; JIT spraying; OOM; debugger attach; emergency no-JIT transition.
+
+**Handoff:** runtime performance and security evidence to M7 hardening and the benchmark lab. **Not supported:** optimizing-JIT, universal WebAssembly, production runtime, or performance-leadership claims without accepted evidence.
 
 ## WP-012 — Navigation transactions, site instances, and renderer swaps
 

@@ -5,11 +5,11 @@ Owner: JavaScript, media, Plug-ins, AI, security, product, performance, and qual
 
 ## 1. Objective
 
-M6 adds performance and ecosystem capabilities that significantly increase attack surface: baseline JIT, WebAssembly, media/document pipelines, restricted Plug-ins, and a capability-scoped agent preview. Each track can be delayed independently. None is required merely to make a more impressive demo.
+M6 adds performance and ecosystem capabilities that significantly increase attack surface: baseline JIT (`WP-019`), WebAssembly, media/document pipelines, restricted Plug-ins, and a capability-scoped agent preview. Each track can be delayed independently. None is required merely to make a more impressive demo.
 
 ## 2. Baseline JIT
 
-Entry requires a mature interpreter, exact GC reference mode, differential harness, executable-memory policy, and sandbox evidence.
+Entry requires `WP-010` and `WP-011` reference contracts, a mature interpreter, exact GC reference mode, differential harness, executable-memory policy, and sandbox evidence. `WP-019` remains planned until these conditions are reviewed.
 
 Task sequence:
 
