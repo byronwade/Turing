@@ -112,6 +112,10 @@ These sources support comparative research and falsifiable hypotheses. They do n
 - Speedometer 3.1 — https://browserbench.org/Speedometer3.1/
 - JetStream 3.0 — https://browserbench.org/JetStream3.0/
 - MotionMark current benchmark — https://browserbench.org/MotionMark/
+- JetStream 3 announcement — https://blog.google/chromium/jetstream-3-a-modern-benchmark-for-high-performance-compute-intensive-web-applications/
+- Chrome Speedometer 3.1 and JetStream 3 performance announcement — https://blog.google/chromium/a-double-victory-for-web-speed-chrome-breaks-records-again-on-speedometer-31-and-jetstream-3/
+- Chromium competitive-benchmark regression policy — https://chromium.googlesource.com/chromium/src/+/main/docs/benchmark_performance_regressions.md
+- Web Platform Tests documentation — https://web-platform-tests.org/
 - Chrome Releases — https://chromereleases.googleblog.com/
 - Microsoft Edge Stable release notes — https://learn.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel
 - Firefox release notes — https://www.firefox.com/en-US/releases/

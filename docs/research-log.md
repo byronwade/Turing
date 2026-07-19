@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Chrome-class benchmark source refresh
+
+Question:
+
+Does the Chrome-class and extreme-performance lane still reflect the current benchmark versions, competitor context, regression policy, and compatibility-test limitations that a future build must preserve?
+
+Method:
+
+Checked the official BrowserBench MotionMark and WPT documentation, the JetStream 3.0 release announcement, Google's current Chrome Speedometer 3.1/JetStream 3 announcement, and Chromium's competitive-benchmark regression policy on 2026-07-19. Compared those observations with the existing performance Blueprint, benchmark-lab contracts, competitor runbook, and no-claim registries.
+
+Decision:
+
+Recorded JetStream 3.0 as the current pinned compute-suite version, recorded Google's M5/macOS 26.0.1 scores as dated vendor context only, adopted regression detection as an engineering control without adopting vendor claims, and retained the requirement for exact suite revisions, failure denominators, equal security/lifecycle settings, raw artifacts, and independent review. WPT browser-in-browser limitations remain explicit for crash/hang coverage.
+
+Impact:
+
+The performance lane is better aligned with current primary-source observations while its claim boundary remains unchanged: `PB-013` is still no-claim and no Turing performance, Chrome-class, compatibility, memory, energy, or production claim was created.
+
 ## 2026-07-19 - Nova design-source identity made executable
 
 Question:

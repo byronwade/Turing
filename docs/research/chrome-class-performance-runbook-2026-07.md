@@ -36,6 +36,13 @@ Official BrowserBench methodology refresh retrieved on 2026-07-19:
 - MotionMark methodology: https://browserbench.org/MotionMark/about.html
 - MotionMark developer controls: https://browserbench.org/MotionMark/developer.html
 
+Current competitor and regression-policy sources retrieved on 2026-07-19:
+
+- Google Chrome performance announcement: https://blog.google/chromium/a-double-victory-for-web-speed-chrome-breaks-records-again-on-speedometer-31-and-jetstream-3/
+- Chromium competitive-benchmark regression policy: https://chromium.googlesource.com/chromium/src/+/main/docs/benchmark_performance_regressions.md
+- JetStream 3 announcement: https://blog.google/chromium/jetstream-3-a-modern-benchmark-for-high-performance-compute-intensive-web-applications/
+- Web Platform Tests documentation: https://web-platform-tests.org/
+
 Updated release-catalog check on 2026-07-18:
 
 - Chrome Releases: https://chromereleases.googleblog.com/
@@ -52,6 +59,13 @@ These sources define useful measurement surfaces and competitor-version capture 
 - JetStream 3.0 reports per-workload results and combines them with a geometric mean. Startup, worst-case, and average behavior are separately represented, with the documented first-iteration treatment; results from different JetStream versions are not comparable. Turing must retain per-workload output and never replace missing or unsupported workloads with a silently reduced aggregate.
 - MotionMark warms up, adjusts drawing complexity around a target frame rate, estimates a change point, and uses bootstrap confidence intervals and a geometric mean. Frame-rate and display-refresh controls affect the result; cross-browser comparisons must normalize the target refresh rate and record viewport class, orientation, and GPU/power state.
 - These controls are suite-specific validity rules. They do not make BrowserBench scores interchangeable with local corpus, trace, memory, energy, accessibility, compatibility, or Chrome-class evidence.
+
+### 2026-07-19 competitor-performance posture
+
+- Google reports a Chrome Speedometer 3.1 score of 61 and JetStream 3 score of 469, measured on an M5 MacBook Pro running macOS 26.0.1. This is a dated vendor-reported observation, not an independently reproduced Turing result. Any use in planning must preserve the hardware, operating-system, suite-version, and disclosure boundary rather than treating the numbers as universal targets.
+- Chromium's published competitive-benchmark policy treats regressions as actionable engineering signals and names Speedometer, MotionMark, and JetStream as competitive benchmarks. Turing should adopt the useful control principle of detecting and triaging regressions, while retaining its stricter requirements for failure denominators, security settings, accessibility, recovery, resource attribution, and independent review.
+- JetStream 3.0's 2026 release reinforces the version-pinning rule: older JetStream results cannot be combined with JetStream 3.0 results. The benchmark registry must therefore store the exact suite URL/revision and invalidate stale comparison records when the suite or competitor release changes.
+- WPT remains the shared cross-browser compatibility corpus and provides test-runner documentation, but browser-in-browser execution cannot cover crash or hang edge cases. Compatibility planning must retain out-of-process crash/hang evidence and must not convert WPT pass rates into a Chrome-class product claim by themselves.
 
 ## Observations
 
