@@ -30,7 +30,11 @@
         "docs/research/servo-build-script-generated-output-audit-2026-07.md",
         "docs/research/servo-clean-generated-output-reproduction-2026-07.md",
         "docs/research/servo-generated-output-generator-manifest-2026-07.md",
-        "docs/research/servo-generated-output-source-provenance-map-2026-07.md"
+        "docs/research/servo-generated-output-source-provenance-map-2026-07.md",
+        "docs/research/web-platform-source-and-conformance-evidence-2026-07.md",
+        "docs/web-platform/machine/web-platform-source-manifest.json",
+        "docs/web-platform/machine/web-platform-source-manifest.schema.json",
+        "tools/validate_web_platform_sources.py"
       ],
       "next_proof": [
         "owner-selected source baseline",

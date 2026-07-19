@@ -50,6 +50,8 @@ The documentation system is organized enough for contained M0 implementation tas
 
 `PB-002` source-strategy evidence also includes the checked no-claim [ADR-0009 source-observation manifest](../blueprint-v1/machine/adr-0009-source-observation-manifest.json) and [`validate_adr_0009_source_observations.py`](../../tools/validate_adr_0009_source_observations.py). The manifest tracks official upstream source identity, archive/bootstrap/native-artifact separation, dependency pinning, offline-build observations, and support-boundary consequences; it does not select a baseline, prove equivalence, approve dependencies, or authorize source import.
 
+The same route now includes the checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json), [schema](../web-platform/machine/web-platform-source-manifest.schema.json), and [`validate_web_platform_sources.py`](../../tools/validate_web_platform_sources.py). It records normative-source identity, test-suite and denominator discipline, interoperability, security/privacy/accessibility review, feature lifecycle, differential testing, and unsupported behavior. It does not establish conformance, compatibility, or implementation readiness.
+
 `PB-008`/`PB-009` current evidence also includes the checked no-claim [fresh-host toolchain-source manifest](machine/fresh-host-toolchain-source-manifest.json), [`fresh-host-toolchain-source-manifest.schema.json`](machine/fresh-host-toolchain-source-manifest.schema.json), and [`validate_fresh_host_toolchain_sources.py`](../../tools/validate_fresh_host_toolchain_sources.py). The manifest tracks official Rustup, Cargo, and Microsoft toolchain observations and run-record consequences only; it does not provide an independent run, toolchain equivalence, owner review, or readiness promotion.
 
 `PB-011` current evidence also includes the checked no-claim [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json), [`ipc-wire-source-manifest.schema.json`](../blueprint-v1/machine/ipc-wire-source-manifest.schema.json), and [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py). The manifest tracks official CBOR, Protocol Buffers, and FlatBuffers source observations across nine wire-safety axes; it does not select an encoding, approve a generator, authenticate a transport, or establish production IPC.
@@ -166,6 +168,7 @@ python3 -B tools/validate_incident_response_sources.py
 python3 -B tools/validate_ownership_control_sources.py
 python3 -B tools/validate_profile_session_sources.py
 python3 -B tools/validate_reference_platform_scorecard.py
+python3 -B tools/validate_web_platform_sources.py
 python3 -B tools/validate_task_approval_templates.py
 python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py

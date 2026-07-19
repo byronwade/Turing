@@ -1061,7 +1061,7 @@ def check_document_locations() -> None:
             continue
         if path.suffix == ".jsx" and path.is_relative_to(DOCS / "ui-runtime" / "design-lab"):
             continue
-        if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine") or path.is_relative_to(DOCS / "ui-runtime" / "machine") or path.is_relative_to(DOCS / "accessibility" / "machine") or path.is_relative_to(DOCS / "storage" / "machine") or path.is_relative_to(DOCS / "platform" / "machine") or path.is_relative_to(DOCS / "release-operations" / "machine") or path.is_relative_to(DOCS / "security-engine" / "machine") or path.is_relative_to(DOCS / "project-buildout" / "machine") or path.is_relative_to(DOCS / "agent-execution" / "machine") or path.is_relative_to(DOCS / "production-readiness" / "machine")):
+        if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine") or path.is_relative_to(DOCS / "ui-runtime" / "machine") or path.is_relative_to(DOCS / "accessibility" / "machine") or path.is_relative_to(DOCS / "storage" / "machine") or path.is_relative_to(DOCS / "platform" / "machine") or path.is_relative_to(DOCS / "web-platform" / "machine") or path.is_relative_to(DOCS / "release-operations" / "machine") or path.is_relative_to(DOCS / "security-engine" / "machine") or path.is_relative_to(DOCS / "project-buildout" / "machine") or path.is_relative_to(DOCS / "agent-execution" / "machine") or path.is_relative_to(DOCS / "production-readiness" / "machine")):
             continue
         fail(f"unsupported documentation file type: {relative(path)}")
 

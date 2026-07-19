@@ -121,7 +121,9 @@ The ownership lane also has a checked no-claim [ownership/control source manifes
 
 The profile/session lane also has a checked no-claim [profile/session source manifest](storage/machine/profile-session-source-manifest.json) and [`validate_profile_session_sources.py`](../tools/validate_profile_session_sources.py); these track official web-storage and clearing observations only and do not define a profile format, prove migration or durability, or provide data-loss readiness evidence.
 
-The platform lane also has a checked no-claim [reference-platform scorecard](platform/machine/reference-platform-scorecard.json) and [`validate_reference_platform_scorecard.py`](../tools/validate_reference_platform_scorecard.py); these compare Windows, macOS, and Linux planning evidence and official platform observations only and do not select a platform or establish support, compatibility, security, accessibility, performance, or release readiness.
+  The platform lane also has a checked no-claim [reference-platform scorecard](platform/machine/reference-platform-scorecard.json) and [`validate_reference_platform_scorecard.py`](../tools/validate_reference_platform_scorecard.py); these compare Windows, macOS, and Linux planning evidence and official platform observations only and do not select a platform or establish support, compatibility, security, accessibility, performance, or release readiness.
+
+  The web-platform lane also has a checked no-claim [source manifest](web-platform/machine/web-platform-source-manifest.json), [schema](web-platform/machine/web-platform-source-manifest.schema.json), and [`validate_web_platform_sources.py`](../tools/validate_web_platform_sources.py); these identify the standards, test-suite, interoperability, protocol, and governance evidence route only and do not establish conformance, compatibility, security, accessibility, performance, or production readiness.
 
 | Study | Status and purpose |
 |---|---|

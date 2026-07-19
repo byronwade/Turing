@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "manifest_id": "WEB_PLATFORM.SOURCES.2026_07",
+  "status": "no_claim_web_platform_source_manifest",
+  "updated": "2026-07-19",
+  "related_gates": ["PB-002", "PB-020"],
+  "claim_status": "No-claim web-platform standards, interoperability, and conformance-source observations only; these sources do not establish Turing compatibility, standards conformance, security, accessibility, performance, or production readiness.",
+  "evidence_axes": [
+    "normative_spec_identity_and_revision",
+    "test_suite_commit_manifest_and_harness",
+    "dependency_graph_and_denominator",
+    "interop_and_multi_implementer_context",
+    "security_privacy_accessibility_and_abuse_review",
+    "feature_lifecycle_experiment_and_deprecation",
+    "differential_testing_and_failure_accounting",
+    "unsupported_behavior_and_claim_review"
+  ],
+  "sources": [
+    {
+      "source_id": "WEB-SOURCE-WHATWG-HTML",
+      "category": "standard",
+      "title": "HTML Living Standard",
+      "publisher": "WHATWG",
+      "url": "https://html.spec.whatwg.org/",
+      "retrieved": "2026-07-19",
+      "observation": "The HTML standard is a living normative source whose algorithms, parsing behavior, document lifecycle, and integration points must be identified by exact retrieval or pinned snapshot when used as evidence.",
+      "evidence_consequence": "Record the exact source revision or retrieval identity, covered algorithms, implementation feature mapping, test mapping, unsupported behavior, and any local interpretation."
+    },
+    {
+      "source_id": "WEB-SOURCE-WHATWG-DOM",
+      "category": "standard",
+      "title": "DOM Standard",
+      "publisher": "WHATWG",
+      "url": "https://dom.spec.whatwg.org/",
+      "retrieved": "2026-07-19",
+      "observation": "DOM behavior spans trees, events, mutation, ranges, selection, realms, and integration hooks; a DOM implementation cannot be represented by page screenshots alone.",
+      "evidence_consequence": "Retain algorithm/spec identity, semantic trace cases, realm and lifecycle conditions, event ordering, mutation outcomes, test denominator, failures, and unsupported rows."
+    },
+    {
+      "source_id": "WEB-SOURCE-WHATWG-FETCH",
+      "category": "standard",
+      "title": "Fetch Standard",
+      "publisher": "WHATWG",
+      "url": "https://fetch.spec.whatwg.org/",
+      "retrieved": "2026-07-19",
+      "observation": "Fetch integrates request policy, origins, credentials, redirects, response bodies, streams, service workers, and network errors; a successful HTTP request is not a Fetch conformance result.",
+      "evidence_consequence": "Record origin/policy identity, credentials mode, redirects, timing, cancellation, body/error behavior, network fixtures, security review, and failure denominator."
+    },
+    {
+      "source_id": "WEB-SOURCE-CSSWG-DRAFTS",
+      "category": "standard",
+      "title": "CSS Working Group drafts",
+      "publisher": "W3C CSS Working Group",
+      "url": "https://drafts.csswg.org/",
+      "retrieved": "2026-07-19",
+      "observation": "CSS is a family of specifications with distinct maturity and test coverage; an implementation must identify the exact module, feature, syntax, computed-value behavior, layout/paint effect, and status.",
+      "evidence_consequence": "Pin the module and revision, map parser/style/layout/paint behavior to tests, preserve interop differences, and list unsupported or experimental features explicitly."
+    },
+    {
+      "source_id": "WEB-SOURCE-ECMA-262",
+      "category": "language",
+      "title": "ECMAScript Language Specification",
+      "publisher": "ECMA International / TC39",
+      "url": "https://tc39.es/ecma262/",
+      "retrieved": "2026-07-19",
+      "observation": "ECMAScript language and built-in semantics are normative inputs distinct from host APIs, browser integration, and implementation performance.",
+      "evidence_consequence": "Record specification edition or revision, Test262 commit and harness configuration, feature categories, implementation-defined behavior, realm/agent conditions, failures, and unsupported cases."
+    },
+    {
+      "source_id": "WEB-SOURCE-TEST262",
+      "category": "test-suite",
+      "title": "Test262",
+      "publisher": "TC39",
+      "url": "https://github.com/tc39/test262",
+      "retrieved": "2026-07-19",
+      "observation": "Test262 is a conformance test suite whose result depends on the exact repository commit, harness, features, host configuration, and included or excluded tests.",
+      "evidence_consequence": "Retain commit, harness, feature metadata, test selection, pass/fail/timeout/crash/not-run counts, expected failures, exclusions, and reproducible artifacts."
+    },
+    {
+      "source_id": "WEB-SOURCE-WPT",
+      "category": "test-suite",
+      "title": "Web Platform Tests",
+      "publisher": "Web Platform Tests community",
+      "url": "https://web-platform-tests.org/",
+      "retrieved": "2026-07-19",
+      "observation": "WPT provides cross-implementation web-platform tests, but results require a pinned tree, metadata, harness, environment, test selection, and complete denominator accounting.",
+      "evidence_consequence": "Record exact WPT commit, local patches, manifest generation, enabled directories, pass/fail/timeout/crash/leak/not-run/harness-error counts, expected failures, platform differences, and rerun policy."
+    },
+    {
+      "source_id": "WEB-SOURCE-INTEROP",
+      "category": "interop",
+      "title": "Interop project",
+      "publisher": "Interop project participants",
+      "url": "https://wpt.fyi/interop",
+      "retrieved": "2026-07-19",
+      "observation": "Interop provides a shared prioritization and measurement context, not a complete browser-support contract or a substitute for Turing-owned test and failure accounting.",
+      "evidence_consequence": "Record the Interop year/area, participating-engine context, selected tests, denominator, known differences, local results, and reasons for any divergence or exclusion."
+    },
+    {
+      "source_id": "WEB-SOURCE-WEBDRIVER-BIDI",
+      "category": "protocol",
+      "title": "WebDriver BiDi",
+      "publisher": "W3C WebDriver Working Group",
+      "url": "https://w3c.github.io/webdriver-bidi/",
+      "retrieved": "2026-07-19",
+      "observation": "WebDriver BiDi is a protocol surface with navigation, browsing-context, input, script, and event semantics that must be versioned and tested independently from a browser UI or agent authority model.",
+      "evidence_consequence": "Record protocol revision, command/event coverage, session and browsing-context identity, authorization boundary, transport faults, conformance tests, and unsupported commands."
+    },
+    {
+      "source_id": "WEB-SOURCE-DESIGN-PRINCIPLES",
+      "category": "governance",
+      "title": "Web Platform Design Principles",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/design-principles/",
+      "retrieved": "2026-07-19",
+      "observation": "Web-platform design principles require compatibility, user needs, accessibility, privacy, security, and interoperability considerations when proposing new platform behavior.",
+      "evidence_consequence": "Each proposed or experimental feature needs a user need, standards/interoperability route, privacy/security/accessibility review, test plan, multi-implementer rationale, and explicit deprecation or rejection path."
+    }
+  ],
+  "source_documents": [
+    "docs/web-platform/README.md",
+    "docs/web-platform/01-user-needs-and-design-principles.md",
+    "docs/web-platform/02-feature-lifecycle-and-standards-participation.md",
+    "docs/web-platform/03-tests-interop-and-dependency-graphs.md",
+    "docs/web-platform/04-privacy-security-accessibility-and-abuse-review.md",
+    "docs/web-platform/05-experiments-deprecation-and-compatibility-interventions.md",
+    "docs/web-platform/06-governance-evidence-and-public-dashboard.md",
+    "docs/blueprint-v1/02-capability-parity.md",
+    "docs/blueprint-v1/12-testing-compatibility.md",
+    "docs/blueprint-v1/18-source-bibliography.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/research/servo-local-compatibility-corpus-2026-07.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md"
+  ],
+  "unsupported": [
+    "No HTML, DOM, CSS, Fetch, ECMAScript, WPT, Test262, Interop, or WebDriver BiDi execution has been established by this manifest.",
+    "No exact standards snapshot, WPT/Test262 denominator, browser-run artifact package, or differential result is accepted as current compatibility evidence here.",
+    "No feature is selected for implementation, no web-platform API is supported, and no compatibility exception or user-agent intervention is approved.",
+    "No standards conformance, Chrome-class compatibility, security, accessibility, performance, production, or implementation claim exists."
+  ]
+}

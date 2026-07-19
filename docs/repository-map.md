@@ -56,6 +56,10 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   └── machine/
 │   │       ├── reference-platform-scorecard.json
 │   │       └── reference-platform-scorecard.schema.json
+│   ├── web-platform/
+│   │   └── machine/
+│   │       ├── web-platform-source-manifest.json
+│   │       └── web-platform-source-manifest.schema.json
 │   ├── project-buildout/
 │   │   ├── implementation-plan/
 │   │   │   ├── README.md
@@ -112,7 +116,8 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_incident_response_sources.py
     ├── validate_ownership_control_sources.py
     ├── validate_profile_session_sources.py
-    ├── validate_reference_platform_scorecard.py
+      ├── validate_reference_platform_scorecard.py
+      ├── validate_web_platform_sources.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
     ├── validate_fresh_host_readiness_review.py

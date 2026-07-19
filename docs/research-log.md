@@ -1,5 +1,19 @@
 # Research Log
 
+## 2026-07-19 - Web-platform source and conformance route made executable
+
+Question:
+
+Can standards, conformance suites, interoperability, automation protocol, and lifecycle evidence be collected as one checked no-claim route without implying browser compatibility or standards conformance?
+
+Method:
+
+Added the web-platform source manifest, schema, validator, and dated evidence report. The route records normative-source identity, suite commit and harness discipline, denominator accounting, interoperability, security/privacy/accessibility review, feature lifecycle, differential testing, and unsupported behavior. It is attached to the existing PB-002 source-strategy evidence route and does not add a task, select a feature, authorize implementation, or establish compatibility.
+
+Result:
+
+The source route is now machine-checked and indexed. No standards snapshot, WPT/Test262 execution, denominator, browser-run artifact, differential result, conformance result, compatibility claim, security claim, accessibility claim, performance claim, or production claim changed. PB-002 remains blocked and PB-020 remains partial.
+
 ## 2026-07-19 - Reference platform support scorecard made executable
 
 Question:

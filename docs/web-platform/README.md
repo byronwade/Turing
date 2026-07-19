@@ -55,6 +55,8 @@ Leadership requires a public evidence package combining conformance, adversarial
 
 The book is a research baseline. Accepted architecture requires an ADR or owning Blueprint change with reproducible evidence. Current and early Turing builds remain unsafe for sensitive or hostile browsing.
 
+The checked [web-platform source manifest](machine/web-platform-source-manifest.json), [manifest schema](machine/web-platform-source-manifest.schema.json), and [validator](../../tools/validate_web_platform_sources.py) collect the current standards, test-suite, interoperability, protocol, and governance source route for `PB-002` and `PB-020`. This is a no-claim source inventory: it records what must be pinned and executed later, but does not establish standards conformance, compatibility, security, accessibility, performance, or production readiness. The dated [source and conformance evidence report](../research/web-platform-source-and-conformance-evidence-2026-07.md) records the handoff and remaining proof order.
+
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Product differentiation and the open web
 
