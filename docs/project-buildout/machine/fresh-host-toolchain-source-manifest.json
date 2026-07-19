@@ -36,6 +36,33 @@
       "run_record_consequence": "Record the lockfile hash, locked/offline flags, registry and cache roots, network mode, and whether dependencies were fetched before an offline attempt; neither flag proves a clean host or identical native toolchain."
     },
     {
+      "source_id": "BUILD-SOURCE-RUSTUP-OVERRIDES",
+      "title": "Rustup overrides and toolchain files",
+      "publisher": "Rustup project",
+      "url": "https://rust-lang.github.io/rustup/overrides.html",
+      "retrieved": "2026-07-19",
+      "observation": "Rustup resolves command-line, environment, directory, and rust-toolchain.toml overrides in a defined order; a checked-in toolchain file can pin a channel, components, targets, and profile, and Cargo.lock should normally be tracked with a pinned toolchain.",
+      "run_record_consequence": "Record the discovered rust-toolchain.toml path and contents hash, override source and precedence, active toolchain from rustup show, requested components/targets/profile, and lockfile identity; do not infer the active compiler from a machine default."
+    },
+    {
+      "source_id": "BUILD-SOURCE-MICROSOFT-COMMAND-LINE",
+      "title": "Use the Microsoft C++ Build Tools from the command line",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170",
+      "retrieved": "2026-07-19",
+      "observation": "Microsoft distinguishes installed C++ workloads from the command-line environment that exposes compiler, linker, library, and related tools; the selected toolset and developer environment determine the executable paths used by a build.",
+      "run_record_consequence": "Capture the exact developer-shell or vcvars initialization command, environment delta, cl/link paths and versions, target architecture, LLVM/lld path if used, and shell type; a normal PowerShell PATH is not evidence that the intended compiler environment was active."
+    },
+    {
+      "source_id": "BUILD-SOURCE-MICROSOFT-WINDOWS-SDK",
+      "title": "Windows SDK overview",
+      "publisher": "Microsoft",
+      "url": "https://learn.microsoft.com/en-us/windows/apps/windows-sdk/",
+      "retrieved": "2026-07-19",
+      "observation": "The Windows SDK supplies versioned platform headers, libraries, metadata, and build tools for Windows application targets; an installed SDK family is a distinct build input from the Visual Studio product or MSVC toolset.",
+      "run_record_consequence": "Record the selected Windows SDK version, installation root, headers/libraries/resource-tool paths, target architecture, and discovery mechanism, then retain the exact SDK facts with the linker and compiler records."
+    },
+    {
       "source_id": "BUILD-SOURCE-MICROSOFT-MSVC",
       "title": "Acquire Microsoft C++ Build Tools",
       "publisher": "Microsoft",

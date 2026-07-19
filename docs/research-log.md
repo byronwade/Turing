@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Fresh-host toolchain identity boundary expanded
+
+Question:
+
+What toolchain-selection and Windows native-build facts must be retained before a future `TASK-000002` run can be compared across hosts without confusing a machine default, an initialized compiler environment, or an installed SDK with the actual build inputs?
+
+Method:
+
+Compared the fresh-host reproduction inventory, closure preparation, run-record contract, toolchain manifest, build-information ledger, repository `rust-toolchain.toml` and `Cargo.lock`, and existing Windows build observations with official [Rustup override](https://rust-lang.github.io/rustup/overrides.html), [Microsoft C++ command-line](https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170), and [Windows SDK](https://learn.microsoft.com/en-us/windows/apps/windows-sdk/) documentation. Added the source identities to the manifest and validator and synchronized the closure route, evidence matrix, repository map, and research log.
+
+Result:
+
+The run record must capture rust-toolchain-file discovery and precedence, active toolchain/components/targets/profile, lockfile identity, Developer Command Prompt or `vcvars` initialization, compiler/linker/LLVM paths and versions, target architecture, and Windows SDK version/root/discovery. `rustc --version`, an installed Visual Studio product, or a passing same-host build is not sufficient equivalence evidence.
+
+Impact:
+
+The `PB-008`/`PB-009` toolchain-source manifest now requires six primary source records across nine evidence axes. No fresh-host run, toolchain equivalence, owner-reviewed readiness, release confidence, implementation, performance, compatibility, security, or Chrome-class claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the reviewed `TASK-000002` run record retain these facts together with independent host identity, command denominator, cache/target controls, source-tree cleanliness, logs, and owner review?
+
 ## 2026-07-19 - ADR-0009 provenance policy boundary clarified
 
 Question:
