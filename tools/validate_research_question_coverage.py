@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""Validate complete, explicit coverage of the numbered research program."""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+AUDIT = ROOT / "docs/blueprint-v1/machine/research-question-coverage.json"
+SCHEMA = ROOT / "docs/blueprint-v1/machine/research-question-coverage.schema.json"
+PROGRAM = ROOT / "docs/blueprint-v1/22-research-program.md"
+CROSSWALK = ROOT / "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+
+
+def fail(message: str) -> None:
+    print(f"research-question coverage validation failed: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def nonempty(value: object, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        fail(f"{label} must be a non-empty string")
+    return value
+
+
+def strings(value: object, label: str, minimum: int) -> list[str]:
+    if not isinstance(value, list) or len(value) < minimum or not all(isinstance(item, str) and item.strip() for item in value):
+        fail(f"{label} must contain at least {minimum} non-empty strings")
+    return value
+
+
+def main() -> int:
+    try:
+        audit = json.loads(AUDIT.read_text(encoding="utf-8"))
+        schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+        program = PROGRAM.read_text(encoding="utf-8")
+        crosswalk = json.loads(CROSSWALK.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        fail(f"cannot read source: {exc}")
+
+    if schema.get("properties", {}).get("schema_version", {}).get("const") != 1:
+        fail("schema must declare schema_version 1")
+    if audit.get("schema_version") != 1 or audit.get("status") != "no_claim_research_question_coverage_audit":
+        fail("audit status or schema_version is invalid")
+    claim = nonempty(audit.get("claim_status"), "claim_status").lower()
+    for phrase in ("no-claim", "does not", "approve", "compatibility", "performance"):
+        if phrase not in claim:
+            fail(f"claim_status must preserve {phrase!r} boundary")
+    if not (ROOT / audit.get("program_source", "")).is_file() or not (ROOT / audit.get("crosswalk_source", "")).is_file():
+        fail("program_source and crosswalk_source must resolve")
+    required_commands = strings(audit.get("validation_commands"), "validation_commands", 3)
+    if "python3 -B tools/validate_research_question_coverage.py" not in required_commands:
+        fail("validation_commands must include this validator")
+    unsupported = strings(audit.get("unsupported"), "unsupported", 8)
+    if not any("deferred" in value.lower() for value in unsupported):
+        fail("unsupported must explain deferred-question boundaries")
+
+    program_ids = set(re.findall(r"^## (RQ-[0-9]{2})\s+—", program, re.MULTILINE))
+    if len(program_ids) != 66:
+        fail(f"research program must contain 66 numbered questions, found {len(program_ids)}")
+    crosswalk_ids = {question for lane in crosswalk.get("lanes", []) for question in lane.get("research_questions", [])}
+    if not crosswalk_ids <= program_ids:
+        fail("crosswalk contains a research question absent from the program")
+
+    active = strings(audit.get("active_question_ids"), "active_question_ids", 1)
+    active_set = set(active)
+    if len(active_set) != len(active) or active_set != crosswalk_ids:
+        fail("active_question_ids must exactly match crosswalk research_questions")
+    deferred = audit.get("deferred_questions")
+    if not isinstance(deferred, list):
+        fail("deferred_questions must be an array")
+    deferred_ids: set[str] = set()
+    for index, record in enumerate(deferred):
+        if not isinstance(record, dict):
+            fail(f"deferred_questions[{index}] must be an object")
+        question_id = nonempty(record.get("question_id"), f"deferred_questions[{index}].question_id")
+        if question_id in deferred_ids:
+            fail(f"duplicate deferred question: {question_id}")
+        deferred_ids.add(question_id)
+        if record.get("status") != "deferred_outside_current_prebuild_crosswalk":
+            fail(f"deferred_questions[{index}] has invalid status")
+        for key in ("reason", "owner_route", "revisit_trigger"):
+            nonempty(record.get(key), f"deferred_questions[{index}].{key}")
+        strings(record.get("required_future_evidence"), f"deferred_questions[{index}].required_future_evidence", 3)
+    if deferred_ids != program_ids - active_set:
+        fail("deferred_questions must exactly cover every program question outside the active crosswalk")
+    if active_set & deferred_ids:
+        fail("a question cannot be both active and deferred")
+
+    print(f"research-question coverage validation passed: {len(program_ids)} questions, {len(active_set)} active, {len(deferred_ids)} explicitly deferred")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,5 +1,19 @@
 # Research Log
 
+## 2026-07-19 - Research-question coverage made explicit
+
+Question:
+
+Are all numbered research questions either routed to an active pre-build lane or explicitly deferred with a revisit path, so omission cannot be confused with completion?
+
+Method:
+
+Compared the 66 headings in `docs/blueprint-v1/22-research-program.md` with the `RQ-*` IDs in `research-readiness-crosswalk.json`. Added a machine coverage registry, schema, validator, and dated audit. The validator requires the active set to match the crosswalk exactly and requires every remaining question to carry an explicit deferred status, owner route, revisit trigger, and future evidence list.
+
+Result:
+
+All 66 questions are now accounted for: 37 are active in current readiness lanes and 29 are explicitly deferred outside the current pre-build crosswalk. No question was answered, rejected, converted into a task, or promoted into a support or readiness claim.
+
 ## 2026-07-19 - Owner-decision synchronization control made executable
 
 Question:

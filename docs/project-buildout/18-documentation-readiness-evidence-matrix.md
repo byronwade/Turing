@@ -68,6 +68,8 @@ The same route now includes the checked no-claim [web-platform source manifest](
 
 `PB-020` owner-decision evidence also includes the checked no-claim [owner-decision synchronization matrix](machine/owner-decision-synchronization.json), [schema](machine/owner-decision-synchronization.schema.json), and [`validate_owner_decision_synchronization.py`](../../tools/validate_owner_decision_synchronization.py). The matrix binds each of the 11 closure scopes to roles, evidence classes, exact synchronization paths, exception requirements, and prohibited claims; it does not name an owner, select a decision, close a gate, approve a task, or grant authority.
 
+The research program is also covered by the checked no-claim [research-question coverage audit](../blueprint-v1/machine/research-question-coverage.json), [schema](../blueprint-v1/machine/research-question-coverage.schema.json), and [`validate_research_question_coverage.py`](../../tools/validate_research_question_coverage.py). It accounts for all 66 numbered questions, distinguishes 37 active crosswalk questions from 29 explicitly deferred questions, and preserves revisit and evidence requirements without answering a question or promoting a gate.
+
 `PB-016` current evidence also includes the checked no-claim [profile/session source manifest](../storage/machine/profile-session-source-manifest.json), [`profile-session-source-manifest.schema.json`](../storage/machine/profile-session-source-manifest.schema.json), and [`validate_profile_session_sources.py`](../../tools/validate_profile_session_sources.py). The manifest tracks official WHATWG/W3C web-storage, transaction, clearing, and privacy observations across nine evidence axes; it does not define a profile format, prove migration or durability, or provide data-loss readiness evidence.
 
 ## Required Continuation Checks
@@ -176,6 +178,7 @@ python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py
 python3 -B tools/validate_build_readiness_closure_review.py
 python3 -B tools/validate_owner_decision_synchronization.py
+python3 -B tools/validate_research_question_coverage.py
 git diff --check
 git diff --cached --check
 cargo fmt --all -- --check

@@ -51,6 +51,9 @@ Update rule: required for every file or directory addition, deletion, rename, or
 ├── docs/
 │   ├── README.md
 │   ├── blueprint-v1/
+│   │   └── machine/
+│   │       ├── research-question-coverage.json
+│   │       └── research-question-coverage.schema.json
 │   ├── research/
 │   ├── platform/
 │   │   └── machine/
@@ -120,6 +123,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_profile_session_sources.py
     ├── validate_reference_platform_scorecard.py
     ├── validate_owner_decision_synchronization.py
+    ├── validate_research_question_coverage.py
     ├── validate_web_platform_sources.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
