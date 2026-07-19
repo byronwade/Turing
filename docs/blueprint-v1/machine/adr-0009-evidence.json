@@ -18,7 +18,8 @@
         "docs/research/servo-source-archive-provenance-audit-2026-07.md",
         "docs/research/servo-upstream-source-provenance-2026-07.md",
         "docs/research/servo-independent-source-verification-2026-07.md",
-        "docs/research/servo-source-baseline-equivalence-policy-2026-07.md"
+        "docs/research/servo-source-baseline-equivalence-policy-2026-07.md",
+        "docs/research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md"
       ],
       "missing_outputs": [
         "owner-selected source baseline",
@@ -39,7 +40,8 @@
       ],
       "existing_evidence": [
         "docs/research/servo-independent-build-reproduction-2026-07.md",
-        "docs/research/servo-source-strategy-inventory-2026-07.md"
+        "docs/research/servo-source-strategy-inventory-2026-07.md",
+        "docs/research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md"
       ],
       "missing_outputs": [
         "owner acceptance of the replay protocol",
@@ -238,7 +240,8 @@
         "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
         "docs/research/servo-dependency-provenance-inventory-2026-07.md",
         "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
-        "docs/research/servo-component-boundary-analysis-2026-07.md"
+        "docs/research/servo-component-boundary-analysis-2026-07.md",
+        "docs/research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md"
       ],
       "missing_outputs": [
         "owner-selected ADR-0009 option, source baseline, feature profile, and target platform",
@@ -336,7 +339,8 @@
       "existing_evidence": [
         "docs/research/servo-generated-native-unsafe-classification-2026-07.md",
         "docs/research/servo-native-bootstrap-provenance-audit-2026-07.md",
-        "docs/research/servo-security-maintenance-implications-2026-07.md"
+        "docs/research/servo-security-maintenance-implications-2026-07.md",
+        "docs/research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md"
       ],
       "missing_outputs": [
         "owner-reviewed process authority map for each ADR-0009 option",

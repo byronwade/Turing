@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Servo upstream refresh and source-strategy delta
+
+Question:
+
+What current official Servo and `mozjs` observations must be refreshed before `ADR-0009` source, runtime, build, and maintenance decisions can be reviewed?
+
+Method:
+
+Reviewed the official [Servo repository](https://github.com/servo/servo), [Servo pull requests](https://github.com/servo/servo/pulls), and [Servo `mozjs` repository](https://github.com/servo/mozjs) on 2026-07-19, then compared those live observations with the existing source-strategy inventory, provenance/equivalence packets, build-reproduction route, component/runtime analysis, security-maintenance report, ADR evidence matrix, and machine evidence registry. Added a dated no-claim refresh packet that separates live upstream activity from commit-pinned Turing evidence and routes the delta to `ADR9-EV-001`, `002`, `012`, and `016`.
+
+Result:
+
+The upstream surfaces confirm a broad, moving engine and embedding/build ecosystem with explicit native/toolchain, runtime, test, security, and maintenance surfaces. The official project description calls Servo a prototype and publishes platform/build guidance; the `mozjs` project documents a separate SpiderMonkey binding and vendored/upstream workflow. These observations improve freshness and decision routing but do not resolve source identity, reproducible independent builds, Turing-owned JavaScript semantics, or maintenance ownership.
+
+Impact:
+
+The source-strategy lane now has a dated upstream refresh with source URLs, observation-versus-inference rules, freshness controls, evidence-item mapping, and a next-proof sequence. `PB-002` and `ADR9-EV-018` remain blocked; no source, dependency, runtime, compatibility, performance, security, support, or release claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can an owner freeze one source baseline and runtime relationship, reproduce it on an independent clean host, and accept the resulting maintenance and provenance contract through a real `ADR-0009` review record?
+
 ## 2026-07-19 - Nova design authority synchronized into readiness audit
 
 Question:

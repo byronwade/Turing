@@ -587,6 +587,7 @@ These reports must remain linked from the research index and mapped back to the 
 These reports feed `ADR-0009`; they do not approve a Servo-derived release path:
 
 - [`docs/research/servo-source-strategy-inventory-2026-07.md`](research/servo-source-strategy-inventory-2026-07.md);
+- [`docs/research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md`](research/servo-upstream-refresh-and-source-strategy-delta-2026-07.md);
 - [`docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md`](research/adr-0009-source-strategy-closure-preparation-2026-07.md);
 - [`docs/research/adr-0009-source-strategy-packet-examples-2026-07.md`](research/adr-0009-source-strategy-packet-examples-2026-07.md);
 - [`docs/research/servo-independent-build-reproduction-2026-07.md`](research/servo-independent-build-reproduction-2026-07.md);
