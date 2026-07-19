@@ -12,6 +12,7 @@ Every published number includes build, commit, platform, hardware, memory size, 
 - first window and address-bar readiness;
 - navigation response start, first content, largest content, interactive readiness, and visual stability;
 - input-to-event, event-to-render, and input-to-present latency;
+- page-observable Navigation Timing and Event Timing phases, with page-level responsiveness metrics kept separate from browser chrome and internal process latency;
 - scrolling and animation frame pacing at 60/90/120/144 Hz;
 - JavaScript parse/compile/execute and GC pauses;
 - style, layout, paint, raster, and composite time;

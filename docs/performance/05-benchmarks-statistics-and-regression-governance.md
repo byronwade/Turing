@@ -26,6 +26,14 @@ A noise study determines repetitions and meaningful thresholds. Store raw sample
 
 A statistically significant change below practical impact may not block; a large practical tail regression can block even with noisy significance.
 
+### User-visible latency decomposition
+
+Page-observable timing and browser-wide timing are separate measurement families. Navigation Timing supplies document navigation phases, and Event Timing supplies qualifying input-event phases and interaction grouping. INP is a useful page-level responsiveness diagnostic based on interaction-to-next-paint behavior, but it does not measure browser chrome, startup, memory, energy, process topology, or every asynchronous effect. The [Long Animation Frames API](https://www.w3.org/TR/long-animation-frames/) is a draft diagnostic surface for long-frame and script/style/layout attribution, not an automatic release metric.
+
+For a user interaction, retain input arrival, queue delay, processing start/end, rendering/presentation milestones, presentation feedback, interaction/scenario identity, document/frame/site identity, process/resource owner, cancellation or timeout, and visible/stale/failed outcome. Report input delay, processing, render/present, and total input-to-present separately. Keep page metrics, chrome metrics, continuous-input metrics, accessibility-input metrics, startup, navigation, and recovery in separate metric families with explicit denominators. Use opaque identifiers and classifications in routine traces, and record origin/privacy reductions or unsupported observer capabilities.
+
+The benchmark evidence and claim-closure route defines the source versions and no-trace control requirements for these observations. A page-level metric or a trace-derived cause cannot independently support a browser-wide speed, responsiveness, energy, or Chrome-class claim.
+
 ## Baseline and comparison
 
 Compare against prior Turing commits and current named competitor versions. Competitor tests use equivalent content, activity, security, isolation, lifecycle, cache, and profile state. Unsupported/failed pages count. Architecture causes require controlled follow-up, not correlation from one browser comparison.

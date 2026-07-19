@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Performance timing-source separation expanded
+
+Question:
+
+Does the `PB-013` performance lane distinguish page-observable timing, user-facing page responsiveness, browser chrome input, and causal trace diagnosis well enough to prevent a web metric from becoming an unsupported browser-wide performance claim?
+
+Method:
+
+Compared the benchmark evidence and claim-closure route, Blueprint 09, the performance statistics book, and the startup/navigation/input benchmark chapter with W3C Navigation Timing, W3C Event Timing, the W3C Long Animation Frames draft, and web.dev's INP guidance as observed on 2026-07-19.
+
+Result:
+
+The documentation now requires separate page-observable, user-facing, and causal-diagnostic views. Future interaction records must retain input arrival, queue delay, processing, rendering/presentation, interaction identity, document/frame/site identity, process/resource owner, cancellation/timeout, and visible/stale/failed outcome. Page metrics remain distinct from chrome input-to-present and browser-wide resource or process measurements. Long Animation Frames remains capability-detected diagnostic evidence with a no-diagnostic control because it is a draft API.
+
+Impact:
+
+The `PB-013` contract is more explicit about metric-family boundaries, privacy minimization, cross-origin limitations, failure denominators, and observer overhead. This does not provide a browser run, benchmark result, owner-reviewed readiness, compatibility result, speed result, energy result, or Chrome-class claim; `PB-013`, `TASK-000005`, and `PB-020` remain unresolved. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the reviewed L1 runner emit these decomposed interaction records and equivalent no-trace controls from a real browser run without leaking page content or silently dropping failed or unsupported interactions?
+
 ## 2026-07-19 - Live repository ownership controls captured
 
 Question:

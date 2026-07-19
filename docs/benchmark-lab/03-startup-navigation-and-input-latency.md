@@ -57,6 +57,12 @@ Every durable design note must enumerate:
 
 Measurements report p50, p95, and p99 latency where interaction is involved; live, reserved, committed, resident, shared, compressed, swapped, and GPU memory where relevant; CPU time, queue wait, wakeups, network/disk bytes, energy, and thermal state; and the effect of site isolation, process count, tab lifecycle, extensions, DevTools, and agents.
 
+### Timing-source separation
+
+Use [Navigation Timing](https://www.w3.org/TR/navigation-timing-2/) for document navigation phases and [Event Timing](https://www.w3.org/TR/event-timing/) for qualifying event and interaction phases when the page exposes them. Treat [INP](https://web.dev/articles/inp) as a page-level responsiveness observation, not as a replacement for browser input-to-present or chrome latency. The [Long Animation Frames API](https://www.w3.org/TR/long-animation-frames/) is a draft, capability-detected diagnostic source; its script/style/layout attribution must not become a release baseline without an exact revision, privacy review, and no-diagnostic control.
+
+Every interaction record should separate input delay, processing time, rendering/presentation delay, and total input-to-present, with opaque scenario/interaction IDs, document/frame/site identity, process/resource-owner attribution, cancellation/timeout state, and visible/stale/failed outcome. Page, chrome, continuous-input, accessibility-input, startup, navigation, and recovery metric families use separate denominators. Page timing and trace-derived causes are supporting diagnostic data only; they do not prove browser-wide responsiveness or Chrome-class performance.
+
 An optimization is not accepted from a microbenchmark alone. It must preserve conformance, security mitigations, accessibility paths, failure behavior, and a default-equivalent configuration. Tail regressions, extra process launches, larger working sets, or increased recovery cost remain visible.
 
 ## Security and privacy requirements
