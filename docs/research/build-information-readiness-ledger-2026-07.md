@@ -63,10 +63,10 @@ The validator checks that each critical lane has current evidence, missing infor
 | `INFO-SANDBOX` | Missing executable evidence | Packaged expected-deny probes, unsandboxed controls, effective platform policy, compromised-client harnesses, platform matrix, and owner-reviewed sandbox readiness |
 | `INFO-BENCHMARK` | Missing executable evidence | Browser-run raw artifacts, trace packages, memory and energy samples, owner-reviewed statistics, claim bundles, and benchmark readiness |
 | `INFO-NATIVE-SHELL` | Missing executable evidence | Accepted native UI ADRs, equivalent adapter prototypes, rendered fixtures, page-surface proof, accessibility workflows, fault evidence, metrics, and owner review |
-| `INFO-PROFILE-SESSION` | Missing executable evidence | Executable profile/session schemas, migration/fault tests, real-profile fixture policy, data-loss safety, and owner review |
-| `INFO-PACKAGE-UPDATE` | Missing executable evidence | Fake-key package/update lab, parser/verifier/staged install, rollback/migration/fault evidence, production-key separation review, and owner review |
-| `INFO-INCIDENT-RESPONSE` | Missing executable evidence | Executed tabletop, emergency patch dry run, role matrix, update capacity, disclosure workflow, backup coverage, and owner review |
-| `INFO-BACKUP-OWNERSHIP` | Blocked owner-only | Named qualified backup owners, qualification evidence, no-stale-access review, two-person control, and owner review |
+| `INFO-PROFILE-SESSION` | Missing executable evidence | Source manifest is checked; executable profile/session schemas, migration/fault tests, real-profile fixture policy, data-loss safety, and owner review remain missing |
+| `INFO-PACKAGE-UPDATE` | Missing executable evidence | Source manifest is checked; fake-key package/update lab, parser/verifier/staged install, rollback/migration/fault evidence, production-key separation review, and owner review remain missing |
+| `INFO-INCIDENT-RESPONSE` | Missing executable evidence | Source manifest is checked; executed tabletop, emergency patch dry run, role matrix, update capacity, disclosure workflow, backup coverage, and owner review remain missing |
+| `INFO-BACKUP-OWNERSHIP` | Blocked owner-only | Source manifest is checked; named qualified backup owners, qualification evidence, no-stale-access review, two-person control, and owner review remain missing |
 | `INFO-CHROME-CLASS-PRODUCT` | Blocked owner-only | Accepted capability evidence and claim bundles across product, compatibility, security, accessibility, performance, update, incident-response, and support domains |
 
 ## Decision

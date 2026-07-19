@@ -49,6 +49,18 @@
     "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
     "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
     "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    "docs/storage/machine/profile-session-source-manifest.json",
+    "docs/storage/machine/profile-session-source-manifest.schema.json",
+    "tools/validate_profile_session_sources.py",
+    "docs/release-operations/machine/package-update-source-manifest.json",
+    "docs/release-operations/machine/package-update-source-manifest.schema.json",
+    "tools/validate_package_update_sources.py",
+    "docs/security-engine/machine/incident-response-source-manifest.json",
+    "docs/security-engine/machine/incident-response-source-manifest.schema.json",
+    "tools/validate_incident_response_sources.py",
+    "docs/project-buildout/machine/ownership-control-source-manifest.json",
+    "docs/project-buildout/machine/ownership-control-source-manifest.schema.json",
+    "tools/validate_ownership_control_sources.py",
     "docs/research/owner-decision-closure-record-examples-2026-07.md",
     "tools/validate_build_readiness_closure_review.py",
     "docs/agent-execution/machine/task-approval-template.schema.json",
@@ -123,7 +135,7 @@
       "id": "DOC-READY-MACHINE_REGISTRIES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "Pre-build readiness, build-readiness task queue, research-readiness crosswalk, kickoff inventory, dependency graph, contained M0 start-state record, build-information readiness ledger, requirements, risks, backlog, owners, and validators provide checked IDs and status boundaries."
+        "Pre-build readiness, build-readiness task queue, research-readiness crosswalk, kickoff inventory, dependency graph, contained M0 start-state record, build-information readiness ledger, requirements, risks, backlog, owners, source manifests, and focused validators provide checked IDs and status boundaries."
       ],
       "missing_for_full_goal": [
         "Machine records still lack promoted readiness for PB-002, PB-008, PB-009, PB-011, PB-012, PB-013, native-shell readiness, profile/session implementation, package/update lab execution, incident rehearsal execution, and backup-owner coverage."
@@ -137,14 +149,22 @@
         "docs/project-buildout/machine/implementation-kickoff-review.json",
         "docs/project-buildout/machine/build-readiness-dependency-graph.json",
         "docs/project-buildout/machine/contained-m0-start-state.json",
-        "docs/project-buildout/machine/build-information-readiness-ledger.json"
+        "docs/project-buildout/machine/build-information-readiness-ledger.json",
+        "docs/storage/machine/profile-session-source-manifest.json",
+        "docs/release-operations/machine/package-update-source-manifest.json",
+        "docs/security-engine/machine/incident-response-source-manifest.json",
+        "docs/project-buildout/machine/ownership-control-source-manifest.json",
+        "tools/validate_profile_session_sources.py",
+        "tools/validate_package_update_sources.py",
+        "tools/validate_incident_response_sources.py",
+        "tools/validate_ownership_control_sources.py"
       ]
     },
     {
       "id": "DOC-READY-RESEARCH_LANES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The research index and crosswalk connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
+        "The research index, crosswalk, and checked no-claim source manifests connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
       ],
       "missing_for_full_goal": [
         "Research lane existence does not answer the remaining research questions or provide accepted decisions, executable proof, raw benchmark results, security evidence, compatibility results, accessibility results, or owner approvals."
@@ -155,7 +175,11 @@
         "docs/research/README.md",
         "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
         "docs/blueprint-v1/22-research-program.md",
-        "docs/research/pre-build-readiness-gap-audit-2026-07.md"
+        "docs/research/pre-build-readiness-gap-audit-2026-07.md",
+        "docs/storage/machine/profile-session-source-manifest.json",
+        "docs/release-operations/machine/package-update-source-manifest.json",
+        "docs/security-engine/machine/incident-response-source-manifest.json",
+        "docs/project-buildout/machine/ownership-control-source-manifest.json"
       ]
     },
     {
@@ -270,7 +294,11 @@
         "docs/project-buildout/11-pre-build-readiness-checklist.md",
         "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
         "docs/research/build-readiness-closure-and-owner-decision-preparation-2026-07.md",
-        "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json"
+        "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
+        "docs/storage/machine/profile-session-source-manifest.json",
+        "docs/release-operations/machine/package-update-source-manifest.json",
+        "docs/security-engine/machine/incident-response-source-manifest.json",
+        "docs/project-buildout/machine/ownership-control-source-manifest.json"
       ]
     }
   ],
