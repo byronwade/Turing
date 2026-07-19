@@ -18,6 +18,8 @@ What evidence and decision criteria should govern Turing's IPC wire encoding bef
 
 The external specifications describe format capabilities and evolution rules. They do not establish that any candidate is safe for Turing's process model, resource budgets, trust boundaries, or release path.
 
+The checked [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json), validated by [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py), records the source identities and decision consequences for these observations. It is a no-claim source record only; it does not select a codec, approve a generator, authenticate a transport, or establish production IPC.
+
 ## Non-negotiable protocol requirements
 
 Any candidate must provide or be wrapped by an explicit Turing protocol that:

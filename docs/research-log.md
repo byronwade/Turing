@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - IPC wire-source identity made executable
+
+Question:
+
+Can the current CBOR, Protocol Buffers, and FlatBuffers research be tracked as stable `PB-011` inputs without treating external format specifications as a codec selection, transport proof, or production IPC approval?
+
+Method:
+
+Compared the IPC Wire-Encoding Decision Preparation, IPC Transport and Authority Closure Preparation, IPC capability inventory, system architecture, security model, and the official IETF, Protocol Buffers, and FlatBuffers sources. Added a no-claim manifest with five source records, nine wire-safety axes, source-document links, unsupported boundaries, and an `xtask check` validator.
+
+Decision:
+
+Keep deterministic encoding, bounds/allocation, evolution, unknown values, generated provenance, fuzzability, platform authentication, resource cost, and cross-language maintenance as separate decision axes. No codec or generator is selected.
+
+Impact:
+
+`PB-011` remains partial; no wire-format, generator, transport, renderer-security, process-isolation, production IPC, performance, or implementation claim changed.
+
 ## 2026-07-19 - Fresh-host toolchain source identity made executable
 
 Question:

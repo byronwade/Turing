@@ -56,6 +56,8 @@ The route is compatible with the [IPC Capability Boundary Inventory](ipc-capabil
 
 The [IPC Transport Packet Examples](ipc-transport-packet-examples-2026-07.md) supplies a fictitious packet covering schema provenance, control-envelope identity, peer/channel binding, negative and lifecycle cases, resource accounting, platform differences, and review rejection rules. It is a handoff example only and does not satisfy `PB-011` evidence.
 
+The checked no-claim [IPC wire-source manifest](../blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../../tools/validate_ipc_wire_sources.py) keep the external format observations linked to this closure route. They do not replace the owner-reviewed wire decision, real transport experiment, hostile-wire tests, or readiness review.
+
 Any future `PB-011` decision must also be reconciled through the [PB-020 owner-decision closure board](../project-buildout/23-owner-decision-closure-board.md) and [build-readiness closure preparation](build-readiness-closure-and-owner-decision-preparation-2026-07.md). IPC acceptance cannot independently authorize broad implementation, renderer or agent security, site isolation, release, or production claims.
 
 ## Next controlled action

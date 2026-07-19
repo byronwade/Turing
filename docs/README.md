@@ -107,6 +107,8 @@ The source-strategy lane also has a checked no-claim [ADR-0009 source-observatio
 
 The fresh-host lane also has a checked no-claim [toolchain-source manifest](project-buildout/machine/fresh-host-toolchain-source-manifest.json) and [`validate_fresh_host_toolchain_sources.py`](../tools/validate_fresh_host_toolchain_sources.py); these track official toolchain observations only and do not prove independent reproduction or readiness.
 
+The IPC lane also has a checked no-claim [wire-source manifest](blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../tools/validate_ipc_wire_sources.py); these track external format observations only and do not select a codec or authorize transport implementation.
+
 | Study | Status and purpose |
 |---|---|
 | [Browser engine landscape — July 2026](research/browser-engine-landscape-2026-07.md) | Competitive engine architecture and measurement hypotheses |

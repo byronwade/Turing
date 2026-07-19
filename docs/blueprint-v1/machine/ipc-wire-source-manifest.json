@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "manifest_id": "IPC.WIRE.SOURCES.2026_07",
+  "status": "no_claim_wire_source_manifest",
+  "updated": "2026-07-19",
+  "related_gate": "PB-011",
+  "claim_status": "No-claim IPC wire-source observations only; external format specifications are not a selected encoding, generator approval, transport authentication, production IPC, renderer security, or implementation evidence.",
+  "evidence_axes": [
+    "deterministic_encoding",
+    "bounds_and_allocation",
+    "schema_evolution",
+    "unknown_values",
+    "generated_provenance",
+    "fuzzability",
+    "platform_authentication",
+    "resource_cost",
+    "cross_language_maintenance"
+  ],
+  "sources": [
+    {
+      "source_id": "IPC-SOURCE-IETF-RFC8949",
+      "title": "Concise Binary Object Representation (CBOR)",
+      "publisher": "IETF",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8949",
+      "retrieved": "2026-07-19",
+      "observation": "CBOR defines a typed binary data model and deterministic-encoding guidance, but legal representations and generic values still require an application profile and bounds policy.",
+      "decision_consequence": "A Turing CBOR candidate must specify deterministic profile, tags, map policy, frame limits, allocation limits, and unknown-value behavior before comparison or approval."
+    },
+    {
+      "source_id": "IPC-SOURCE-PROTOBUF-ENCODING",
+      "title": "Protocol Buffers encoding",
+      "publisher": "Protocol Buffers project",
+      "url": "https://protobuf.dev/programming-guides/encoding/",
+      "retrieved": "2026-07-19",
+      "observation": "Protocol Buffers uses field numbers and wire types with length-delimited values, making schema and decoder policy central to size, recursion, unknown-field, and evolution behavior.",
+      "decision_consequence": "A Turing Protocol Buffers candidate must bound length-delimited and nested data, define unknown-field retention/rejection, audit generated runtime behavior, and keep capability meaning outside page-controlled fields."
+    },
+    {
+      "source_id": "IPC-SOURCE-PROTOBUF-SPEC",
+      "title": "Protocol Buffers language specification",
+      "publisher": "Protocol Buffers project",
+      "url": "https://protobuf.dev/reference/protobuf/proto2-spec/",
+      "retrieved": "2026-07-19",
+      "observation": "The language specification defines schema constructs and compatibility-relevant field semantics, but it does not authenticate peers or enforce Turing capabilities.",
+      "decision_consequence": "Schema evolution and compatibility must be reviewed separately from transport identity, capability authorization, resource accounting, and hostile-decoder behavior."
+    },
+    {
+      "source_id": "IPC-SOURCE-FLATBUFFERS-SCHEMA",
+      "title": "FlatBuffers schema language",
+      "publisher": "FlatBuffers project",
+      "url": "https://flatbuffers.dev/schema/",
+      "retrieved": "2026-07-19",
+      "observation": "FlatBuffers provides a schema-driven representation and direct buffer access model, which shifts safety obligations to validation of offsets, lengths, alignment, nesting, strings, vectors, unions, and lifetimes.",
+      "decision_consequence": "A Turing FlatBuffers candidate must prove bounds-before-use and ownership/lifetime rules; zero-copy access cannot be counted as validation or peer authentication."
+    },
+    {
+      "source_id": "IPC-SOURCE-FLATBUFFERS-EVOLUTION",
+      "title": "FlatBuffers schema evolution",
+      "publisher": "FlatBuffers project",
+      "url": "https://flatbuffers.dev/evolution/",
+      "retrieved": "2026-07-19",
+      "observation": "FlatBuffers documents additive evolution and deprecated-field practices, but application authority, version rejection, and resource policy remain Turing protocol responsibilities.",
+      "decision_consequence": "A candidate experiment must test incompatible fields, variants, capability meanings, document epochs, and resource-owner changes rather than assuming schema evolution preserves authority."
+    }
+  ],
+  "source_documents": [
+    "docs/research/ipc-wire-encoding-decision-prep-2026-07.md",
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+    "docs/blueprint-v1/04-system-architecture.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md"
+  ],
+  "unsupported": [
+    "No IPC encoding has been selected.",
+    "No schema generator or serialization dependency has been approved.",
+    "No authenticated platform transport, hostile-wire experiment, or owner-reviewed PB-011 readiness exists.",
+    "No renderer-security, process-isolation, site-isolation, production IPC, or implementation claim exists."
+  ]
+}
