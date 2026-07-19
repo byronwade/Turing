@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Live repository ownership controls captured
+
+Question:
+
+What effective GitHub repository controls exist today for the ownership and independent-review blocker, and can they be treated as proof of backup coverage or two-person control?
+
+Method:
+
+Ran a read-only authenticated GitHub CLI audit against `byronwade/Turing`: repository metadata, `main` branch protection, and repository rulesets. Compared those results with the checked `.github/CODEOWNERS` file and the ownership gap registry. No settings were changed and no credentials were recorded.
+
+Result:
+
+The repository is public with `main` as its default branch. The branch-protection endpoint returned `404 Branch not protected`; the rulesets endpoint returned no rulesets; automatic branch deletion after merge is disabled. The wildcard and listed path classes in `.github/CODEOWNERS` route to provisional `@byronwade` only, with no backup owner.
+
+Impact:
+
+This is dated configuration evidence, not proof of qualification, availability, independent review, two-person control, or release safety. It confirms that repository enforcement and backup ownership remain open controls. `PB-019` remains blocked, and no production, release, signing, disclosure, incident-closure, legal, owner-coverage, or broad-readiness claim changes. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the owner approve and apply a protected `main`/ruleset configuration with independent review, code-owner enforcement, bypass restrictions, status checks, and branch cleanup policy, then reconcile it against named qualified backups and the remaining high-authority control surfaces?
+
 ## 2026-07-19 - Nova new-tab and page-shell mapping completed
 
 Question:

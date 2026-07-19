@@ -51,6 +51,18 @@ The checked no-claim backup-owner qualification template adds the handoff shape 
 
 The checked no-claim backup-ownership readiness-review template adds the cross-scope owner-review shape for a future real readiness review. It keeps the inventory, qualification-record-set, and reviewer fields null, requires every readiness and authority flag to remain false, and lists the coverage, qualification, reconciliation, two-person-control, authority-boundary, owner-review, rejection-rule, and unsupported-boundary fields a future owner-reviewed record must replace with evidence.
 
+## Current repository-control observation - 2026-07-19
+
+A read-only authenticated audit of `byronwade/Turing` was performed on 2026-07-19 with the GitHub CLI. The audit observed:
+
+- `main` is the default branch, and the repository is public;
+- the GitHub branch-protection endpoint returned `404 Branch not protected` for `main`;
+- the repository rulesets endpoint returned an empty list;
+- automatic branch deletion after merge is disabled;
+- `.github/CODEOWNERS` routes the wildcard and listed protected path classes to provisional `@byronwade` only, with no backup owner.
+
+This is current repository-configuration observation, not proof of owner qualification, availability, independent review, two-person control, or effective release safety. The absence of branch protection and rulesets means preview and release gates cannot rely on GitHub enforcement at this capture date. `PB-019` therefore remains blocked, and no production, release, signing, disclosure, incident-closure, legal, owner-coverage, or broad-readiness claim changes. The capture is not a substitute for an owner-approved protected-branch/ruleset configuration and later reconciliation against the owner, review, access, package, CI, service, signing, disclosure, support, and incident records.
+
 ## Decision
 
 `PB-019` remains `blocked`. The inventory, checked no-claim backup-owner qualification template, and checked no-claim backup-ownership readiness-review template are useful because they turn the blocker into checked, reviewable evidence, not because they satisfy the blocker. Advancing `PB-019` requires named qualified backups beyond the checked no-claim backup-owner qualification template, owner-reviewed reconciliation across the professional owner registry, CODEOWNERS, review rules, escalation policy, support, signing, disclosure, package, CI, service, repository access, stale privileged access, ownerless protected paths, primary-only paths, single-owner residual risk, and two-person-control paths, plus owner-reviewed backup ownership readiness beyond the checked no-claim readiness-review template.

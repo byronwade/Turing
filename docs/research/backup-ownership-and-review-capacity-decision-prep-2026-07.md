@@ -53,6 +53,10 @@ Implications for Turing:
 
 The checked no-claim [ownership/control source manifest](../project-buildout/machine/ownership-control-source-manifest.json), [manifest schema](../project-buildout/machine/ownership-control-source-manifest.schema.json), and [`validate_ownership_control_sources.py`](../../tools/validate_ownership_control_sources.py) preserve these governance observations across eight evidence axes. They are source identity and control-input records only; they do not name a backup, prove qualification, capture effective repository settings, establish two-person control, or close `PB-019`/`PB-020`.
 
+### Current GitHub control observation
+
+On 2026-07-19, a read-only authenticated GitHub CLI audit of `byronwade/Turing` observed that `main` is the public repository's default branch, the branch-protection endpoint returned `404 Branch not protected`, the rulesets endpoint returned no rulesets, and automatic branch deletion after merge is disabled. The checked `.github/CODEOWNERS` file routes the wildcard and listed path classes to provisional `@byronwade` only. These observations are configuration evidence at the capture date, not owner qualification or proof of effective review independence. They confirm that repository enforcement and backup ownership remain open controls for `PB-019`; no authority or readiness claim follows from the audit.
+
 ## Required ownership evidence
 
 For every build-critical scope, the future qualification record must contain:
@@ -117,3 +121,4 @@ This report does not name backups, prove availability or competence, alter `CODE
 - [GitHub about CODEOWNERS](https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
 - [GitHub about protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 - [GitHub managing branch protection rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule)
+- [GitHub branch protection REST API](https://docs.github.com/en/rest/branches/branch-protection)
