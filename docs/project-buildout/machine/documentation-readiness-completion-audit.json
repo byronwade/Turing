@@ -53,6 +53,11 @@
     "docs/blueprint-v1/machine/research-question-coverage.json",
     "docs/blueprint-v1/machine/research-question-coverage.schema.json",
     "tools/validate_research_question_coverage.py",
+    "docs/ui-runtime/README.md",
+    "docs/ui-runtime/design-lab/README.md",
+    "docs/ui-runtime/design-lab/surface-contract-map.md",
+    "docs/ui-runtime/machine/design-source-manifest.json",
+    "tools/validate_design_source.py",
     "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
     "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
     "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
@@ -184,7 +189,7 @@
       "id": "DOC-READY-RESEARCH_LANES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The research index, crosswalk, checked no-claim source manifests, deferred open-web feature-lifecycle packet, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
+        "The research index, crosswalk, checked no-claim source manifests, deferred open-web feature-lifecycle packet, Nova visual source and surface-contract map, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
       ],
       "missing_for_full_goal": [
         "Research lane existence does not answer the remaining research questions or provide accepted decisions, executable proof, raw benchmark results, security evidence, compatibility results, accessibility results, or owner approvals."
@@ -206,6 +211,11 @@
         "docs/project-buildout/machine/ownership-control-source-manifest.json",
         "docs/research/reference-platform-support-scorecard-2026-07.md",
         "docs/research/open-web-governance-feature-lifecycle-research-2026-07.md",
+        "docs/ui-runtime/README.md",
+        "docs/ui-runtime/design-lab/README.md",
+        "docs/ui-runtime/design-lab/surface-contract-map.md",
+        "docs/ui-runtime/machine/design-source-manifest.json",
+        "tools/validate_design_source.py",
         "docs/platform/machine/reference-platform-scorecard.json",
         "tools/validate_reference_platform_scorecard.py"
       ]

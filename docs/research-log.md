@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Nova design authority synchronized into readiness audit
+
+Question:
+
+Can future UI work use the supplied Nova source consistently without allowing a React design-lab artifact to become trusted browser behavior or release-path authority?
+
+Method:
+
+Compared the UI runtime book, Nova design-lab source boundary, surface-contract map, design-source manifest and validator, native UI readiness lanes, documentation-readiness audit, progress snapshot, and documentation evidence matrix. Added the Nova source and its contract map to the central audit evidence set and made the visual-versus-behavioral authority split explicit in the human audit.
+
+Result:
+
+Nova is now represented in the central readiness handoff as the visual and layout reference. Rust state, typed commands, native accessibility, page-surface, security policy, and accepted ADRs remain authoritative for behavior and release-path decisions. No UI toolkit was selected and no native UI or accessibility readiness claim changed.
+
+Impact:
+
+The design instruction is easier to discover from the build-readiness snapshot and completion audit, while the React/JavaScript exclusion for trusted chrome remains enforced by the UI runtime rules and design-source validator. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the selected native adapter reproduce Nova's visual states through toolkit-neutral contracts, component fixtures, input, accessibility, fault, and performance evidence before `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020` are promoted?
+
 ## 2026-07-19 - Deferred open-web governance route expanded
 
 Question:
