@@ -49,6 +49,35 @@ Before each session:
 - append a short note to [`research-log.md`](../research-log.md) when a continuity or gate posture change occurs;
 - if you open or close a lane, verify `tools/validate_blueprint.py` and `tools/validate_implementation_kickoff_review.py` still pass for the edited scope.
 
+## Required pre-build evidence commands
+
+Run this command set before allowing any implementation-adjacent activity in the current session:
+
+```powershell
+python3 -B tools/validate_build_foundation.py
+python3 -B tools/validate_blueprint.py
+python3 -B tools/validate_implementation_plan.py
+python3 -B tools/validate_implementation_kickoff_review.py
+python3 -B tools/validate_adr_0009_evidence.py
+python3 -B tools/validate_documentation_readiness_completion_audit.py
+python3 -B tools/validate_build_information_readiness.py
+python3 -B tools/validate_ipc_capability_boundaries.py
+python3 -B tools/validate_sandbox_contracts.py
+python3 -B tools/validate_github_issue_handoff.py
+python3 -B tools/validate_evidence_bundles.py
+git diff --check
+git diff --cached --check
+cargo fmt --all -- --check
+cargo fmt --manifest-path prototype/Cargo.toml -- --check
+cargo test --manifest-path prototype/Cargo.toml --all-targets
+cargo run --manifest-path prototype/Cargo.toml --quiet
+.\tools\check.ps1
+```
+
+Treat any failure in this set as requiring a documentation, registry, or process-capture patch before changing lanes.
+
+If the same command output changed since the last entry in [`research-log.md`](../research-log.md), add a new log row with the changed evidence.
+
 ## Claim boundary reminder
 
 This project is in a coherent documented pre-build state for contained M0 continuation only. Nothing in this guide should be treated as approval for:

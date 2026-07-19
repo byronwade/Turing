@@ -2,6 +2,59 @@
 
 This log records material research-program and documentation-governance changes. Detailed technical conclusions belong in the owning Blueprint chapter, requirement, risk, ADR, benchmark, backlog entry, indexed engineering book, or dated research report.
 
+## 2026-07-19 — Session handoff runbook and evidence verification patch
+
+Question:
+What additional documentation control can make pre-build continuity easier to execute safely without weakening gates?
+
+Sources and versions:
+
+- `docs/project-buildout/21-build-readiness-start-guide.md`
+- `tools/validate_build_foundation.py` (run output)
+- `tools/validate_implementation_plan.py` (run output)
+- `tools/validate_implementation_kickoff_review.py` (run output)
+- `tools/validate_adr_0009_evidence.py` (run output)
+- `tools/validate_documentation_readiness_completion_audit.py` (run output)
+- `tools/validate_build_information_readiness.py` (run output)
+- `tools/validate_blueprint.py` (run output)
+- `tools/validate_ipc_capability_boundaries.py` (run output)
+- `tools/validate_sandbox_contracts.py` (run output)
+- `tools/validate_github_issue_handoff.py` (run output)
+- `tools/validate_evidence_bundles.py` (passed via `.\tools\check.ps1`)
+- `.\tools\check.ps1` (full aggregate M0/build/readiness + implementation-plan + issue-handoff + tests)
+
+Method and environment:
+
+- local repository: `C:\\Users\\bcw19\\Documents\\Codex\\2026-07-17\\github-plugin-github-openai-curated-remote`
+- added a mandatory command bundle section to the start guide so every session has one canonical pre-build execution checklist
+
+Observations:
+
+- command-blocking stale artifacts no longer needed during checks (`target/` was already clean prior to this pass);
+- `docs/project-buildout/21-build-readiness-start-guide.md` now includes a concrete required command set under one section.
+- all core validators and aggregate checks passed again after the doc edit.
+- no new implementation evidence was introduced; only documentation and continuity structure changed.
+
+Decision:
+
+- keep no-claim gate posture unchanged:
+  - `pre-build-readiness.json` still indicates `not_ready_for_broad_implementation`;
+  - hard blocks `PB-002` and `PB-019` remain;
+  - broad implementation remains outside current evidence scope.
+- this patch is classified as no-claim continuity control only and does not alter implementation rights.
+
+Alternatives rejected:
+
+- allowing sessions to infer full pre-build readiness from partial passing checks without recording the exact command contract;
+- leaving the start guide without a direct command sequence in favor of external/in-text references.
+
+Security/privacy/compliance impact:
+
+- unchanged.
+
+Remaining gaps to close before broad implementation:
+
+- `PB-002` and `PB-019` owner-reviewed readiness closure with explicit evidence, and `PB-020` closure review promotion.
 ## 2026-07-19 — Full M0 repository and documentation validation pass
 
 Question:
