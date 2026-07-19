@@ -25,6 +25,24 @@
       "decision_consequence": "A candidate baseline must identify the exact revision and toolchain inputs; a repository URL or moving branch is insufficient source identity."
     },
     {
+      "source_id": "ADR9-SOURCE-SERVO-LIVE-METADATA",
+      "title": "Servo live repository metadata and refs",
+      "publisher": "GitHub API / Servo Project",
+      "url": "https://api.github.com/repos/servo/servo",
+      "retrieved": "2026-07-19",
+      "observation": "A read-only capture observed public, non-archived Servo with default branch main, MPL-2.0 API license metadata, head commit 736ad1bda08c1af419aadc903e82938f8610a65d, and latest release v0.3.0 published 2026-06-25 at tag commit fb6c9d511f67a311f5883ec859aa0c5dd88d19c3. The head and latest release are different identities.",
+      "decision_consequence": "The decision must select and pin one source identity, record whether it is a moving head or release/tag object, and rerun equivalence, build, dependency, compatibility, performance, security, and maintenance evidence when the selected identity changes."
+    },
+    {
+      "source_id": "ADR9-SOURCE-MOZJS-LIVE-METADATA",
+      "title": "Servo mozjs live repository metadata and head",
+      "publisher": "GitHub API / Servo Project",
+      "url": "https://api.github.com/repos/servo/mozjs",
+      "retrieved": "2026-07-19",
+      "observation": "A read-only capture observed public, non-archived servo/mozjs with default branch main and head commit f5cbf8aa6076064fd658a1e9fb16147c2347affb. The repository API returned null SPDX license metadata and no security-policy URL; those fields are unresolved metadata observations, not proof of absent licensing or security practice.",
+      "decision_consequence": "The JavaScript-runtime option must pin mozjs independently from Servo, inspect repository license/security files, retain the exact ref and hash, and resolve provenance, runtime, Web IDL, identity, debugger, Test262, and maintenance consequences before any source or component approval."
+    },
+    {
       "source_id": "ADR9-SOURCE-SERVO-GETTING-CODE",
       "title": "Getting the code",
       "publisher": "The Servo Book",

@@ -44,6 +44,17 @@ The practical source-strategy implication is that an upstream-first option needs
 
 The official `mozjs` repository describes Servo's SpiderMonkey bindings and documents a vendored/upstream SpiderMonkey relationship, generated or imported source workflows, and pre-built archive behavior. Its current README identifies a SpiderMonkey tracking branch/version, but that live value must be captured by commit and release metadata before it can be used in a Turing decision.
 
+### Exact live repository capture - 2026-07-19
+
+A read-only GitHub API capture recorded the following identities without changing either repository:
+
+| Repository | Live observation | Interpretation boundary |
+| --- | --- | --- |
+| `servo/servo` | Public, non-archived, default branch `main`; head `736ad1bda08c1af419aadc903e82938f8610a65d`; latest release `v0.3.0` published 2026-06-25 at tag commit `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`; API license metadata `MPL-2.0` | The moving head and release tag are different source identities. Neither is selected for Turing, and neither proves reproducibility, compatibility, security, performance, or release suitability. |
+| `servo/mozjs` | Public, non-archived, default branch `main`; head `f5cbf8aa6076064fd658a1e9fb16147c2347affb`; API metadata returned null SPDX license and security-policy URL fields | Null API metadata is unresolved metadata, not proof that licensing or security documentation is absent. `mozjs` must be pinned and reviewed independently from Servo. |
+
+The machine [`ADR-0009 source-observation manifest`](../blueprint-v1/machine/adr-0009-source-observation-manifest.json) now retains these observations as no-claim source inputs. The capture is time-bounded: future refreshes must repeat the API queries, retain retrieval timestamps, compare selected refs and hashes, inspect repository license/security files, and record changed release/head relationships before downstream evidence is reused.
+
 This reinforces `ADR9-EV-012`: a Servo-derived option cannot be evaluated as a rendering-only choice. It must explicitly decide whether the JavaScript runtime is:
 
 - excluded and replaced by the Turing-owned runtime direction;
@@ -57,9 +68,9 @@ Each outcome changes Web IDL bindings, garbage collection and wrapper lifetime, 
 
 | Evidence item | Fresh observation | Required Turing follow-up | Current maturity |
 |---|---|---|---|
-| `ADR9-EV-001` source identity | Live upstream views expose a broad repository and moving branch, while the existing local evidence names commit/archive/package candidates | Freeze one candidate commit/tag/archive/package, record hashes and retrieval metadata, then apply the accepted equivalence policy | Partial |
+| `ADR9-EV-001` source identity | Live API capture distinguishes Servo head `736ad1b...` from release tag `v0.3.0` at `fb6c9d...`; `mozjs` has independent head `f5cbf8a...` | Freeze one candidate commit/tag/archive/package for each accepted input, record hashes and retrieval metadata, then apply the accepted equivalence policy | Partial |
 | `ADR9-EV-002` reference build | Official build instructions span platform toolchains and `mach` bootstrap/build behavior | Reproduce the selected baseline from a clean target on an independent host or approved clean VM, retaining bootstrap, dependency, cache, target, and failure logs | Partial |
-| `ADR9-EV-012` runtime conflict | `mozjs` is a distinct binding and vendored SpiderMonkey surface with its own source/update workflow | Produce option-specific runtime, provenance, security, Web IDL, identity, debugger, and Test262 decisions | Partial |
+| `ADR9-EV-012` runtime conflict | `mozjs` is a distinct binding and vendored SpiderMonkey surface with independent head identity and unresolved API license/security metadata | Produce option-specific runtime, provenance, security, Web IDL, identity, debugger, and Test262 decisions | Partial |
 | `ADR9-EV-016` maintenance | Active upstream changes span engine, runtime, media, accessibility, tooling, and dependencies | Name update cadence, patch ownership, stale-evidence triggers, security-response split, merge burden, rollback, primary owner, backup owner, and reviewer | Partial |
 
 ## Required evidence preservation

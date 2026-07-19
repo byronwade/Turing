@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 live source identities pinned for observation
+
+Question:
+
+Can the current official Servo and `mozjs` repository state be recorded precisely enough to prevent a moving branch, release tag, or independently moving JavaScript binding from being treated as one interchangeable source baseline?
+
+Method:
+
+Ran read-only GitHub API queries for `servo/servo` repository metadata, latest head commit, latest release/tag, and `servo/mozjs` repository metadata and head commit. No repositories were modified. Compared the capture with the existing ADR-0009 source-observation manifest and the upstream refresh report.
+
+Result:
+
+On 2026-07-19, `servo/servo` was public, non-archived, default branch `main`, with head `736ad1bda08c1af419aadc903e82938f8610a65d`; its latest release was `v0.3.0`, published 2026-06-25 at tag commit `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`. `servo/mozjs` was public, non-archived, default branch `main`, with independent head `f5cbf8aa6076064fd658a1e9fb16147c2347affb`. The `mozjs` API response returned null SPDX license and security-policy URL fields, which remain unresolved metadata observations rather than absence claims.
+
+Impact:
+
+The ADR-0009 source-observation manifest now records seven source inputs and keeps moving-head, release-tag, and `mozjs` identities separate. The capture improves provenance and refresh routing but does not select a baseline, prove archive equivalence, resolve licensing/security metadata, approve a dependency or component, or authorize source import or release code. `PB-002`, `ADR-0009`, and `PB-020` remain unresolved. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can the owner select an exact Servo/`mozjs` source profile, resolve license/security metadata, and replay it from a clean target with retained dependency, generated-output, compatibility, performance, and security evidence?
+
 ## 2026-07-19 - Performance timing-source separation expanded
 
 Question:
