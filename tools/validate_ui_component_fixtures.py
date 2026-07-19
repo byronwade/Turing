@@ -20,6 +20,7 @@ AXIS_ID = re.compile(r"^UI-FIXTURE-AXIS-[A-Z0-9._-]+$")
 
 REQUIRED_SURFACES = {
     "browser_chrome",
+    "new_tab_page_shell",
     "tabs",
     "spaces",
     "command_field",

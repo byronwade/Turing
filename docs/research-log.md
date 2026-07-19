@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Nova new-tab and page-shell mapping completed
+
+Question:
+
+Does the Nova source inventory map the browser's new-tab and web-page shell to an explicit native fixture contract, rather than leaving the page surface implied by the chrome components?
+
+Method:
+
+Compared the Nova source manifest and design-lab surface map with the toolkit-neutral component-fixture inventory, native UI book, page-surface composition route, and `validate_ui_component_fixtures.py`. The source manifest contained a new-tab/web-page shell surface, while the machine fixture inventory covered only 15 other component surfaces. Added `UI-COMPONENT-NEW-TAB-PAGE-SHELL` and synchronized its state, command, accessibility, page-generation, and authority-boundary requirements.
+
+Result:
+
+Nova's browser-face coverage now explicitly includes the new-tab/web-page shell. The fixture contract requires loading, error, recovery, stale-generation, focus-transfer, page-tree, and chrome/page trust-boundary evidence, with typed page-surface handles and no renderer authority in chrome.
+
+Impact:
+
+The UI fixture inventory now covers 16 component surfaces: 10 core shell surfaces and 6 Nova-specific product surfaces. `PB-014`, `PB-003`, `PB-005`, `PB-015`, and `PB-020` remain unresolved; no native implementation, toolkit, accessibility, page-surface, security, performance, or production claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future native fixture packet render or semantically exercise this page-shell contract with the selected adapter while preserving page-surface generations, renderer crash recovery, focus, IME, and accessibility evidence?
+
 ## 2026-07-19 - Incident repository-coordination boundary expanded
 
 Question:

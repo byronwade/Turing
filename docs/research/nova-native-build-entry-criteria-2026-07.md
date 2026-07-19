@@ -23,6 +23,8 @@ The source may be used for:
 - interaction-story coverage for toolkit-neutral fixtures;
 - visual regression and screenshot/component review after the native fixture contract exists.
 
+The surface inventory now has an explicit fixture mapping for the new-tab/web-page shell through `UI-COMPONENT-NEW-TAB-PAGE-SHELL`. This mapping covers the chrome/page boundary, typed page-surface generations, loading/error/recovery states, focus transfer, and page-tree accessibility work; it does not make the renderer or page surface trusted.
+
 The source may not provide:
 
 - navigation, origin, permission, credential, profile, agent, Plug-in, update, process, sandbox, network, storage, IPC, or release authority;

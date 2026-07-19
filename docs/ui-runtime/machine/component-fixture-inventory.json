@@ -240,6 +240,52 @@
       "authority_boundary": "The chrome emits typed commands only; it cannot grant navigation, profile, permission, credential, agent, Plug-in, persistence, update, or release authority."
     },
     {
+      "component_id": "UI-COMPONENT-NEW-TAB-PAGE-SHELL",
+      "surface": "new_tab_page_shell",
+      "name": "New Tab And Web-Page Shell",
+      "purpose": "Compose the initial browser page surface and its trusted chrome relationship while keeping renderer content, loading/error state, and page handles outside chrome authority.",
+      "required_states": [
+        "new tab",
+        "loading",
+        "loaded",
+        "offline",
+        "permission pending",
+        "navigation error",
+        "renderer crashed",
+        "stale page handle"
+      ],
+      "required_commands": [
+        "open page",
+        "reload",
+        "stop",
+        "find in page",
+        "zoom in",
+        "zoom out",
+        "reset zoom",
+        "open page info",
+        "recover renderer"
+      ],
+      "required_fixture_axes": [
+        "UI-FIXTURE-AXIS-KEYBOARD",
+        "UI-FIXTURE-AXIS-FOCUS",
+        "UI-FIXTURE-AXIS-SCREEN-READER",
+        "UI-FIXTURE-AXIS-FORCED-COLOR",
+        "UI-FIXTURE-AXIS-HIGH-CONTRAST",
+        "UI-FIXTURE-AXIS-REDUCED-MOTION",
+        "UI-FIXTURE-AXIS-DENSITY",
+        "UI-FIXTURE-AXIS-LOCALIZATION",
+        "UI-FIXTURE-AXIS-ERROR-STATE"
+      ],
+      "accessibility_contract": [
+        "page landmark and chrome landmark remain distinguishable",
+        "loading and navigation status is announced",
+        "error and recovery actions are reachable",
+        "focus transfer between chrome and page is observable",
+        "stale or crashed page state is announced without exposing renderer authority"
+      ],
+      "authority_boundary": "Page content, renderer events, page textures, and page-controlled text cannot issue chrome commands or mint authority; the broker validates origin, site, process, document, device, and page-surface generations before composing or acting."
+    },
+    {
       "component_id": "UI-COMPONENT-TABS",
       "surface": "tabs",
       "name": "Tabs And Tab Strip",

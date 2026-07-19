@@ -14,6 +14,7 @@ This map turns the Nova visual/layout reference into an implementation handoff. 
 | Nova source surface | Existing component contract | Primary gates | Next evidence |
 | --- | --- | --- | --- |
 | window chrome, origin/profile indicators, navigation controls | `UI-COMPONENT-BROWSER-CHROME` | `PB-003`, `PB-014`, `PB-015` | Native window, focus, trusted-state, accessibility, and command fixtures |
+| new tab and web-page shell | `UI-COMPONENT-NEW-TAB-PAGE-SHELL` | `PB-003`, `PB-005`, `PB-015` | Typed page-surface handles, chrome/page focus transfer, loading/error/recovery, stale-generation rejection, and page-tree/accessibility fixtures |
 | tabs, tab groups, pinned/muted/captured/frozen/discarded tabs | `UI-COMPONENT-TABS` | `PB-003`, `PB-014`, `PB-015`, `PB-013` | Lifecycle, density, keyboard, screen-reader, and 30-tab fixture evidence |
 | Spaces, workspace rail, layouts, developer bindings | `UI-COMPONENT-SPACES` | `PB-003`, `PB-014`, `PB-016` | Profile boundary, export redaction, layout recovery, and localization fixtures |
 | address/search/command field, command palette, tab search | `UI-COMPONENT-COMMAND-FIELD` | `PB-003`, `PB-015` | URL/search/command separation, stale-result rejection, IME, and accessible-combobox fixtures |
