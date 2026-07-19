@@ -23,6 +23,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Build readiness progress snapshot](project-buildout/22-build-readiness-progress-snapshot.md) | One-screen continuation summary for current hard-stop lane state |
 | [Build readiness board](project-buildout/13-build-readiness-operating-board.md) | Ongoing continuation path and sequencing across `PB-*`, `WP-*`, `RQ-*`, and `ADR-*` records |
 | [Documentation readiness matrix](project-buildout/18-documentation-readiness-evidence-matrix.md) | Evidence matrix for the current documentation-readiness and contained-M0 continuation claim |
+| [Requirement verification matrix](project-buildout/24-requirement-verification-matrix.md) | No-claim verification lanes for all 46 accepted requirements, including planned tests, failure cases, artifacts, and next proof |
 | [Chrome-class capability traceability map](research/chrome-class-capability-traceability-map-2026-07.md) | No-claim cross-domain routing map from the Chrome-class target to current requirements, blockers, owners, next proof, and prohibited claims |
 | [Implementation master plan](project-buildout/implementation-plan/README.md) | Dependency-ordered execution documentation for reviewed, bounded tasks; not broad implementation approval |
 | [GitHub issue handoff](project-buildout/19-github-issue-handoff.md) | Offline issue and stale-PR cleanup snapshot mapped to `WP-*`, `PB-*`, and `TASK-*` records; not task approval |

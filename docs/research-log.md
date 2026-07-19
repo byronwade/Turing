@@ -7722,3 +7722,21 @@ Added existing canonical design sources for all 46 requirements. Implementation,
 Next question:
 
 Which requirement-specific verification or evidence route should be formalized first after design routing is complete?
+
+# 2026-07-19 - Requirement verification matrix audit
+
+Question:
+
+Does every accepted requirement have a concrete verification and evidence-collection route before implementation work is approved?
+
+Method:
+
+Compared all 46 accepted requirements, 20 work packages, the implementation evidence catalog, professional traceability registry, detailed engineering books, and existing no-claim readiness lanes. Forty-four requirements had no explicit planned test or evidence route; the two existing reference-test records were not production evidence.
+
+Decision:
+
+Added the no-claim Requirement Verification Matrix with 11 domain lanes. Each lane records requirement coverage, work-package ownership, existing source documents, evidence classes, test layers, negative and failure cases, required artifacts, and a next-proof condition. Added validator enforcement for exact 46-requirement coverage, valid work packages/evidence classes, and existing source paths. This creates a verification plan without populating actual tests, reviews, or evidence in professional traceability.
+
+Next question:
+
+Which owner-approved evidence lane should be selected first after the unresolved source-strategy, fresh-host, IPC, sandbox, native-shell, and ownership gates are closed?

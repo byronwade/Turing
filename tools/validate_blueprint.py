@@ -385,6 +385,7 @@ REQUIRED_MACHINE_FILES = [
     / "no-claim-https-host-alias.plan.json",
     MACHINE / "professional-owners.json",
     MACHINE / "professional-traceability.json",
+    MACHINE / "requirement-verification-matrix.json",
     MACHINE / "professional-phase-gates.json",
     MACHINE / "professional-review-rules.json",
     MACHINE / "professional-exceptions.json",
@@ -6302,6 +6303,96 @@ def check_professional_traceability_design_routes() -> None:
                 fail(f"{requirement_id}: {field} must be an array")
 
 
+def check_requirement_verification_matrix() -> None:
+    matrix = load_json(MACHINE / "requirement-verification-matrix.json")
+    lanes = matrix.get("lanes")
+    if not isinstance(lanes, list) or not lanes:
+        fail("requirement-verification-matrix.json must contain lanes")
+
+    requirements_payload = load_json(MACHINE / "requirements.json")
+    requirements = requirements_payload.get("requirements")
+    if not isinstance(requirements, list):
+        fail("requirements.json must contain requirements")
+    expected_ids = {
+        item.get("id")
+        for item in requirements
+        if isinstance(item, dict)
+    }
+
+    backlog = load_json(MACHINE / "backlog.json")
+    work_packages = backlog.get("items")
+    if not isinstance(work_packages, list):
+        fail("backlog.json must contain items")
+    expected_work_packages = {
+        item.get("id")
+        for item in work_packages
+        if isinstance(item, dict)
+    }
+
+    catalog = load_json(MACHINE / "implementation-evidence-catalog.json")
+    evidence_classes = catalog.get("classes")
+    if not isinstance(evidence_classes, list):
+        fail("implementation-evidence-catalog.json must contain classes")
+    expected_evidence_classes = {
+        item.get("id")
+        for item in evidence_classes
+        if isinstance(item, dict)
+    }
+
+    seen_ids: list[str] = []
+    seen_lanes: set[str] = set()
+    required_fields = (
+        "work_packages",
+        "source_documents",
+        "evidence_classes",
+        "test_layers",
+        "negative_and_failure_cases",
+        "required_artifacts",
+    )
+    for lane in lanes:
+        if not isinstance(lane, dict):
+            fail("requirement verification lanes must be objects")
+        lane_id = lane.get("id")
+        if not isinstance(lane_id, str) or not lane_id:
+            fail("requirement verification lane id is missing")
+        if lane_id in seen_lanes:
+            fail(f"duplicate requirement verification lane: {lane_id}")
+        seen_lanes.add(lane_id)
+        requirement_ids = lane.get("requirement_ids")
+        if not isinstance(requirement_ids, list) or not requirement_ids:
+            fail(f"{lane_id}: requirement_ids must be a non-empty array")
+        seen_ids.extend(requirement_ids)
+        for field in required_fields:
+            values = lane.get(field)
+            if not isinstance(values, list) or not values:
+                fail(f"{lane_id}: {field} must be a non-empty array")
+            if not all(isinstance(value, str) and value for value in values):
+                fail(f"{lane_id}: {field} values must be non-empty strings")
+        if not isinstance(lane.get("next_proof"), str) or not lane["next_proof"]:
+            fail(f"{lane_id}: next_proof must be a non-empty string")
+        unknown_packages = sorted(set(lane["work_packages"]) - expected_work_packages)
+        if unknown_packages:
+            fail(f"{lane_id}: unknown work packages: " + ", ".join(unknown_packages))
+        unknown_classes = sorted(set(lane["evidence_classes"]) - expected_evidence_classes)
+        if unknown_classes:
+            fail(f"{lane_id}: unknown evidence classes: " + ", ".join(unknown_classes))
+        for source in lane["source_documents"]:
+            if not (ROOT / source).is_file():
+                fail(f"{lane_id}: source document is missing: {source}")
+
+    if len(seen_ids) != len(set(seen_ids)):
+        fail("requirement verification matrix contains duplicate requirement IDs")
+    if set(seen_ids) != expected_ids:
+        missing = sorted(expected_ids - set(seen_ids))
+        unknown = sorted(set(seen_ids) - expected_ids)
+        details = []
+        if missing:
+            details.append("missing: " + ", ".join(missing))
+        if unknown:
+            details.append("unknown: " + ", ".join(unknown))
+        fail("requirement verification matrix coverage differs from requirements.json (" + "; ".join(details) + ")")
+
+
 def check_research_log_chronology() -> None:
     path = DOCS / "research-log.md"
     text = path.read_text(encoding="utf-8")
@@ -7394,6 +7485,7 @@ def main() -> int:
         markdown_count, links_checked = check_markdown()
         check_research_question_ids()
         check_professional_traceability_design_routes()
+        check_requirement_verification_matrix()
         check_research_log_chronology()
         check_repository_map_core_registries()
         check_index_machine_registry_navigation()

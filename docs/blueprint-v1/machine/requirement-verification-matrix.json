@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "updated": "2026-07-19",
+  "status": "planned_no_claim",
+  "purpose": "Map every accepted requirement to a bounded verification lane before implementation evidence exists.",
+  "claim_boundary": "This matrix defines planned verification and evidence collection. It does not prove implementation, correctness, compatibility, security, accessibility, performance, release readiness, or support.",
+  "required_record_fields": [
+    "requirement_ids",
+    "work_packages",
+    "source_documents",
+    "evidence_classes",
+    "test_layers",
+    "negative_and_failure_cases",
+    "required_artifacts",
+    "next_proof"
+  ],
+  "lanes": [
+    {
+      "id": "A11Y",
+      "name": "Accessibility and internationalization",
+      "requirement_ids": ["REQ-A11Y-001", "REQ-A11Y-002", "REQ-ENG-006"],
+      "work_packages": ["WP-004", "WP-009"],
+      "source_documents": ["docs/accessibility/README.md", "docs/accessibility/04-platform-accessibility-bridges.md", "docs/engine/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-CONFORMANCE", "EV-A11Y", "EV-COMPAT", "EV-DOCS"],
+      "test_layers": ["semantic unit tests", "platform bridge integration tests", "reference-platform workflow tests", "manual assistive-technology evaluation", "international-text and IME tests"],
+      "negative_and_failure_cases": ["missing or stale semantic nodes", "focus and keyboard traversal failure", "screen-reader announcement mismatch", "IME, bidi, forced-color, or reduced-motion failure", "renderer hang or crash during accessibility update"],
+      "required_artifacts": ["versioned semantic fixtures", "platform accessibility mapping matrix", "manual transcript with platform and assistive-technology versions", "raw test results", "independent accessibility review", "evidence bundle"],
+      "next_proof": "Execute the reference-platform accessibility and international-text fixture plan after the native shell and engine contracts are approved."
+    },
+    {
+      "id": "AI",
+      "name": "Agent authority, observation, and audit",
+      "requirement_ids": ["REQ-AI-001", "REQ-AI-002", "REQ-AI-003", "REQ-AI-004", "REQ-AI-005"],
+      "work_packages": ["WP-016"],
+      "source_documents": ["docs/blueprint-v1/10-ai-agent-platform.md", "docs/ai/README.md", "docs/agent-execution/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-SECURITY", "EV-PRIVACY", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["schema and policy unit tests", "stale-target and origin integration tests", "prompt-injection and secret-redaction corpus", "provider data-flow tests", "resource-budget and cancellation tests", "independent security review"],
+      "negative_and_failure_cases": ["page content expands authority", "cross-origin or secret observation leakage", "stale document or epoch action", "confirmation bypass", "stop or revoke failure", "provider timeout, retry, or audit loss"],
+      "required_artifacts": ["versioned observation and action schemas", "redaction corpus results", "grant and confirmation decision logs", "provider manifest and data-flow record", "resource-budget report", "evidence bundle"],
+      "next_proof": "Freeze agent observation, action, grant, audit, and provider contracts after IPC, engine identity, and sandbox boundaries are owner-reviewed."
+    },
+    {
+      "id": "DEV",
+      "name": "DevTools, headless, and automation",
+      "requirement_ids": ["REQ-DEV-001", "REQ-DEV-002", "REQ-DEV-003"],
+      "work_packages": ["WP-015"],
+      "source_documents": ["docs/developer-experience/README.md", "docs/developer-experience/04-automation-headless-and-reproducibility.md", "docs/api-design/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-CONFORMANCE", "EV-SECURITY", "EV-DOCS"],
+      "test_layers": ["schema and generated-client tests", "protocol integration tests", "headless parity tests", "WebDriver BiDi conformance tests", "trace replay and redaction tests", "transport authentication tests"],
+      "negative_and_failure_cases": ["protocol version mismatch", "headless path diverges from interactive engine", "unauthenticated transport", "unbounded trace or replay input", "secret exposure in diagnostics", "stale target or document action"],
+      "required_artifacts": ["versioned protocol schema", "generated client manifest", "conformance denominator and raw results", "redacted trace package", "replay-limit report", "evidence bundle"],
+      "next_proof": "Define the first protocol schema and same-engine headless fixture after engine, IPC, and authentication contracts are frozen."
+    },
+    {
+      "id": "ENG",
+      "name": "HTML, DOM, CSS, layout, paint, and rendering",
+      "requirement_ids": ["REQ-ENG-001", "REQ-ENG-002", "REQ-ENG-003", "REQ-ENG-004", "REQ-ENG-005", "REQ-ENG-007"],
+      "work_packages": ["WP-001", "WP-006", "WP-007", "WP-008", "WP-009"],
+      "source_documents": ["docs/engine/README.md", "docs/engine/01-pipeline-and-artifacts.md", "docs/engine/02-html-parser-and-dom.md", "docs/engine/04-layout-and-fragmentation.md", "docs/engine/05-paint-compositor-and-gpu.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-CONFORMANCE", "EV-SECURITY", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["parser and mutation unit tests", "reduced standards conformance suites", "property and model tests", "fuzzing and malformed-input tests", "differential rendering tests", "resource-exhaustion and cancellation tests"],
+      "negative_and_failure_cases": ["malformed or deeply nested input", "invalid CSS and cascade ambiguity", "stale DOM or layout epoch", "hit-test and paint divergence", "unbounded resource use", "accidental existing-engine or forbidden-runtime dependency"],
+      "required_artifacts": ["supported-subset specification", "suite revision and denominator", "raw conformance and fuzz results", "reduced failure corpus", "dependency and source provenance report", "evidence bundle"],
+      "next_proof": "Resolve source strategy and establish the first Turing-owned parser/DOM conformance corpus before rendering implementation is promoted."
+    },
+    {
+      "id": "JS",
+      "name": "JavaScript, WebAssembly, garbage collection, and JIT",
+      "requirement_ids": ["REQ-JS-001", "REQ-JS-002", "REQ-JS-003", "REQ-JS-004", "REQ-JS-005", "REQ-JS-006"],
+      "work_packages": ["WP-010", "WP-011", "WP-019"],
+      "source_documents": ["docs/blueprint-v1/06-javascript-runtime.md", "docs/javascript/README.md", "docs/quality-assurance/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-CONFORMANCE", "EV-SECURITY", "EV-PERF", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["parser, interpreter, and GC unit tests", "Test262 and Web IDL conformance", "heap stress and poisoning tests", "malformed bytecode and Wasm validation tests", "interpreter/JIT differential tests", "W^X, deoptimization, cancellation, and no-JIT tests"],
+      "negative_and_failure_cases": ["invalid syntax, bytecode, metadata, or Wasm", "GC root or lifetime error", "binding ownership mismatch", "tier result divergence", "executable-memory policy failure", "JIT cache staleness or cancellation failure"],
+      "required_artifacts": ["suite revision and denominator", "heap and fuzz corpus results", "tier equivalence report", "W^X and mitigation evidence", "no-JIT coverage report", "evidence bundle"],
+      "next_proof": "Complete interpreter and exact-GC evidence before any baseline-JIT or optimizing-JIT claim; keep no-JIT mode as the hardened comparison path."
+    },
+    {
+      "id": "NET",
+      "name": "Networking, request policy, and web security headers",
+      "requirement_ids": ["REQ-NET-001", "REQ-NET-002", "REQ-NET-003", "REQ-NET-004"],
+      "work_packages": ["WP-013"],
+      "source_documents": ["docs/networking/README.md", "docs/blueprint-v1/07-network-storage-media.md", "docs/security-engine/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-CONFORMANCE", "EV-SECURITY", "EV-PRIVACY", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["URL and request-context unit tests", "hermetic HTTP/TLS integration tests", "Fetch and header conformance tests", "certificate and redirect negative tests", "origin, site, and partition policy tests", "timeout, cancellation, and retry tests"],
+      "negative_and_failure_cases": ["renderer socket escape", "origin/profile/site/epoch mismatch", "invalid certificate or redirect", "CORS/CSP/CORP/COOP/COEP bypass", "mixed-content violation", "cache or cookie partition leak"],
+      "required_artifacts": ["protocol subset and revision manifest", "hermetic server configuration", "raw conformance results", "security negative corpus", "request-trace redaction review", "evidence bundle"],
+      "next_proof": "Run the hermetic network policy suite only after IPC identity, site-instance, TLS, and storage partition contracts are frozen."
+    },
+    {
+      "id": "OPS",
+      "name": "Build provenance, support, and emergency operations",
+      "requirement_ids": ["REQ-OPS-001", "REQ-OPS-002"],
+      "work_packages": ["WP-001", "WP-017"],
+      "source_documents": ["docs/release-operations/README.md", "docs/project-buildout/08-release-incident-legal-data-and-support.md", "docs/production-readiness/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-OPERATIONS", "EV-SECURITY", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["clean-build reproducibility tests", "SBOM and provenance consistency checks", "package install/update/rollback tests", "incident tabletop and emergency-patch rehearsal", "support and offline-runbook review"],
+      "negative_and_failure_cases": ["build identity mismatch", "missing or unverifiable provenance", "rollback or migration failure", "crash-loop update", "unowned emergency patch or unsupported version", "secret leakage in operational records"],
+      "required_artifacts": ["immutable build manifest", "SBOM, notices, and symbol records", "package and rollback logs", "support policy and owner ladder", "incident rehearsal record", "evidence bundle"],
+      "next_proof": "Close source, clean-host, package/update, incident-response, and qualified-backup evidence before any stable-support or release claim."
+    },
+    {
+      "id": "PERF",
+      "name": "Performance, memory, energy, and resource attribution",
+      "requirement_ids": ["REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003", "REQ-PERF-004"],
+      "work_packages": ["WP-002", "WP-005", "WP-018"],
+      "source_documents": ["docs/performance/README.md", "docs/benchmark-lab/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-PERF", "EV-RELIABILITY", "EV-DOCS"],
+      "test_layers": ["queue and budget unit tests", "fixed-hardware startup and interaction benchmarks", "30-tab mixed and all-live scenarios", "per-principal accounting reconciliation", "memory and energy sampling", "statistical analysis and regression tests"],
+      "negative_and_failure_cases": ["queue overflow or starvation", "cache budget breach", "hidden tab discard or unmatched lifecycle", "unattributed resource use", "thermal, power, or background-state confounder", "incomparable browser pin or workload"],
+      "required_artifacts": ["hardware, OS, toolchain, and build manifest", "workload and lifecycle manifest", "raw samples and traces", "resource-accounting reconciliation", "statistics-analysis record", "evidence bundle"],
+      "next_proof": "Execute benchmark infrastructure and resource-accounting fixtures before comparing Turing with Chrome or making extreme-performance claims."
+    },
+    {
+      "id": "PROD",
+      "name": "Browser product surfaces and lifecycle",
+      "requirement_ids": ["REQ-PROD-001", "REQ-PROD-002", "REQ-PROD-003", "REQ-PROD-004", "REQ-PROD-005"],
+      "work_packages": ["WP-004", "WP-005", "WP-012", "WP-014", "WP-017", "WP-020"],
+      "source_documents": ["docs/product-experience/README.md", "docs/platform/README.md", "docs/storage/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-PRIVACY", "EV-RELIABILITY", "EV-A11Y", "EV-COMPAT", "EV-DOCS"],
+      "test_layers": ["state-machine unit tests", "profile/session/storage integration tests", "migration and fault-injection tests", "privacy and data-deletion tests", "native UI workflow and accessibility tests", "manual usability and recovery evaluation"],
+      "negative_and_failure_cases": ["cross-profile or private-session leakage", "crash or power-loss data loss", "stale tab lifecycle state", "unsafe download/history/bookmark/settings operation", "migration downgrade or corruption failure", "renderer, GPU, or window recovery failure"],
+      "required_artifacts": ["versioned state and storage schemas", "synthetic fixture corpus", "fault and recovery logs", "privacy isolation report", "workflow and accessibility transcripts", "evidence bundle"],
+      "next_proof": "Approve native shell, storage/profile schemas, and page-surface contracts before executing product workflow and recovery fixtures."
+    },
+    {
+      "id": "SEC",
+      "name": "Sandboxing, site isolation, IPC, updates, and response",
+      "requirement_ids": ["REQ-SEC-001", "REQ-SEC-002", "REQ-SEC-003", "REQ-SEC-004", "REQ-SEC-005"],
+      "work_packages": ["WP-002", "WP-003", "WP-012", "WP-017"],
+      "source_documents": ["docs/security.md", "docs/security-engine/README.md", "docs/blueprint-v1/08-security-and-sandbox.md", "docs/release-operations/README.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-SECURITY", "EV-RELIABILITY", "EV-OPERATIONS", "EV-DOCS"],
+      "test_layers": ["typed IPC and capability unit tests", "authenticated transport integration tests", "packaged cross-platform sandbox probes", "site-isolation and compromised-client harnesses", "update signature and rollback tests", "fuzzing, model, incident, and independent security review"],
+      "negative_and_failure_cases": ["oversized, malformed, or replayed IPC", "stale process/document epoch", "renderer capability escape", "site-instance confusion", "broker disconnect or timeout", "unsigned, downgraded, or compromised update", "untriaged vulnerability"],
+      "required_artifacts": ["threat and authority model", "generated IPC schema and wire manifest", "effective platform-policy captures", "compromised-client results", "update and incident rehearsal records", "independent security review", "evidence bundle"],
+      "next_proof": "Resolve IPC wire/authentication and platform sandbox evidence before treating the reference prototype as security or production evidence."
+    },
+    {
+      "id": "STO",
+      "name": "Storage, quota, migrations, and recovery",
+      "requirement_ids": ["REQ-STO-001", "REQ-STO-002", "REQ-STO-003"],
+      "work_packages": ["WP-014"],
+      "source_documents": ["docs/storage/README.md", "docs/storage/01-storage-keys-buckets-and-partitioning.md", "docs/storage/02-quota-eviction-and-pressure.md", "docs/storage/07-migrations-corruption-disk-full-and-power-loss.md", "docs/project-buildout/implementation-plan/16-work-package-playbooks.md"],
+      "evidence_classes": ["EV-SPEC", "EV-UNIT", "EV-SECURITY", "EV-PRIVACY", "EV-RELIABILITY", "EV-COMPAT", "EV-DOCS"],
+      "test_layers": ["key and quota unit tests", "broker and origin-partition integration tests", "migration and downgrade tests", "corruption, disk-full, and power-loss fault injection", "clear-site-data and eviction conformance tests", "recovery and data-loss review"],
+      "negative_and_failure_cases": ["cross-origin or cross-profile read", "quota accounting under pressure", "partial migration", "corrupt index or journal", "disk-full or power-loss interruption", "clear-site-data residue", "unsafe recovery or silent data loss"],
+      "required_artifacts": ["versioned schema and migration manifest", "partition and quota fixtures", "fault-injection raw logs", "recovery and data-loss statement", "privacy review", "evidence bundle"],
+      "next_proof": "Define executable storage schemas and migration fixtures after profile, origin, broker, and recovery authority contracts are reviewed."
+    }
+  ]
+}
