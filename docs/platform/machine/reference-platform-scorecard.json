@@ -60,6 +60,16 @@
       "evidence_consequence": "Retain UI Automation tree snapshots, control patterns, focus/event traces, client identity, timing, failures, and unsupported cases for the reference platform."
     },
     {
+      "source_id": "PLAT-SOURCE-WINDOWS-NARRATOR",
+      "platform": "windows",
+      "title": "Complete guide to Narrator",
+      "publisher": "Microsoft Support",
+      "url": "https://support.microsoft.com/en-us/accessibility/windows/narrator/complete-guide-to-narrator",
+      "retrieved": "2026-07-19",
+      "observation": "The Windows Narrator guide documents keyboard and scan-mode navigation, reading and interaction behavior, configuration, and supported language or input considerations for a built-in screen reader.",
+      "evidence_consequence": "Retain Windows build, Narrator version or guide revision, scan or navigation mode, keyboard or braille settings, spoken transcript, focus and announcement timing, and unsupported workflows for every reference-shell accessibility run."
+    },
+    {
       "source_id": "PLAT-SOURCE-MACOS-APPKIT",
       "platform": "macos",
       "title": "AppKit",
@@ -80,6 +90,16 @@
       "evidence_consequence": "Retain accessibility hierarchy/action evidence, VoiceOver configuration, focus and text behavior, timing, and failure or unsupported rows."
     },
     {
+      "source_id": "PLAT-SOURCE-MACOS-VOICEOVER",
+      "platform": "macos",
+      "title": "VoiceOver User Guide",
+      "publisher": "Apple Support",
+      "url": "https://support.apple.com/guide/voiceover/welcome/mac",
+      "retrieved": "2026-07-19",
+      "observation": "Apple's VoiceOver guide defines the keyboard and interaction model used to navigate Mac applications and web content with speech and related assistive controls.",
+      "evidence_consequence": "Retain macOS and VoiceOver versions, interaction and navigation mode, keyboard or braille configuration, manual transcript, focus and announcement behavior, rotor state where used, and unsupported workflows."
+    },
+    {
       "source_id": "PLAT-SOURCE-LINUX-WAYLAND",
       "platform": "linux",
       "title": "Wayland documentation",
@@ -98,6 +118,16 @@
       "retrieved": "2026-07-19",
       "observation": "Desktop portals broker selected user-facing operations and vary by backend and desktop environment; portal presence is not equivalent to a complete sandbox or support contract.",
       "evidence_consequence": "Record portal backend/version, permission and user-activation behavior, failure/timeout paths, desktop environment, and the boundary between portal evidence and actual containment."
+    },
+    {
+      "source_id": "PLAT-SOURCE-LINUX-ORCA",
+      "platform": "linux",
+      "title": "Orca Screen Reader",
+      "publisher": "GNOME",
+      "url": "https://help.gnome.org/orca/",
+      "retrieved": "2026-07-19",
+      "observation": "GNOME's Orca guide covers structural navigation, forms, live regions, object review, profiles, and keyboard commands for speech and refreshable-braille interaction.",
+      "evidence_consequence": "Retain distribution/session, Orca and AT-SPI versions, profile and keymap, structural-navigation mode, transcript or braille action record, event timing, live-region behavior, and unsupported workflows."
     }
   ],
   "candidates": [
@@ -106,7 +136,7 @@
       "platform": "windows",
       "architecture": "x86_64",
       "selection_status": "not_selected",
-      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-WINDOWS-DESKTOP", "PLAT-SOURCE-WINDOWS-UIAUTOMATION"],
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-WINDOWS-DESKTOP", "PLAT-SOURCE-WINDOWS-UIAUTOMATION", "PLAT-SOURCE-WINDOWS-NARRATOR"],
       "required_evidence": ["Reference Windows image and update identity", "Window/display/input/IME/accessibility workflow execution", "Graphics, sandbox, packaging, crash, sleep/resume, and resource traces", "CI-to-local reproducibility and support-owner record"],
       "open_questions": ["Which Windows minimum build and architecture are supportable?", "Which native toolkit and graphics path satisfy the trusted-chrome boundary?", "Which sandbox and packaging controls are effective on the selected image?", "What maintenance and incident capacity supports this platform?" ]
     },
@@ -115,7 +145,7 @@
       "platform": "macos",
       "architecture": "arm64",
       "selection_status": "not_selected",
-      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-MACOS-APPKIT", "PLAT-SOURCE-MACOS-ACCESSIBILITY"],
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-MACOS-APPKIT", "PLAT-SOURCE-MACOS-ACCESSIBILITY", "PLAT-SOURCE-MACOS-VOICEOVER"],
       "required_evidence": ["Reference macOS version and hardware identity", "Window/display/input/IME/VoiceOver workflow execution", "Graphics, sleep/resume, packaging/signing, crash, and resource traces", "CI-to-local reproducibility and support-owner record"],
       "open_questions": ["Which macOS version and architecture are supportable?", "How will trusted UI, renderer surfaces, sandboxing, and permissions compose?", "Which signing, packaging, and update boundaries are in scope?", "What independent hardware and incident capacity exists?" ]
     },
@@ -124,7 +154,7 @@
       "platform": "linux",
       "architecture": "x86_64",
       "selection_status": "not_selected",
-      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-LINUX-WAYLAND", "PLAT-SOURCE-LINUX-DESKTOP-PORTALS"],
+      "source_ids": ["PLAT-SOURCE-RUST-PLATFORM-SUPPORT", "PLAT-SOURCE-GITHUB-RUNNERS", "PLAT-SOURCE-LINUX-WAYLAND", "PLAT-SOURCE-LINUX-DESKTOP-PORTALS", "PLAT-SOURCE-LINUX-ORCA"],
       "required_evidence": ["Reference distribution, kernel, compositor, desktop, and portal identity", "Window/display/input/IME/accessibility workflow execution", "Graphics, software fallback, sandbox, portal, packaging, crash, and resource traces", "CI-to-local reproducibility and support-owner record"],
       "open_questions": ["Which distribution, compositor, desktop, and protocol extensions are in scope?", "Which portal and sandbox combinations are supported or rejected?", "How will graphics and software fallback remain deterministic?", "What packaging, update, and incident model is supportable?" ]
     }

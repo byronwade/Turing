@@ -62,7 +62,7 @@ The machine record retains the detailed required-evidence and open-question arra
 
 ## Source observations
 
-The checked machine record links official Rust platform support, GitHub runner, Microsoft Windows/UI Automation, Apple AppKit/accessibility, Wayland, and XDG Desktop Portal documentation. These sources establish terminology and evidence consequences. They do not establish Turing support, security, compatibility, accessibility, performance, or release readiness.
+The checked machine record links official Rust platform support, GitHub runner, Microsoft Windows/UI Automation and Narrator, Apple AppKit/accessibility and VoiceOver, Wayland, XDG Desktop Portal, and GNOME Orca documentation. The assistive-technology records are separate from platform accessibility API records because a tree or control-pattern snapshot is not a screen-reader workflow. These sources establish terminology and evidence consequences. They do not establish Turing support, security, compatibility, accessibility, performance, or release readiness.
 
 ## Explicit non-claims
 

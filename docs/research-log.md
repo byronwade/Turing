@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Reference-platform assistive-technology evidence synchronized
+
+Question:
+
+Does the `PB-006` reference-platform scorecard distinguish platform accessibility APIs from actual screen-reader workflows?
+
+Method:
+
+Compared the reference-platform scorecard, platform engineering book, native UI/accessibility closure route, and accessibility source manifest with Microsoft's [Narrator guide](https://support.microsoft.com/en-us/accessibility/windows/narrator/complete-guide-to-narrator), Apple's [VoiceOver User Guide](https://support.apple.com/guide/voiceover/welcome/mac), and GNOME's [Orca guide](https://help.gnome.org/orca/). Added the three assistive-technology source identities to the scorecard and validator and linked each candidate to its platform-specific manual workflow source.
+
+Result:
+
+`PB-006` now requires both platform API observations and assistive-technology workflow evidence. Future runs must retain the exact OS and assistive-technology configuration, navigation mode, keyboard or braille setup, transcript or action record, focus and announcement timing, and unsupported workflows. A platform accessibility tree or control-pattern snapshot alone remains insufficient.
+
+Impact:
+
+The reference-platform scorecard now carries eleven source records across Windows, macOS, Linux, and cross-platform toolchain/CI inputs. No platform selection, support, accessibility, compatibility, security, performance, release, or readiness claim changed. Documentation remains 90% organized for contained-M0 continuation and 0% closed for the full-build goal.
+
+Next question:
+
+Can a future platform reference-shell packet bind these manual assistive-technology records to the same page-surface, input/IME, fault, timing, and artifact identity used by the native UI readiness review?
+
 ## 2026-07-19 - Assistive-technology workflow evidence expanded
 
 Question:
