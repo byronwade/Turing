@@ -9,6 +9,7 @@
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/research/implementation-kickoff-review-inventory-2026-07.md",
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
@@ -66,6 +67,15 @@
       "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
       "summary": "Page-surface and compositor composition have checked planning evidence but no UI-GATE-7 execution or ADR-0016 decision.",
       "claim_boundary": "No page-surface approval, compositor ownership decision, UI-GATE-7 approval, ADR-0016 acceptance, or release-path UI claim."
+    },
+    {
+      "id": "PB-008",
+      "type": "readiness_item",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "source_ref": "docs/blueprint-v1/machine/pre-build-readiness.json",
+      "summary": "Pinned compiler, SDK, linker, Rust, Cargo, Git, shell, and toolchain facts are recorded for the reference host, but independent reproduction and owner-reviewed equivalence remain missing.",
+      "claim_boundary": "No independent toolchain reproduction, broad build, release confidence, production, implementation, or Chrome-class claim."
     },
     {
       "id": "PB-009",
@@ -325,6 +335,13 @@
       "no_claim_boundary": "No source adoption claim or dependency approval claim."
     },
     {
+      "from": "PB-008",
+      "to": "TASK-000002",
+      "type": "readiness_to_task",
+      "reason": "Pinned toolchain and host-equivalence evidence is required alongside fresh-host reproduction before broad build claims.",
+      "no_claim_boundary": "No independent toolchain reproduction, broad build, release confidence, production, implementation, or Chrome-class claim."
+    },
+    {
       "from": "PB-009",
       "to": "TASK-000002",
       "type": "readiness_to_task",
@@ -561,6 +578,13 @@
       "type": "kickoff_dependency",
       "reason": "Implementation kickoff remains partial while page-surface composition evidence is partial.",
       "no_claim_boundary": "No page-surface approval claim."
+    },
+    {
+      "from": "PB-008",
+      "to": "PB-020",
+      "type": "kickoff_dependency",
+      "reason": "Implementation kickoff remains partial while pinned toolchain evidence and owner-reviewed host equivalence are missing.",
+      "no_claim_boundary": "No broad build confidence, release-confidence, implementation, or Chrome-class claim."
     },
     {
       "from": "PB-009",

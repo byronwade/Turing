@@ -18,6 +18,7 @@ This is not a package implementation, updater implementation, signing system, re
 ## Inputs
 
 - [Release Operations book](../release-operations/README.md)
+- [Package, Update Trust, and Recovery Decision Preparation](package-update-trust-and-recovery-decision-prep-2026-07.md)
 - [Build Identity and Hermetic Toolchains](../release-operations/01-build-identity-and-hermetic-toolchains.md)
 - [Reproducible Builds, Provenance, and SBOM](../release-operations/02-reproducible-builds-provenance-and-sbom.md)
 - [Signing Keys and Package Attestation](../release-operations/03-signing-keys-and-package-attestation.md)

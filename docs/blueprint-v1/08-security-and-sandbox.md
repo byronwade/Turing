@@ -82,6 +82,8 @@ The checked [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-0
 
 ## 7. Capability-secure IPC
 
+The no-claim [IPC wire-encoding decision preparation](../research/ipc-wire-encoding-decision-prep-2026-07.md) records the candidate-format security criteria and does not select an encoding, generator, transport, or production IPC path.
+
 Privileged receivers authenticate the connection’s process identity and role. They ignore renderer claims that conflict with kernel state. Every capability handle encodes scope, operation set, expiry/epoch where relevant, and revocation.
 
 High-risk messages undergo:

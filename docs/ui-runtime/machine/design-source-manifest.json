@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "manifest_id": "UI.DESIGN_SOURCE.TURING_NOVA.2026_07",
+  "status": "primary_visual_reference_no_claim",
+  "source_path": "docs/ui-runtime/design-lab/turing-nova-design-source.jsx",
+  "captured": "2026-07-19",
+  "sha256": "7A85933F7C794F29A5F0B8FBB55DD53C28C0834A3FEF0ECDC73184BB8782148B",
+  "byte_length": 501652,
+  "line_count": 7727,
+  "visual_authority": [
+    "browser chrome hierarchy",
+    "tab strip and address field composition",
+    "side panels and settings surfaces",
+    "DevTools, Shield, vault, agent, resource, and recovery surface layout",
+    "typography, spacing, color roles, density, theme, icon, and motion intent"
+  ],
+  "behavioral_authority": [
+    "Rust shell state and typed commands",
+    "native accessibility contracts",
+    "security, profile, process, IPC, page-surface, and release policy",
+    "accepted ADRs and machine-readable requirements"
+  ],
+  "release_exclusion": [
+    "React runtime",
+    "Node runtime",
+    "DOM or CSSOM",
+    "runtime CSS parser",
+    "webview or browser-engine embedding"
+  ],
+  "surface_inventory": [
+    "window chrome",
+    "tabs and tab groups",
+    "address and command field",
+    "spaces and side panels",
+    "new tab and web-page shell",
+    "history, bookmarks, reading list, downloads, and extensions",
+    "settings and theme studio",
+    "Turing Shield and site controls",
+    "password vault",
+    "agent mode and approval queue",
+    "DevTools and project inspector",
+    "resource truth center and task manager",
+    "split view, reader, capture, find, and recovery surfaces"
+  ]
+}

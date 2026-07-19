@@ -1,0 +1,53 @@
+# Turing Nova Design Source
+
+Status: primary visual and layout reference; React design-lab artifact only
+Owner: product design, UI runtime, accessibility, platform, performance, and developer experience
+Captured: 2026-07-19
+
+## Source of truth
+
+[`turing-nova-design-source.jsx`](turing-nova-design-source.jsx) is the supplied Nova concept shell and is the current primary reference for Turing's browser-facing visual language and layout composition. It defines the intended browser chrome, tab strip, address field, side panels, settings, history, downloads, extensions, Shield, password vault, agent surfaces, DevTools, resource views, themes, density behavior, motion, and responsive surface relationships.
+
+The machine [`design-source-manifest.json`](../machine/design-source-manifest.json) binds this artifact's path, SHA-256, byte length, line count, capture date, authority boundary, and surface inventory. [`validate_design_source.py`](../../../tools/validate_design_source.py) runs in the aggregate repository check.
+
+The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementation handoff for translating the visual source into existing and missing toolkit-neutral component contracts.
+
+The captured source is preserved verbatim from the supplied attachment. SHA-256:
+
+`A626BA58A26C9B54491BFE48A47C4BA0DEEFBFC7912B5D9849960D5F9222B659`
+
+It contains 7,727 lines and is retained as a design reference, not as a release dependency.
+
+## Authority boundaries
+
+The Nova source is authoritative for:
+
+- visual hierarchy, spacing, sizing, color roles, typography roles, icon placement, density, themes, motion intent, and panel composition;
+- named browser-facing surfaces and their design states;
+- interaction-story coverage that native fixtures must represent;
+- the first visual baseline for screenshot and component-fixture review.
+
+It is not authoritative for:
+
+- navigation, origin, permission, credential, profile, agent, Plug-in, update, process, sandbox, or release authority;
+- IPC, persistence, network access, page rendering, accessibility implementation, or security decisions;
+- production toolkit selection or trusted-chrome runtime architecture.
+
+Rust state, typed commands, native accessibility contracts, page-surface contracts, security policy, and accepted ADRs remain authoritative for behavior. A visual match does not prove native input, accessibility, security, performance, or compatibility.
+
+## Required extraction path
+
+Before native implementation begins, the design lab must extract the source into the shared design system described by [React Design Lab, Tokens, and Authoring Workflow](../06-react-design-lab-tokens-and-authoring-workflow.md):
+
+1. identify semantic tokens for typography, spacing, color/state, focus/motion, iconography, density, and theme;
+2. inventory each browser surface and state represented by the source;
+3. bind every actionable visual state to a typed command or read-only snapshot field;
+4. create native component fixtures for light, dark, high-contrast, forced-color, reduced-motion, localization, keyboard, focus, fault, and density axes;
+5. compare the selected native adapter and the design lab against the same token and fixture records;
+6. retain the JSX source as the visual regression reference until the native surface is accepted through `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020`.
+
+No React, Node, DOM, CSSOM, runtime CSS parser, or webview may enter trusted browser chrome because this source is adopted as the visual reference.
+
+## Current claim boundary
+
+This artifact does not select a UI toolkit, establish a native browser shell, prove accessibility, authorize React in a release build, establish page-surface composition, or support a production, Chrome-class, performance, compatibility, or daily-driver claim.

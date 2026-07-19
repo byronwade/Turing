@@ -1,15 +1,15 @@
 # Fresh Host Reproduction Inventory - July 2026
 
-Status: no-claim `PB-009` reproduction inventory, run-record template, and readiness-review template; no independent fresh-host run yet
+Status: no-claim `PB-008`/`PB-009` toolchain and reproduction inventory, run-record template, and readiness-review template; no independent toolchain/fresh-host run yet
 Owner: release operations, quality, build, documentation-research, and program
 
 ## Question
 
-Can Turing make the `PB-009` fresh-host reproduction blocker precise enough for a maintainer to execute later without mistaking current-host check output for independent build confidence?
+Can Turing make the `PB-008` pinned toolchain and `PB-009` fresh-host reproduction blockers precise enough for a maintainer to execute later without mistaking current-host check output for independent build confidence?
 
 ## Conclusion
 
-Yes, for planning only. The checked [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json) registry, checked [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), checked no-claim [`fresh-host readiness-review template`](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), [`validate_fresh_host_reproduction.py`](../../tools/validate_fresh_host_reproduction.py), [`validate_fresh_host_run_records.py`](../../tools/validate_fresh_host_run_records.py), and [`validate_fresh_host_readiness_review.py`](../../tools/validate_fresh_host_readiness_review.py) define the host facts, source identity, command output, cache and target-directory evidence, source-tree cleanliness, failure classification, retained-log hashes, owner-review handoff, and rejection rules required before `PB-009` can move beyond partial.
+Yes, for planning only. The checked [`build-information-readiness-ledger.json`](../project-buildout/machine/build-information-readiness-ledger.json), [`fresh-host-reproduction.json`](../project-buildout/machine/fresh-host-reproduction.json) registry, checked [`no-claim-run-record-template.json`](../project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json), checked no-claim [`fresh-host readiness-review template`](../project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json), [`validate_fresh_host_reproduction.py`](../../tools/validate_fresh_host_reproduction.py), [`validate_fresh_host_run_records.py`](../../tools/validate_fresh_host_run_records.py), and [`validate_fresh_host_readiness_review.py`](../../tools/validate_fresh_host_readiness_review.py) define the compiler/SDK/linker/toolchain facts, host facts, source identity, command output, cache and target-directory evidence, source-tree cleanliness, failure classification, retained-log hashes, owner-review handoff, and rejection rules required before `PB-008` or `PB-009` can move beyond partial.
 
 This inventory does not run on a fresh host. It does not prove the project bootstraps from a clean machine, promote `PB-009` to ready, approve broad implementation, approve preview/beta/stable readiness, or support a Chrome-class claim.
 
@@ -27,9 +27,9 @@ That evidence proves the commands exist and validate the current M0 scope. It do
 
 ## Required Fresh-Host Evidence
 
-`PB-009` still requires an owner-approved independent fresh reference host or clean-VM equivalent with:
+`PB-008` and `PB-009` still require an owner-approved independent fresh reference host or clean-VM equivalent with:
 
-- exact OS edition, version, architecture, patch level, shell, locale, timezone, CPU, memory, disk, network posture, and privilege facts;
+- exact compiler, SDK, linker, Rust, Cargo, Git, shell, OS edition, version, architecture, patch level, locale, timezone, CPU, memory, disk, network posture, and privilege facts;
 - a clean checkout at an exact commit with remote URL, branch, commit hash, line-ending/Git configuration facts, and before/after dirty-state output;
 - `bootstrap`, `doctor`, `check`, and `xtask` logs with dates, shell, exit code, Rust/Cargo/Git facts, aggregate validation output, formatting, clippy, workspace tests, shell self-test, and prototype output;
 - `CARGO_TARGET_DIR`, Cargo/Rustup cache roots, temp directory, ignored-output behavior, and proof that build outputs stayed outside durable source;
@@ -86,11 +86,13 @@ The validator checks:
 - required host, source, command, artifact, failure, run-record, and rejection terms;
 - readiness-review false flags, null review-scope fields, owner-review axes, and rejection rules;
 - evidence axis coverage;
-- `PB-009` status and evidence in [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json);
+- `PB-008` and `PB-009` status and evidence in [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json);
 - `TASK-000002` allowed paths, preconditions, acceptance criteria, and negative tests.
 
 ## Build-Readiness Effect
 
-`PB-009` remains `partial`. The inventory, run-record template, and readiness-review template make the missing proof executable and reviewable, but readiness still requires an actual independent run or owner-approved clean-VM equivalent plus retained logs and owner-reviewed fresh-host readiness review beyond the checked no-claim template.
+`PB-008` and `PB-009` remain `partial`. The ledger, inventory, run-record template, and readiness-review template make the missing proof executable and reviewable, but readiness still requires an actual independent toolchain/host run or owner-approved clean-VM equivalent plus retained logs and owner-reviewed toolchain/fresh-host readiness review beyond the checked no-claim template.
 
 No broad implementation, source-strategy, benchmark, release packaging, preview, beta, stable, production, or Chrome-class claim is supported by this inventory.
+
+The consolidated [Fresh-Host Toolchain Reproduction Closure Preparation](fresh-host-toolchain-reproduction-closure-preparation-2026-07.md) is the continuation route for classifying the execution environment and replaying the evidence contract; it does not replace this inventory or create an independent run.

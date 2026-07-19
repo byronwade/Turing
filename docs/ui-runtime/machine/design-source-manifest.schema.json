@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://turing.invalid/schemas/ui-design-source-manifest-v1.json",
+  "title": "Turing UI Design Source Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "status", "source_path", "captured", "sha256", "byte_length", "line_count", "visual_authority", "behavioral_authority", "release_exclusion", "surface_inventory"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "manifest_id": { "type": "string", "pattern": "^UI\\.DESIGN_SOURCE\\.[A-Z0-9._-]+$" },
+    "status": { "const": "primary_visual_reference_no_claim" },
+    "source_path": { "const": "docs/ui-runtime/design-lab/turing-nova-design-source.jsx" },
+    "captured": { "type": "string", "format": "date" },
+    "sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "byte_length": { "type": "integer", "minimum": 1 },
+    "line_count": { "type": "integer", "minimum": 1 },
+    "visual_authority": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "behavioral_authority": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "release_exclusion": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "surface_inventory": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  }
+}

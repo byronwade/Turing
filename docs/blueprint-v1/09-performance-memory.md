@@ -256,6 +256,8 @@ Local models are loaded on demand and unloadable. A dormant agent feature must n
 - competitor comparisons use current stable builds, default security settings, clean equivalent profiles, and the same workload;
 - failed/unsupported pages count; they are not dropped silently.
 
+Suite-specific methodology controls are mandatory before a synthetic result is used in a comparison: Speedometer 3.1 no-duration subtests invalidate the run; JetStream 3.0 retains per-workload output, documented startup/worst/average treatment, and version identity; MotionMark records target frame rate, refresh rate, viewport class, warmup, and GPU/power state. These controls support diagnostic validity only and do not establish a Chrome-class or product-performance claim.
+
 The checked no-claim [statistics-analysis contract](machine/benchmark-statistics-analyses/no-claim-statistics-analysis-plan.json), [benchmark readiness-review template](machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json), and [benchmark engine baseline harness readiness map](../research/benchmark-engine-baseline-harness-readiness-map-2026-07.md) define future `PB-013` analysis, owner-review, and stop/resume handoffs across sample design, uncertainty, denominators, hardware, OS controls, corpus, servers, runners, artifacts, browser pins, statistics, and claim bundles. They are not owner-reviewed statistics analysis or benchmark readiness: there is no owner-reviewed benchmark readiness, benchmark-ready status, public performance claim, faster claim, lower-memory claim, lower-energy claim, Chrome-class claim, competitor-result claim, production claim, or implementation claim from these checked no-claim records.
 
 ## 15. Performance gates

@@ -2,7 +2,7 @@
 
 Status: canonical execution plan for bounded implementation; not a production-readiness claim
 Owner: program, architecture, security, quality, release operations, product, accessibility, and subsystem owners
-Last reviewed: 2026-07-17
+Last reviewed: 2026-07-19
 
 This handbook converts Turing's research library, Blueprint, requirements, work packages, agent controls, and release gates into one dependency-ordered game plan that an implementation agent can follow without inventing scope or silently bypassing unresolved decisions.
 
@@ -13,6 +13,10 @@ It is subordinate to accepted requirements and ADRs. When this plan conflicts wi
 Turing is ready for contained M0 tasks. It is not ready for broad parallel implementation, preview distribution, or an autonomous stable-release campaign.
 
 An agent starts only a named `TASK-*` whose dependencies are accepted, paths and authority are bounded, acceptance criteria and negative tests are complete, and an independent reviewer is identified. An agent never receives the instruction "build the entire browser" as one task.
+
+## Pre-build readiness handoff
+
+Before selecting a milestone or shaping implementation work, read the checked [Documentation Readiness Completion Audit](../../research/documentation-readiness-completion-audit-2026-07.md), [Build Information Readiness Ledger](../../research/build-information-readiness-ledger-2026-07.md), [Owner Decision Closure Board](../23-owner-decision-closure-board.md), and [Build-Readiness Closure and Owner-Decision Preparation](../../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md). These records are the current stop/resume handoff for the ten source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell/accessibility, profile/session, package/update, incident-response, and ownership closure routes. They establish contained-M0 continuation only; they do not approve proposed tasks, close `PB-020`, authorize broad M1 implementation, or establish all-information-ready-for-building, Chrome-class, production, release, performance, compatibility, security, or accessibility claims.
 
 ## Canonical source hierarchy
 

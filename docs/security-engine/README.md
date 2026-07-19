@@ -67,11 +67,17 @@ Security leadership means measurable containment and response, not absence of pu
 - [Servo security and maintenance implications](../research/servo-security-maintenance-implications-2026-07.md)
 - [Sandbox Probe Inventory](../research/sandbox-probe-inventory-2026-07.md)
 - [WP-003 Sandbox Probe Contract](../research/wp-003-sandbox-probe-plan-2026-07.md)
+- [Sandbox Probe Execution and Containment Closure Preparation](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md)
 - [Incident Patch Rehearsal Inventory](../research/incident-patch-rehearsal-inventory-2026-07.md)
+- [Incident Response and Emergency Patch Decision Preparation](../research/incident-response-and-emergency-patch-decision-prep-2026-07.md)
+- [Incident-Response Execution and Disclosure Closure Preparation](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md)
+- [Incident-Response and Patch-Rehearsal Packet Examples](../research/incident-response-patch-rehearsal-packet-examples-2026-07.md)
 
 ## Incident and patch readiness boundary
 
-The checked no-claim [incident patch rehearsal template](machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), checked no-claim [incident/patch readiness-review template](machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json), and focused [`validate_incident_patch_readiness_review.py`](../../tools/validate_incident_patch_readiness_review.py) provide `PB-018` owner-review handoff shape only. They do not approve executed private-intake tabletop output, emergency patch dry-run records, owner-reviewed incident/patch readiness, incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, stable promotion, signing authority, incident closure authority, implementation, or production-safe browsing.
+The checked no-claim [incident patch rehearsal template](machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json), checked no-claim [incident/patch readiness-review template](machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json), focused [`validate_incident_patch_readiness_review.py`](../../tools/validate_incident_patch_readiness_review.py), and [Incident-Response Execution and Disclosure Closure Preparation](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md) provide `PB-018` owner-review handoff shape only. They do not approve executed private-intake tabletop output, emergency patch dry-run records, owner-reviewed incident/patch readiness, incident-response readiness, emergency patch capacity, supported security versions, disclosure authority, stable promotion, signing authority, incident closure authority, implementation, or production-safe browsing. Any future incident decision also remains subject to the [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md), `PB-020` closure, and independent review.
+
+The checked no-claim [sandbox probe-package template](machine/sandbox-probe-packages/no-claim-expected-deny-template.json), [sandbox readiness-review template](machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json), and [Sandbox Probe Execution and Containment Closure Preparation](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md) are the `PB-012` evidence-order handoff. They do not prove packaged probes, effective platform policy, owner-reviewed sandbox readiness, renderer security, site isolation, hostile-browsing safety, or production containment.
 
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market-driven trust boundaries

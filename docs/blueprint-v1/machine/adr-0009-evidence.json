@@ -292,6 +292,7 @@
       ],
       "missing_outputs": [
         "local HTTPS harness execution and host-alias browser runs against the external Servo build with raw logs, certificate artifacts, host-alias cleanup proof, and hashes",
+        "exact WPT commit plus retrieval date, local patch or diff hash, manifest-generation inputs and output hash, and denominator record",
         "focused WPT subset run for the selected ADR-0009 option",
         "disabled-test, expected-failure, timeout, crash, and unsupported-API accounting",
         "failure denominator and flakiness policy",

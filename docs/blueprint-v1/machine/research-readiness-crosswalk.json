@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "status": "no_claim_research_control",
   "source": "docs/research/README.md#build-readiness-research-crosswalk",
   "claim_status": "Research-to-readiness crosswalk only; no readiness gate, no task approval, no source-strategy decision, no benchmark eligibility, and no compatibility, security, performance, memory, energy, Chrome-class, production, beta, stable, or daily-driver claim is approved by this registry.",
@@ -54,13 +54,17 @@
     },
     {
       "id": "research-lane-fresh-host-build-confidence",
-      "title": "Fresh-host build confidence",
-      "readiness_items": ["PB-009", "PB-020"],
+      "title": "Pinned toolchain and fresh-host build confidence",
+      "readiness_items": ["PB-008", "PB-009", "PB-020"],
       "tasks": ["TASK-000002"],
       "research_questions": ["RQ-46", "RQ-47", "RQ-31"],
       "evidence_start": [
         "docs/research/m0-build-foundation-2026-07.md",
+        "rust-toolchain.toml",
+        "docs/blueprint-v1/machine/toolchains.json",
+        "docs/project-buildout/machine/build-information-readiness-ledger.json",
         "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
         "docs/project-buildout/machine/fresh-host-reproduction.schema.json",
         "docs/project-buildout/machine/fresh-host-reproduction.json",
         "docs/project-buildout/machine/fresh-host-run-record.schema.json",
@@ -80,14 +84,18 @@
         "tools/xtask/"
       ],
       "next_proof": [
+        "versioned compiler, SDK, linker, Rust, Cargo, Git, shell, cache, target-directory, and source-tree facts tied to an independent fresh-host or owner-approved clean-VM run",
         "independent fresh-host or owner-approved clean-VM equivalent bootstrap evidence beyond the checked no-claim inventory, run-record template, and checked no-claim fresh-host readiness-review template",
         "dated bootstrap, doctor, check, and xtask output with exact OS, shell, Rust, Cargo, Git, and exit codes",
         "cache, target-directory, temp-directory, and source-tree cleanliness behavior",
         "failure classification, rollback notes, retained logs, and owner review",
-        "owner-reviewed fresh-host readiness review beyond the checked no-claim fresh-host readiness-review template before PB-009 readiness promotion, release confidence, production readiness, implementation, or Chrome-class claims"
+        "owner-reviewed toolchain and fresh-host readiness review beyond the checked no-claim fresh-host readiness-review template before PB-008 or PB-009 readiness promotion, release confidence, production readiness, implementation, or Chrome-class claims",
+        "owner-reviewed fresh-host readiness review beyond the checked no-claim fresh-host readiness-review template remains required for PB-009 readiness promotion"
       ],
       "claim_boundary": [
+        "no independent toolchain reproduction",
         "no PB-009 readiness promotion",
+        "no PB-008 readiness promotion",
         "no broad M1 readiness",
         "no independent reproducibility claim from same-host reruns",
         "no preview, beta, stable, release-confidence, production-install, or Chrome-class claim",
@@ -102,6 +110,7 @@
       "research_questions": ["RQ-02", "RQ-13", "RQ-20", "RQ-22", "RQ-36"],
       "evidence_start": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
@@ -152,6 +161,7 @@
       "research_questions": ["RQ-20", "RQ-38", "RQ-31"],
       "evidence_start": [
         "docs/research/sandbox-probe-inventory-2026-07.md",
+        "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
         "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
         "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
       "docs/security-engine/machine/sandbox-probe-inventory.json",
@@ -195,6 +205,7 @@
       "research_questions": ["RQ-16", "RQ-23", "RQ-34", "RQ-35", "RQ-37"],
       "evidence_start": [
         "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+        "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
         "docs/research/benchmark-corpus-expansion-2026-07.md",
         "docs/research/chrome-class-performance-runbook-2026-07.md",
         "docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md",
@@ -257,6 +268,7 @@
       "evidence_start": [
       "docs/research/native-ui-framework-evaluation-2026-07.md",
       "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+      "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
       "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
       "docs/research/native-ui-component-fixture-inventory-2026-07.md",
       "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
@@ -321,6 +333,7 @@
       "research_questions": ["RQ-14", "RQ-27", "RQ-49", "RQ-50", "RQ-53", "RQ-54"],
       "evidence_start": [
         "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
         "docs/storage/README.md",
         "docs/storage/machine/profile-session-format-inventory.schema.json",
         "docs/storage/machine/profile-session-format-inventory.json",
@@ -357,6 +370,7 @@
       "research_questions": ["RQ-31", "RQ-63", "RQ-64", "RQ-66"],
       "evidence_start": [
         "docs/research/research-package-update-lab-inventory-2026-07.md",
+        "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
         "docs/release-operations/README.md",
         "docs/release-operations/machine/research-package-update-lab.schema.json",
         "docs/release-operations/machine/research-package-update-lab.json",
@@ -394,6 +408,7 @@
       "research_questions": ["RQ-31", "RQ-60", "RQ-66"],
       "evidence_start": [
         "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+        "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
         "docs/security.md",
         "docs/security-engine/machine/incident-patch-rehearsal.schema.json",
         "docs/security-engine/machine/incident-patch-rehearsal.json",
@@ -433,6 +448,7 @@
       "research_questions": ["RQ-25", "RQ-31", "RQ-45", "RQ-47", "RQ-48", "RQ-60", "RQ-66"],
       "evidence_start": [
         "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
         "docs/project-buildout/README.md",
         "docs/project-buildout/machine/backup-ownership-gap.schema.json",
         "docs/project-buildout/machine/backup-ownership-gap.json",

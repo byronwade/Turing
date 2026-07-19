@@ -18,6 +18,7 @@ This is not an incident-response program, executed rehearsal record, patch-capac
 ## Inputs
 
 - [Security policy](../security.md)
+- [Incident Response and Emergency Patch Decision Preparation](incident-response-and-emergency-patch-decision-prep-2026-07.md)
 - [Security Verification and Release Gates](../security-engine/06-security-verification-and-release-gates.md)
 - [Vulnerability Response and Supported Lifecycle](../release-operations/08-vulnerability-response-and-supported-lifecycle.md)
 - [Update, Supply Chain, and Vulnerability Response](../security-engine/05-update-supply-chain-and-vulnerability-response.md)

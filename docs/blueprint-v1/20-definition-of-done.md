@@ -122,10 +122,11 @@ This checklist prevents architecture work from becoming presentation-only.
 
 - first-entry documents agree: root README, Start Here, documentation index, repository map, and project-buildout handbook route to the same current status;
 - the Documentation Readiness Evidence Matrix maps the changed claim to concrete evidence, what that evidence proves, and what remains outside the proof;
-- human records and machine registries agree, including `pre-build-readiness.json`, `TASK-000001` through `TASK-000010` in the build-readiness task queue, research-readiness crosswalk, requirements, risks, backlog, owners, and validators where affected;
+- human records and machine registries agree, including `pre-build-readiness.json`, `TASK-000001` through `TASK-000010` in the build-readiness task queue, research-readiness crosswalk, requirements, risks, backlog, owners, and validators where affected; the queue and specified manifests additionally carry matching immutable `readiness_items` `PB-*` gate mappings;
 - stop/resume instructions preserve gate truth, first continuation path, current research lane set, owner-only decisions, proposed-task boundaries, and unsupported-claim language;
 - research changes are linked to primary `RQ-*`, `PB-*`, and `TASK-*` records without treating research presence as approval;
 - source-strategy, fresh-host, IPC, sandbox, benchmark, native UI/native-shell, profile/session, package/update, incident-response, ownership, production, and release claims remain explicitly separated from documentation readiness;
+- pinned compiler/SDK/linker toolchain evidence remains explicitly separated from documentation readiness and is tracked with the fresh-host lane;
 - every new or moved document is indexed from `docs/README.md` or an indexed child and mapped in `docs/repository-map.md`;
 - the research log records material governance or evidence changes in newest-first order;
 - validators enforce any new invariant that future maintainers could otherwise miss;

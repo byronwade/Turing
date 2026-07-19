@@ -28,6 +28,7 @@ This is not a working sandbox harness, platform policy, packaged-build probe res
 - [`sandbox-probe-inventory.schema.json`](../security-engine/machine/sandbox-probe-inventory.schema.json)
 - [`sandbox-probe-inventory.json`](../security-engine/machine/sandbox-probe-inventory.json)
 - [WP-003 Sandbox Probe Contract](wp-003-sandbox-probe-plan-2026-07.md)
+- [Sandbox Platform-Evidence Decision Preparation](sandbox-platform-evidence-decision-prep-2026-07.md)
 - [`probe-catalog.json`](../../schemas/sandbox/probe-catalog.json)
 - [`probe-evidence.schema.json`](../../schemas/sandbox/probe-evidence.schema.json)
 - [`sandbox-probe-package.schema.json`](../security-engine/machine/sandbox-probe-package.schema.json)
@@ -53,6 +54,8 @@ The checked probe-package template adds the handoff shape for the first future e
 The checked sandbox readiness-review template adds the handoff shape for the first future owner-reviewed sandbox readiness review. Its review fields are deliberately null, every readiness flag is false, and its axes require packaged role runners, effective platform policy, host-safe fixtures, broker fixtures, compromised-client harnesses, role/surface coverage, result records, failure denominator, cleanup, platform matrix evidence, and owner/security/platform/quality/release review beyond the checked no-claim sandbox readiness-review template.
 
 The checked WP-003 contract adds a stable no-claim operation catalog and evidence-bundle schema for the first future executable package. It requires three allowed control probes, expected-deny operation records, unsupported-as-not-pass behavior, rejection of application-level stub denials as sandbox proof, redacted evidence, and `research_evidence_only` release-claim status.
+
+The dated [Sandbox Platform-Evidence Decision Preparation](sandbox-platform-evidence-decision-prep-2026-07.md) records the platform-specific evidence differences for Windows, Linux, and macOS, including the rule that seccomp is not a complete sandbox and that Landlock ABI support must be captured explicitly.
 
 ## Missing Evidence
 

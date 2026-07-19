@@ -8,6 +8,7 @@
     "schema_version",
     "id",
     "status",
+    "readiness_items",
     "owner",
     "independent_reviewer",
     "requirements",
@@ -43,6 +44,14 @@
         "rolled_back",
         "superseded"
       ]
+    },
+    "readiness_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^PB-[0-9]{3}$"
+      }
     },
     "owner": {
       "type": "string",

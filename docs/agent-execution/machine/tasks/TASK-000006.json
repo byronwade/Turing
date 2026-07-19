@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000006",
+  "status": "specified",
+  "readiness_items": ["PB-003", "PB-004", "PB-005", "PB-014", "PB-015"],
+  "owner": "ui-runtime owner (name required before ready)",
+  "independent_reviewer": "accessibility reviewer (name required before ready)",
+  "requirements": [
+    "REQ-A11Y-001",
+    "REQ-PROD-001",
+    "REQ-PROD-003"
+  ],
+  "risks": [
+    "R-027",
+    "R-028",
+    "R-034"
+  ],
+  "adrs": [
+    "ADR-0013",
+    "ADR-0014",
+    "ADR-0016"
+  ],
+  "allowed_paths": [
+    "apps/turing-shell/",
+    "crates/turing-ui-model/",
+    "docs/ui-runtime/",
+    "docs/platform/",
+    "docs/accessibility/",
+    "docs/product-experience/",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+    "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
+    "docs/research/native-ui-component-fixture-inventory-2026-07.md",
+    "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+    "docs/research/page-surface-composition-inventory-2026-07.md",
+    "docs/ui-runtime/machine/adapter-contract-inventory.schema.json",
+    "docs/ui-runtime/machine/adapter-contract-inventory.json",
+    "docs/ui-runtime/machine/framework-bakeoff-inventory.schema.json",
+    "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
+    "docs/ui-runtime/machine/native-ui-readiness-review.schema.json",
+    "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json",
+    "tools/validate_ui_adapter_contract.py",
+    "tools/validate_framework_bakeoff.py",
+    "tools/validate_ui_component_fixtures.py",
+    "tools/validate_window_input_accessibility_spike.py",
+    "tools/validate_page_surface_composition.py",
+    "tools/validate_native_ui_readiness_review.py"
+  ],
+  "prohibited_paths": [
+    "Electron",
+    "Tauri",
+    "system webview",
+    "runtime React or JavaScript in trusted chrome",
+    "runtime CSS parser in trusted chrome release path"
+  ],
+  "preconditions": [
+    "TASK-000003 IPC and command authority are reviewed or the shell prototype is isolated",
+    "all compared UI adapters implement equivalent scope",
+    "checked no-claim adapter contract inventory is treated as planning evidence until ADR-0013, complete toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contracts, native adapter prototype, no-toolkit-owned-authority negative tests, and owner review exist",
+    "checked no-claim framework bake-off inventory is treated as planning evidence until three-adapter or owner-approved reduced reference-shell evidence, ADR-0014, license/provenance review, accessibility evidence, IME/keyboard evidence, page-surface evidence, crash/GPU-loss evidence, and performance evidence exist",
+    "license and dependency review is included before selecting a toolkit",
+    "checked no-claim window/input/accessibility workflow inventory is treated as planning evidence until reference-platform and manual assistive-technology evidence exists",
+    "checked no-claim page-surface composition inventory is treated as planning evidence until UI-GATE-7, ADR-0016, typed page-surface handles, brokered surface handle, document and device generation, software fallback, and owner-review evidence exists",
+    "checked no-claim native UI readiness-review template is treated as planning evidence only and cannot be cited for toolkit selection, accessibility readiness, page-surface approval, release-path UI approval, or production readiness",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "checked no-claim adapter contract inventory is treated as planning evidence until ADR-0013, toolkit-neutral state, command, surface, accessibility, diagnostic, and adapter contract evidence, native adapter prototype evidence, no toolkit-owned authority negative tests, and owner review exist",
+    "three-adapter or owner-approved reduced bake-off scope is recorded with equivalent shell tasks",
+    "checked no-claim framework bake-off inventory is treated as planning evidence until equivalent Slint, Vizia, and Floem or GPUI adapter evidence, ADR-0014, accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, provenance, replacement, and package/runtime-exclusion evidence exists",
+    "page-surface composition, design-token and component fixtures, accessibility, IME, keyboard, crash, GPU-loss, startup, memory, binary, latency, frame-pacing, energy, license, dependency, and provenance evidence requirements are explicit",
+    "checked no-claim component fixture inventory is treated as planning evidence until rendered or equivalent adapter-specific fixtures exist",
+    "checked no-claim window/input/accessibility workflow inventory is treated as planning evidence until executable reference-platform workflow matrix, page-tree composition, input, IME, keyboard, clipboard, drag-drop, localization, zoom, high contrast, reduced motion, manual assistive-technology, screen-reader, latency, crash, renderer-hang, GPU-loss, UI-GATE-7, and UI-GATE-10 evidence exists",
+    "checked no-claim page-surface composition inventory is treated as planning evidence until executable resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer-crash, GPU-loss, software fallback, latency, frame-pacing, typed page-surface handles, brokered surface handle, document and device generations, UI-GATE-7, ADR-0016, and owner-review evidence exists",
+    "checked no-claim native UI readiness-review template is treated as planning evidence until a real owner-reviewed native UI readiness review replaces null reviewers, selected toolkit, adapter strategy, and reference-platform fields with evidence beyond the template",
+    "toolkit-neutral UI state remains independent of any chosen renderer",
+    "no toolkit is promoted without ADR and license/provenance review"
+  ],
+  "negative_tests": [
+    "trusted chrome cannot depend on a webview, Electron, Tauri, system webview, Node, runtime React, runtime JavaScript, runtime DOM, or runtime CSS parser",
+    "native adapter prototype success cannot be claimed before ADR-0013, explicit adapter contract evidence, and no toolkit-owned authority negative tests exist",
+    "framework bake-off success cannot be claimed from a single adapter, empty-window demo, qualitative source observation, or unchecked license/provenance assumption",
+    "UI success cannot hide missing keyboard, screen-reader, manual assistive-technology, IME, resize, scale, damage, occlusion, capture, crash, renderer-hang, GPU-loss, software fallback, typed page-surface handle, brokered surface handle, document and device generations, page-tree, page-surface, latency, frame-pacing, energy, or memory behavior",
+    "checked no-claim native UI readiness-review template cannot be cited as toolkit selection, accessibility readiness, page-surface approval, trusted-chrome readiness, release-path UI approval, TASK-000006 execution approval, or production readiness",
+    "adapter-specific state cannot become the product source of truth"
+  ],
+  "resource_budget": {
+    "wall_seconds": 28800,
+    "cpu_seconds": 10800,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 21474836480,
+    "network_bytes": 1073741824,
+    "max_workers": 1,
+    "max_retries": 2
+  },
+  "rollback": {
+    "strategy": "Keep adapter prototypes isolated and revert any toolkit-specific source if review rejects its authority, license, or runtime model.",
+    "evidence_required": [
+      "adapter comparison",
+      "accessibility notes",
+      "license review",
+      "validation output"
+    ]
+  },
+  "dependencies": [
+    "TASK-000003"
+  ],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

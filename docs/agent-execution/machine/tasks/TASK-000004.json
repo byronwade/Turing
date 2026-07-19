@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000004",
+  "status": "specified",
+  "readiness_items": ["PB-012"],
+  "owner": "security owner (name required before ready)",
+  "independent_reviewer": "architecture reviewer (name required before ready)",
+  "requirements": [
+    "REQ-SEC-001",
+    "REQ-NET-001"
+  ],
+  "risks": [
+    "R-004",
+    "R-005",
+    "R-007",
+    "R-026"
+  ],
+  "adrs": [],
+  "allowed_paths": [
+    "docs/security-engine/",
+    "docs/research/sandbox-probe-inventory-2026-07.md",
+    "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
+    "docs/security-engine/machine/sandbox-probe-inventory.schema.json",
+    "docs/security-engine/machine/sandbox-probe-inventory.json",
+    "docs/security-engine/machine/sandbox-probe-package.schema.json",
+    "docs/security-engine/machine/sandbox-probe-packages/",
+    "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
+    "docs/security-engine/machine/sandbox-readiness-review.schema.json",
+    "docs/security-engine/machine/sandbox-readiness-reviews/",
+    "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
+    "schemas/sandbox/",
+    "docs/platform/",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "tools/validate_sandbox_probe_inventory.py",
+    "tools/validate_sandbox_readiness_review.py",
+    "tools/validate_sandbox_contracts.py",
+    "tools/",
+    "security/"
+  ],
+  "prohibited_paths": [
+    "sandbox weakening for demonstrations",
+    "certificate validation exceptions",
+    "production signing or update keys",
+    "browser engine release code"
+  ],
+  "preconditions": [
+    "TASK-000003 authority and IPC boundaries are reviewed or explicitly scoped out",
+    "checked no-claim sandbox probe inventory remains current",
+    "checked no-claim sandbox probe-package template remains current",
+    "checked no-claim sandbox readiness-review template remains current but cannot be cited as owner-reviewed sandbox readiness",
+    "checked no-claim stable operation catalog and evidence schema remain current",
+    "target platform and sandbox primitive are named",
+    "negative probes are safe to run on the host",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "checked no-claim sandbox probe inventory remains synchronized with process-capability roles, required surfaces, and unsupported boundaries",
+    "versioned no-claim operation catalog, evidence schema, and sandbox contract validator remain synchronized with this task before executable work starts",
+    "first executable package starts from the checked no-claim sandbox probe-package template and replaces template-only fields with real run evidence",
+    "packaged probe harness records expected-deny file, socket, process, registry, device, shared-memory, credential, debug, profile, and IPC access cases",
+    "an unsandboxed control run proves that the harness observes allowed control operations before expected-deny results are accepted",
+    "unsupported platform primitives are recorded separately and never counted as passes",
+    "application-level stub denial is rejected as sandbox evidence unless operating-system, broker, or launch-policy enforcement is captured",
+    "renderer, network, storage, GPU, decoder, extension, DevTools, agent, and updater roles have explicit probe coverage or unsupported notes",
+    "sandbox evidence distinguishes design from actual platform-enforced behavior and includes effective platform policy capture",
+    "host-safe fixtures, fake credentials, fake profiles, bounded temporary roots, and cleanup checks prevent probe execution from damaging the developer host",
+    "owner-reviewed sandbox readiness review exists beyond the checked no-claim sandbox readiness-review template before PB-012 readiness, sandbox-readiness, renderer-security, site-isolation, hostile-browsing safety, SEC-GATE, production-safety, or implementation claims",
+    "security docs, risk records, and pre-build readiness agree on remaining gaps"
+  ],
+  "negative_tests": [
+    "the no-claim sandbox probe-package template cannot be cited as SEC-GATE evidence or probe execution approval",
+    "the checked no-claim sandbox readiness-review template cannot be cited as owner-reviewed sandbox readiness, PB-012 readiness, sandbox-readiness, renderer-security, site-isolation, SEC-GATE, production-safety, or implementation evidence",
+    "the no-claim operation catalog and evidence schema cannot be cited as execution approval or platform containment evidence",
+    "a successful demo cannot bypass sandbox denial checks",
+    "an application-level stub cannot be counted as an operating-system sandbox denial",
+    "untrusted input cannot broaden probe authority",
+    "no failure is swallowed as a pass"
+  ],
+  "resource_budget": {
+    "wall_seconds": 21600,
+    "cpu_seconds": 7200,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 10737418240,
+    "network_bytes": 0,
+    "max_workers": 1,
+    "max_retries": 2
+  },
+  "rollback": {
+    "strategy": "Remove probe tooling and revert sandbox status if any probe grants more authority than specified.",
+    "evidence_required": [
+      "probe logs",
+      "security review note",
+      "updated risk state"
+    ]
+  },
+  "dependencies": [
+    "TASK-000003"
+  ],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

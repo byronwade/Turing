@@ -3,7 +3,7 @@
 Status: first-pass compatibility evidence prep with checked no-claim corpus, route self-test, and HTTPS harness plan; no compatibility claim
 Owner: quality, engine, JavaScript runtime, compatibility, documentation, and release operations
 Related gate: `PB-002`, `ADR-0009`, `ADR9-EV-013`
-Date: 2026-07-18
+Date: 2026-07-19
 
 ## Question
 
@@ -23,6 +23,19 @@ Primary local evidence came from the external Servo checkout at `C:\ts\servo`, o
 | Built shell evidence | `servoshell.exe` exists from the previous short-path Windows development build |
 | Turing repository role | documentation and registry update only |
 | Commands | read-only `git`, `Get-ChildItem`, `rg`, Python manifest counters, and file inspection |
+
+### Upstream source retrieval record
+
+The upstream source references were checked on 2026-07-19 against the official project locations:
+
+| Source | Official location | Revision state in inspected checkout | Compatibility consequence |
+|---|---|---|---|
+| Web Platform Tests | `https://github.com/web-platform-tests/wpt` | **Not pinned.** Servo's `tests/wpt/config.ini` names the older `https://github.com/w3c/web-platform-tests.git` remote and moving `master` branch. | No WPT result from this checkout is admissible for comparison until the exact WPT commit, local patch set, manifest generation inputs, and retrieval record are captured. |
+| Test262 | `https://github.com/tc39/test262` | Pinned in `tests/wpt/tests/third_party/test262/vendored.toml` to `b66872a92487694396fb082343e08dd7cca5ddf4`. | The pin identifies the vendored Test262 source, but does not create a Turing-owned Test262 harness or a Turing runtime result. |
+
+The official WPT repository describes itself as the canonical source history and provides the `wpt serve`, `wpt run`, and `wpt manifest` command families. The official TC39 organization identifies `tc39/test262` as the ECMAScript conformance suite. These observations establish source ownership and runner direction only; they are not test results.
+
+Before any WPT evidence can enter `ADR-0009`, the execution record must replace the moving WPT branch with an exact commit and record retrieval date, source URL, local patch/diff hash, manifest-generation command and output hash, selected include rules, metadata roots, and the resulting test denominator. The same record must keep Test262 attribution separate from Turing-owned runtime evidence.
 
 ## Method
 
@@ -196,6 +209,16 @@ The dependency-free [`serve_servo_local_compatibility_corpus.py`](../../tools/se
 
 This evidence proves only repository route plumbing for generated fixtures. It deliberately records `https_used=false`, `tls_certificate_provided=false`, `dns_os_modified=false`, `browser_launched=false`, `compatibility_result_generated=false`, `wpt_result_generated=false`, and `test262_result_generated=false`.
 
+### 2026-07-19 route self-test verification
+
+The checked command below was rerun from the repository after the current documentation-readiness pass:
+
+```text
+python3 -B tools/serve_servo_local_compatibility_corpus.py --self-test
+```
+
+The run started the loopback HTTP/1.1 server, returned `200` for all 10 manifest routes, verified the server port was closed after shutdown, used no external network, and left `dns_os_modified=false`, `https_used=false`, `browser_launched=false`, `wpt_result_generated=false`, and `test262_result_generated=false`. The fixture hashes and route identities matched the checked manifest. This is a reproducible route-plumbing result only; it does not move `ADR9-EV-013`, does not execute Servo, and does not produce compatibility evidence.
+
 ## Checked No-Claim HTTPS Harness Plan
 
 The machine-readable [ADR-0009 local compatibility HTTPS harness schema](../blueprint-v1/machine/servo-local-compatibility-https-harness.schema.json), checked [no-claim HTTPS host-alias harness plan](../blueprint-v1/machine/servo-local-compatibility-harnesses/no-claim-https-host-alias.plan.json), and [`validate_servo_local_compatibility_https_harness.py`](../../tools/validate_servo_local_compatibility_https_harness.py) now define the required local HTTPS execution envelope for the checked corpus.
@@ -222,6 +245,8 @@ Every future compatibility run must record:
 
 The evidence moves `ADR9-EV-013` from missing to partial. It shows that Servo has a large WPT tree, active include rules, extensive expected-result metadata, Test262 vendoring through WPT, runner entry points, and now a checked Turing-owned no-claim local compatibility corpus manifest, generated fixture files, HTTP route self-test, and HTTPS host-alias harness plan. It also shows why no compatibility claim is possible yet: the HTTPS harness plan has not been executed, no host-alias browser run exists, no local corpus was executed in Servo, no WPT focus-area run was captured, no disabled-test denominator was accepted, no unsupported-API map exists, and no result was compared against future Turing or competitor browsers.
 
+The source-baseline review adds one explicit reproducibility finding: the inspected Servo checkout pins Test262 but leaves the WPT remote on a moving `master` branch. That is a source-control gap, not evidence of a compatibility defect. It must be closed before a WPT result can support a source-strategy comparison.
+
 ## Unsupported Conclusions
 
 This report does not show:
@@ -234,6 +259,7 @@ This report does not show:
 - safety for arbitrary web browsing;
 - that WPT-hosted Test262 evidence satisfies Turing's JavaScript-runtime plan;
 - that any skipped or expected-failure metadata is acceptable for Turing.
+- that the moving WPT `master` branch identifies a reproducible test baseline.
 
 ## Documentation and Registry Impact
 
@@ -241,6 +267,7 @@ This report affects:
 
 - [ADR-0009 Source Strategy Decision Packet](../project-buildout/14-adr-0009-source-strategy-decision-packet.md);
 - [ADR-0009 Evidence Traceability Matrix](../project-buildout/15-adr-0009-evidence-traceability-matrix.md);
+- [Primary Source Bibliography](../blueprint-v1/18-source-bibliography.md);
 - [`adr-0009-evidence.json`](../blueprint-v1/machine/adr-0009-evidence.json);
 - [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json);
 - [`servo-local-compatibility-corpus.schema.json`](../blueprint-v1/machine/servo-local-compatibility-corpus.schema.json);
@@ -267,3 +294,4 @@ It does not change implementation status, support status, source approval, depen
 4. Produce disabled-test, expected-failure, timeout, crash, and unsupported-API accounting.
 5. Produce a separate Turing Test262 harness plan for `ADR-0004`, then decide how Servo/SpiderMonkey results are labeled in `ADR-0009`.
 6. Compare the same corpus against named browser versions only after the harness is stable and equivalent settings are documented.
+7. Pin the WPT source commit and preserve the retrieval, patch, manifest, and denominator records before treating any WPT run as `ADR9-EV-013` evidence.

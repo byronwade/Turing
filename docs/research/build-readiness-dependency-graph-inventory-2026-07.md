@@ -13,7 +13,7 @@ Can the current build-readiness sequence be captured as a machine-checked depend
 This inventory covers the current unresolved pre-build dependency graph for:
 
 - `PB-GATE-0`;
-- unresolved readiness items `PB-002`, `PB-003`, `PB-004`, `PB-005`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, and `PB-020`;
+- unresolved readiness items `PB-002`, `PB-003`, `PB-004`, `PB-005`, `PB-008`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, and `PB-020`;
 - proposed tasks `TASK-000001` through `TASK-000010`;
 - decision/evidence gates `ADR-0009`, `ADR-0013`, `ADR-0014`, `ADR-0016`, and `UI-GATE-7`.
 
@@ -21,7 +21,7 @@ The machine companion is [`build-readiness-dependency-graph.json`](../project-bu
 
 ## Method
 
-The graph reconciles the [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md), [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md), [Implementation Kickoff Review Inventory](implementation-kickoff-review-inventory-2026-07.md), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json), [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), [Agent Execution](../agent-execution/README.md), [Production Readiness](../production-readiness/README.md), and [Definition of Done](../blueprint-v1/20-definition-of-done.md).
+The graph reconciles the [Pre-build Readiness Checklist](../project-buildout/11-pre-build-readiness-checklist.md), [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md), [Build Readiness Task Queue](../project-buildout/17-build-readiness-task-queue.md), [Documentation Readiness Evidence Matrix](../project-buildout/18-documentation-readiness-evidence-matrix.md), [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md), [Implementation Kickoff Review Inventory](implementation-kickoff-review-inventory-2026-07.md), [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json), [`build-readiness-task-queue.json`](../blueprint-v1/machine/build-readiness-task-queue.json), [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json), [Agent Execution](../agent-execution/README.md), [Production Readiness](../production-readiness/README.md), and [Definition of Done](../blueprint-v1/20-definition-of-done.md).
 
 The focused validator checks that:
 
@@ -45,14 +45,14 @@ The graph makes the current sequencing constraints checkable:
 - `TASK-000010` depends on `TASK-000008` and `TASK-000009`;
 - all unresolved readiness items still feed `PB-020`, so implementation kickoff remains partial and the checked no-claim build-readiness closure-review template cannot be used as closure evidence.
 
-This is a dependency-control improvement only. It does not close `PB-002`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-003` through `PB-005`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, `PB-020`, the owner-reviewed benchmark readiness review required beyond the checked no-claim benchmark readiness-review template, or the owner-reviewed build-readiness closure review required beyond the checked no-claim template.
+This is a dependency-control improvement only. It does not close `PB-002`, `PB-008`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-003` through `PB-005`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, `PB-020`, the owner-reviewed benchmark readiness review required beyond the checked no-claim benchmark readiness-review template, or the owner-reviewed build-readiness closure review required beyond the checked no-claim template.
 
 ## Parallel No-Claim Work
 
 The graph explicitly allows continued no-claim work in these lanes while preserving stop conditions:
 
 - source-strategy research;
-- fresh-host reproduction evidence;
+- pinned toolchain and fresh-host reproduction evidence;
 - IPC and sandbox prototypes;
 - benchmark lab contracts and the checked no-claim benchmark readiness-review template;
 - native-shell research;
@@ -66,4 +66,4 @@ This graph supports only contained M0 continuation, sequencing clarity, and no-c
 
 ## Next Proof
 
-The next useful proof is to execute an owner-approved task from the graph without violating its predecessors. The lowest-risk closure remains either `TASK-000001` for `PB-002` source-strategy decision evidence or `TASK-000002` for `PB-009` fresh-host reproduction.
+The next useful proof is to execute an owner-approved task from the graph without violating its predecessors. The lowest-risk closure remains either `TASK-000001` for `PB-002` source-strategy decision evidence or `TASK-000002` for `PB-008`/`PB-009` pinned-toolchain and fresh-host reproduction.

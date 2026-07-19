@@ -33,6 +33,7 @@ EXPECTED_STATE = {
 
 EXPECTED_CLASSES = {
     "INFO-ENTRYPOINTS": {"gates": {"PB-001", "PB-020"}, "tasks": set()},
+    "INFO-TOOLCHAIN": {"gates": {"PB-008", "PB-009"}, "tasks": {"TASK-000002"}},
     "INFO-TASK-AUTHORITY": {"gates": {"PB-020"}, "tasks": PROPOSED_TASKS | REVIEW_PENDING_TASKS},
     "INFO-SOURCE-STRATEGY": {"gates": {"PB-002"}, "tasks": {"TASK-000001"}},
     "INFO-FRESH-HOST": {"gates": {"PB-009", "PB-020"}, "tasks": {"TASK-000002"}},
@@ -62,6 +63,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/project-buildout/implementation-plan/README.md",
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/project-buildout/machine/build-readiness-dependency-graph.json",

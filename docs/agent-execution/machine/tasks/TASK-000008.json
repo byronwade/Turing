@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000008",
+  "status": "specified",
+  "readiness_items": ["PB-019", "PB-020"],
+  "owner": "program owner (name required before ready)",
+  "independent_reviewer": "documentation-research reviewer (name required before ready)",
+  "requirements": [
+    "REQ-OPS-001"
+  ],
+  "risks": [
+    "R-001",
+    "R-039"
+  ],
+  "adrs": [],
+  "allowed_paths": [
+    "docs/project-buildout/",
+    "docs/project-buildout/machine/backup-ownership-gap.schema.json",
+    "docs/project-buildout/machine/backup-ownership-gap.json",
+    "docs/project-buildout/machine/backup-owner-qualification-record.schema.json",
+    "docs/project-buildout/machine/backup-owner-qualification-records/",
+    "docs/project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json",
+    "docs/project-buildout/machine/backup-ownership-readiness-review.schema.json",
+    "docs/project-buildout/machine/backup-ownership-readiness-reviews/",
+    "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json",
+    "docs/research/backup-ownership-gap-inventory-2026-07.md",
+    "docs/blueprint-v1/machine/professional-owners.json",
+    "docs/blueprint-v1/machine/professional-review-rules.json",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "tools/validate_backup_ownership_gap.py",
+    "tools/validate_backup_ownership_readiness_review.py"
+  ],
+  "prohibited_paths": [
+    "code ownership changes without named reviewers",
+    "production release authority changes",
+    "security disclosure authority changes"
+  ],
+  "preconditions": [
+    "checked no-claim backup-owner qualification template remains current",
+    "checked no-claim backup-ownership readiness-review template remains current and cannot be cited for owner coverage, two-person control, release authority, production authority, broad readiness, or implementation evidence",
+    "candidate backup maintainers are identified by the owner for build-critical program, architecture, security, release-operations, human-release-authority, incident-response, legal-community, support, quality, supply-chain, documentation-research, product, platform, engine, JavaScript, networking, storage, performance, accessibility, UI-runtime, agent-operations, and privacy-data scopes",
+    "each backup scope includes role level, subsystem competence, representative path coverage, recent review record, availability, succession, recusal, inactivity, removal, and emergency replacement evidence",
+    "single-owner research-phase limits remain visible and PB-019 remains blocked while backups are null, placeholders, undocumented availability, or primary-only review paths",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "build-critical scopes have named qualified backups or explicit checked blocked status from the backup ownership gap inventory remains",
+    "first backup-owner qualification record starts from the checked no-claim backup-owner qualification template and replaces template-only null candidate fields with real named qualified backup, role-level, subsystem-competence, path-coverage, review-record, availability, succession, recusal, inactivity, removal, emergency-replacement, reconciliation, two-person-control, and owner-review evidence",
+    "owner, reviewer, release, security, legal-community, support, incident-response, human-release-authority, quality, supply-chain, product, privacy-data, and accessibility scopes are updated consistently",
+    "CODEOWNERS, review-rule, escalation-policy, support, signing, disclosure, package, CI, service, and repository-access records are reconciled with the ownership registry",
+    "two-person control is explicit for stable signing, update trust, supported-version changes, security disclosure, irreversible profile migration, release promotion, legal approval, and incident closure",
+    "first backup ownership readiness review starts from the checked no-claim backup-ownership readiness-review template and replaces template-only null ownership_inventory, qualification_record_set, owner_reviewer, independent_reviewer, security_reviewer, release_operations_reviewer, legal_reviewer, and support_reviewer fields with owner-reviewed evidence beyond the template",
+    "PB-019 is not promoted unless backup evidence is concrete, reviewable, current, and independently verifiable",
+    "handoff docs state which scopes still rely on the primary owner and which protected paths remain ownerless or primary-only"
+  ],
+  "negative_tests": [
+    "do not treat a placeholder name as a qualified backup",
+    "do not cite the checked no-claim backup-owner qualification template as named backup ownership, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence",
+    "do not cite the checked no-claim backup-ownership readiness-review template as owner-reviewed backup ownership readiness, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence",
+    "do not treat CODEOWNERS routing, intent, self-nomination, undocumented availability, or title-only ownership as qualification evidence",
+    "do not promote production authority from documentation intent",
+    "do not hide single-owner residual risk",
+    "do not leave stale privileged access, ownerless protected paths, or primary-only release, signing, disclosure, support, or incident paths undocumented"
+  ],
+  "resource_budget": {
+    "wall_seconds": 7200,
+    "cpu_seconds": 1800,
+    "memory_bytes": 2147483648,
+    "disk_bytes": 1073741824,
+    "network_bytes": 0,
+    "max_workers": 1,
+    "max_retries": 1
+  },
+  "rollback": {
+    "strategy": "Revert owner and review-rule changes if backup qualifications are not accepted.",
+    "evidence_required": [
+      "owner review note",
+      "updated readiness registry",
+      "validation output"
+    ]
+  },
+  "dependencies": [],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

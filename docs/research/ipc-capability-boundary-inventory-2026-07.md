@@ -30,6 +30,7 @@ This is not a production IPC protocol, accepted execution task, accepted indepen
 - [`ipc-readiness-review.schema.json`](../blueprint-v1/machine/ipc-readiness-review.schema.json)
 - [`no-claim-ipc-readiness-template.json`](../blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json)
 - [WP-002 kernel identity and IPC reference](wp-002-kernel-ipc-2026-07.md)
+- [IPC wire-encoding decision preparation](ipc-wire-encoding-decision-prep-2026-07.md)
 - [TASK-000011 WP-002 Review Handoff](task-000011-wp002-review-handoff-2026-07.md)
 - checked no-claim [TASK-000011 evidence capture](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json)
 - [`TASK-000011`](../agent-execution/machine/tasks/TASK-000011.json)
@@ -62,6 +63,8 @@ The checked inventory keeps `PB-011` partial because the following are still mis
 - cancellation semantics;
 - stale-epoch receiver rejection on a real transport;
 - fuzz and model tests for decoders, queues, state machines, duplicate delivery, reordering, authorization, wrong principal, timeout, cancellation, and resource exhaustion.
+
+The dated [IPC wire-encoding decision preparation](ipc-wire-encoding-decision-prep-2026-07.md) records the candidate comparison and decision gates for CBOR, Protocol Buffers, FlatBuffers, and a Turing-owned codec. It is research evidence only: no encoding, dependency, generator, or transport has been selected.
 
 ## Negative Coverage
 

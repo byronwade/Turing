@@ -35,6 +35,28 @@ This inventory does not approve Servo-derived release code. It prepares the evid
 - Linux Foundation Europe Servo announcement, posted 2023-09-07: https://linuxfoundation.eu/newsroom/servo-web-rendering-engine-joins-linux-foundation-europe
 - Servo WPT pass-rate page, retrieved 2026-07-17: https://servo.org/wpt/
 
+## Official documentation refresh — 2026-07-19
+
+A fresh review of Servo's official documentation was performed on 2026-07-19. The retrieval is recorded separately from the 2026-07-17 checkout observations because public project policy can change independently of the locally inspected source objects.
+
+Sources:
+
+- [Servo embedding overview](https://book.servo.org/embedding/overview.html), retrieved 2026-07-19;
+- [Servo LTS release policy](https://book.servo.org/embedding/lts-release.html), retrieved 2026-07-19;
+- [Servo Book overview](https://book.servo.org/), retrieved 2026-07-19;
+- [Servo offline build guidance](https://book.servo.org/building/building-offline.html), retrieved 2026-07-19.
+
+Observed policy signals:
+
+- Servo's embedding documentation describes the embedding material as an active work in progress and says that using Cargo directly requires reimplementing parts of `mach`.
+- Servo's public overview identifies `servoshell` as the recommended browser path while the WebView library surface is still being developed.
+- Servo's LTS policy describes support as best effort, provides no specific guarantees, limits LTS scope to the `servo` library and dependencies, and explicitly excludes `servoshell`.
+- Servo's offline-build guidance identifies a vendored source archive as the path for source plus Rust dependencies, which is relevant to the archive-equivalence and supply-chain questions but does not establish source approval.
+
+Inference for `ADR-0009`: these official statements increase the importance of a Turing-owned support boundary, an explicit browser-shell ownership decision, and a source/archive equivalence review. They do not by themselves prove that Servo is unsuitable, insecure, incompatible, or unmaintainable, and they do not close `ADR9-EV-016`, `ADR9-EV-017`, or `ADR9-EV-018`.
+
+Required follow-up remains owner-controlled: select or reject the source relationship, define the supported product surface and update/security obligations, and record the decision and synchronized registry changes. No Servo source or dependency was copied into this repository during the refresh.
+
 ## Observations
 
 Servo currently presents itself as a Rust web rendering engine for embedding web technologies in desktop, mobile, and embedded applications. Its public site emphasizes a WebView API, WebGL/WebGPU support, modularity, parallelism, cross-platform support, and open governance under Linux Foundation Europe.

@@ -25,6 +25,8 @@ design/
 
 Generate Rust constants, selected-toolkit declarations, optional React CSS variables, documentation tables, contrast checks, screenshots, and fixture data from this source.
 
+The current primary visual/layout reference is the captured [Turing Nova design source](design-lab/README.md) and its verbatim [JSX artifact](design-lab/turing-nova-design-source.jsx). Until its visual contracts are extracted into the shared design data, changes to browser-facing hierarchy, panel composition, spacing, typography, themes, density, motion intent, or named surface states must be reconciled against that artifact. This elevates the supplied concept shell to the design reference without making React the product runtime or behavioral source of truth.
+
 ## Design lab capabilities
 
 - component gallery and state fixtures;
@@ -42,6 +44,7 @@ Generate Rust constants, selected-toolkit declarations, optional React CSS varia
 - Visual similarity is not proof of native accessibility, input, timing, or platform correctness.
 - Every stable component fixture must run in the native test kit.
 - The design lab is separately packaged and never a release dependency.
+- The Nova JSX artifact is preserved as a visual regression reference; it is never bundled into trusted browser chrome.
 
 ## Future TSX option
 

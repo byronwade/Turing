@@ -2,7 +2,7 @@
   "schema_version": 1,
   "ledger_id": "PB020.BUILD_INFORMATION_READINESS_LEDGER.NO_CLAIM.2026_07",
   "status": "no_claim_information_readiness_gap_ledger",
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "claim_status": "Build-information readiness gap ledger only; no complete documentation claim, no all-information-ready-for-building claim, no proposed task approval, no TASK-000011 acceptance, no readiness promotion, no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no performance claim, no compatibility claim, no security claim, no accessibility claim, no release readiness claim, and no daily-driver claim.",
   "source_records": [
     "README.md",
@@ -16,10 +16,21 @@
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/project-buildout/implementation-plan/README.md",
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/project-buildout/machine/build-readiness-dependency-graph.json",
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
     "docs/project-buildout/machine/contained-m0-start-state.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
@@ -56,6 +67,40 @@
     "release_gated_tasks": []
   },
   "information_classes": [
+    {
+      "id": "INFO-TOOLCHAIN",
+      "name": "Pinned compiler, SDK, linker, and toolchain reproduction",
+      "gate_refs": ["PB-008", "PB-009"],
+      "task_refs": ["TASK-000002"],
+      "build_scope": "broad_build_blocker",
+      "information_status": "missing_independent_evidence",
+      "ready_for_broad_build": false,
+      "owner_review_required": true,
+      "required_information": [
+        "Versioned platform compiler, SDK, linker, Rust, Cargo, Git, shell, and environment manifests tied to the reference build.",
+        "Independent fresh-host or owner-approved clean-VM reproduction beyond reference-host evidence."
+      ],
+      "current_evidence": [
+        "rust-toolchain.toml",
+        "docs/blueprint-v1/machine/toolchains.json",
+        "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+        "docs/project-buildout/machine/fresh-host-reproduction.json"
+      ],
+      "missing_information": [
+        "Platform compiler, SDK, and linker manifests retained with the independent run record.",
+        "Owner-reviewed acceptance or rejection of the host/toolchain equivalence and any waiver expiry."
+      ],
+      "owner_only_decisions": [
+        "Owner accepts or rejects the reference toolchain and clean-host equivalence policy.",
+        "Owner approves any time-bounded host or toolchain waiver."
+      ],
+      "next_research_or_review": "Capture the exact compiler, SDK, linker, Rust, Cargo, Git, shell, cache, target, and source-tree facts in the TASK-000002 run record before any PB-008 or PB-009 promotion.",
+      "prohibited_claims": [
+        "No independent toolchain reproduction claim.",
+        "No broad build, release confidence, production, or Chrome-class claim from reference-host evidence alone."
+      ]
+    },
     {
       "id": "INFO-ENTRYPOINTS",
       "name": "First-entry documentation and stop/resume map",
@@ -192,6 +237,7 @@
       ],
       "current_evidence": [
         "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
         "docs/project-buildout/machine/fresh-host-reproduction.json",
         "docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json",
         "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json"
@@ -227,6 +273,7 @@
       "current_evidence": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
+        "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
         "docs/blueprint-v1/machine/ipc-capability-boundary.json",
@@ -264,6 +311,7 @@
       "current_evidence": [
         "docs/research/sandbox-probe-inventory-2026-07.md",
         "docs/research/wp-003-sandbox-probe-plan-2026-07.md",
+        "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
         "docs/security-engine/machine/sandbox-probe-inventory.json",
         "docs/security-engine/machine/sandbox-probe-packages/no-claim-expected-deny-template.json",
         "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json",
@@ -300,6 +348,7 @@
       ],
       "current_evidence": [
         "docs/research/performance-benchmark-readiness-packet-2026-07.md",
+        "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
         "docs/research/benchmark-engine-baseline-harness-readiness-map-2026-07.md",
         "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
         "docs/blueprint-v1/machine/benchmark-launch-runners/no-claim-browser-launch.plan.json",
@@ -337,6 +386,7 @@
       ],
       "current_evidence": [
         "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+        "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
         "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
         "docs/research/native-ui-component-fixture-inventory-2026-07.md",
         "docs/research/page-surface-composition-inventory-2026-07.md",
@@ -377,6 +427,7 @@
       ],
       "current_evidence": [
         "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
         "docs/storage/machine/profile-session-format-inventory.json",
         "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
         "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json"
@@ -411,6 +462,7 @@
       ],
       "current_evidence": [
         "docs/research/research-package-update-lab-inventory-2026-07.md",
+        "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
         "docs/release-operations/machine/research-package-update-lab.json",
         "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
         "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json"
@@ -446,6 +498,7 @@
       "current_evidence": [
         "docs/security.md",
         "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+        "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
         "docs/security-engine/machine/incident-patch-rehearsal.json",
         "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
         "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json"
@@ -480,6 +533,7 @@
       ],
       "current_evidence": [
         "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
         "docs/project-buildout/machine/backup-ownership-gap.json",
         "docs/project-buildout/machine/backup-owner-qualification-records/no-claim-backup-owner-qualification-template.json",
         "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json"

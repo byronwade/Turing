@@ -37,6 +37,7 @@ The checked no-claim [backup-ownership readiness-review template](../project-bui
 - [Task approval template](machine/task-approval-templates/no-claim-task-approval-template.json)
 - [Evidence bundle schema](machine/evidence-bundle.schema.json)
 - [Evidence bundle records](machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json)
+- [Specified non-executable manifests](machine/tasks/TASK-000001.json): [`TASK-000001`](machine/tasks/TASK-000001.json), [`TASK-000002`](machine/tasks/TASK-000002.json), [`TASK-000003`](machine/tasks/TASK-000003.json), [`TASK-000004`](machine/tasks/TASK-000004.json), [`TASK-000005`](machine/tasks/TASK-000005.json), [`TASK-000006`](machine/tasks/TASK-000006.json), [`TASK-000007`](machine/tasks/TASK-000007.json), [`TASK-000008`](machine/tasks/TASK-000008.json), [`TASK-000009`](machine/tasks/TASK-000009.json), and [`TASK-000010`](machine/tasks/TASK-000010.json); [`TASK-000001` owner-review handoff](TASK-000001-owner-review.md)
 - [Escalation policy](machine/escalation-policy.json)
 - [Prohibited agent actions](machine/prohibited-agent-actions.json)
 
@@ -44,7 +45,9 @@ The checked no-claim [backup-ownership readiness-review template](../project-bui
 
 - [`TASK-000011`](machine/tasks/TASK-000011.json) implements the M0 reference portion of `WP-002`: restart-safe process identity, generated capabilities and routes, bounded envelopes and queues, sequence validation, and kernel authorization. Its [review handoff](../research/task-000011-wp002-review-handoff-2026-07.md) maps candidate evidence and remaining evidence-bundle gaps. The checked no-claim [TASK-000011 evidence capture](machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json), validated by [`validate_evidence_bundles.py`](../../tools/validate_evidence_bundles.py), binds candidate artifacts to the green source commit but records `needs_independent_review`. The task status is `review_pending`; the implementation agent cannot approve or merge it.
 
-The proposed build-readiness queue reserves `TASK-000001` through `TASK-000010` for future handoff records. Those queue rows remain proposed only and are not execution approval.
+The proposed build-readiness queue reserves `TASK-000001` through `TASK-000010`. Each now has a specified, non-executable manifest that mirrors the proposed queue row, including its immutable `readiness_items` `PB-*` gate mapping, and binds it to the queue digest. The queue rows and manifests remain proposed/specification-only and are not execution approval.
+
+All specified manifests remain below `reviewed` and `ready`; named owner/reviewer identities, approval, an agent run manifest, and an evidence bundle are still required before any execution. `TASK-000001` additionally has the dedicated owner-review handoff linked above.
 
 ## Normative baselines
 

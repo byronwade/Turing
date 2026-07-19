@@ -8,6 +8,7 @@
   "source_records": [
     "docs/project-buildout/09-servo-adoption-decision-framework.md",
     "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
     "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
     "docs/project-buildout/16-adr-0009-decision-draft.md",
     "docs/blueprint-v1/machine/adr-0009-evidence.schema.json",

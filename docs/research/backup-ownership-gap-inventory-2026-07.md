@@ -18,6 +18,7 @@ This does not name qualified backups, prove availability, grant two-person contr
 ## Inputs
 
 - [Project-buildout handbook](../project-buildout/README.md)
+- [Backup Ownership and Review Capacity Decision Preparation](backup-ownership-and-review-capacity-decision-prep-2026-07.md)
 - [Ownership, CODEOWNERS, and Maintainer Ladder](../project-buildout/02-ownership-codeowners-and-maintainer-ladder.md)
 - [Release, Incident, Legal, Data, and Support Operations](../project-buildout/08-release-incident-legal-data-and-support.md)
 - [Agent Execution](../agent-execution/README.md)

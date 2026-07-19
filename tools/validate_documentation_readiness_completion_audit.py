@@ -48,11 +48,96 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/project-buildout/machine/build-readiness-dependency-graph.json",
+    "docs/project-buildout/22-build-readiness-progress-snapshot.md",
+    "docs/project-buildout/implementation-plan/README.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
     "docs/research/README.md",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/blueprint-v1/20-definition-of-done.md",
     "tools/validate_blueprint.py",
     "tools/check.ps1",
+}
+
+REQUIRED_LANE_CLOSURE_ROUTES = {
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md": (
+        "pb-020",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+    "docs/project-buildout/implementation-plan/README.md": (
+        "pre-build readiness handoff",
+        "documentation readiness completion audit",
+        "build information readiness ledger",
+        "owner decision closure board",
+        "build-readiness closure",
+    ),
+}
+
+REQUIRED_REVIEW_TEMPLATE_ROUTES = {
+    "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json": "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json": "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json": "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json": "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json": "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json": "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json": "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json": "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json": "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json": "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
 }
 
 REQUIRED_CRITERIA = {
@@ -113,6 +198,7 @@ REQUIRED_PB020_EVIDENCE = [
     "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
     "tools/validate_documentation_readiness_completion_audit.py",
+    "tools/validate_build_readiness_closure_review.py",
 ]
 
 REQUIRED_PB020_REQUIRED_TERMS = [
@@ -156,6 +242,20 @@ REQUIRED_CLOSURE_SOURCE_RECORDS = {
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
     "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
+    "docs/project-buildout/implementation-plan/README.md",
+    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    "tools/validate_owner_decision_closure_board.py",
+    "tools/validate_build_readiness_closure_review.py",
     "docs/agent-execution/README.md",
     "docs/production-readiness/README.md",
     "docs/blueprint-v1/20-definition-of-done.md",
@@ -189,6 +289,7 @@ REQUIRED_CLOSURE_CLAIM_PHRASES = [
 REQUIRED_CLOSURE_GATE_TERMS = [
     "pb-002",
     "pb-009",
+    "pb-008",
     "pb-011",
     "pb-012",
     "pb-013",
@@ -217,6 +318,25 @@ REQUIRED_CLOSURE_GATE_TERMS = [
     "release authority",
     "all-information-ready-for-building",
 ]
+
+REQUIRED_CLOSURE_DECISION_GATES = {
+    "PB-002",
+    "PB-003",
+    "PB-004",
+    "PB-005",
+    "PB-008",
+    "PB-009",
+    "PB-011",
+    "PB-012",
+    "PB-013",
+    "PB-014",
+    "PB-015",
+    "PB-016",
+    "PB-017",
+    "PB-018",
+    "PB-019",
+    "PB-020",
+}
 
 REQUIRED_CLOSURE_REJECTION_TERMS = [
     "template",
@@ -310,6 +430,47 @@ def normalize(value: str) -> str:
     return normalized
 
 
+def validate_lane_closure_routes(source_records: set[str], owner: Path) -> None:
+    missing_routes = sorted(set(REQUIRED_LANE_CLOSURE_ROUTES) - source_records)
+    if missing_routes:
+        fail(
+            f"{owner}: missing lane closure source records: {', '.join(missing_routes)}"
+        )
+    for route, required_terms in REQUIRED_LANE_CLOSURE_ROUTES.items():
+        route_path = ROOT / route
+        try:
+            route_text = normalize(route_path.read_text(encoding="utf-8"))
+            route_text = route_text.replace("owner-decision", "owner decision")
+        except OSError as exc:
+            fail(f"{owner}: cannot read lane closure route {route}: {exc}")
+        for term in required_terms:
+            if term not in route_text:
+                fail(f"{owner}: lane closure route {route} is missing semantic term: {term}")
+
+
+def validate_review_template_routes(source_records: set[str], owner: Path) -> None:
+    missing_templates = sorted(set(REQUIRED_REVIEW_TEMPLATE_ROUTES) - source_records)
+    if missing_templates:
+        fail(
+            f"{owner}: missing review-template source records: {', '.join(missing_templates)}"
+        )
+    for template, route in REQUIRED_REVIEW_TEMPLATE_ROUTES.items():
+        template_path = ROOT / template
+        try:
+            template_data = load_json(template_path)
+        except SystemExit:
+            raise
+        except Exception as exc:
+            fail(f"{owner}: cannot read review template {template}: {exc}")
+        template_sources = {
+            text(value) for value in require_list(template_data, "source_records")
+        }
+        if route not in template_sources:
+            fail(
+                f"{owner}: review template {template} is missing closure route source record: {route}"
+            )
+
+
 def validate_audit(path: Path) -> None:
     data = load_json(path)
     if not isinstance(data, dict):
@@ -346,6 +507,8 @@ def validate_audit(path: Path) -> None:
     for source in source_records:
         if not (ROOT / source).exists():
             fail(f"{path}: referenced source record does not exist: {source}")
+    validate_lane_closure_routes(source_records, path)
+    validate_review_template_routes(source_records, path)
 
     criteria = require_list(data, "criteria")
     criteria_by_id: dict[str, dict[str, Any]] = {}
@@ -444,6 +607,8 @@ def validate_closure_review(path: Path) -> None:
     for source in source_records:
         if not (ROOT / source).exists():
             fail(f"{path}: referenced closure source record does not exist: {source}")
+    validate_lane_closure_routes(source_records, path)
+    validate_review_template_routes(source_records, path)
 
     review_scope = require_object(data, "review_scope")
     for null_field in ["scope", "owner_reviewer", "independent_reviewer"]:
@@ -460,6 +625,50 @@ def validate_closure_review(path: Path) -> None:
     for flag in CLOSURE_STATUS_FLAGS:
         if closure_status.get(flag) is not False:
             fail(f"{path}: closure_status.{flag} must be false in template")
+
+    decision_records = require_list(data, "decision_records")
+    decision_gates: set[str] = set()
+    for record in decision_records:
+        if not isinstance(record, dict):
+            fail(f"{path}: decision_records entries must be objects")
+            continue
+        gates = require_list(record, "gate_scope")
+        decision_gates.update(
+            text(gate).upper() for gate in gates if text(gate).upper().startswith("PB-")
+        )
+        if record.get("status") != "unresolved_template":
+            fail(f"{path}: decision record must remain unresolved_template")
+        for field in ["decision", "rationale", "owner", "independent_reviewer"]:
+            if record.get(field) is not None:
+                fail(f"{path}: decision record {field} must remain null in template")
+        evidence_refs = record.get("evidence_refs")
+        if not isinstance(evidence_refs, list):
+            fail(f"{path}: decision record evidence_refs must be an array")
+        elif evidence_refs:
+            fail(f"{path}: decision record evidence_refs must remain empty in template")
+        exception = require_object(record, "exception")
+        if exception.get("status") != "none_in_template":
+            fail(f"{path}: decision record exception must remain none_in_template")
+        for field in ["owner", "expires_at", "rollback", "support_boundary_change"]:
+            if exception.get(field) is not None:
+                fail(f"{path}: decision record exception.{field} must remain null in template")
+        risk_refs = exception.get("risk_refs")
+        if not isinstance(risk_refs, list):
+            fail(f"{path}: decision record exception.risk_refs must be an array")
+        elif risk_refs:
+            fail(f"{path}: decision record exception.risk_refs must remain empty in template")
+        registry_updates = record.get("registry_updates")
+        if not isinstance(registry_updates, list):
+            fail(f"{path}: decision record registry_updates must be an array")
+        elif registry_updates:
+            fail(f"{path}: decision record registry_updates must remain empty in template")
+    if decision_gates != REQUIRED_CLOSURE_DECISION_GATES:
+        missing = sorted(REQUIRED_CLOSURE_DECISION_GATES - decision_gates)
+        extra = sorted(decision_gates - REQUIRED_CLOSURE_DECISION_GATES)
+        if missing:
+            fail(f"{path}: decision records missing gates: {', '.join(missing)}")
+        if extra:
+            fail(f"{path}: decision records contain unexpected gates: {', '.join(extra)}")
 
     axis_text_parts: list[str] = []
     for key in [
@@ -541,6 +750,116 @@ def validate_pb020_readiness(path: Path) -> None:
             fail(f"PB-020 evidence path does not exist: {evidence_path}")
 
 
+def validate_progress_snapshot(path: Path, audit: dict[str, Any]) -> None:
+    snapshot_path = ROOT / "docs/project-buildout/22-build-readiness-progress-snapshot.md"
+    try:
+        snapshot = snapshot_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"{snapshot_path}: unable to read progress snapshot: {exc}")
+    normalized = normalize(snapshot)
+
+    readiness = load_json(MACHINE / "pre-build-readiness.json")
+    readiness_items = readiness.get("items") if isinstance(readiness, dict) else None
+    if not isinstance(readiness_items, list):
+        fail("pre-build-readiness.json must contain an items array for progress validation")
+    readiness_counts: dict[str, int] = {}
+    for item in readiness_items:
+        if isinstance(item, dict):
+            status = text(item.get("status"))
+            readiness_counts[status] = readiness_counts.get(status, 0) + 1
+    count_pattern = re.compile(
+        r"(?P<ready>\d+) ready, (?P<partial>\d+) partial, "
+        r"(?P<blocked>\d+) blocked, (?P<not_selected>\d+) not selected, "
+        r"(?P<documented_no_runner>\d+) documented without runner; (?P<total>\d+) total"
+    )
+    count_match = count_pattern.search(snapshot)
+    if not count_match:
+        fail(f"{snapshot_path}: missing pre-build readiness distribution")
+    expected_counts = {
+        "ready": readiness_counts.get("ready", 0),
+        "partial": readiness_counts.get("partial", 0),
+        "blocked": readiness_counts.get("blocked", 0),
+        "not_selected": readiness_counts.get("not_selected", 0),
+        "documented_no_runner": readiness_counts.get("documented_no_runner", 0),
+        "total": len(readiness_items),
+    }
+    actual_counts = {key: int(value) for key, value in count_match.groupdict().items()}
+    if actual_counts != expected_counts:
+        fail(
+            f"{snapshot_path}: pre-build readiness distribution is stale; "
+            f"expected {expected_counts}, found {actual_counts}"
+        )
+
+    adr = load_json(MACHINE / "adr-0009-evidence.json")
+    adr_items = adr.get("items") if isinstance(adr, dict) else None
+    if not isinstance(adr_items, list):
+        fail("adr-0009-evidence.json must contain an items array for progress validation")
+    adr_counts: dict[str, int] = {}
+    for item in adr_items:
+        if isinstance(item, dict):
+            status = text(item.get("status"))
+            adr_counts[status] = adr_counts.get(status, 0) + 1
+    adr_pattern = re.compile(r"(?P<partial>\d+) partial, (?P<blocked>\d+) blocked; (?P<total>\d+) total")
+    adr_match = adr_pattern.search(snapshot)
+    if not adr_match:
+        fail(f"{snapshot_path}: missing ADR-0009 evidence distribution")
+    expected_adr = {
+        "partial": adr_counts.get("partial", 0),
+        "blocked": adr_counts.get("blocked", 0),
+        "total": len(adr_items),
+    }
+    actual_adr = {key: int(value) for key, value in adr_match.groupdict().items()}
+    if actual_adr != expected_adr:
+        fail(
+            f"{snapshot_path}: ADR-0009 evidence distribution is stale; "
+            f"expected {expected_adr}, found {actual_adr}"
+        )
+
+    criteria = audit.get("criteria")
+    if not isinstance(criteria, list):
+        fail(f"{path}: audit criteria must be a list for progress validation")
+    contained_ready = sum(
+        1 for criterion in criteria
+        if isinstance(criterion, dict) and criterion.get("status") == "ready_for_contained_m0"
+    )
+    total_criteria = len(criteria)
+    full_goal_ready = sum(
+        1 for criterion in criteria
+        if isinstance(criterion, dict) and criterion.get("status") == "ready_for_full_goal"
+    )
+    readiness_match = re.search(
+        r"(?P<contained>\d+) of (?P<contained_total>\d+) criteria .*?ready-for-contained-m0",
+        normalized,
+    )
+    full_goal_match = re.search(
+        r"(?P<full>\d+) of (?P<full_total>\d+) audit criteria .*?ready-for-full-goal",
+        normalized,
+    )
+    if not readiness_match or not full_goal_match:
+        fail(f"{snapshot_path}: missing documentation progress distributions")
+    actual_docs = {
+        "contained": int(readiness_match.group("contained")),
+        "contained_total": int(readiness_match.group("contained_total")),
+        "full": int(full_goal_match.group("full")),
+        "full_total": int(full_goal_match.group("full_total")),
+    }
+    expected_docs = {
+        "contained": contained_ready,
+        "contained_total": total_criteria,
+        "full": full_goal_ready,
+        "full_total": total_criteria,
+    }
+    if actual_docs != expected_docs:
+        fail(
+            f"{snapshot_path}: documentation progress distribution is stale; "
+            f"expected {expected_docs}, found {actual_docs}"
+        )
+
+    for term in ["pb-002", "pb-019", "doc-ready-owner-decisions"]:
+        if term not in normalized:
+            fail(f"{snapshot_path}: missing current blocker/criterion term: {term}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -560,6 +879,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     validate_audit(Path(args.path))
+    audit = load_json(Path(args.path))
+    validate_progress_snapshot(Path(args.path), audit)
     validate_closure_review(Path(args.closure_review))
     print("documentation-readiness completion audit validation passed: audit and closure-review template")
     return 0

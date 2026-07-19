@@ -46,7 +46,11 @@ One person may provisionally hold both roles during the research phase, but the 
 - Departed maintainers retain no privileged access.
 - Every reviewer scope named by a machine-readable review rule resolves to a registered owner scope or the change owner.
 
-The checked no-claim [backup-ownership readiness-review template](machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) is a future owner-review shape only. It does not satisfy backup coverage, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence.
+The checked no-claim [backup-ownership readiness-review template](machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json) and source-backed [Backup Ownership and Review Capacity Decision Preparation](../research/backup-ownership-and-review-capacity-decision-prep-2026-07.md) are future owner-review and decision-preparation evidence only. They do not satisfy backup coverage, owner coverage, two-person control, release authority, signing authority, disclosure authority, legal approval, incident closure, production authority, broad readiness, or implementation evidence.
+
+The no-claim [Backup Owner and Two-Person-Control Packet Examples](../research/backup-owner-two-person-control-packet-examples-2026-07.md) demonstrates the field relationships for a future qualification and control exercise. It contains fictitious values only and does not name a backup or establish authority.
+
+Any future owner-coverage or two-person-control decision remains subject to the [Owner Decision Closure Board](23-owner-decision-closure-board.md) and `PB-020` closure. Ownership records, CODEOWNERS, review rules, access reconciliation, and control exercises are evidence inputs; none independently grants release, signing, disclosure, legal, incident-closure, migration, production, or broad-build authority.
 
 ## Risks and failure modes
 

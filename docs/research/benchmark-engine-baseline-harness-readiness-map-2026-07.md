@@ -2,7 +2,7 @@
 
 Status: `PB-013` no-claim handoff map; no browser-run benchmark, no raw sample, no competitor result, no owner-reviewed benchmark readiness, no Chrome-class claim, and no performance claim
 Owner: performance measurement, benchmark operations, quality, security, privacy, accessibility, developer experience, and release operations
-Map date: 2026-07-18
+Map date: 2026-07-19
 Source snapshot inspected before this map: `d96c310`
 Confidence: high for current evidence routing and missing-proof classification; low for measurement readiness until browser-run artifacts and owner review exist
 

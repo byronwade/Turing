@@ -14,6 +14,7 @@ This inventory summarizes only unresolved pre-build blockers that still constrai
 
 - `PB-002` source strategy;
 - `PB-003`, `PB-004`, `PB-005`, `PB-014`, and `PB-015` native shell, page surface, component fixtures, input, IME, accessibility, and page-tree work;
+- `PB-008` pinned compiler, SDK, linker, and toolchain reproduction;
 - `PB-009` fresh-host reproduction;
 - `PB-011` IPC and process authority;
 - `PB-012` sandbox probes;
@@ -23,7 +24,7 @@ This inventory summarizes only unresolved pre-build blockers that still constrai
 - `PB-018` incident response and patch rehearsal;
 - `PB-019` backup ownership.
 
-The machine companion is [`implementation-kickoff-review.json`](../project-buildout/machine/implementation-kickoff-review.json), validated by [`implementation-kickoff-review.schema.json`](../project-buildout/machine/implementation-kickoff-review.schema.json) and [`validate_implementation_kickoff_review.py`](../../tools/validate_implementation_kickoff_review.py). The related checked [Contained M0 Start State Inventory](contained-m0-start-state-inventory-2026-07.md) narrows the session-start question without changing this inventory's no-claim kickoff status. The checked [Build Information Readiness Ledger](build-information-readiness-ledger-2026-07.md) keeps the remaining broad-build information gaps visible without promoting this inventory.
+The machine companion is [`implementation-kickoff-review.json`](../project-buildout/machine/implementation-kickoff-review.json), validated by [`implementation-kickoff-review.schema.json`](../project-buildout/machine/implementation-kickoff-review.schema.json) and [`validate_implementation_kickoff_review.py`](../../tools/validate_implementation_kickoff_review.py). The related checked [Contained M0 Start State Inventory](contained-m0-start-state-inventory-2026-07.md) narrows the session-start question without changing this inventory's no-claim kickoff status. The checked [Build Information Readiness Ledger](build-information-readiness-ledger-2026-07.md) and [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md) keep broad-build information gaps and owner-only decisions visible without promoting this inventory.
 
 ## Method
 
@@ -34,7 +35,7 @@ The focused validator checks that:
 - every unresolved `PB-*` item named above appears exactly once;
 - each item status matches [`pre-build-readiness.json`](../blueprint-v1/machine/pre-build-readiness.json);
 - every item states current evidence, required evidence before M1, first next actions, owner-only decisions, prohibited claims, and evidence references;
-- kickoff gates cover source strategy, fresh-host reproduction, IPC boundary, sandbox probes, benchmark claims, native shell, profile/session, package/update, incident response, backup ownership, owner review, and release authority;
+- kickoff gates cover source strategy, pinned toolchain, fresh-host reproduction, IPC boundary, sandbox probes, benchmark claims, native shell, profile/session, package/update, incident response, backup ownership, owner review, and release authority;
 - the build-information ledger keeps missing broad-build information visible across the same lanes without claiming all-information-ready-for-building;
 - `PB-020` remains `partial` and names this report, schema, registry, validator, checked no-claim build-readiness closure-review template, remaining P0 items, owner review, and release authority.
 
@@ -45,6 +46,7 @@ The focused validator checks that:
 Current broad-implementation blockers remain:
 
 - `PB-002` is blocked until `ADR-0009` accepts a source strategy and the source baseline, provenance, equivalence, legal, component-boundary, JavaScript-runtime, compatibility, performance, security, and maintenance evidence are reviewed.
+- `PB-008` is partial until exact compiler, SDK, linker, Rust, Cargo, Git, shell, cache, target, and source-tree facts are retained for an independent fresh-host or owner-approved clean-VM run and the owner accepts the host/toolchain equivalence policy.
 - `PB-009` is partial until independent fresh-host or owner-approved clean-VM evidence exists with retained bootstrap, doctor, check, `xtask`, cache, target-directory, source-cleanliness, failure-classification, rollback, and owner-review records.
 - `PB-011` is partial until accepted `TASK-000011` evidence with an accepted independent evidence bundle tied to the exact source commit beyond the checked non-accepting evidence capture, wire encoding, authentication, real-transport bounded queues, stale-epoch receiver proof, timeout/cancellation behavior, malformed/oversized/stale/duplicate/reordered/unauthorized/wrong-principal transport tests, and owner-reviewed IPC readiness beyond the checked no-claim IPC readiness-review template exist.
 - `PB-012` is partial until packaged expected-deny probes beyond the checked no-claim probe-package template, effective platform-policy capture, broker fixtures, compromised-client harnesses, platform matrix evidence, and owner-reviewed sandbox readiness beyond the checked no-claim sandbox readiness-review template exist.
@@ -59,4 +61,4 @@ This inventory supports only contained M0 continuation, stop/resume clarity, and
 
 ## Next Proof
 
-The next useful proof is owner-reviewed closure of the first blocking lane, usually `PB-002` source strategy or `PB-009` fresh-host reproduction. Agents can gather evidence and maintain validators; they cannot promote a readiness item, accept an ADR, approve release authority, or convert no-claim inventory into implementation approval.
+The next useful proof is owner-reviewed closure of the first blocking lane, usually `PB-002` source strategy or the `PB-008`/`PB-009` toolchain and fresh-host reproduction lane. Agents can gather evidence and maintain validators; they cannot promote a readiness item, accept an ADR, approve release authority, or convert no-claim inventory into implementation approval.

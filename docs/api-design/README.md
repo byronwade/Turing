@@ -46,6 +46,7 @@ Every interface declares its caller, callee, trust level, principal identities, 
 - [AI engineering book](../ai/README.md)
 - [Security engineering book](../security-engine/README.md)
 - [IPC Capability Boundary Inventory](../research/ipc-capability-boundary-inventory-2026-07.md)
+- [IPC Transport Packet Examples](../research/ipc-transport-packet-examples-2026-07.md)
 - [Web platform design principles](../research/browser-engine-landscape-2026-07.md)
 
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->

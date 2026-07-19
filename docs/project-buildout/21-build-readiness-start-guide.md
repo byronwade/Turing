@@ -13,15 +13,18 @@ This guide is for people and agents starting or resuming in-session work. It doe
 - Allowed now: contained M0 continuity tasks, validation commands, documentation/research indexing, and no-claim task-handoff maintenance.
 - Hard blocks: `PB-002` (source strategy) and `PB-019` (backup ownership), plus all blocked/owner-only gates behind them.
 
+Long-term positioning remains a Chrome-class/extreme-performance competitive target, but this is not yet evidence-approved. Track that lane through the [Chrome-class capability traceability map](../research/chrome-class-capability-traceability-map-2026-07.md), [performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md), and the [Chrome-class performance readiness lane](../benchmark-lab/chrome-class-performance-readiness-lane.md). Do not treat any intermediate artifact in this phase as a Chrome-class or performance claim.
+
 Use this in the same order every session:
 
 1. [Start here](../start-here.md) for definitions and scope.
-2. [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) for the current hard-stop summary and fast-lane scorecard.
-3. [Build Readiness Operating Board](13-build-readiness-operating-board.md) for sequencing.
-4. [Pre-build Readiness Checklist](11-pre-build-readiness-checklist.md) for check constraints.
-5. [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md) for unresolved information classes.
-6. [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) for documentation continuity checks.
-7. [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) before deciding whether to execute proposed tasks.
+2. [Build Readiness Progress Snapshot](22-build-readiness-progress-snapshot.md) for the one-pass current state.
+3. [Build Continuation Readiness Pack](20-build-continuation-readiness-pack.md) for the current hard-stop summary and fast-lane scorecard.
+4. [Build Readiness Operating Board](13-build-readiness-operating-board.md) for sequencing.
+5. [Pre-build Readiness Checklist](11-pre-build-readiness-checklist.md) for check constraints.
+6. [Build Information Readiness Ledger](../research/build-information-readiness-ledger-2026-07.md) for unresolved information classes.
+7. [Documentation Readiness Evidence Matrix](18-documentation-readiness-evidence-matrix.md) for documentation continuity checks.
+8. [Contained M0 Start State Inventory](../research/contained-m0-start-state-inventory-2026-07.md) before deciding whether to execute proposed tasks.
 
 ## What to do before broad M1 work
 
@@ -30,12 +33,12 @@ The repository is organized for continuation, but broad implementation is blocke
 | Lane | Current gate state | Deep research track to expand |
 |---|---|---|
 | `PB-002` Source strategy | blocked | `RQ-31`, `RQ-44`, `RQ-46`, `RQ-47`, `RQ-25`, `RQ-16` | Servo/alternative source selection, provenance equivalence, legal/support boundaries, component baseline decisions, generated-output provenance proofs. |
-| `PB-009` Fresh-host confidence | partial | `RQ-31`, `RQ-47` | Independent fresh-host run with source-tree cleanliness proof, cache/target controls, and owner-reviewed readiness review. |
+| `PB-008`/`PB-009` Toolchain and fresh-host confidence | partial | `RQ-31`, `RQ-47` | Versioned compiler/SDK/linker/toolchain manifests plus independent fresh-host run with source-tree cleanliness proof, cache/target controls, and owner-reviewed readiness review. |
 | `PB-011` IPC and transport boundaries | partial | `RQ-02`, `RQ-13`, `RQ-22`, `RQ-36` | Canonical transport, wire codec, queue/backpressure behavior, malformed/timeout/cancellation negative tests, independent review packet. |
 | `PB-012` Sandbox probes | partial | `RQ-20`, `RQ-38` | Packaged expected-deny probes, unstable-path policy capture, effective platform-policy evidence, and owner review. |
 | `PB-013` Benchmark/extreme-performance prep | partial | `RQ-16`, `RQ-23`, `RQ-34`, `RQ-35`, `RQ-37` | Fixed-hardware browser runs with reproducible corpus, launch-runner and server lifecycle evidence, raw traces/artifacts, and statistics review. |
 | `PB-003`/`PB-004`/`PB-005`/`PB-014`/`PB-015` Native UI | partial | `RQ-04`, `RQ-05`, `RQ-29`, `RQ-30`, `RQ-40`, `RQ-55`, `RQ-56`, `RQ-57` | Adapter contract proofs, toolkit selection via executed bake-off, compositor/page-surface proof, input/accessibility fixtures, `UI-GATE-7` and release-path approvals. |
-| `PB-016` Profile/session schemas | partial | `RQ-14`, `RQ-27`, `RQ-49`, `RQ-50`, `RQ-53`, `RQ-54` | Versioned executable schemas, migration fault behavior, sync/credential handling evidence. |
+| `PB-016` Profile/session schemas | partial | `RQ-14`, `RQ-27`, `RQ-49`, `RQ-50`, `RQ-53`, `RQ-54` | Synthetic-fixture executable schemas, migration/fault/recovery accounting, privacy isolation, and owner-reviewed evidence through the [profile/session execution and data-safety closure-preparation route](../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md); sync and credential behavior remain unsupported until separately reviewed. |
 | `PB-017` Package/update lab | partial | `RQ-31`, `RQ-63`, `RQ-64`, `RQ-66` | Signed executable update labs, staged install/rollback/migration tests, production key separation evidence. |
 | `PB-018` Incident-response rehearsal | partial | `RQ-31`, `RQ-60`, `RQ-66` | Private intake and patch-rehearsal execution, disclosure workflow, and owner-led readiness review. |
 | `PB-019` Backup ownership | blocked | `RQ-25`, `RQ-45`, `RQ-47`, `RQ-48`, `RQ-60`, `RQ-66` | Qualified backups, two-person control, support matrix updates, and release authority closure. |

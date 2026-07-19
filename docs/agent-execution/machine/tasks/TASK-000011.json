@@ -2,6 +2,7 @@
   "schema_version": 1,
   "id": "TASK-000011",
   "status": "review_pending",
+  "readiness_items": ["PB-011"],
   "owner": "agent:gpt-5.6-pro",
   "independent_reviewer": "human-owner-or-separately-controlled-reviewer",
   "requirements": [

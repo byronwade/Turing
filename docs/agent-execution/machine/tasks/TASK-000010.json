@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000010",
+  "status": "specified",
+  "readiness_items": ["PB-018"],
+  "owner": "incident-response owner (name required before ready)",
+  "independent_reviewer": "release-operations reviewer (name required before ready)",
+  "requirements": [
+    "REQ-SEC-005",
+    "REQ-OPS-002",
+    "REQ-SEC-004"
+  ],
+  "risks": [
+    "R-024",
+    "R-025",
+    "R-026",
+    "R-038",
+    "R-039"
+  ],
+  "adrs": [],
+  "allowed_paths": [
+    "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
+    "docs/security.md",
+    "docs/security-engine/",
+    "docs/security-engine/machine/incident-patch-rehearsal-record.schema.json",
+    "docs/security-engine/machine/incident-patch-rehearsal-records/",
+    "docs/security-engine/machine/incident-patch-rehearsal-records/no-claim-incident-patch-rehearsal-template.json",
+    "docs/security-engine/machine/incident-patch-readiness-review.schema.json",
+    "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json",
+    "docs/release-operations/",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/13-build-release-operations.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/project-buildout/",
+    "docs/templates/",
+    "tools/validate_incident_patch_rehearsal.py",
+    "tools/validate_incident_patch_readiness_review.py"
+  ],
+  "prohibited_paths": [
+    "production signing keys",
+    "offline root keys",
+    "public exploitable issue details",
+    "agent-decided vulnerability severity or disclosure timing",
+    "agent stable-promotion or signing authority"
+  ],
+  "preconditions": [
+    "TASK-000008 ownership limits are explicit or incident staffing gaps remain blocked",
+    "TASK-000009 update dry-run evidence exists or the patch exercise records update-capacity as blocked",
+    "checked no-claim incident patch rehearsal template remains current",
+    "checked no-claim incident/patch readiness-review template remains current and cannot be cited for incident-response readiness, emergency patch capacity, supported security versions, production-safe browsing, disclosure authority, stable promotion, signing authority, incident closure authority, or implementation evidence",
+    "private report channel and confidential evidence handling are available for tabletop material",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "checked no-claim incident patch rehearsal inventory is treated as planning evidence until tabletop records, emergency patch dry-run evidence, and role review exist",
+    "first executable incident patch rehearsal record starts from the checked no-claim incident patch rehearsal template and replaces template-only fields with real private-intake tabletop, emergency-patch dry-run, regression/backport, fake signing/update dry-run, disclosure, postmortem, role-matrix, backup-coverage, and owner-review evidence",
+    "first incident/patch readiness review starts from the checked no-claim incident/patch readiness-review template and replaces template-only null rehearsal_record, reference_platform, private_channel, owner_reviewer, independent_reviewer, security_reviewer, release_operations_reviewer, legal_reviewer, and support_reviewer fields with owner-reviewed evidence beyond the template",
+    "private intake tabletop covers report access control, acknowledgement, reproduction, severity, asset analysis, affected-version statement, embargo handling, and sanitized evidence preservation",
+    "emergency patch rehearsal covers protected patch branch, embargoed CI, regression test, backport decision, signing and update dry run, staged rollout, minimum secure version, revocation, release notes, user and admin communication, CVE and credit handling, coordinated disclosure, and postmortem remediation",
+    "incident-class workflow covers active exploitation, update or signing compromise, dependency vulnerability, data loss, privacy leak, sandbox regression, malicious extension or provider, and service outage",
+    "role matrix names owner, reviewer, release, security, legal, support, and on-call responsibilities with timing targets, escalation path, secret rotation, and no agent disclosure, stable-promotion, or signing authority"
+  ],
+  "negative_tests": [
+    "public issue flow cannot retain exploitable vulnerability details after private escalation",
+    "agents cannot decide severity, disclosure timing, incident closure, stable promotion, or signing",
+    "checked no-claim incident patch rehearsal template cannot be cited as executed private-intake tabletop, emergency patch dry run, regression or backport evidence, signing or update dry-run evidence, disclosure rehearsal, postmortem, role review, backup coverage, owner review, incident-response readiness, emergency patch capacity, supported security, disclosure authority, stable promotion, signing authority, incident closure, production-safe browsing, or implementation evidence",
+    "checked no-claim incident/patch readiness-review template cannot be cited as owner review, incident-response readiness, emergency patch capacity, supported security versions, production-safe browsing, disclosure authority, stable promotion, signing authority, incident closure, or implementation evidence",
+    "tabletop success cannot hide missing update capacity, missing owner coverage, missing regression evidence, or unresolved support targets",
+    "security incident documentation cannot imply production-safe browsing or supported security versions"
+  ],
+  "resource_budget": {
+    "wall_seconds": 14400,
+    "cpu_seconds": 3600,
+    "memory_bytes": 4294967296,
+    "disk_bytes": 2147483648,
+    "network_bytes": 0,
+    "max_workers": 1,
+    "max_retries": 1
+  },
+  "rollback": {
+    "strategy": "Revert incident workflow and readiness wording if private handling, patch dry-run, or authority boundaries are rejected.",
+    "evidence_required": [
+      "tabletop notes",
+      "incident-response review note",
+      "validation output"
+    ]
+  },
+  "dependencies": [
+    "TASK-000008",
+    "TASK-000009"
+  ],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

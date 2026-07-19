@@ -3,10 +3,11 @@
   "schema_version": 1,
   "review_id": "UI.READINESS_REVIEW.NOCLAIM_TEMPLATE.2026_07",
   "status": "no_claim_native_ui_readiness_template",
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "claim_status": "Native UI readiness-review template only; no owner review, no independent review, no ADR-0013 approval, no ADR-0014 approval, no ADR-0016 approval, no UI-GATE-7 claim, no UI-GATE-10 claim, no native adapter prototype claim, no UI toolkit selection, no toolkit selection, no trusted-chrome readiness claim, no accessibility readiness claim, no screen-reader coverage claim, no page-tree composition proof, no page-surface approval, no compositor ownership decision, no release-path UI approval, no production claim, and no implementation claim.",
   "source_records": [
     "docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md",
+    "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
     "docs/research/native-ui-framework-bakeoff-inventory-2026-07.md",
     "docs/research/native-ui-component-fixture-inventory-2026-07.md",
     "docs/research/page-surface-composition-inventory-2026-07.md",

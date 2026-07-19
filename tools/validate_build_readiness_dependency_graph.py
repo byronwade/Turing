@@ -25,6 +25,7 @@ REQUIRED_READINESS_ITEMS = {
     "PB-003": "partial",
     "PB-004": "partial",
     "PB-005": "partial",
+    "PB-008": "partial",
     "PB-009": "partial",
     "PB-011": "partial",
     "PB-012": "partial",
@@ -45,6 +46,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/research/implementation-kickoff-review-inventory-2026-07.md",
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
@@ -69,6 +71,7 @@ REQUIRED_NODES = {
 
 REQUIRED_READINESS_TO_TASK_EDGES = {
     ("PB-002", "TASK-000001"),
+    ("PB-008", "TASK-000002"),
     ("PB-009", "TASK-000002"),
     ("PB-011", "TASK-000003"),
     ("PB-012", "TASK-000004"),

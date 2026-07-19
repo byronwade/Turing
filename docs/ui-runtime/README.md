@@ -6,6 +6,8 @@ Last reviewed: 2026-07-18
 
 This book defines a small native browser shell without Electron, Tauri, a system webview, a second browser engine, or a JavaScript runtime in trusted chrome.
 
+The current visual and layout source of truth is the [Turing Nova design source](design-lab/README.md), backed by the checked [`design-source-manifest.json`](machine/design-source-manifest.json) and [`validate_design_source.py`](../../tools/validate_design_source.py). It is a separate React design-lab reference; it does not change the native-runtime boundary.
+
 ## Working hypothesis
 
 > Keep browser state, commands, identity, policy, recovery, and resource accounting in pure Rust; place a compiled native toolkit behind a narrow replaceable adapter; evaluate Slint first against Vizia and Floem or GPUI; use React only in a development design lab that never ships.
@@ -36,6 +38,8 @@ The component boundary is recorded in [`workspace-components.json`](../blueprint
 `PB-005` page-surface/compositor planning evidence is recorded in [`page-surface-composition.json`](machine/page-surface-composition.json), checked by [`validate_page_surface_composition.py`](../../tools/validate_page_surface_composition.py), and summarized in the [Page Surface Composition Inventory](../research/page-surface-composition-inventory-2026-07.md). This is not `UI-GATE-7`, page-surface approval, compositor ownership, typed page-surface handle implementation, brokered handle proof, renderer-texture composition proof, software-fallback proof, latency/frame-pacing proof, toolkit selection, or release-path UI approval.
 
 `PB-015` window/input/IME/accessibility/page-tree planning evidence is recorded in [`window-input-accessibility-spike.json`](../accessibility/machine/window-input-accessibility-spike.json), checked by [`validate_window_input_accessibility_spike.py`](../../tools/validate_window_input_accessibility_spike.py), and summarized in the [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md). This is not an executable reference-platform workflow matrix, manual assistive-technology coverage, page-tree proof, IME correctness proof, accessibility-readiness claim, `UI-GATE-7` or `UI-GATE-10` result, toolkit selection, or release-path UI approval.
+
+Native UI and accessibility decisions remain subject to the [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md) and `PB-020` closure. Toolkit-neutral contracts, adapter evidence, page-surface evidence, accessibility evidence, and accepted UI ADRs are lane evidence only; none independently grants broad implementation, trusted-chrome release, production, performance, or Chrome-class authority.
 
 ## Reading order
 

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000001",
+  "status": "specified",
+  "readiness_items": ["PB-002"],
+  "owner": "architecture owner (name required before ready)",
+  "independent_reviewer": "program reviewer (name required before ready)",
+  "requirements": ["REQ-ENG-007", "REQ-OPS-001"],
+  "risks": ["R-003", "R-026", "R-035", "R-038"],
+  "adrs": ["ADR-0009"],
+  "allowed_paths": [
+    "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
+    "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
+    "docs/project-buildout/16-adr-0009-decision-draft.md",
+    "docs/blueprint-v1/machine/adr-0009-evidence.json",
+    "docs/blueprint-v1/machine/adr-0009-decision-review.schema.json",
+    "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
+    "docs/blueprint-v1/machine/servo-local-compatibility-corpus.schema.json",
+    "docs/blueprint-v1/machine/servo-local-compatibility-https-harness.schema.json",
+    "docs/blueprint-v1/machine/servo-local-compatibility-corpora/no-claim-tiny-adr0009.corpus.json",
+    "docs/blueprint-v1/machine/servo-local-compatibility-corpora/",
+    "docs/blueprint-v1/machine/servo-local-compatibility-harnesses/no-claim-https-host-alias.plan.json",
+    "benchmarks/compatibility/adr0009/no-claim-tiny",
+    "tools/validate_servo_local_compatibility_corpus.py",
+    "tools/validate_servo_local_compatibility_https_harness.py",
+    "tools/serve_servo_local_compatibility_corpus.py",
+    "docs/research/"
+  ],
+  "prohibited_paths": [
+    "apps/",
+    "crates/",
+    "prototype/",
+    "security/dependencies.json",
+    "third-party browser-engine source imports",
+    "release packaging or signing material"
+  ],
+  "preconditions": [
+    "PB-002 remains blocked and ADR-0009 remains unresolved",
+    "source-strategy owner identifies candidate source baselines or explicitly records that no baseline is selected",
+    "no Servo-derived or other browser-engine code enters a release path",
+    "the source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "ADR9-EV-001 through ADR9-EV-018 each have owner-reviewed evidence, an explicit missing output, or a recorded blocker",
+    "the first real ADR-0009 decision review starts from the checked no-claim decision-review template and replaces null selected option, source baseline, feature profile, owner reviewer, independent reviewer, and false decision status flags with owner-reviewed evidence or explicit blocked status",
+    "the selected source baseline and provenance policy are recorded or the lack of selection is explicitly retained",
+    "license, advisory, SBOM, native package, generated-output, unsafe, FFI, local compatibility corpus HTTPS/browser execution beyond the checked harness plan and WPT/Test262 denominator, performance, security, maintenance, and public-claim impacts are synchronized",
+    "the ADR-0009 decision draft states accepted, rejected, or still-blocked status without promoting unsupported claims",
+    "validation passes without weakening any source-strategy gate"
+  ],
+  "negative_tests": [
+    "no release code imports Chromium, WebKit, Gecko, Servo, Electron, CEF, system webview, or remote-rendering code",
+    "the checked no-claim decision-review template is not cited as an accepted ADR, source baseline, source adoption, component approval, release-code authorization, PB-002 readiness promotion, or implementation evidence",
+    "no dependency, component, compatibility, security, performance, memory, or release claim is introduced by evidence presence alone"
+  ],
+  "resource_budget": {
+    "wall_seconds": 28800,
+    "cpu_seconds": 7200,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 21474836480,
+    "network_bytes": 2147483648,
+    "max_workers": 1,
+    "max_retries": 2
+  },
+  "rollback": {
+    "strategy": "Revert only the task-specific documentation and registry diffs if owner review rejects the source-strategy packet.",
+    "evidence_required": ["validation output", "owner review note", "diff of reverted records"]
+  },
+  "dependencies": [],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

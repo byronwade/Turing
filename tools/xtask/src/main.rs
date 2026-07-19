@@ -112,6 +112,8 @@ fn bootstrap() -> Result<(), String> {
 fn check() -> Result<(), String> {
     let root = repository_root();
     command(&root, "python3", ["-B", "tools/validate_blueprint.py"])?;
+    command(&root, "python3", ["-B", "tools/validate_research_index.py"])?;
+    command(&root, "python3", ["-B", "tools/validate_design_source.py"])?;
     command(
         &root,
         "python3",
@@ -147,6 +149,29 @@ fn check() -> Result<(), String> {
         &root,
         "python3",
         ["-B", "tools/validate_build_information_readiness.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_specified_task_manifests.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_owner_decision_closure_board.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_build_readiness_closure_review.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        [
+            "-B",
+            "tools/validate_documentation_readiness_completion_audit.py",
+        ],
     )?;
     command(&root, "git", ["diff", "--check"])?;
     command(&root, "git", ["diff", "--cached", "--check"])?;

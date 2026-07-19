@@ -9,6 +9,7 @@
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/project-buildout/machine/build-readiness-closure-review.schema.json",
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
@@ -128,6 +129,34 @@
         "docs/research/page-surface-composition-inventory-2026-07.md",
         "docs/ui-runtime/machine/page-surface-composition.json",
         "tools/validate_page_surface_composition.py"
+      ]
+    },
+    {
+      "id": "PB-008",
+      "name": "Pinned compiler SDK linker and toolchain",
+      "status": "partial",
+      "owner_scope": "release-operations",
+      "current_evidence": [
+        "rust-toolchain.toml and the checked toolchains registry exist, and the fresh-host reproduction inventory records the required host/toolchain facts."
+      ],
+      "required_before_m1": [
+        "Versioned platform compiler, SDK, linker, Rust, Cargo, Git, shell, and toolchain environment manifests tied to an independent fresh-host or owner-approved clean-VM run."
+      ],
+      "first_next_actions": [
+        "Capture the exact compiler, SDK, linker, Rust, Cargo, Git, shell, cache, target, and source-tree facts in the TASK-000002 run record."
+      ],
+      "owner_only_decisions": [
+        "Accept or reject the pinned toolchain and host equivalence policy, including any time-bounded waiver."
+      ],
+      "prohibited_claims": [
+        "No independent toolchain reproduction, broad build, release confidence, production, implementation, or Chrome-class claim from reference-host evidence alone."
+      ],
+      "validation_or_evidence_refs": [
+        "rust-toolchain.toml",
+        "docs/blueprint-v1/machine/toolchains.json",
+        "docs/research/fresh-host-reproduction-inventory-2026-07.md",
+        "docs/project-buildout/machine/fresh-host-reproduction.json",
+        "tools/validate_fresh_host_reproduction.py"
       ]
     },
     {
@@ -428,7 +457,7 @@
     },
     {
       "id": "KICKOFF-GATE-FRESH_HOST_REPRODUCTION",
-      "related_readiness_items": ["PB-009"],
+      "related_readiness_items": ["PB-008", "PB-009"],
       "gate": "fresh-host-reproduction",
       "blocked_until": "Independent fresh-host or owner-approved clean-VM evidence exists with retained bootstrap, doctor, check, xtask, cache, target-directory, source-cleanliness records, and owner-reviewed fresh-host readiness beyond the checked no-claim template.",
       "owner_only_decision": "Owner approves the host, waivers, retained evidence, fresh-host readiness review, and PB-009 promotion.",

@@ -25,6 +25,7 @@ This evidence does not implement a profile store, migrate real user data, approv
 - [Onboarding, Migration, Profiles, and Private Sessions](../product-experience/02-onboarding-migration-profiles-and-private-sessions.md)
 - [Blueprint 07 network, storage, media, and platform services](../blueprint-v1/07-network-storage-media.md)
 - [Blueprint 13 build, release, distribution, and operations](../blueprint-v1/13-build-release-operations.md)
+- [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md)
 - [`profile-session-format-inventory.schema.json`](../storage/machine/profile-session-format-inventory.schema.json)
 - [`profile-session-format-inventory.json`](../storage/machine/profile-session-format-inventory.json)
 - [`profile-session-schema-package.schema.json`](../storage/machine/profile-session-schema-package.schema.json)
@@ -51,6 +52,8 @@ The checked inventory now contains:
 - required versioning, authority-boundary, privacy-rule, failure-case, and unsupported-boundary fields for each record type;
 - no-claim language that blocks profile implementation, real-profile migration, sync support, credential storage support, user-data handling readiness, data-loss safety, production profile-format, and implementation claims;
 - a checked no-claim schema-package template for future executable profile, Space, session, snapshot, and migration schema packages, with fixture policy, lifecycle, rejection rules, and unsupported boundaries.
+
+The dated [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) adds the state-class and durability distinctions needed before executable schemas, migration, export, deletion, or recovery experiments are accepted.
 
 `PB-016` can remain `partial` because the inventory, schema-package template, and validator now exist. The status must not move beyond `partial` until executable schema tests beyond the checked no-claim schema-package template, fault-injection evidence, privacy review, real-profile fixture policy, migration rehearsal, and owner review exist.
 

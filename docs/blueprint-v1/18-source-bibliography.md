@@ -53,6 +53,8 @@ These principles guide user needs, interoperability, safety, privacy, accessibil
 - WebDriver tests within WPT — https://github.com/web-platform-tests/wpt/tree/master/webdriver
 - ARIA Authoring Practices — https://www.w3.org/WAI/ARIA/apg/
 
+The 2026-07-19 [Servo local compatibility corpus and WPT/Test262 evidence report](../research/servo-local-compatibility-corpus-2026-07.md) records the retrieval date and inspected Servo checkout. It found Test262 pinned to an exact commit while Servo's WPT configuration still names a moving `master` branch. Any future WPT result must pin the exact commit, local patch set, manifest-generation inputs, and denominator before it can support `ADR-0009`; this entry is a source-control requirement, not a compatibility result.
+
 ## Browser architecture and runtime references
 
 These sources support comparative research and falsifiable hypotheses. They do not define Turing behavior and do not authorize source copying.
@@ -186,6 +188,7 @@ Product references support dated UX, privacy, workflow, distribution, and govern
 ### Windows
 
 - Windows application security — https://learn.microsoft.com/en-us/windows/security/
+- Microsoft C++ (MSVC) Build Tools installation and servicing — https://learn.microsoft.com/en-us/cpp/overview/acquire-msvc?view=msvc-160
 - AppContainer isolation — https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation
 - Process mitigation policies — https://learn.microsoft.com/en-us/windows/win32/procthread/process-mitigation-policy
 - UI Automation — https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview
@@ -205,9 +208,11 @@ Product references support dated UX, privacy, workflow, distribution, and govern
 
 - Rust language documentation — https://doc.rust-lang.org/
 - Rustonomicon — https://doc.rust-lang.org/nomicon/
+- Rustup toolchain concepts — https://rust-lang.github.io/rustup/concepts/toolchains.html
 - Miri — https://github.com/rust-lang/miri
 - Rust fuzzing book — https://rust-fuzz.github.io/book/
 - Cargo supply-chain and package metadata — https://doc.rust-lang.org/cargo/
+- Cargo build command and `--locked`/`--offline` semantics — https://doc.rust-lang.org/cargo/commands/cargo-build.html
 - Cargo registry index and checksums — https://doc.rust-lang.org/cargo/reference/registry-index.html
 - Cargo-deny supply-chain checks — https://embarkstudios.github.io/cargo-deny/
 - Git archive command — https://git-scm.com/docs/git-archive

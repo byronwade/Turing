@@ -965,6 +965,7 @@ STABLE_ID = re.compile(
     r"TASK-\d{6}|EXP-[A-Z0-9-]+|ENGINE-P-\d{3}|[A-Z]+-GATE-\d+)\b"
 )
 TASK_ID = re.compile(r"^TASK-[0-9]{6}$")
+PB_ID = re.compile(r"^PB-[0-9]{3}$")
 
 
 def fail(message: str) -> None:
@@ -1058,6 +1059,8 @@ def check_document_locations() -> None:
     for path in DOCS.rglob("*"):
         if not path.is_file() or path.suffix == ".md":
             continue
+        if path.suffix == ".jsx" and path.is_relative_to(DOCS / "ui-runtime" / "design-lab"):
+            continue
         if path.suffix == ".json" and (path.is_relative_to(MACHINE) or path.is_relative_to(DOCS / "market-strategy" / "machine") or path.is_relative_to(DOCS / "ui-runtime" / "machine") or path.is_relative_to(DOCS / "accessibility" / "machine") or path.is_relative_to(DOCS / "storage" / "machine") or path.is_relative_to(DOCS / "release-operations" / "machine") or path.is_relative_to(DOCS / "security-engine" / "machine") or path.is_relative_to(DOCS / "project-buildout" / "machine") or path.is_relative_to(DOCS / "agent-execution" / "machine") or path.is_relative_to(DOCS / "production-readiness" / "machine")):
             continue
         fail(f"unsupported documentation file type: {relative(path)}")
@@ -1140,6 +1143,8 @@ def check_build_readiness_task_queue() -> None:
     requirements = load_json(MACHINE / "requirements.json")
     risks = load_json(MACHINE / "risks.json")
     owners = load_json(MACHINE / "professional-owners.json")
+    readiness = load_json(MACHINE / "pre-build-readiness.json")
+    crosswalk = load_json(MACHINE / "research-readiness-crosswalk.json")
     if not isinstance(queue, dict) or not isinstance(queue.get("tasks"), list):
         fail("build-readiness-task-queue.json must contain a tasks array")
     if queue.get("schema_version") != 1:
@@ -1176,6 +1181,33 @@ def check_build_readiness_task_queue() -> None:
     owner_scopes = {
         item.get("scope") for item in owners.get("owners", []) if isinstance(item, dict)
     }
+    readiness_ids = {
+        item.get("id") for item in readiness.get("items", []) if isinstance(item, dict)
+    }
+    task_to_readiness: dict[str, set[str]] = {}
+    for lane in crosswalk.get("lanes", []):
+        if not isinstance(lane, dict):
+            continue
+        for task_id in lane.get("tasks", []):
+            task_to_readiness.setdefault(task_id, set()).update(lane.get("readiness_items", []))
+    routed_readiness = {
+        readiness_id
+        for lane in crosswalk.get("lanes", [])
+        if isinstance(lane, dict)
+        for readiness_id in lane.get("readiness_items", [])
+    }
+    missing_routes = sorted(
+        item.get("id")
+        for item in readiness.get("items", [])
+        if isinstance(item, dict)
+        and item.get("status") in {"partial", "blocked", "documented_no_runner", "documented_no_source", "not_started"}
+        and item.get("id") not in routed_readiness
+    )
+    if missing_routes:
+        fail(
+            "non-ready PB items must have a research crosswalk route: "
+            + ", ".join(missing_routes)
+        )
     required_fields = {
         "schema_version",
         "id",
@@ -1221,6 +1253,18 @@ def check_build_readiness_task_queue() -> None:
             fail(f"{task_id}: schema_version must be 1")
         if task.get("status") != "proposed":
             fail(f"{task_id}: task queue entries must remain proposed until owner approval")
+        readiness_items = task.get("readiness_items")
+        if (
+            not isinstance(readiness_items, list)
+            or not readiness_items
+            or not all(isinstance(value, str) and PB_ID.fullmatch(value) for value in readiness_items)
+        ):
+            fail(f"{task_id}: readiness_items must be a non-empty PB-* array")
+        if set(readiness_items) != task_to_readiness.get(task_id, set()):
+            fail(
+                f"{task_id}: readiness_items must match the research-crosswalk task mapping; "
+                f"found {readiness_items}"
+            )
         for field in ("owner", "independent_reviewer"):
             value = task.get(field)
             if value not in owner_scopes:
@@ -1936,7 +1980,7 @@ def check_research_readiness_crosswalk() -> None:
             ],
         },
         "research-lane-fresh-host-build-confidence": {
-            "readiness_items": ["PB-009", "PB-020"],
+            "readiness_items": ["PB-008", "PB-009", "PB-020"],
             "tasks": ["TASK-000002"],
             "research_questions": ["RQ-46", "RQ-47", "RQ-31"],
         },
@@ -3130,8 +3174,53 @@ def check_ui_runtime_controls() -> None:
         if item.get("status") == "ready":
             if not isinstance(item.get("evidence"), list) or not item["evidence"]:
                 fail(f"{item.get('id')}: ready item requires evidence")
+        elif item.get("status") == "not_selected":
+            for field in ("not_selected_reason", "revisit_trigger"):
+                value = item.get(field)
+                if not isinstance(value, str) or len(value) < 30:
+                    fail(f"{item.get('id')}: not_selected item requires {field}")
         elif not isinstance(item.get("evidence_required"), list) or not item["evidence_required"]:
             fail(f"{item.get('id')}: non-ready item requires evidence_required")
+
+    gap_audit_path = RESEARCH / "pre-build-readiness-gap-audit-2026-07.md"
+    gap_audit = gap_audit_path.read_text(encoding="utf-8")
+    status_labels = {
+        "ready": "Ready",
+        "partial": "Partial",
+        "blocked": "Blocked",
+        "not_selected": "Not selected",
+        "not_started": "Not started",
+        "documented_no_source": "Documented no source",
+        "documented_no_runner": "Documented no runner",
+        "proposed": "Proposed",
+    }
+    for item in readiness_items:
+        item_id = item.get("id")
+        expected_label = status_labels[item.get("status")]
+        match = re.search(
+            rf"^\|\s*`{re.escape(str(item_id))}`[^|]*\|\s*([^|]+?)\s*\|",
+            gap_audit,
+            re.MULTILINE,
+        )
+        if not match:
+            fail(f"{gap_audit_path}: missing status row for {item_id}")
+        if match.group(1).strip().lower() != expected_label.lower():
+            fail(
+                f"{gap_audit_path}: {item_id} status drifted; "
+                f"expected {expected_label}, found {match.group(1).strip()}"
+            )
+
+    if readiness_by_id := {item.get("id"): item for item in readiness_items}:
+        if readiness_by_id.get("PB-008", {}).get("status") == "partial" and readiness_by_id.get("PB-009", {}).get("status") == "partial":
+            continuation_match = re.search(
+                r"^2\. Continue `PB-008` and `PB-009`",
+                gap_audit,
+                re.MULTILINE,
+            )
+            if not continuation_match:
+                fail(
+                    f"{gap_audit_path}: first continuation path must route the partial PB-008/PB-009 toolchain and fresh-host lane together"
+                )
 
     pb003 = next((item for item in readiness_items if item.get("id") == "PB-003"), None)
     if not isinstance(pb003, dict):
@@ -7081,6 +7170,11 @@ def check_windows_tool_wrappers() -> None:
         "tools/validate_fresh_host_run_records.py",
         "tools/validate_fresh_host_readiness_review.py",
     ]
+    toolchain_paths = [
+        "rust-toolchain.toml",
+        "docs/blueprint-v1/machine/toolchains.json",
+        "docs/project-buildout/machine/build-information-readiness-ledger.json",
+    ]
     readiness = load_json(MACHINE / "pre-build-readiness.json")
     items = readiness.get("items")
     if not isinstance(items, list):
@@ -7091,6 +7185,18 @@ def check_windows_tool_wrappers() -> None:
     )
     if not isinstance(pb009, dict):
         fail("pre-build-readiness.json is missing PB-009")
+    pb008 = next(
+        (item for item in items if isinstance(item, dict) and item.get("id") == "PB-008"),
+        None,
+    )
+    if not isinstance(pb008, dict):
+        fail("pre-build-readiness.json is missing PB-008")
+    pb008_evidence = pb008.get("evidence")
+    if not isinstance(pb008_evidence, list):
+        fail("PB-008 evidence must be an array")
+    missing_pb008 = [path for path in toolchain_paths if path not in pb008_evidence]
+    if missing_pb008:
+        fail("PB-008 evidence is missing toolchain paths: " + ", ".join(missing_pb008))
     pb009_evidence = pb009.get("evidence")
     if not isinstance(pb009_evidence, list):
         fail("PB-009 evidence must be an array")
@@ -7119,7 +7225,7 @@ def check_windows_tool_wrappers() -> None:
     if not isinstance(evidence_start, list):
         fail("fresh-host lane evidence_start must be an array")
     missing_lane = [
-        path for path in [*wrapper_paths, *fresh_host_paths] if path not in evidence_start
+        path for path in [*toolchain_paths, *wrapper_paths, *fresh_host_paths] if path not in evidence_start
     ]
     if missing_lane:
         fail(
@@ -7145,7 +7251,7 @@ def check_windows_tool_wrappers() -> None:
     if not isinstance(allowed_paths, list):
         fail("TASK-000002 allowed_paths must be an array")
     missing_task_paths = [
-        path for path in [*wrapper_paths, *fresh_host_paths] if path not in allowed_paths
+        path for path in [*toolchain_paths, *wrapper_paths, *fresh_host_paths] if path not in allowed_paths
     ]
     if missing_task_paths:
         fail(

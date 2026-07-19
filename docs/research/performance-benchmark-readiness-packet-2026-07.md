@@ -2,12 +2,14 @@
 
 Status: readiness packet for `PB-013` with checked no-claim benchmark readiness-review template; no owner-reviewed benchmark readiness, browser-run benchmark runner, benchmark result, competitor result, or performance claim
 Owner: performance measurement, benchmark operations, architecture, quality, security, accessibility, and release operations
-Packet date: 2026-07-17
+Packet date: 2026-07-19
 Confidence: high for evidence requirements; low for implementation readiness until hardware, expanded corpus, runner, and raw-artifact storage exist
 
 ## Question
 
 What must exist before Turing can treat performance measurement as build-ready, compare against Chrome-class browsers, or support an extreme-performance claim?
+
+The short [Benchmark Evidence and Claim Closure Preparation](benchmark-evidence-and-claim-closure-preparation-2026-07.md) is the canonical stop/resume route for the `PB-013` lane.
 
 This packet turns the performance Blueprint, benchmark laboratory book, and `PB-013` readiness item into an executable evidence queue. It now also links the checked no-claim [benchmark statistics analysis contract](benchmark-statistics-analysis-contract-2026-07.md) and [benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json). The readiness-review template carries a dedicated `review_scope.statistics_analysis_plan` field so a future owner review must name the analysis plan it accepts. It does not implement a browser benchmark runner, select final hardware, create a representative corpus, run competitors, provide owner-reviewed statistics analysis, provide owner-reviewed benchmark readiness, or move `PB-013` out of `documented_no_runner`.
 
@@ -53,7 +55,7 @@ Internal inputs:
 - [Pre-build readiness registry](../blueprint-v1/machine/pre-build-readiness.json)
 - [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md)
 
-External sources checked on 2026-07-17:
+External sources checked on 2026-07-17; official BrowserBench methodology refreshed on 2026-07-19:
 
 - BrowserBench home page: https://browserbench.org/
 - Speedometer 3.1 about page: https://browserbench.org/Speedometer3.1/about.html
@@ -61,6 +63,8 @@ External sources checked on 2026-07-17:
 - JetStream 3.0 announcement: https://browserbench.org/announcements/jetstream3/
 - MotionMark current benchmark page: https://browserbench.org/MotionMark/
 - BrowserBench MotionMark about page: https://browserbench.org/MotionMark/about.html
+- Speedometer 3.1 run instructions: https://www.browserbench.org/Speedometer3.1/instructions.html
+- MotionMark developer controls: https://browserbench.org/MotionMark/developer.html
 - Chromium Telemetry documentation: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/
 - Web Vitals documentation: https://web.dev/articles/vitals
 - Chrome UX Report overview: https://developer.chrome.com/docs/crux
@@ -72,6 +76,10 @@ External sources checked on 2026-07-17:
 - Windows Performance Analyzer documentation: https://learn.microsoft.com/en-us/windows-hardware/test/wpt/windows-performance-analyzer
 
 The BrowserBench pages are inputs for suite selection, not proof that a single synthetic score is a product result. Chromium, Chrome, Web Vitals, CrUX, DevTools, and WebPageTest sources shape comparison controls and raw-artifact expectations, not Turing results. The Windows Performance Toolkit pages are inputs for the first Windows trace-capture path, not a cross-platform tracing strategy.
+
+## Current official methodology findings
+
+The 2026-07-19 refresh adds suite-specific controls to `PB13-EV-009` and `PB13-EV-010`: Speedometer 3.1 no-duration subtests invalidate the run rather than becoming omitted or zero samples; clean profile, focused-page, quiet-host, power, and thermal controls are recorded; JetStream 3.0 retains per-workload output, uses its documented startup/worst/average treatment and geometric-mean aggregation, and forbids cross-version comparison; MotionMark records warmup, target frame rate, viewport class, orientation, display refresh, GPU, and power state and applies its documented change-point/bootstrap method. These are diagnostic validity controls, not performance results or approval of a Chrome-class claim.
 
 ## Current posture
 
@@ -142,8 +150,8 @@ Every run must record the exact suite URL, version, retrieved asset hash when mi
 | `PB13-EV-006` | Raw result schema and statistics-analysis contract | Partial | schema, a no-claim sample manifest cross-checked against the current Tier H hardware, OS-control, and resource-attribution registry entries, checked raw-artifact index hash, direct validator command, repository validation hook, checked no-claim statistics-analysis contract, and claim-bundle `statistics_analysis_plan_id` cross-check exist; runner-generated output, trace package, owner-reviewed statistics analysis beyond the checked no-claim statistics-analysis contract, and non-sample artifact storage remain missing |
 | `PB13-EV-007` | Trace and artifact package | Partial | checked no-claim trace/artifact package schema, package-root policy, ETW or equivalent trace class, Perfetto-compatible trace class, tab lifecycle log class, required artifact classes, SHA-256 manifest records, redaction/retention rules, prohibited-content rules, and validator exist; runner-generated trace and artifact package root, real ETW or equivalent traces, Perfetto-compatible traces where applicable, logs, screenshots, memory snapshots, power data, raw samples, failure records, redaction review, retention decision, and SHA-256 manifest remain missing |
 | `PB13-EV-008` | 30-tab mixed and all-live scenario manifests | Partial | checked no-claim scenario schema, mixed-state manifest, all-live manifest, corpus case IDs, lifecycle state counts, network-profile coverage, semantic resource-attribution linkage, and validator exist; runner-generated concrete tab IDs, navigation order, process topology, site-instance identity, lifecycle transition timestamps, state-transition checks, raw artifacts, revival measurements, and state-loss evidence remain missing |
-| `PB13-EV-009` | Competitor comparison method | Partial | [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md) defines competitor pinning, suite usage, equal-security/equal-workload controls, and diagnostic comparison levels; checked release-catalog competitor-version schema, manifest, and validator record official current Chrome, Edge, Firefox, Safari Stable, and Safari Technology Preview candidate versions; checked local-install schema, manifest, report, and validator record current-host Chrome and Edge executable paths, hashes, signatures, and unresolved version-state caveats; checked browser-pin capture schema, plan, report, validator, and self-test runner define how browser-reported versions and settings must be captured without real profile access; checked browser-pin diagnostic schema, manifest, report, and validator record current-host Chrome `Chrome/150.0.7871.115` and Edge `Edg/151.0.4129.21` browser-reported versions from isolated temporary profiles; owner-reviewed benchmark-ready pins, channel proof, complete profiles, command lines, settings, Firefox/Safari local install evidence, and run outputs remain missing |
-| `PB13-EV-010` | Performance claim gate | Partial | [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md) defines claim bundle and expiry policy, the claim-bundle template now cross-checks its statistics-analysis plan, and the manifest schema/sample carry explicit no-claim metadata; no owner-approved claim bundle generated from real results exists |
+| `PB13-EV-009` | Competitor comparison method | Partial | [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md) defines competitor pinning, suite-specific BrowserBench validity controls, equal-security/equal-workload controls, and diagnostic comparison levels; checked release-catalog competitor-version schema, manifest, and validator record official current Chrome, Edge, Firefox, Safari Stable, and Safari Technology Preview candidate versions; checked local-install schema, manifest, report, and validator record current-host Chrome and Edge executable paths, hashes, signatures, and unresolved version-state caveats; checked browser-pin capture schema, plan, report, validator, and self-test runner define how browser-reported versions and settings must be captured without real profile access; checked browser-pin diagnostic schema, manifest, report, and validator record current-host Chrome `Chrome/150.0.7871.115` and Edge `Edg/151.0.4129.21` browser-reported versions from isolated temporary profiles; owner-reviewed benchmark-ready pins, channel proof, complete profiles, command lines, settings, Firefox/Safari local install evidence, and run outputs remain missing |
+| `PB13-EV-010` | Performance claim gate | Partial | [Chrome-class performance runbook](chrome-class-performance-runbook-2026-07.md) defines suite-specific invalid-run rules, claim bundle and expiry policy, the claim-bundle template now cross-checks its statistics-analysis plan, and the manifest schema/sample carry explicit no-claim metadata; no owner-approved claim bundle generated from real results exists |
 | `PB13-EV-011` | Semantic resource attribution plan | Partial | checked resource-attribution schema, semantic owner taxonomy, metric list, shared-resource policy, collection-plan fields, UI reporting contract, validator, and no-claim manifest/smoke-runner traceability exist; browser trace instrumentation, per-process collection, per-tab attribution, shared-resource implementation, GPU accounting, unknown-bucket threshold, runner raw artifacts, and UI/reporting fixture remain missing |
 | `PB13-EV-012` | Accessibility, recovery, DevTools, and agent workload coverage | Documented only | no fixtures, runner steps, assistive-technology measurement, crash/revival scripts, DevTools overhead scenarios, or agent-cost scenarios exist |
 | `PB13-EV-013` | Benchmark readiness-review gate | Template only | checked no-claim benchmark readiness-review template exists for future owner review across hardware/OS, corpus/network, runner/artifact, browser-pin/comparison, statistics-analysis plan scope, statistics/denominator, and claim-review axes; owner-reviewed benchmark readiness review beyond the checked no-claim benchmark readiness-review template remains missing |

@@ -69,7 +69,11 @@ A framework’s generic accessibility feature is not sufficient. The UI selectio
 
 The checked [Native UI component fixture inventory](../research/native-ui-component-fixture-inventory-2026-07.md) records required accessibility contracts and fixture axes for planning. The checked [Window Input Accessibility Spike Inventory](../research/window-input-accessibility-spike-inventory-2026-07.md) records the `PB-015` workflow axes, core shell workflows, platform assistive-technology rows, and blockers for windowing, input, IME, accessibility-tree, page-tree composition, clipboard, drag/drop, localization, zoom, high contrast, forced colors, reduced motion, crash recovery, renderer hang, and GPU loss.
 
+The no-claim [Native UI and Accessibility Workflow Examples](../research/native-ui-accessibility-workflow-examples-2026-07.md) demonstrates how a future address-field/page-surface workflow should retain authority, identity, IME, platform-tree, manual assistive-technology, fault, latency, and denominator records. It is sample documentation only; it does not prove accessibility or screen-reader readiness.
+
 These records do not prove screen-reader, forced-color, high-contrast, reduced-motion, keyboard, focus, density, localization, error-state, manual assistive-technology, page-tree composition, IME, crash, GPU-loss, or accessibility readiness until rendered or equivalent adapter-specific fixtures are tested with real platform assistive technologies and owner-reviewed evidence.
+
+Any future accessibility or native UI readiness decision must also be reconciled through the [Owner Decision Closure Board](../project-buildout/23-owner-decision-closure-board.md) and `PB-020` closure review. A platform workflow, accessibility snapshot, manual assistive-technology transcript, UI-gate result, or accepted UI ADR cannot independently authorize broad implementation, release-path support, production accessibility, or Chrome-class claims.
 
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Stable-release accessibility evidence

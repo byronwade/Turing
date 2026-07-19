@@ -2,7 +2,7 @@
 
 Status: `PB-013` evidence draft; no benchmark runner, result, competitor result, or performance claim
 Owner: performance measurement, benchmark operations, quality, security, accessibility, and release operations
-Research date: 2026-07-17
+Research date: 2026-07-19
 Confidence: medium for current suite and runbook shape; low for product readiness until hardware, corpus, runner, and raw results exist
 
 ## Question
@@ -26,6 +26,16 @@ Retrieved on 2026-07-17:
 - WebPageTest agent JSON test options: https://github.com/catchpoint/WebPageTest.agent/blob/master/docs/test_options.md
 - Chrome Releases: https://chromereleases.googleblog.com/
 
+Official BrowserBench methodology refresh retrieved on 2026-07-19:
+
+- Speedometer 3.1 methodology: https://www.browserbench.org/Speedometer3.1/about.html
+- Speedometer 3.1 run instructions: https://www.browserbench.org/Speedometer3.1/instructions.html
+- Speedometer 3.1 announcement: https://www.browserbench.org/announcements/speedometer3.1/
+- JetStream 3.0 announcement: https://browserbench.org/announcements/jetstream3/
+- JetStream 3.0 in-depth methodology: https://browserbench.org/JetStream3.0/in-depth.html
+- MotionMark methodology: https://browserbench.org/MotionMark/about.html
+- MotionMark developer controls: https://browserbench.org/MotionMark/developer.html
+
 Updated release-catalog check on 2026-07-18:
 
 - Chrome Releases: https://chromereleases.googleblog.com/
@@ -35,6 +45,13 @@ Updated release-catalog check on 2026-07-18:
 - Safari resources and Technology Preview: https://developer.apple.com/safari/resources/
 
 These sources define useful measurement surfaces and competitor-version capture points. They do not prove anything about Turing's performance.
+
+### 2026-07-19 official methodology findings
+
+- Speedometer 3.1 is an interaction-driven web-application responsiveness diagnostic. The 3.1 release corrected harness measurement issues, so the runner must pin the exact suite version and record the harness revision. A subtest that produces no duration is a failed run, not a zero or an omitted sample. Official instructions also require a clean profile, a focused benchmark page, a quiet host, and controlled power and thermal conditions.
+- JetStream 3.0 reports per-workload results and combines them with a geometric mean. Startup, worst-case, and average behavior are separately represented, with the documented first-iteration treatment; results from different JetStream versions are not comparable. Turing must retain per-workload output and never replace missing or unsupported workloads with a silently reduced aggregate.
+- MotionMark warms up, adjusts drawing complexity around a target frame rate, estimates a change point, and uses bootstrap confidence intervals and a geometric mean. Frame-rate and display-refresh controls affect the result; cross-browser comparisons must normalize the target refresh rate and record viewport class, orientation, and GPU/power state.
+- These controls are suite-specific validity rules. They do not make BrowserBench scores interchangeable with local corpus, trace, memory, energy, accessibility, compatibility, or Chrome-class evidence.
 
 ## Observations
 
@@ -228,6 +245,8 @@ Expired claims must be removed from public docs, release notes, website copy, RE
 The checked no-claim [claim-bundle template](../blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json), validated by [`validate_benchmark_claim_bundles.py`](../../tools/validate_benchmark_claim_bundles.py), is the current machine-readable shape for a future Level 3 owner-reviewed claim bundle. It binds claim text, owner and reviewer scopes, benchmark manifest, hardware, OS control, corpus, network profile, resource attribution, tab scenarios, trace package, statistics-analysis plan, browser launch runner, browser pins, competitor manifests, statistical controls, equivalence controls, denominator controls, overhead controls, expiry, publication rules, and rejection rules. The validator cross-checks the `statistics_analysis_plan_id` against the checked no-claim statistics-analysis plan before any claim text can be reviewed. It is a template only: no public claim is approved.
 
 ## Required Registry Impact
+
+The [Benchmark Competitor Runbook Examples](benchmark-competitor-runbook-examples-2026-07.md) provides sample-only Chrome Stable and Firefox Stable records for the identity, lab, workload, collection, outcome, and review fields below. It is a documentation example only; it does not satisfy any `PB13-EV-*` execution or review requirement.
 
 This report advances `PB13-EV-009` and `PB13-EV-010` from generic partial evidence to documented runbook evidence. It does not move `PB-013` out of `documented_no_runner`.
 

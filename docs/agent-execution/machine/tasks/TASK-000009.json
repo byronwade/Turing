@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000009",
+  "status": "specified",
+  "readiness_items": ["PB-017"],
+  "owner": "release-operations owner (name required before ready)",
+  "independent_reviewer": "security reviewer (name required before ready)",
+  "requirements": [
+    "REQ-OPS-001",
+    "REQ-SEC-004",
+    "REQ-STO-002"
+  ],
+  "risks": [
+    "R-023",
+    "R-024",
+    "R-026",
+    "R-038"
+  ],
+  "adrs": [],
+  "allowed_paths": [
+    "docs/release-operations/",
+    "docs/research/research-package-update-lab-inventory-2026-07.md",
+    "docs/release-operations/machine/research-package-update-lab-package.schema.json",
+    "docs/release-operations/machine/research-package-update-lab-packages/",
+    "docs/release-operations/machine/research-package-update-lab-packages/no-claim-update-lab-template.json",
+    "docs/release-operations/machine/research-package-update-readiness-review.schema.json",
+    "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json",
+    "docs/security-engine/",
+    "docs/blueprint-v1/13-build-release-operations.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/project-buildout/",
+    "tools/",
+    "tools/validate_research_package_update_lab.py",
+    "tools/validate_research_package_update_readiness_review.py"
+  ],
+  "prohibited_paths": [
+    "production signing keys",
+    "offline root keys",
+    "stable-channel update service",
+    "public binary distribution",
+    "real user profile migration"
+  ],
+  "preconditions": [
+    "TASK-000002 fresh-host evidence exists or the lab is explicitly same-host and no-claim",
+    "TASK-000003 authority boundaries are reviewed or the updater lab is isolated",
+    "TASK-000007 migration terms are available before any profile schema rollback fixture exists",
+    "checked no-claim update-lab package template remains current",
+    "checked no-claim research package/update readiness-review template remains current and cannot be cited for release readiness, supported security, production updater, stable-channel, public-distribution, signing-readiness, or implementation evidence",
+    "no production signing keys, offline root keys, real updater, stable channel, or public binary distribution are in scope",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "checked no-claim research package/update lab inventory is treated as planning evidence until executable manifests and update tests exist",
+    "first executable update-lab package starts from the checked no-claim update-lab package template and replaces template-only fields with real package-manifest, metadata-parser, fake-key signature-threshold, staged-install, rollback/migration, privacy-event, cleanup, and owner-review evidence",
+    "first research package/update readiness review starts from the checked no-claim research package/update readiness-review template and replaces template-only null lab_package, reference_platform, fixture_policy, owner_reviewer, independent_reviewer, release_operations_reviewer, security_reviewer, and privacy_reviewer fields with owner-reviewed evidence beyond the template",
+    "signed research-package manifest binds source commit, build ID, channel, platform, architecture, toolchain, feature set, SBOM, provenance, symbols, notices, artifact hashes, artifact sizes, and no-stable-support label",
+    "update metadata lab covers role separation, signature threshold, expiry, minimum secure version, channel, platform, architecture, rollout, mirrors, staged install, tamper, replay, wrong-target, partial-write, disk-full, and power-loss tests",
+    "rollback and migration lab proves authorized known-good rollback only, revoked or vulnerable version refusal, profile schema compatibility, downgrade behavior, crash-loop health gate, and privacy-preserving local event record",
+    "release, security, storage, and readiness documents keep unsupported production signing, offline root, stable-channel, user-profile migration, real-updater, and public-distribution behavior explicit"
+  ],
+  "negative_tests": [
+    "tamper, replay, wrong-target, expiry, mirror, partial-write, disk-full, and power-loss cases cannot be reported as successful updates",
+    "rollback cannot restore revoked or vulnerable versions",
+    "the lab cannot use production signing keys, offline root keys, stable-channel infrastructure, public distribution, or real user profile data",
+    "research-package evidence cannot create a production update, stable support, security, or release claim",
+    "checked no-claim update-lab package template cannot be cited as executable package manifest, update metadata parser, signature-threshold, staged-install, rollback safety, migration safety, release readiness, supported security, or production updater evidence",
+    "checked no-claim research package/update readiness-review template cannot be cited as release readiness, supported security, production updater, stable-channel, public-distribution, signing-readiness, owner-review, or implementation evidence"
+  ],
+  "resource_budget": {
+    "wall_seconds": 21600,
+    "cpu_seconds": 7200,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 10737418240,
+    "network_bytes": 0,
+    "max_workers": 1,
+    "max_retries": 2
+  },
+  "rollback": {
+    "strategy": "Revert lab manifests, tools, and readiness wording if update verification or rollback semantics are ambiguous.",
+    "evidence_required": [
+      "update lab output",
+      "security review note",
+      "validation output"
+    ]
+  },
+  "dependencies": [
+    "TASK-000002",
+    "TASK-000003",
+    "TASK-000007"
+  ],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

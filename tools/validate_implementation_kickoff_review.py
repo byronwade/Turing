@@ -26,6 +26,7 @@ REQUIRED_ITEMS = {
     "PB-003": "partial",
     "PB-004": "partial",
     "PB-005": "partial",
+    "PB-008": "partial",
     "PB-009": "partial",
     "PB-011": "partial",
     "PB-012": "partial",
@@ -43,6 +44,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/project-buildout/13-build-readiness-operating-board.md",
     "docs/project-buildout/17-build-readiness-task-queue.md",
     "docs/project-buildout/18-documentation-readiness-evidence-matrix.md",
+    "docs/project-buildout/23-owner-decision-closure-board.md",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
@@ -69,6 +71,7 @@ REQUIRED_GATES = {
 REQUIRED_BEFORE_M1_TERMS = {
     "adr-0009",
     "fresh-host",
+    "toolchain",
     "ipc",
     "sandbox",
     "benchmark",

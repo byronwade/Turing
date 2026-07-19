@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "id": "TASK-000007",
+  "status": "specified",
+  "readiness_items": ["PB-016"],
+  "owner": "storage owner (name required before ready)",
+  "independent_reviewer": "privacy-data reviewer (name required before ready)",
+  "requirements": [
+    "REQ-PROD-001",
+    "REQ-PROD-002",
+    "REQ-PROD-003",
+    "REQ-STO-001",
+    "REQ-STO-002"
+  ],
+  "risks": [
+    "R-021",
+    "R-023",
+    "R-040"
+  ],
+  "adrs": [],
+  "allowed_paths": [
+    "docs/storage/",
+    "docs/product-experience/",
+    "docs/blueprint-v1/07-network-storage-media.md",
+    "docs/blueprint-v1/machine/pre-build-readiness.json",
+    "docs/templates/",
+    "docs/research/profile-session-format-inventory-2026-07.md",
+    "docs/storage/machine/profile-session-schema-package.schema.json",
+    "docs/storage/machine/profile-session-schema-packages/",
+    "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
+    "docs/storage/machine/profile-session-readiness-review.schema.json",
+    "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json",
+    "tools/validate_profile_session_formats.py",
+    "tools/validate_profile_session_readiness_review.py"
+  ],
+  "prohibited_paths": [
+    "credential storage implementation",
+    "sync service implementation",
+    "profile migration code that handles real user data"
+  ],
+  "preconditions": [
+    "profile, Space, session, snapshot, and migration terms are defined consistently",
+    "checked no-claim schema-package template remains current",
+    "checked no-claim profile/session readiness-review template remains current and cannot be cited for data-loss safety, user-data handling readiness, production profile-format approval, release-path approval, or implementation evidence",
+    "privacy and downgrade behavior are treated as first-class requirements",
+    "no real user profile data is used as a fixture",
+    "queue status remains proposed; this specified manifest is non-executable",
+    "source queue digest is 617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0",
+    "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
+  ],
+  "acceptance_criteria": [
+    "versioned schema proposals cover profile, Space, session, snapshot, and migration records",
+    "checked no-claim profile/session format inventory is treated as planning evidence until executable schemas and migration tests exist",
+    "first executable schema package starts from the checked no-claim schema-package template and replaces template-only fields with real schema, migration-test, fault-test, fixture-policy, and owner-review evidence",
+    "first profile/session readiness review starts from the checked no-claim profile/session readiness-review template and replaces template-only null schema_package, reference_platform, fixture_policy, owner_reviewer, independent_reviewer, and privacy_reviewer fields with owner-reviewed evidence beyond the template",
+    "disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, and data-loss behavior are specified",
+    "crash recovery and user-work preservation rules are linked to product requirements and risks",
+    "unsupported sync, credential storage, real-profile migration, user-data handling, and production profile-format behavior remains explicit"
+  ],
+  "negative_tests": [
+    "schemas cannot silently discard unsaved or protected work",
+    "private-session data cannot leak into normal profile fixtures",
+    "downgrade or corrupt input cannot be treated as successful migration",
+    "real user profile data cannot be used as a fixture before owner-approved privacy and migration review",
+    "checked no-claim schema-package template cannot be cited as executable schema approval, data-loss safety evidence, user-data handling readiness, production profile-format evidence, or real-profile migration approval",
+    "checked no-claim profile/session readiness-review template cannot be cited as data-loss safety, user-data handling readiness, production profile-format approval, release-path approval, sync support, credential-storage support, or implementation evidence"
+  ],
+  "resource_budget": {
+    "wall_seconds": 21600,
+    "cpu_seconds": 5400,
+    "memory_bytes": 8589934592,
+    "disk_bytes": 10737418240,
+    "network_bytes": 0,
+    "max_workers": 1,
+    "max_retries": 2
+  },
+  "rollback": {
+    "strategy": "Revert schema proposals and readiness wording if privacy, recovery, or downgrade behavior cannot be specified.",
+    "evidence_required": [
+      "schema review",
+      "privacy review",
+      "validation output"
+    ]
+  },
+  "dependencies": [
+    "TASK-000003"
+  ],
+  "expires_at": "2026-10-17T00:00:00Z"
+}

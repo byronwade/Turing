@@ -2,7 +2,7 @@
 
 Status: operational evidence lane map (no public performance claim)
 Owner: performance, security, measurement, compatibility, and buildout teams
-Last updated: 2026-07-18
+Last updated: 2026-07-19
 
 This document is the compact map for the project’s “competitor-to-Chrome + extreme-performance” objective while no public performance claim is yet allowed. It exists so any continuation session can see exactly what is proven, what is planned, and what evidence is still missing before `PB-013` can progress toward readiness promotion.
 
@@ -39,7 +39,10 @@ Establish reproducible, fixed-hardware, claim-grade evidence for startup, memory
   - [Chrome-class performance runbook](../research/chrome-class-performance-runbook-2026-07.md)
   - [No-claim benchmark readiness-review template](../blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json)
   - [No-claim claim-bundle template](../blueprint-v1/machine/benchmark-claim-bundles/no-claim-public-claim-template.json)
+  - [No-claim claim-bundle examples](../research/benchmark-claim-bundle-examples-2026-07.md)
 - Validators and self-tests exist and run through no-claim schemas, but do not imply implemented performance.
+
+The performance lane is not an independent release track. Any future `PB-013` readiness or claim decision must be reconciled through the [PB-020 closure and owner-decision preparation](../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md), with the benchmark claim bundle, security/accessibility review, support boundary, and independent review retained together.
 
 ## Deep research progression plan
 
@@ -80,6 +83,7 @@ Treat each phase as a blocker to the next phase, and only one evidence class may
 - no owner-reviewed statistics analysis for equivalent workload outcomes;
 - no accepted benchmark readiness review or claim bundle;
 - no validated claim-expiry governance with ownership and release constraints.
+- no owner-reviewed `PB-020` closure record reconciling benchmark claims with the other full-goal blocker groups.
 
 ## Direct control map
 
@@ -102,6 +106,7 @@ Treat each phase as a blocker to the next phase, and only one evidence class may
   - `tools/validate_benchmark_launch_runners.py`
   - `tools/validate_benchmark_readiness_review.py`
   - `tools/validate_benchmark_statistics_analysis.py`
+  - `tools/validate_build_readiness_closure_review.py`
 
 ## Claim boundary
 
