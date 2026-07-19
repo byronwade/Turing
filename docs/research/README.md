@@ -4,6 +4,15 @@ Status: active evidence index
 Owner: research and architecture
 Update rule: every durable study is indexed here, mapped to its decision owner, and logged in the research log
 
+Before adding or continuing research:
+
+1. Read the [Build Readiness Start Guide](../project-buildout/21-build-readiness-start-guide.md) for the current gate posture and no-claim boundary.
+2. Confirm your lane against the [Build Continuation Readiness Pack](../project-buildout/20-build-continuation-readiness-pack.md).
+3. Before changing `RQ-*` scope, verify your handoff against:
+   - [Implementation Kickoff Review Inventory](implementation-kickoff-review-inventory-2026-07.md)
+   - [Build Readiness Dependency Graph Inventory](build-readiness-dependency-graph-inventory-2026-07.md)
+   - [Documentation Readiness Completion Audit](documentation-readiness-completion-audit-2026-07.md)
+
 This directory contains dated research and implementation-evidence artifacts that inform, challenge, or validate the Turing Blueprint. A study is not a substitute for a requirement, risk, ADR, benchmark manifest, or implementation plan. Recommendations remain hypotheses until the decision owner accepts them through the normal process.
 
 ## Current studies
