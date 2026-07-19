@@ -1,6 +1,7 @@
 # Contained M0 Start State Inventory - July 2026
 
 Status: checked no-claim start-state inventory; not task approval, readiness promotion, or broad implementation approval
+Owner: program, documentation research, and build-readiness governance
 
 Related gate: `PB-020`
 Machine record: [`contained-m0-start-state.json`](../project-buildout/machine/contained-m0-start-state.json)

@@ -1,6 +1,7 @@
 # Web-Platform Source and Conformance Evidence - July 2026
 
 Status: checked no-claim source and evidence route
+Owner: web-platform, architecture, conformance, and documentation research
 Primary gates: `PB-002`, `PB-020`
 Active crosswalk questions: `RQ-44`, `RQ-46`, `RQ-47`, `RQ-15`, `RQ-16`, `RQ-25`, `RQ-31`
 

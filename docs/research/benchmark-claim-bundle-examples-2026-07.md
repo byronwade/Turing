@@ -1,6 +1,7 @@
 # Benchmark Claim-Bundle Examples - July 2026
 
 Status: fictitious no-claim public-claim handoff example
+Owner: performance, measurement, statistics, and documentation research
 Related gate: `PB-013`
 Related task: `TASK-000005`
 Scope: claim-bundle shape only; no browser run, benchmark result, competitor result, or public performance claim

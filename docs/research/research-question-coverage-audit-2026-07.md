@@ -1,6 +1,7 @@
 # Research-Question Coverage Audit - July 2026
 
 Status: checked no-claim program coverage audit
+Owner: research and documentation governance
 
 ## Result
 

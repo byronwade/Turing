@@ -1,6 +1,7 @@
 # Owner-Decision Closure Record Examples - July 2026
 
 Status: fictitious no-claim record examples for `PB-020` closure preparation; no owner decision, gate closure, task approval, authority grant, or readiness promotion.
+Owner: program, architecture, security, quality, release operations, and documentation research
 
 ## Purpose
 

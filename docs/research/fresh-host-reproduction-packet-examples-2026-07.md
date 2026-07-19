@@ -1,6 +1,7 @@
 # Fresh-Host Reproduction Packet Examples - July 2026
 
 Status: fictitious no-claim run-record handoff example
+Owner: build reproducibility, release operations, and documentation research
 Related gates: `PB-008` and `PB-009`
 Related task: `TASK-000002`
 Scope: packet shape only; no fresh-host execution, toolchain approval, readiness promotion, or release claim

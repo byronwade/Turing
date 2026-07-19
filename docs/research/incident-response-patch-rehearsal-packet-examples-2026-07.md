@@ -1,6 +1,7 @@
 # Incident-Response and Patch-Rehearsal Packet Examples - July 2026
 
 Status: fictitious no-claim packet examples for `PB-018` and `TASK-000010`; no incident-response readiness, emergency-patch capacity, disclosure authority, signing authority, supported-security, stable-promotion, production-safety, or implementation claim.
+Owner: security response, release operations, legal-community, support, and documentation research
 
 ## Purpose
 

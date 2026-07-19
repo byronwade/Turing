@@ -1,6 +1,7 @@
 # ADR-0009 Source-Strategy Packet Examples - July 2026
 
 Status: fictitious no-claim handoff example
+Owner: architecture, provenance, legal-community, and documentation research
 Related gate: `PB-002` and `ADR-0009`
 Scope: review-packet shape only; no source selection, source import, component approval, or release-code authorization
 

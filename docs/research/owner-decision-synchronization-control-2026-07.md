@@ -1,6 +1,7 @@
 # Owner-Decision Synchronization Control - July 2026
 
 Status: checked no-claim governance and evidence-control route
+Owner: program, architecture, security, quality, performance, accessibility, release operations, legal-community, and documentation research
 Primary gate: `PB-020`
 Related gates: `PB-002`, `PB-003`, `PB-004`, `PB-005`, `PB-008`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`
 

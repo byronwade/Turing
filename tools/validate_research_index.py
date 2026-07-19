@@ -48,6 +48,18 @@ def main() -> int:
     if missing:
         fail(f"unindexed durable research files: {', '.join(missing)}")
 
+    missing_metadata = []
+    for path in sorted(durable_files):
+        text = path.read_text(encoding="utf-8")
+        missing_fields = [
+            field for field in ("Status", "Owner")
+            if not re.search(rf"(?m)^{field}:\s*\S", text)
+        ]
+        if missing_fields:
+            missing_metadata.append(f"{path.name} ({', '.join(missing_fields)})")
+    if missing_metadata:
+        fail("durable research files missing required metadata: " + "; ".join(missing_metadata))
+
     print(
         "research-index validation passed: "
         f"{len(durable_files)} durable research files, "
