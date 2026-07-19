@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Nova source manifest and coverage wording synchronized
+
+Question:
+
+Do the human-facing Nova design records agree with the committed source hash, repository line-ending policy, and expanded 15-surface component inventory?
+
+Method:
+
+Compared the design-lab README, design-source manifest, source file bytes, component-fixture inventory, Nova surface map, and native UI research record. The source manifest validator confirmed the committed SHA-256, byte length, and line count; a repository search found stale pre-normalization hash and nine-surface wording in the README and research method.
+
+Decision:
+
+Updated the README to state the LF normalization explicitly, display the committed SHA-256, and describe the contract map as covering existing, newly represented, and still-unproven contracts. Updated the research method to describe the complete 15-surface inventory.
+
+Impact:
+
+Human and machine records now agree on Nova source identity and surface coverage. No UI implementation, toolkit, accessibility, security, release, or readiness claim changed.
+
 ## 2026-07-19 - Nova surface contracts expanded
 
 Question:

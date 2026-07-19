@@ -10,11 +10,11 @@ Captured: 2026-07-19
 
 The machine [`design-source-manifest.json`](../machine/design-source-manifest.json) binds this artifact's path, SHA-256, byte length, line count, capture date, authority boundary, and surface inventory. [`validate_design_source.py`](../../../tools/validate_design_source.py) runs in the aggregate repository check.
 
-The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementation handoff for translating the visual source into existing and missing toolkit-neutral component contracts.
+The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementation handoff for translating the visual source into covered, newly represented, and still-unproven toolkit-neutral component contracts.
 
-The captured source is preserved verbatim from the supplied attachment. SHA-256:
+The captured source content is preserved from the supplied attachment with repository LF line-ending normalization. The manifest records the committed bytes exactly. SHA-256:
 
-`A626BA58A26C9B54491BFE48A47C4BA0DEEFBFC7912B5D9849960D5F9222B659`
+`7A85933F7C794F29A5F0B8FBB55DD53C28C0834A3FEF0ECDC73184BB8782148B`
 
 It contains 7,727 lines and is retained as a design reference, not as a release dependency.
 

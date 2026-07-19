@@ -32,7 +32,7 @@ The inventory was shaped as a dependency-free machine registry with a validator 
 
 - missing no-claim status and unsupported-claim language;
 - missing semantic token groups for typography, spacing/density, color/state, focus/motion, and iconography;
-- missing component surfaces for browser chrome, tabs, Spaces, command field, permission prompts, agent confirmations, resource manager, settings, and recovery UI;
+- required component surfaces are present for browser chrome, tabs, Spaces, command field, permission prompts, agent confirmations, resource manager, settings, recovery UI, and the six Nova-specific product groups;
 - missing fixture axes for keyboard, focus, screen reader, forced color, high contrast, reduced motion, density, localization, and error state;
 - component records that omit states, commands, accessibility contracts, or explicit authority-boundary language.
 
