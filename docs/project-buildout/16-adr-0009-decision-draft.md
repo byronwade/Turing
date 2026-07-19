@@ -11,6 +11,8 @@ This draft records the public-claim, requirement, risk, support-language, and re
 
 No `ADR-0009` option is selected. `PB-002` remains blocked until the preceding evidence gates are owner-reviewed or explicitly rejected with time-bounded exceptions and a real decision-review record replaces the checked no-claim template.
 
+The [normalized option matrix](../research/adr-0009-source-strategy-closure-preparation-2026-07.md#option-normalization-matrix) is the comparison aid for owner review. It distinguishes research input, collaboration, component reuse, engine adoption, and charter change; it does not score, recommend, or select an option.
+
 The only claim currently supported is:
 
 Turing is a research and architecture program with a small M0 Rust prototype, documentation, validation tooling, and external Servo evidence. The repository is not a production-safe browser and has not accepted Servo source, Servo components, a Servo maintenance relationship, a JavaScript-runtime change, a compatibility target, or public binary support.

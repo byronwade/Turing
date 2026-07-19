@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 option comparison normalized
+
+Question:
+
+Does the ADR-0009 handoff distinguish external research, upstream collaboration, selective component reuse, engine adoption, and charter change before an owner compares or selects a source strategy?
+
+Method:
+
+Compared the ADR-0009 source-strategy packet, evidence traceability matrix, decision draft, no-claim decision-review template, independent-engine boundary, and current PB-002 owner-decision route.
+
+Result:
+
+Added a normalized option matrix covering charter relationship, release-surface consequence, minimum decision-grade evidence, and the claim permitted before acceptance. The matrix makes explicit that these options are not interchangeable and that a lower implementation burden cannot override provenance, legal, security, compatibility, maintenance, or charter requirements.
+
+Impact:
+
+This improves source-strategy decision coherence without selecting Servo, authorizing source import, closing `PB-002`, or changing any implementation boundary. `ADR9-EV-018` remains blocked, documentation remains 90% organized for contained-M0 continuation, and full-build closure remains 0%.
+
+Next question:
+
+Which normalized option, source baseline, feature profile, and bounded claim scope will the owner and independent reviewer accept after the remaining ADR9 evidence is reviewed?
+
 ## 2026-07-19 - Compatibility prioritization and denominator contract added
 
 Question:
