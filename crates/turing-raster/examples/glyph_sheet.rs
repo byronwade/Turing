@@ -11,13 +11,11 @@
 //! against the same table would catch. Eyes catch it immediately.
 
 use std::env;
-use std::fs::File;
-use std::io::{BufWriter, Write as _};
 use std::process::ExitCode;
 
 use turing_css::Color;
 use turing_layout::{DisplayItem, DisplayList, Rect};
-use turing_raster::{Canvas, rasterize};
+use turing_raster::{Canvas, encode_bmp, rasterize};
 
 const LINE_HEIGHT: f32 = 16.0;
 const ADVANCE: f32 = 8.0;
@@ -55,40 +53,8 @@ fn sheet() -> DisplayList {
     list
 }
 
-/// Writes `canvas` as an uncompressed 24-bit BMP.
 fn write_bmp(canvas: &Canvas, path: &str) -> std::io::Result<()> {
-    let width = canvas.width();
-    let height = canvas.height();
-    // Each BMP pixel row is padded to a multiple of four bytes.
-    let row_bytes = (width * 3).div_ceil(4) * 4;
-    let pixel_bytes = row_bytes * height;
-    let file_bytes = 54 + pixel_bytes;
-
-    let mut out = BufWriter::new(File::create(path)?);
-    let u32le = |value: usize| u32::try_from(value).expect("fits").to_le_bytes();
-
-    out.write_all(b"BM")?;
-    out.write_all(&u32le(file_bytes))?;
-    out.write_all(&[0; 4])?; // reserved
-    out.write_all(&u32le(54))?; // pixel data offset
-    out.write_all(&u32le(40))?; // BITMAPINFOHEADER size
-    out.write_all(&u32le(width))?;
-    out.write_all(&u32le(height))?;
-    out.write_all(&1u16.to_le_bytes())?; // planes
-    out.write_all(&24u16.to_le_bytes())?; // bits per pixel
-    out.write_all(&[0; 24])?; // no compression, defaulted remainder
-
-    // BMP stores rows bottom-up.
-    for y in (0..height).rev() {
-        let mut row = Vec::with_capacity(row_bytes);
-        for x in 0..width {
-            let pixel = canvas.pixel(x, y).expect("in bounds");
-            row.extend_from_slice(&[pixel.blue, pixel.green, pixel.red]);
-        }
-        row.resize(row_bytes, 0);
-        out.write_all(&row)?;
-    }
-    out.flush()
+    std::fs::write(path, encode_bmp(canvas))
 }
 
 fn main() -> ExitCode {

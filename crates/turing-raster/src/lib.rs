@@ -203,6 +203,48 @@ impl Canvas {
     }
 }
 
+/// Encodes `canvas` as an uncompressed 24-bit BMP file.
+///
+/// BMP because it is the simplest self-contained image container that
+/// standard viewers open: a fixed 54-byte header and bottom-up rows padded to
+/// four bytes, writable without a dependency. This is how lab renders become
+/// inspectable artifacts.
+#[must_use]
+pub fn encode_bmp(canvas: &Canvas) -> Vec<u8> {
+    let width = canvas.width();
+    let height = canvas.height();
+    let row_bytes = (width * 3).div_ceil(4) * 4;
+    let file_bytes = 54 + row_bytes * height;
+
+    let mut out = Vec::with_capacity(file_bytes);
+    let u32le = |value: usize| u32::try_from(value).unwrap_or(u32::MAX).to_le_bytes();
+    out.extend_from_slice(b"BM");
+    out.extend_from_slice(&u32le(file_bytes));
+    out.extend_from_slice(&[0; 4]); // reserved
+    out.extend_from_slice(&u32le(54)); // pixel data offset
+    out.extend_from_slice(&u32le(40)); // BITMAPINFOHEADER size
+    out.extend_from_slice(&u32le(width));
+    out.extend_from_slice(&u32le(height));
+    out.extend_from_slice(&1u16.to_le_bytes()); // planes
+    out.extend_from_slice(&24u16.to_le_bytes()); // bits per pixel
+    out.extend_from_slice(&[0; 24]); // no compression, defaulted remainder
+
+    // Rows are stored bottom-up.
+    for y in (0..height).rev() {
+        let row_start = out.len();
+        for x in 0..width {
+            let pixel = canvas.pixel(x, y).unwrap_or(Color {
+                red: 0,
+                green: 0,
+                blue: 0,
+            });
+            out.extend_from_slice(&[pixel.blue, pixel.green, pixel.red]);
+        }
+        out.resize(row_start + row_bytes, 0);
+    }
+    out
+}
+
 fn round_to_pixel(value: f32) -> i64 {
     // `f32::round` is away-from-zero at .5; that is fine and, more importantly,
     // it is consistent for both edges of every rect, which is what keeps

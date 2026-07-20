@@ -126,6 +126,15 @@ pub enum ShellCommand {
     RestoreTab { tab: TabId },
     /// Switch project Space.
     ActivateSpace { space: SpaceId },
+    /// Open a new tab. The owning service chooses identifiers and initial
+    /// content; chrome only expresses the intent.
+    NewTab,
+    /// Reload one tab's current content.
+    Reload { tab: TabId },
+    /// Open the command field focused for typed input, in the context of one
+    /// tab when the chrome knows it (the Nova design opens it from the active
+    /// tab, which doubles as the address field).
+    OpenCommandField { tab: Option<TabId> },
 }
 
 #[cfg(test)]

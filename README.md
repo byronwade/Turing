@@ -122,7 +122,8 @@ The current shell is a command-line laboratory only. It does not create native w
 | `turing-input` | Epoch-guarded pointer routing | Buildable engine stage |
 | `turing-a11y` | Accessibility tree generation | Buildable engine stage |
 | `turing-engine` | End-to-end page pipeline over the stages above | Buildable research pipeline |
-| `turing-browser` | Windowed laboratory presenter for the pipeline | Research maturity; local files only, no network, no hostile-input claim |
+| `turing-chrome` | Nova chrome renderer over shell snapshots and typed commands | Buildable research pipeline |
+| `turing-browser` | Windowed laboratory browser: Nova chrome, tabs, command palette | Research maturity; local files only, no network, no hostile-input claim |
 | `turing-bench` | Pipeline stage benchmarks | Active repository tool |
 | `turing-fuzz` | Seeded fuzz harness over parse-to-layout | Active repository tool |
 | `xtask` | Bootstrap, doctor, generation, and validation commands | Active repository tool |
