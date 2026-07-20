@@ -386,6 +386,8 @@ Which task decomposition, capability, provenance, and escalation design produces
 
 Which combinations of separate agents, human review, conformance suites, fuzzing, formal/model tests, fixed-hardware measurement, and accessibility evaluation provide sufficiently independent evidence?
 
+Current preparation starts with the active no-claim [Independent Verification for Agent-Generated Browser Code research packet](../research/independent-verification-for-agent-generated-code-research-2026-07.md), the agent task/provenance controls, and the independent-verification baseline. It must become task-scoped evidence with independent oracle and verifier identity, complete denominators, raw artifacts, negative and recovery cases, common-mode analysis, and reviewer disposition before it can support task acceptance, security, accessibility, performance, compatibility, release, production, or Chrome-class claims.
+
 ## RQ-61 — Stable-v1 scope and platform contract
 
 What finite capability and support boundary provides meaningful daily use while remaining maintainable by the actual team?
