@@ -82,6 +82,43 @@ Two observations, recorded without acting on them yet:
   is a hypothesis, not a finding — confirming it needs allocation profiling that
   does not exist yet.
 
+## Scaling
+
+Baselines above measure one small document. They say nothing about how cost
+grows, and growth is where an engine becomes unusable while every test still
+passes.
+
+Two paths were quadratic in document size. Measured 2026-07-20, release build,
+before and after indexing:
+
+| Case | n | Before | After |
+| --- | --- | --- | --- |
+| Style + layout, n rules over n elements | 200 | 1.4 ms | 0.7 ms |
+| | 400 | 8.3 ms | 1.3 ms |
+| | 800 | 27.7 ms | 2.8 ms |
+| | 1600 | 95.5 ms | 4.9 ms |
+| Accessibility tree, n `aria-labelledby` refs over n ids | 200 | 0.3 ms | 0.2 ms |
+| | 400 | 0.9 ms | 0.4 ms |
+| | 800 | 3.2 ms | 1.0 ms |
+| | 1600 | 18.9 ms | 2.7 ms |
+
+Read the growth, not the absolute figures. Before, eight times the input cost
+roughly sixty-seven times the work in both cases — the signature of an O(n²)
+path. After, cost per element is roughly flat across the range.
+
+Causes and fixes: the cascade evaluated every rule against every element, now
+narrowed by `turing_css::SelectorIndex`; and `aria-labelledby` resolved each
+IDREF with a linear document scan, now a map owned by the document.
+
+**The index only removes work that could not have matched.** A stylesheet of
+`div` rules against a document of `div` elements is still quadratic, because
+every pair genuinely matches and no index can help. The improvement above is on
+selective selectors, which is what real stylesheets contain.
+
+The regression guard for this is a deterministic count of candidate rules, not
+a timing assertion. Wall-clock in a test suite fails on a loaded machine for
+reasons unrelated to the code.
+
 ## Footprint
 
 The other half of the mandate, and the part measurable without ambiguity today.
