@@ -8,6 +8,8 @@ Implementation baseline: `agent/m0-build-foundation`
 
 What is the smallest professional source and tooling foundation that allows Turing implementation to begin without prematurely choosing a browser engine source strategy, native UI framework, network stack, storage backend, or external runtime dependency?
 
+The checked no-claim [technology and dependency source manifest](../blueprint-v1/machine/technology-dependency-source-manifest.json) records the official source observations that inform this foundation. It does not select Rust, Cargo, a dependency, a runtime, a source strategy, or a release foundation.
+
 ## Decision
 
 Create a dependency-free root Rust workspace that establishes stable ownership and validation boundaries before subsystem implementation expands.

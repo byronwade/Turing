@@ -4,6 +4,8 @@
 
 The build must be reproducible, reviewable, cacheable, cross-platform, and usable by contributors without proprietary infrastructure. Cargo is the Rust workspace driver. A thin repository tool orchestrates code generation, third-party builds, conformance suites, packaging, signing, and artifact manifests.
 
+The checked no-claim [technology and dependency source manifest](machine/technology-dependency-source-manifest.json) preserves the official Cargo, source-replacement, build-script, license, provenance, and reproducibility observations relevant to this contract. It does not approve a dependency, source baseline, build policy, or release path.
+
 Build inputs are explicit:
 
 - source commit and submodule/vendor revisions;

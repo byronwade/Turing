@@ -4,6 +4,8 @@
 
 Turing processes untrusted, adversarial input at every layer: HTML, CSS, JavaScript, WebAssembly, images, fonts, media, PDFs, compressed data, certificates, protocols, storage files, extensions, DevTools commands, update metadata, and model output. A visually functional browser without containment, rapid updates, and vulnerability response is unsafe for normal use.
 
+The checked no-claim [technology and dependency source manifest](machine/technology-dependency-source-manifest.json) records the official dependency, build-script, unsafe, provenance, advisory, and replaceability observations relevant to this security model. It does not establish a selected dependency, safe build, or security readiness.
+
 The security objective is not “no bugs.” It is to reduce bug classes, constrain exploit chains, limit accessible data, detect failures, and ship fixes before known vulnerabilities remain broadly exploitable.
 
 ## 2. Threat actors

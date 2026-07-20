@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Technology and dependency provenance inbound-link audit
+
+Question:
+
+Do the foundational source-strategy documents expose the checked technology/dependency manifest that governs their official observations?
+
+Method:
+
+Compared the `DEPENDENCY.SOURCES.2026_07` source-document list with its five missing inbound references. Added direct no-claim links to the manifest in the M0 foundation, language/dependency strategy, security/sandbox, build/release operations, and ADR-0009 source-strategy packet. This closes provenance navigation only; it does not select a language, dependency, engine source, build policy, or release foundation.
+
 ## 2026-07-19 - Research crosswalk count drift control
 
 Question:

@@ -4,6 +4,8 @@
 
 Use **Rust as the primary language** for the browser kernel, engine, JavaScript runtime, IPC, network/storage policy, agent policy, test infrastructure, and most cross-platform UI logic. Use small, audited amounts of C/C++ only at unavoidable ABI boundaries. Use Objective-C/Swift, C++/WinRT, and C or Rust FFI shims for platform frameworks where native APIs require them. Python and TypeScript are tooling languages, not trusted runtime languages.
 
+The checked no-claim [technology and dependency source manifest](machine/technology-dependency-source-manifest.json) preserves the official language, Cargo, license, provenance, and build-authority observations relevant to this strategy. It does not make this proposed language direction an accepted dependency or source-strategy decision.
+
 This decision optimizes the program’s total risk-adjusted performance, not synthetic language speed alone. Browser failures are dominated by memory safety, concurrency, parser complexity, privilege boundaries, latency tails, and maintainability. Rust offers deterministic layout and control comparable to C++, zero-cost abstractions when used carefully, strong data-race prevention, expressive type-state modeling, and a growing systems ecosystem.
 
 ## Evaluation criteria
