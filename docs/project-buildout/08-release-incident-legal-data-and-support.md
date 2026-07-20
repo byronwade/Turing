@@ -8,6 +8,8 @@ Last researched: 2026-07-16
 
 Turn release principles into executable build, signing, update, rollback, migration, incident, data, legal, support, and end-of-life operations.
 
+The checked no-claim [ownership/control source manifest](machine/ownership-control-source-manifest.json) records the official governance, separation-of-duties, access, succession, and review observations relevant to these operations. It does not establish release authority, signing authority, incident closure authority, legal approval, support capacity, or production readiness.
+
 ## Governing principles
 
 - A supported release is an operational commitment.

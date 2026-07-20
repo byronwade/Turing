@@ -8,6 +8,8 @@ Last researched: 2026-07-16
 
 Convert conceptual roles into an executable ownership model for every subsystem, document, schema, test suite, benchmark, release artifact, service, and incident path.
 
+The checked no-claim [ownership/control source manifest](machine/ownership-control-source-manifest.json) records the official governance and separation-of-duties observations relevant to this model. It does not prove maintainer qualification, CODEOWNERS effectiveness, access reconciliation, backup coverage, or two-person control.
+
 ## Governing principles
 
 - Ownership is responsibility for maintenance, incidents, deprecation, and outcomes—not exclusive control.

@@ -9,6 +9,8 @@ Research date: 2026-07-19
 
 The [Backup Ownership Gap Inventory](backup-ownership-gap-inventory-2026-07.md) and [Backup Ownership and Review Capacity Decision Preparation](backup-ownership-and-review-capacity-decision-prep-2026-07.md) identify provisional primary-only ownership and the required governance questions. This report defines the evidence packet required before ownership or closure authority can be treated as executable.
 
+The checked no-claim [ownership/control source manifest](../project-buildout/machine/ownership-control-source-manifest.json) records the official governance, separation-of-duties, access, qualification, succession, and review observations that inform this route. It does not name qualified backups, prove access control, establish two-person control, or grant authority.
+
 ## Required evidence sequence
 
 1. Freeze the build-critical scope list and map every protected path, review rule, CODEOWNERS route, release action, signing action, disclosure action, legal action, incident-closure action, and irreversible migration action to a primary and backup role.

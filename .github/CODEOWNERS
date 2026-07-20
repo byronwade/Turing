@@ -1,4 +1,5 @@
 # Provisional single-owner routing. Qualified backups are required before preview.
+# Source identity: docs/project-buildout/machine/ownership-control-source-manifest.json
 * @byronwade
 
 # Build and source foundations

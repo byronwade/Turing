@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-20 - Ownership/control provenance route completion
+
+Question:
+
+Do the ownership, CODEOWNERS, release-operations, backup-gap, and two-person-control records expose the manifest that governs their official governance observations?
+
+Method:
+
+Compared the `GOVERNANCE.OWNERSHIP.SOURCES.2026_07` source-document list with its six missing inbound references. Added direct no-claim manifest links to the two ownership research routes and two project-buildout operating documents, added a source-identity comment to `CODEOWNERS`, and added the manifest to the backup-gap registry's existing `source_registries`. This closes provenance navigation only; ownership remains provisional and `PB-019` remains blocked.
+
 ## 2026-07-19 - Incident-response provenance route completion
 
 Question:

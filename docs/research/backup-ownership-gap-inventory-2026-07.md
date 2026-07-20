@@ -15,6 +15,8 @@ Yes, as blocked evidence only. The new [`backup-ownership-gap.json`](../project-
 
 This does not name qualified backups, prove availability, grant two-person control, provide owner-reviewed backup ownership readiness, provide owner coverage, or promote `PB-019` beyond `blocked`.
 
+The checked no-claim [ownership/control source manifest](../project-buildout/machine/ownership-control-source-manifest.json) records the official governance, separation-of-duties, access, qualification, succession, and review observations used by this inventory. It does not establish qualified backup coverage, effective access reconciliation, two-person control, or production authority.
+
 ## Inputs
 
 - [Project-buildout handbook](../project-buildout/README.md)

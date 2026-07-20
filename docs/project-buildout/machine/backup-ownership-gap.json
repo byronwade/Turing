@@ -6,6 +6,7 @@
   "claim_status": "Blocked gap inventory only; no broad readiness claim, no production authority claim, no release authority claim, no release promotion claim, no stable signing authority claim, no update trust claim, no supported-version changes claim, no security-disclosure authority claim, no irreversible migration approval claim, no incident closure authority claim, no legal approval claim, no owner coverage claim, and no implementation claim.",
   "source_registries": [
     ".github/CODEOWNERS",
+    "docs/project-buildout/machine/ownership-control-source-manifest.json",
     "docs/blueprint-v1/machine/professional-owners.json",
     "docs/blueprint-v1/machine/professional-review-rules.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
