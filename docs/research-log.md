@@ -18,6 +18,24 @@ Next question:
 
 When `ADR-0009` receives owner authority and a selected baseline, which exact commit/tag/archive should be rebuilt and compared under the accepted equivalence policy?
 
+## 2026-07-19 - Servo mozjs upstream identity refresh
+
+Question:
+
+Does the companion Servo `mozjs` runtime record preserve an exact current head, release identity, and activity boundary independently from the Servo engine repository?
+
+Method:
+
+Ran read-only GitHub API queries for `servo/mozjs` `main`, repository metadata, and the latest release, then compared the result with the upstream-delta packet and the ADR-0009 source-observation manifest.
+
+Decision:
+
+The `mozjs` head remains `f5cbf8aa6076064fd658a1e9fb16147c2347affb`; the repository activity timestamps are `2026-07-19T19:30:00Z` and `2026-07-19T19:30:03Z`; and the latest release is `mozjs-sys-v140.12.0-2` published 2026-07-10. Synchronized the live upstream-delta table and machine source observation. Null API license/security fields remain unresolved metadata, not a license or security conclusion.
+
+Next question:
+
+Which pinned `mozjs` source/package identity, runtime boundary, and license/security evidence will the owner accept if an ADR-0009 option retains SpiderMonkey-related code?
+
 ## 2026-07-19 - Command-log environment and scope binding
 
 Question:

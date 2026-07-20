@@ -39,8 +39,8 @@
       "publisher": "GitHub API / Servo Project",
       "url": "https://api.github.com/repos/servo/mozjs",
       "retrieved": "2026-07-19",
-      "observation": "A read-only capture observed public, non-archived servo/mozjs with default branch main and head commit f5cbf8aa6076064fd658a1e9fb16147c2347affb. The repository API returned null SPDX license metadata and no security-policy URL; those fields are unresolved metadata observations, not proof of absent licensing or security practice.",
-      "decision_consequence": "The JavaScript-runtime option must pin mozjs independently from Servo, inspect repository license/security files, retain the exact ref and hash, and resolve provenance, runtime, Web IDL, identity, debugger, Test262, and maintenance consequences before any source or component approval."
+      "observation": "A read-only capture observed public, non-archived servo/mozjs with default branch main and head commit f5cbf8aa6076064fd658a1e9fb16147c2347affb; repository pushedAt 2026-07-19T19:30:00Z, updatedAt 2026-07-19T19:30:03Z, and latest release mozjs-sys-v140.12.0-2 published 2026-07-10. The repository API returned null SPDX license metadata and no security-policy URL; those fields are unresolved metadata observations, not proof of absent licensing or security practice.",
+      "decision_consequence": "The JavaScript-runtime option must pin mozjs independently from Servo, inspect repository license/security files and release identity, retain the exact ref, hash, and freshness metadata, and resolve provenance, runtime, Web IDL, identity, debugger, Test262, and maintenance consequences before any source or component approval."
     },
     {
       "source_id": "ADR9-SOURCE-SERVO-GETTING-CODE",
