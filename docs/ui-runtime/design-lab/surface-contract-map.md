@@ -37,6 +37,19 @@ These surfaces are now represented in the component-fixture inventory as no-clai
 | split view, reader, capture, find-in-page, link hints, tab search | `UI-COMPONENT-VIEW-TOOLS` | `PB-005`, `PB-015`, `PB-016` | No page-surface or input-routing proof |
 | Nova streaming assistant, watched pages, schedules, and agent activity log | `UI-COMPONENT-AGENT-ACTIVITY` | `PB-011`, `PB-012`, `PB-016`, `PB-018`, `PB-019` | No agent authority or automation readiness |
 
+## Supporting source-component reconciliation
+
+The Nova source also contains reusable visual primitives, settings subsections, popovers, and message-layout components. They are intentionally not separate product contracts: each is assigned to the parent contract below so the source inventory is complete without multiplying authority boundaries.
+
+| Source components | Owning contract | Boundary |
+| --- | --- | --- |
+| `Fav`, `FavImg`, `UrlText`, `Skl`, `HRow`, `Row`, `Toggle`, `PerfPill`, `PageHeader` | `UI-COMPONENT-BROWSER-CHROME`, `UI-COMPONENT-TABS`, `UI-COMPONENT-RESOURCE-MANAGER`, or the owning parent fixture | Shared visual primitives carry token, text-fit, focus, density, and accessibility obligations; they do not mint commands or policy authority. |
+| `A11ySec`, `DeveloperSec`, `PrivacySec`, `ShieldsSec`, `CookiesSec`, `PerformanceSec`, `AppearanceSec`, `GeneralSec`, `AutofillSec`, `SearchSec`, `AboutSec`, `WorkspaceSec`, `ThemeStudio`, `SW` | `UI-COMPONENT-SETTINGS`, `UI-COMPONENT-SPACES`, `UI-COMPONENT-SHIELD`, or `UI-COMPONENT-VAULT` | Settings subsections remain scoped to Rust preference snapshots, profile/policy identity, accessibility contracts, and typed commands; JSX state is visual input only. |
+| `DownloadsSettings`, `ExtensionsInline`, `TrailPop`, `ReceiptPop` | `UI-COMPONENT-LIBRARY` or `UI-COMPONENT-SHIELD` | Inline library and security receipts retain storage, update, origin, permission, and audit boundaries; they are not independent release services. |
+| `VaultRow`, `PwMeter`, `VaultPop`, `Bubble`, `Marker`, `Attachment`, `Actions`, `Action`, `Sources`, `Suggestions`, `Suggestion`, `PromptInput`, `PromptInputBody`, `PromptInputToolbar`, `PromptInputTools`, `PromptInputButton`, `PromptInputSubmit`, `MessageScroller`, `Message`, `MessageAvatar`, `MessageBody`, `MessageHeader`, `MessageFooter`, `RichText`, `CodeBlock` | `UI-COMPONENT-VAULT`, `UI-COMPONENT-AGENT-ACTIVITY`, or `UI-COMPONENT-DEVTOOLS` | Credential, provider, message, source, attachment, and code-display elements require redaction, provider/grant identity, keyboard, text-fit, and diagnostic contracts; they do not authorize data access or execution. |
+
+The root `Nova` composition and all 91 named function components are therefore either represented by a primary surface, a source-region row, or this supporting-component reconciliation. This is a source-coverage assertion only; it does not claim that the corresponding native fixtures, accessibility workflows, security controls, or behavior contracts exist.
+
 ## Source-region reconciliation
 
 The high-level contracts above are intentionally fewer than the visual source's React function count. The following source regions were reviewed against the committed Nova source and assigned to their owning contract. This prevents a source-level view from becoming an undocumented product surface while preserving one toolkit-neutral behavioral owner for related views.
