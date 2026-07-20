@@ -2,7 +2,7 @@
   "schema_version": 1,
   "matrix_id": "PB020.OWNER_DECISION_SYNC.2026_07",
   "status": "no_claim_owner_decision_synchronization_matrix",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "claim_status": "No-claim owner-decision synchronization control only; this matrix defines future packet inputs and synchronized document updates but does not name an owner, approve a decision, close a gate, grant authority, authorize implementation, or support a production, compatibility, security, accessibility, performance, release, or daily-driver claim.",
   "related_records": [
     "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json",
@@ -11,6 +11,8 @@
     "docs/project-buildout/machine/implementation-kickoff-review.json",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/project-buildout/machine/build-information-readiness-ledger.json",
+    "docs/blueprint-v1/machine/build-readiness-task-queue.json",
+    "docs/agent-execution/machine/execution-task.schema.json",
     "docs/project-buildout/machine/documentation-readiness-completion-audit.json",
     "docs/platform/machine/reference-platform-scorecard.json",
     "docs/production-readiness/README.md",
@@ -24,7 +26,7 @@
       "owner_role": "architecture owner with legal, security, and maintenance review",
       "independent_reviewer_role": "independent architecture and provenance reviewer",
       "required_evidence": ["ADR-0009 evidence registry and decision-review record", "source baseline, provenance, license, SBOM, component, runtime, compatibility, and maintenance evidence", "direct validator output and retained artifact digests"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/adr-0009-evidence.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/research-readiness-crosswalk.json", "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/adr-0009-evidence.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/research-readiness-crosswalk.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000001.json", "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md"],
       "exception_policy": ["exception must name an owner and linked risk", "exception must expire and define rollback", "support and unsupported-behavior language must change with the exception"],
       "prohibited_until": ["no source baseline is approved", "no Servo-derived release code is authorized", "no compatibility or performance claim is supported"]
     },
@@ -34,7 +36,7 @@
       "owner_role": "native UI and accessibility owner",
       "independent_reviewer_role": "independent UI, accessibility, and platform reviewer",
       "required_evidence": ["accepted native UI ADR and adapter evidence", "page-surface, input, accessibility, assistive-technology, fault, and resource evidence", "direct validator output and retained fixture or transcript digests"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/project-buildout/18-documentation-readiness-evidence-matrix.md"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000006.json", "docs/project-buildout/18-documentation-readiness-evidence-matrix.md"],
       "exception_policy": ["exception must identify affected toolkit or platform surface", "exception must preserve accessibility and authority boundaries", "exception must expire before release-path approval"],
       "prohibited_until": ["no toolkit is selected for the release path", "no accessibility readiness claim is supported", "no page-surface or native-shell production claim is supported"]
     },
@@ -44,7 +46,7 @@
       "owner_role": "build and reproducibility owner",
       "independent_reviewer_role": "independent fresh-host reproduction reviewer",
       "required_evidence": ["pinned compiler, SDK, linker, and environment manifests", "independent fresh-host or approved clean-VM replay with retained logs", "source-tree, cache, target-directory, failure, and validator evidence"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/project-buildout/machine/fresh-host-reproduction.json", "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000002.json", "docs/project-buildout/machine/fresh-host-reproduction.json", "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json"],
       "exception_policy": ["same-host reruns cannot substitute for independent evidence", "waiver must identify the unverified host or toolchain dimension", "expiry and replay conditions must be recorded"],
       "prohibited_until": ["no fresh-host reproducibility claim is supported", "no broad build confidence is promoted", "no release toolchain is approved"]
     },
@@ -54,7 +56,7 @@
       "owner_role": "process and IPC architecture owner",
       "independent_reviewer_role": "independent IPC and security reviewer",
       "required_evidence": ["schema source and generated artifact identity", "real transport, authentication, bounds, timeout, cancellation, and stale-epoch negative tests", "accepted evidence bundle and retained test output"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/ipc-readiness-reviews/no-claim-ipc-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000003.json", "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json"],
       "exception_policy": ["exception must preserve deny-by-default capability boundaries", "unbounded queues or unauthenticated transport cannot be waived silently", "expiry must precede production IPC review"],
       "prohibited_until": ["no production IPC readiness is supported", "no process-isolation or renderer-security claim is supported", "no task acceptance follows from the matrix"]
     },
@@ -64,7 +66,7 @@
       "owner_role": "security and sandbox owner",
       "independent_reviewer_role": "independent platform containment reviewer",
       "required_evidence": ["packaged expected-deny probes", "effective platform policy and compromised-client results", "role matrix, failure triage, and retained probe artifacts"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/security.md"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/security-engine/machine/sandbox-readiness-reviews/no-claim-sandbox-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000004.json", "docs/security.md"],
       "exception_policy": ["policy names cannot substitute for effective enforcement", "any unsupported primitive must remain explicit", "exception must be risk-linked, time-bounded, and independently reviewed"],
       "prohibited_until": ["no sandbox readiness is supported", "no hostile-browsing safety claim is supported", "no renderer or agent security claim is supported"]
     },
@@ -74,7 +76,7 @@
       "owner_role": "performance and measurement owner",
       "independent_reviewer_role": "independent benchmark and statistics reviewer",
       "required_evidence": ["sustained-performance policy comparison for scheduler, memory, cache, lifecycle, pressure, energy, thermal, recovery, and isolation-adjusted dimensions", "fixed hardware, OS controls, browser pins, and equal-workload manifest", "raw runner artifacts, traces, samples, failures, and statistics", "claim bundle and direct validator output"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/benchmark-lab/"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000005.json", "docs/benchmark-lab/"],
       "exception_policy": ["hidden tab discarding or unmatched workloads invalidate the comparison", "missing failures cannot be omitted from the denominator", "public claim exceptions require explicit expiry and rollback"],
       "prohibited_until": ["no Chrome-class result is supported", "no extreme-performance claim is supported", "no benchmark readiness is promoted from a manifest alone"]
     },
@@ -84,7 +86,7 @@
       "owner_role": "storage and profile owner",
       "independent_reviewer_role": "independent data-safety and privacy reviewer",
       "required_evidence": ["executable profile, Space, session, snapshot, and migration schemas", "fault, rollback, corruption, deletion, private-session, and data-loss tests", "privacy review, retained artifacts, and validator output"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/storage/machine/profile-session-source-manifest.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/storage/machine/profile-session-readiness-reviews/no-claim-profile-session-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000007.json", "docs/storage/machine/profile-session-source-manifest.json"],
       "exception_policy": ["real-profile behavior cannot be inferred from synthetic fixtures", "data-loss risk must be explicit and rollback-defined", "migration exceptions require supported-version and expiry updates"],
       "prohibited_until": ["no production profile format is approved", "no data-loss safety claim is supported", "no sync or credential-storage claim is supported"]
     },
@@ -94,7 +96,7 @@
       "owner_role": "release operations owner",
       "independent_reviewer_role": "independent update trust and security reviewer",
       "required_evidence": ["executable package and update lab", "signature, rollback, migration, crash-loop, revocation, and key-separation tests", "release support policy and retained artifact digests"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/release-operations/machine/package-update-source-manifest.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/release-operations/machine/research-package-update-readiness-reviews/no-claim-research-package-update-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000009.json", "docs/release-operations/machine/package-update-source-manifest.json"],
       "exception_policy": ["research keys cannot authorize production updates", "rollback and revocation behavior must remain explicit", "stable-channel exceptions require expiry and support-boundary updates"],
       "prohibited_until": ["no production updater is approved", "no stable distribution claim is supported", "no signing authority is granted"]
     },
@@ -104,7 +106,7 @@
       "owner_role": "security incident-response owner",
       "independent_reviewer_role": "independent incident, legal, and release reviewer",
       "required_evidence": ["private intake and tabletop records", "emergency patch, backport, signing/update dry-run, disclosure, and cleanup evidence", "role, timing, escalation, backup, and retained record review"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/security-engine/machine/incident-response-source-manifest.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/security-engine/machine/incident-patch-readiness-reviews/no-claim-incident-patch-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000010.json", "docs/security-engine/machine/incident-response-source-manifest.json"],
       "exception_policy": ["private-process and disclosure boundaries cannot be bypassed", "emergency patch authority must be named and time-bounded", "unresolved incidents require explicit closure owner and escalation"],
       "prohibited_until": ["no supported-security claim is supported", "no disclosure authority is granted", "no incident closure claim is supported"]
     },
@@ -114,7 +116,7 @@
       "owner_role": "program and repository ownership owner",
       "independent_reviewer_role": "independent access-control and two-person-control reviewer",
       "required_evidence": ["named qualified backup records", "CODEOWNERS, protected-path, access, stale-access, and ownerless-path reconciliation", "two-person exercise and retained review evidence"],
-      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/project-buildout/machine/ownership-control-source-manifest.json"],
+      "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/project-buildout/machine/backup-ownership-readiness-reviews/no-claim-backup-ownership-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000008.json", "docs/project-buildout/machine/ownership-control-source-manifest.json"],
       "exception_policy": ["primary-only coverage must remain an explicit blocker", "backup exceptions require qualified owner, risk, expiry, and remediation", "two-person control cannot be inferred from CODEOWNERS text alone"],
       "prohibited_until": ["no backup ownership readiness is supported", "no release or signing authority is granted", "no broad owner coverage claim is supported"]
     },
@@ -124,7 +126,7 @@
       "owner_role": "program architecture owner with release authority owner",
       "independent_reviewer_role": "independent closure reviewer not authorizing the work",
       "required_evidence": ["all prerequisite gate records and task approval evidence", "closure packet identity, validator output, and direct artifact digests", "explicit closure, hold, or rejection rationale with claim-boundary updates"],
-      "required_synchronization": ["docs/project-buildout/machine/documentation-readiness-completion-audit.json", "docs/project-buildout/machine/implementation-kickoff-review.json", "docs/project-buildout/machine/build-readiness-dependency-graph.json", "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json", "docs/project-buildout/23-owner-decision-closure-board.md"],
+      "required_synchronization": ["docs/project-buildout/machine/documentation-readiness-completion-audit.json", "docs/project-buildout/machine/implementation-kickoff-review.json", "docs/project-buildout/machine/build-readiness-dependency-graph.json", "docs/blueprint-v1/machine/build-readiness-task-queue.json", "docs/agent-execution/machine/tasks/TASK-000001.json", "docs/agent-execution/machine/tasks/TASK-000002.json", "docs/agent-execution/machine/tasks/TASK-000003.json", "docs/agent-execution/machine/tasks/TASK-000004.json", "docs/agent-execution/machine/tasks/TASK-000005.json", "docs/agent-execution/machine/tasks/TASK-000006.json", "docs/agent-execution/machine/tasks/TASK-000007.json", "docs/agent-execution/machine/tasks/TASK-000008.json", "docs/agent-execution/machine/tasks/TASK-000009.json", "docs/agent-execution/machine/tasks/TASK-000010.json", "docs/project-buildout/machine/build-readiness-closure-reviews/no-claim-build-readiness-closure-template.json", "docs/project-buildout/23-owner-decision-closure-board.md"],
       "exception_policy": ["PB-020 cannot close while a P0 gate is silently unresolved", "any held gate requires explicit expiry, rollback, risk, and support-boundary change", "closure review cannot self-approve production or release authority"],
       "prohibited_until": ["no all-information-ready-for-building claim is supported", "no broad M1 authorization is granted", "no production, release, Chrome-class, or daily-driver claim is supported"]
     }

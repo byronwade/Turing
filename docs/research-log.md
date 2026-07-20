@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Owner-decision task-authority synchronization
+
+Extended the owner-decision synchronization matrix and validator so each closure scope explicitly includes the canonical build-readiness task queue and its affected proposed task manifests. `PB-020` requires all ten proposed manifests; lane-specific scopes require their mapped manifest. This prevents a future owner decision from changing readiness records while leaving task authority stale. No owner decision, task approval, gate promotion, or readiness claim changed.
+
 ## 2026-07-20 - Root readiness date reconciliation
 
 Updated the root README's build-readiness date to match the canonical 2026-07-20 progress snapshot, continuation pack, and documentation-readiness audit. Historical research retrieval and capture dates remain unchanged. No gate, owner decision, task status, implementation claim, or full-build percentage changed.

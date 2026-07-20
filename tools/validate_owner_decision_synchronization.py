@@ -27,6 +27,21 @@ EXPECTED_SCOPES = {
     frozenset({"PB-020"}),
 }
 
+TASK_QUEUE_PATH = "docs/blueprint-v1/machine/build-readiness-task-queue.json"
+TASK_MANIFESTS_BY_SCOPE = {
+    frozenset({"PB-002", "ADR-0009"}): ("TASK-000001",),
+    frozenset({"PB-003", "PB-004", "PB-005", "PB-014", "PB-015"}): ("TASK-000006",),
+    frozenset({"PB-008", "PB-009"}): ("TASK-000002",),
+    frozenset({"PB-011"}): ("TASK-000003",),
+    frozenset({"PB-012"}): ("TASK-000004",),
+    frozenset({"PB-013"}): ("TASK-000005",),
+    frozenset({"PB-016"}): ("TASK-000007",),
+    frozenset({"PB-017"}): ("TASK-000009",),
+    frozenset({"PB-018"}): ("TASK-000010",),
+    frozenset({"PB-019"}): ("TASK-000008",),
+    frozenset({"PB-020"}): tuple(f"TASK-{index:06d}" for index in range(1, 11)),
+}
+
 
 def fail(message: str) -> None:
     print(f"owner-decision synchronization validation failed: {message}", file=sys.stderr)
@@ -102,6 +117,18 @@ def main() -> int:
                             fail(f"required synchronization directory is missing: {path}")
                     elif not (ROOT / path).is_file():
                         fail(f"required synchronization file is missing: {path}")
+                if TASK_QUEUE_PATH not in values:
+                    fail(f"{scope_id}.required_synchronization must include the canonical task queue")
+                expected_manifests = {
+                    f"docs/agent-execution/machine/tasks/{task_id}.json"
+                    for task_id in TASK_MANIFESTS_BY_SCOPE[gate_scope]
+                }
+                missing_manifests = sorted(expected_manifests - set(values))
+                if missing_manifests:
+                    fail(
+                        f"{scope_id}.required_synchronization is missing task manifests: "
+                        + ", ".join(missing_manifests)
+                    )
     if seen != EXPECTED_SCOPES:
         fail("decision_scopes do not cover all canonical PB-020 scopes")
 
