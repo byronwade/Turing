@@ -331,6 +331,8 @@ Can requirement-to-evidence records remain accurate and useful?
 
 What staffing, funding, infrastructure, and support capacity is required at each maturity?
 
+The [Capacity and Sustainability Research](../research/capacity-and-sustainability-research-2026-07.md) defines the active source-backed route for role coverage, review and incident bandwidth, infrastructure, support scope, SLO/error-budget controls, maturity promotion, and rejection evidence. It does not name staff, approve funding, set SLOs, or establish support capacity.
+
 <!-- MARKET-STRATEGY-2026-07 -->
 ## Market differentiation research questions
 

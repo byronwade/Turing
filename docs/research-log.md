@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Capacity and sustainability research
+
+Question:
+
+What staffing, funding, infrastructure, review capacity, and support capacity are required at each maturity for an independent browser to remain secure, compatible, accessible, performant, diagnosable, and maintainable?
+
+Method:
+
+Checked NIST SP 800-218 SSDF 1.1 and the Google SRE material on service-level objectives, error budgets, production operations, and ownership/automation on 2026-07-19. Reconciled the observations with `RQ-48`, `RQ-25`, `RQ-31`, `RQ-45`, `RQ-47`, `RQ-60`, `RQ-62`, `RQ-66`, the staffing and capacity plan, SLO research, incident-response, ownership, production-readiness, and research-question coverage records.
+
+Decision:
+
+Added an active no-claim packet that treats capacity as role coverage, qualified backups, review and incident bandwidth, infrastructure, evidence throughput, funding, support scope, and maturity-specific promotion gates. It defines browser-specific recurring workload, SLO/error-budget evidence, rejection rules, and the requirement to reduce scope when maintenance capacity is exceeded. No staff, funding, SLO, support, release, security, performance, or production decision changed.
+
+Next question:
+
+What finite first-build scope can the named owners and qualified backups actually maintain through security response, compatibility, accessibility, performance measurement, update recovery, and incident rehearsal?
+
 ## 2026-07-19 - Technology and dependency decision research
 
 Question:
