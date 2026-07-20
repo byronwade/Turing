@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active task work-package binding made explicit
+
+Added `work_packages: ["WP-002"]` to the active `TASK-000011` manifest and made the build-information validator enforce that exact binding. The agent-execution index now states the same relationship directly. This closes a schema/traceability ambiguity without changing the task's `review_pending` status or creating an acceptance, security, IPC, or readiness claim.
+
 ## 2026-07-20 - Active M0 task added to closure synchronization
 
 Added `TASK-000011` to the `PB-011` IPC and `PB-020` build-readiness synchronization routes alongside its no-claim evidence capture. The validator now requires the active manifest in both scopes, while proposed `TASK-000001` through `TASK-000010` remain owner-approval-required. No task acceptance, owner decision, gate promotion, or readiness percentage changed.

@@ -356,6 +356,8 @@ def check_companion_records(path: Path) -> None:
         fail("TASK-000011 must be an object")
     if task_000011.get("status") != "review_pending":
         fail("TASK-000011 must remain review_pending")
+    if task_000011.get("work_packages") != ["WP-002"]:
+        fail("TASK-000011 must bind exactly to WP-002")
 
     report = DOCS / "research" / "build-information-readiness-ledger-2026-07.md"
     report_text = report.read_text(encoding="utf-8")

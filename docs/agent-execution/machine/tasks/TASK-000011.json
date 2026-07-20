@@ -10,6 +10,7 @@
     "REQ-PERF-004"
   ],
   "risks": [],
+  "work_packages": ["WP-002"],
   "adrs": [],
   "allowed_paths": [
     "schemas/ipc/",
