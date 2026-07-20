@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - TASK-000011 review-baseline wording alignment
+
+Question:
+
+Does the `TASK-000011` review handoff distinguish its historical evidence baseline from the current repository head used for continuation?
+
+Method:
+
+Reconciled the handoff wording with the immutable historical evidence bundle and current `main` head. The document now identifies the prior review baseline and current continuation audit separately, while requiring a new exact-commit evidence bundle before independent acceptance. This prevents historical M0 evidence from being mistaken for current-head evidence and does not change task status or the 90% contained-M0 / 0% full-build measures.
+
 ## 2026-07-19 - GitHub handoff source identity refresh
 
 Question:

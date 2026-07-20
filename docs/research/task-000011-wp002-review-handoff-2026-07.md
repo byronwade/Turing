@@ -21,7 +21,7 @@ Current answer: the repository has candidate evidence and a checked non-acceptin
 
 ## Current baseline and recapture rule
 
-The latest repository head audited for this handoff is `12922b46165d8d941e0dc504148196f4497d8e91` (July 19, 2026). The checked no-claim bundle remains intentionally bound to historical source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`; it is a valid record of that earlier capture, not evidence for the current head. Before independent review, the reviewer must recapture the required artifacts and command outputs against one exact source commit, record that commit in a new evidence bundle, and keep the historical bundle immutable. Documentation-only commits after this baseline also require recapture before acceptance.
+The prior review baseline for this handoff was `12922b46165d8d941e0dc504148196f4497d8e91` (July 19, 2026); the current continuation audit reaches repository head `02caaebc497036f4b4a9214bdd32c8671c84898d`. The checked no-claim bundle remains intentionally bound to historical source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`; it is a valid record of that earlier capture, not evidence for either the prior review baseline or the current head. Before independent review, the reviewer must recapture the required artifacts and command outputs against one exact source commit, record that commit in a new evidence bundle, and keep the historical bundle immutable. Documentation-only commits after the selected review baseline also require recapture before acceptance.
 
 ## Scope boundary
 
