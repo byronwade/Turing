@@ -101,6 +101,8 @@ Eventually needs supported releases, policy, deployment, proxy/certificate/updat
 - published startup/input/frame/page/memory/energy benchmarks;
 - bounded queues/caches, semantic allocation ownership, pressure escalation, and no dormant-model resource reservation.
 
+The Chrome-class/extreme-performance objective is a measured comparison target, not a single score or an unqualified product claim. The requirement is satisfied only through the staged evidence route in the [Benchmark Evidence and Claim Closure Preparation](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md): L0 contract/self-test, L1 local browser diagnostics, L2 equal-workload competitor diagnostics, and L3 owner-reviewed public-claim candidates. Every level must preserve the declared hardware/OS, workload, profile/cache, lifecycle, process/site-isolation, accessibility, failure-denominator, and trace/no-trace controls. No numeric leadership threshold is selected in this research phase; the owner-reviewed claim bundle must define the exact metric, workload, platform, date, uncertainty, expiry, and unsupported scope before any faster, lower-memory, lower-energy, Chrome-class, or daily-driver statement is permitted.
+
 ### Reliability
 
 - process containment, transactional storage/migrations, session journal, update rollback, fault injection, crash diagnostics, and no unsafe automatic replay of consequential actions.

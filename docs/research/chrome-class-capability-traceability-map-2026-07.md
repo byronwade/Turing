@@ -2,7 +2,7 @@
 
 Status: no-claim traceability map; no readiness promotion
 Owner: research, product, architecture, security, quality, performance, accessibility, release operations, and program control
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 ## Question
 
@@ -44,6 +44,19 @@ A Chrome-class claim is not reviewable until every release-critical row has:
 - owner and independent review;
 - synchronized risks, ADRs, backlog, readiness records, and documentation;
 - release and support language that includes proprietary, platform, and unsupported gaps.
+
+## Performance objective and claim ladder
+
+For the performance row below, “Chrome-class” and “extreme performance” are destination labels, not current capabilities or numeric thresholds. The product requirement is decomposed into measurable goals: responsive chrome and page interaction under renderer hangs and 30-tab pressure, honest memory/resource attribution, bounded lifecycle and recovery behavior, and declared startup, frame, input, page, energy, and compatibility evidence.
+
+| Evidence level | What it establishes | What it cannot establish |
+| --- | --- | --- |
+| `L0` contract/self-test | Runner, corpus, server, artifact, trace, statistics, and cleanup contracts are internally valid | Any browser, competitor, speed, memory, energy, compatibility, or Chrome-class result |
+| `L1` local browser pipeline | One declared browser run on fixed controls with raw artifacts, traces, failures, and cleanup | Competitor comparison or public leadership |
+| `L2` competitor diagnostic | Paired equal-workload diagnostics with complete pins, security/lifecycle/profile controls, raw samples, and failure rows | Public fastest, lower-memory, lower-energy, Chrome-class, compatibility-leadership, or production claims |
+| `L3` public-claim candidate | Reviewed multi-tier data with statistics, uncertainty/effect size, expiry, rerun triggers, supported scope, and exact wording | Any claim outside the reviewed metric, workload, platform, date, or support scope |
+
+The ladder is an evidence boundary, not a performance ranking. A lower score, smaller allocation counter, or faster isolated run cannot satisfy the objective if it weakens security, accessibility, lifecycle, profile, recovery, or denominator controls.
 
 ## Capability Trace
 

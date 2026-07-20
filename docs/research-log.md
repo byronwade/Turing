@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Chrome-class performance objective and claim ladder
+
+Connected the performance requirements to the existing benchmark evidence ladder. The product requirements now define Chrome-class/extreme performance as a measured, scoped destination rather than a numeric or marketing claim, and the traceability map records L0 contract/self-test, L1 local browser diagnostics, L2 equal-workload competitor diagnostics, and L3 owner-reviewed public-claim candidates with their boundaries. No threshold, result, competitor ranking, or performance claim was added; `PB-013` remains documented without a browser runner.
+
 ## 2026-07-20 - Nova cross-lane evidence coverage map
 
 Extended the Nova surface-contract map with a cross-lane matrix connecting visual contracts to page-surface composition, platform accessibility, trusted-chrome authority, profile/storage, fault, and performance evidence routes. Updated the Nova native build-entry packet to point to the matrix. This closes a design-to-evidence navigation gap only; Nova remains a visual/layout reference, no native toolkit or adapter is selected, and the 90% contained-M0 / 0% full-build measures are unchanged.
