@@ -6,6 +6,7 @@
   "claim_status": "no-claim fresh-host reproduction inventory only; no independent fresh-host reproduction, no owner-approved clean-VM equivalent, no owner-reviewed fresh-host readiness, no PB-009 readiness promotion, no broad implementation readiness, no preview readiness, no beta readiness, no stable readiness, no production readiness, no release confidence, no implementation claim, and no Chrome-class claim",
   "source_records": [
     "docs/research/m0-build-foundation-2026-07.md",
+    "docs/project-buildout/machine/fresh-host-toolchain-source-manifest.json",
     "docs/project-buildout/05-repository-build-toolchain-and-coding-standards.md",
     "docs/project-buildout/11-pre-build-readiness-checklist.md",
     "docs/project-buildout/13-build-readiness-operating-board.md",

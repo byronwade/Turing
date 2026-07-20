@@ -12,6 +12,8 @@ What evidence order can turn the checked `WP-003` operation catalog and probe-pa
 
 The repository has a checked sandbox-probe inventory, a stable no-claim operation/evidence contract, platform-evidence decision preparation, a no-claim probe-package template, and a no-claim readiness-review template. These records define the future work. They do not launch a constrained process, capture effective operating-system policy, prove containment, satisfy `SEC-GATE-1` or `SEC-GATE-6`, or support renderer-security, site-isolation, hostile-browsing, production-safety, or implementation claims.
 
+The checked no-claim [sandbox platform-source manifest](../security-engine/machine/sandbox-platform-source-manifest.json) records the official Windows, Linux, and macOS platform observations used to constrain this route. It does not provide effective-policy capture, containment evidence, or sandbox readiness.
+
 ## Primary platform-source observations
 
 The following official platform documentation was retrieved on 2026-07-19 and is used to constrain the evidence interpretation:

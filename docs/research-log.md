@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - IPC, fresh-host, and sandbox provenance handoff audit
+
+Question:
+
+Do the remaining critical IPC, fresh-host, and sandbox closure records expose the source manifests that govern their platform and toolchain observations?
+
+Method:
+
+Compared the source-document lists for `IPC.WIRE.SOURCES.2026_07`, the fresh-host toolchain manifest, and `SEC.SANDBOX.PLATFORM_SOURCES.2026_07` with their canonical records. Added the IPC wire manifest to the capability-boundary inventory, the fresh-host toolchain manifest to the machine reproduction registry's existing `source_records`, and the sandbox platform manifest to the closure-preparation route. This closes provenance navigation only; it does not establish IPC transport, fresh-host reproduction, effective sandbox policy, containment, or readiness.
+
 ## 2026-07-19 - Technology and dependency provenance inbound-link audit
 
 Question:
