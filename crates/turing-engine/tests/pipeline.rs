@@ -26,9 +26,17 @@ fn a_page_renders_its_background_and_its_text() {
     assert_eq!(canvas.pixel(300, 8), Some(color("navy")), "banner fill");
     // "Turing" starts at the content origin: 'T' row 0 is 0x3F, so the
     // top-left of the first glyph cell has ink at x = 0, y = 4.
-    assert_eq!(canvas.pixel(0, 4), Some(color("white")), "glyph ink over navy");
+    assert_eq!(
+        canvas.pixel(0, 4),
+        Some(color("white")),
+        "glyph ink over navy"
+    );
     // Below the banner the canvas is untouched background.
-    assert_eq!(canvas.pixel(300, 40), Some(color("white")), "canvas background");
+    assert_eq!(
+        canvas.pixel(300, 40),
+        Some(color("white")),
+        "canvas background"
+    );
 }
 
 #[test]
@@ -49,7 +57,11 @@ fn a_load_time_script_mutation_is_visible_in_the_first_layout() {
         <script>setAttribute('box', 'class', 'after');</script></body></html>";
     let page = Page::load(html, 100.0).expect("loads");
     let canvas = page.render(100, 32).expect("renders");
-    assert_eq!(canvas.pixel(50, 8), Some(color("lime")), "script won before paint");
+    assert_eq!(
+        canvas.pixel(50, 8),
+        Some(color("lime")),
+        "script won before paint"
+    );
 }
 
 #[test]

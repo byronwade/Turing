@@ -111,6 +111,20 @@ The current shell is a command-line laboratory only. It does not create native w
 | `turing-kernel` | Process registry, launch policy, capability attenuation, and message authorization | Buildable deterministic policy oracle; no OS launcher yet |
 | `turing-ui-model` | Toolkit-neutral shell snapshots and commands | Buildable UI contract skeleton |
 | `turing-shell` | M0 integration laboratory | No native UI yet |
+| `turing-html` | HTML tokenizer and tree builder | Buildable engine stage |
+| `turing-css` | CSS parser, selectors, cascade | Buildable engine stage |
+| `turing-dom` | Live document, mutation epochs, events | Buildable engine stage |
+| `turing-layout` | Block and word-wrapped inline layout, display list, hit testing | Buildable engine stage |
+| `turing-raster` | CPU reference rasterizer with embedded 8x8 reference glyphs | Buildable engine stage |
+| `turing-js` | JavaScript compiler and bounded interpreter | Buildable engine stage; deliberately partial syntax |
+| `turing-gc` | Exact tracing collector | Buildable engine stage |
+| `turing-webidl` | Capability-registered DOM bindings for script | Buildable engine stage |
+| `turing-input` | Epoch-guarded pointer routing | Buildable engine stage |
+| `turing-a11y` | Accessibility tree generation | Buildable engine stage |
+| `turing-engine` | End-to-end page pipeline over the stages above | Buildable research pipeline |
+| `turing-browser` | Windowed laboratory presenter for the pipeline | Research maturity; local files only, no network, no hostile-input claim |
+| `turing-bench` | Pipeline stage benchmarks | Active repository tool |
+| `turing-fuzz` | Seeded fuzz harness over parse-to-layout | Active repository tool |
 | `xtask` | Bootstrap, doctor, generation, and validation commands | Active repository tool |
 | `turing-architecture-prototype` | Earlier executable invariant model | Research-only prototype |
 

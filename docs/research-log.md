@@ -1,5 +1,25 @@
 # Research Log
 
+## 2026-07-20 - A window, word wrap, and the workspace's first external dependencies
+
+Question:
+
+With the pipeline composed, the remaining distance to "a working application" was presentation: pixels in a native window, pointer input coming back. The graphics-foundation gate on `WP-009` was the open decision standing in front of that, and — exactly as with the font gate — the owner's direction to make the engine visible is the decision it was waiting on. `docs/research/graphics-foundation-decision-2026-07.md` records it: the paint foundation stays the CPU reference rasterizer, and presentation is a laboratory binary using `winit` and `softbuffer`, the workspace's first and only external runtime dependencies.
+
+The dependency argument, shortly: windowing is operating-system integration, the category the independent-engine boundary permits platform primitives for, and a local implementation would be platform FFI in a workspace that forbids unsafe code. Containment is structural — the two crates appear in one binary, that binary is in `members` but not `default-members`, so every default build, test, and lint sweep remains standard-library-only, and no engine crate can name a toolkit type. The product toolkit decision (`ADR-0014`, the `WP-004` bake-off) is untouched; this presenter is not a candidate and is deleted, not migrated, when that decision lands.
+
+`apps/turing-browser`, registered as `COMP-022`: loads a file named on the command line or its built-in home page, presents `Page::render`'s pixels, routes clicks through `Page::target_at`/`dispatch_at`, reloads on F5, and re-lays out on resize. A refused reload keeps the last good page and says so in the title. There is no network, no navigation, and no hostile-input claim.
+
+What presenting immediately surfaced:
+
+The first full-window render made two things visible that no crate test had. First, a cascade lesson placed in the home page itself: its status bar styled by id could never show the script's class swap, because the id rule out-specifies the class rule — the cascade was right and the page was wrong, and the page now documents that instead of hiding it. Second, and structurally: a paragraph of ordinary prose ran off the right edge of the window, because line breaking only happened *between* inline children and a text run is one child. A browser that cannot wrap a paragraph is not showing text, it is showing a specimen.
+
+So inline layout now breaks between words. A text run splits at whitespace, interior whitespace collapses to one space, the space evaporates at a line start, and each placed word becomes its own text fragment box carrying the source node — painting and hit testing work on fragments without knowing lines exist. An inline element still moves between lines whole; breaking inside one is fragmentation this layout does not implement. Word-per-fragment costs more display items than run-per-line and buys the reference implementation the property that every rect is computed by one rule.
+
+Two renders verify it end to end: the headless `render_page` example (the window minus the window — same `Page`, same pixels, reproducible without a display) and the live window itself, launched and presenting the home page with the script-mutated bar, wrapped prose, and clickable regions. The workspace is at 374 tests; the presenter is compile-checked and clippy-clean but has no automated window tests, which is a stated gap, not an oversight.
+
+What this does not do: no scrolling — content below the window bottom is clipped, not reachable; no high-DPI scaling — a physical pixel is a CSS pixel; no keyboard input to the page; no navigation, no network, no URL bar; and no product-shell claim of any kind. The M0/M1 milestone structure, the `WP-004` gates, and the contained-M0 start-state records are unchanged: this is `WP-009`'s reference raster made visible, not `WP-004` begun early.
+
 ## 2026-07-20 - The pipeline crate: composition became a contract of its own
 
 Question:

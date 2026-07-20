@@ -5,11 +5,12 @@
   "reference_target": "x86_64-unknown-linux-gnu",
   "rules": {
     "default_unsafe_policy": "forbid",
-    "external_runtime_dependencies": 0,
+    "external_runtime_dependencies": 2,
     "forbidden_dependency_cycles": true,
     "toolkit_types_outside_ui_adapter": false,
     "browser_policy_in_ui_crates": false,
-    "generated_control_plane_source": "schemas/ipc/control-plane.json"
+    "generated_control_plane_source": "schemas/ipc/control-plane.json",
+    "external_runtime_dependency_scope": "winit and softbuffer, laboratory presenter only (COMP-022), per docs/research/graphics-foundation-decision-2026-07.md"
   },
   "components": [
     {
@@ -403,6 +404,32 @@
         "turing-webidl"
       ],
       "failure_boundary": "propagate-stage-refusals-and-relayout-after-mutation"
+    },
+    {
+      "id": "COMP-022",
+      "package": "turing-browser",
+      "path": "apps/turing-browser",
+      "kind": "binary",
+      "owner_scope": "ui-runtime",
+      "privilege": "research-lab-presenter",
+      "hostile_input": false,
+      "public_api": "none",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "windows",
+        "macos",
+        "x11",
+        "wayland"
+      ],
+      "dependencies": [
+        "turing-build-info",
+        "turing-dom",
+        "turing-engine",
+        "turing-layout",
+        "winit (external)",
+        "softbuffer (external)"
+      ],
+      "failure_boundary": "report-refusals-and-keep-the-last-good-page"
     }
   ]
 }

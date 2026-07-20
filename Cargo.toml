@@ -1,6 +1,11 @@
 [workspace]
 resolver = "3"
 members = [
+  # In members but not default-members: the laboratory presenter carries the
+  # workspace's only external runtime dependencies (winit, softbuffer), and
+  # the default build stays standard-library-only. Build it explicitly with
+  # `cargo run -p turing-browser`.
+  "apps/turing-browser",
   "apps/turing-shell",
   "crates/turing-a11y",
   "crates/turing-bench",
