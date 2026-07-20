@@ -530,6 +530,7 @@ These reports must remain linked from the research index and mapped back to the 
 These reports must remain linked from the research index and mapped back to the owning quality, developer-experience, engine, security, privacy, performance, and readiness records:
 
 - [`docs/research/deterministic-replay-and-causal-observability-research-2026-07.md`](research/deterministic-replay-and-causal-observability-research-2026-07.md).
+- [`docs/research/product-slos-and-error-budgets-research-2026-07.md`](research/product-slos-and-error-budgets-research-2026-07.md).
 
 ### Native UI research reports
 

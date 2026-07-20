@@ -283,6 +283,9 @@ Use of any listed project is not automatic approval. It remains subject to the d
 - Storage Standard: https://storage.spec.whatwg.org/
 - Indexed Database API: https://w3c.github.io/IndexedDB/
 - Service Workers: https://w3c.github.io/ServiceWorker/
+- Google SRE Book, Service Level Objectives: https://sre.google/sre-book/service-level-objectives/
+- Google SRE Book, Embracing Risk: https://sre.google/sre-book/embracing-risk/
+- Google SRE Workbook, Implementing SLOs: https://sre.google/workbook/implementing-slos/
 - Clear Site Data: https://w3c.github.io/webappsec-clear-site-data/
 - SQLite: https://sqlite.org/
 

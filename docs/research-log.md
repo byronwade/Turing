@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-62 product SLO and error-budget preparation
+
+Question:
+
+Which evidence and policy structure is required before Turing can choose numeric reliability, performance, energy, compatibility, accessibility, migration, update, and agent-safety targets?
+
+Method:
+
+Reviewed the targetless production-readiness SLO catalog and the official Google SRE guidance on SLI/SLO/SLA distinctions, percentile and denominator design, error budgets, release decisions, and product risk tradeoffs. Mapped those observations to Turing's browser-specific workflows and existing benchmark, quality, security, accessibility, storage, update, and agent-safety lanes.
+
+Result:
+
+Added a no-claim `RQ-62` preparation packet. It requires owner-approved workflows, explicit bad-event and denominator definitions, pinned measurement conditions, raw evidence, privacy review, candidate target tradeoffs, and an owner-reviewed release/error-budget policy. Protected security, accessibility, data-integrity, and authorization failures remain stop conditions rather than metrics that can be offset by performance gains.
+
+Impact:
+
+The research index, Blueprint question, bibliography, repository map, and research log now route `RQ-62` to the canonical targetless SLO catalog and a concrete evidence package. This does not set numeric targets, promote release gates, change active/deferred counts, authorize broad implementation, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can owner-reviewed workflow severity, denominator, and exception policy be captured in the SLO registry without turning candidate values into accepted release targets?
+
 ## 2026-07-19 - Deferred research-question routes semantically aligned
 
 Question:

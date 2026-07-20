@@ -394,6 +394,8 @@ What finite capability and support boundary provides meaningful daily use while 
 
 Which numeric reliability, performance, energy, compatibility, accessibility, migration, update, and agent-safety targets predict a supportable stable browser?
 
+Current preparation starts with the no-claim [Product SLOs and Error Budgets research packet](../research/product-slos-and-error-budgets-research-2026-07.md) and the targetless [production-readiness SLO catalog](../production-readiness/04-product-slos-and-error-budgets.md). It must become owner-approved user workflows, SLI definitions, denominators, fixed-platform baselines, raw evidence, privacy-preserving telemetry review, candidate target tradeoffs, and an owner-reviewed SLO/error-budget decision before it can support numeric release gates, support commitments, performance or reliability claims, accessibility or data-safety claims, update/migration claims, agent-safety claims, or stable readiness.
+
 ## RQ-63 — Update trust and compromise recovery
 
 Which TUF-style role, key, delegation, threshold, expiration, rollback, and emergency-recovery architecture best fits Turing channels and platforms?
