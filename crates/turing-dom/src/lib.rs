@@ -61,6 +61,12 @@ impl Epoch {
     pub const fn value(self) -> u64 {
         self.0
     }
+
+    /// Rebuilds an epoch from a counter recorded earlier.
+    #[must_use]
+    pub const fn from_value(value: u64) -> Self {
+        Self(value)
+    }
 }
 
 impl fmt::Display for Epoch {
@@ -105,6 +111,12 @@ pub enum DomError {
     CustomElementUnsupported { name: String },
     /// `MutationObserver` delivery is ordered against microtask timing.
     MutationObserverUnsupported,
+    /// The requested change history is outside what the document retains.
+    ChangesUnavailable {
+        requested: Epoch,
+        oldest: Epoch,
+        current: Epoch,
+    },
 }
 
 impl From<MutationError> for DomError {
@@ -133,6 +145,17 @@ impl fmt::Display for DomError {
                 formatter,
                 "MutationObserver is not implemented; its delivery depends on microtask ordering"
             ),
+            Self::ChangesUnavailable {
+                requested,
+                oldest,
+                current,
+            } => write!(
+                formatter,
+                "the change history from epoch {} is not available: the document                  retains from {} and is now at {}. Answering with what remains                  would understate what changed, and a caller would act on it as                  though it were complete",
+                requested.value(),
+                oldest.value(),
+                current.value()
+            ),
         }
     }
 }
@@ -147,6 +170,35 @@ pub enum Phase {
     /// Walking back up from the target.
     Bubbling,
 }
+
+/// What one mutation changed.
+///
+/// The blueprint requires the engine to record which nodes a stage affected,
+/// not merely that something happened. An epoch alone says a document moved on;
+/// this says what moved.
+///
+/// Deliberately coarse. A consumer learns which node and which kind of change,
+/// not the old and new values: keeping values would mean retaining a copy of
+/// every string a page ever set, and nothing that consumes this needs them.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Change {
+    /// A node was created. It is detached until inserted.
+    NodeCreated { node: NodeId },
+    /// A parent's child list changed by insertion or removal.
+    ChildList { parent: NodeId },
+    /// An attribute was set or removed on an element.
+    Attribute { node: NodeId, name: String },
+}
+
+/// How many changes a document retains.
+///
+/// The log is attacker-influenced — a script mutates in a loop — so it is
+/// bounded like every other growth path in this workspace. Past the bound the
+/// oldest entries are dropped and a query reaching back that far is refused
+/// rather than answered with what happens to remain: a partial answer
+/// understates what changed, and a consumer would act on it as though it were
+/// complete.
+pub const MAX_RECORDED_CHANGES: usize = 4096;
 
 /// A dispatched event.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -231,6 +283,13 @@ pub enum Effect {
 #[derive(Debug)]
 pub struct Dom {
     document: Document,
+    /// Changes in the order they happened, most recent last.
+    changes: std::collections::VecDeque<Change>,
+    /// The epoch the oldest retained change advanced the document *to*.
+    ///
+    /// Queries older than this are refused, because the entries that would
+    /// answer them have been dropped.
+    oldest_retained: Epoch,
     epoch: Epoch,
     listeners: Vec<Listener>,
 }
@@ -243,6 +302,8 @@ impl Dom {
             document,
             epoch: Epoch::default(),
             listeners: Vec::new(),
+            changes: std::collections::VecDeque::new(),
+            oldest_retained: Epoch::default(),
         }
     }
 
@@ -284,8 +345,46 @@ impl Dom {
         }
     }
 
-    fn bump(&mut self) {
+    /// Advances the epoch and records what changed.
+    ///
+    /// Replaces a bare `bump`, so that advancing the epoch without saying why
+    /// is not expressible. The two were separate for one iteration and nothing
+    /// enforced that they stayed in step; a consumer that trusts the log to
+    /// explain an epoch change would have been wrong the first time they
+    /// diverged, and nothing would have reported it.
+    fn record(&mut self, change: Change) {
         self.epoch.0 += 1;
+        self.changes.push_back(change);
+        if self.changes.len() > MAX_RECORDED_CHANGES {
+            self.changes.pop_front();
+            self.oldest_retained.0 += 1;
+        }
+    }
+
+    /// Returns the oldest epoch whose changes are still retained.
+    #[must_use]
+    pub const fn oldest_retained(&self) -> Epoch {
+        self.oldest_retained
+    }
+
+    /// Returns the changes that have happened since `epoch`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DomError::ChangesUnavailable`] when `epoch` is older than the
+    /// retained history, or newer than the document. A caller that cannot learn
+    /// what changed must treat everything as changed, which is why this refuses
+    /// rather than returning the entries it still has.
+    pub fn changes_since(&self, epoch: Epoch) -> Result<Vec<&Change>, DomError> {
+        if epoch > self.epoch || epoch < self.oldest_retained {
+            return Err(DomError::ChangesUnavailable {
+                requested: epoch,
+                oldest: self.oldest_retained,
+                current: self.epoch,
+            });
+        }
+        let skip = (epoch.0 - self.oldest_retained.0) as usize;
+        Ok(self.changes.iter().skip(skip).collect())
     }
 
     // -- mutation --------------------------------------------------------
@@ -304,14 +403,14 @@ impl Dom {
             });
         }
         let id = self.document.create_element(name, Vec::new());
-        self.bump();
+        self.record(Change::NodeCreated { node: id });
         Ok(self.handle(id))
     }
 
     /// Creates a detached text node.
     pub fn create_text(&mut self, text: &str) -> Handle {
         let id = self.document.create_text(text);
-        self.bump();
+        self.record(Change::NodeCreated { node: id });
         self.handle(id)
     }
 
@@ -325,7 +424,7 @@ impl Dom {
         let parent = self.resolve(parent)?;
         let child = self.resolve(child)?;
         self.document.append_child(parent, child)?;
-        self.bump();
+        self.record(Change::ChildList { parent });
         Ok(())
     }
 
@@ -344,7 +443,7 @@ impl Dom {
         let child = self.resolve(child)?;
         let reference = self.resolve(reference)?;
         self.document.insert_before(parent, child, reference)?;
-        self.bump();
+        self.record(Change::ChildList { parent });
         Ok(())
     }
 
@@ -355,8 +454,13 @@ impl Dom {
     /// Returns [`DomError::StaleHandle`] or a [`DomError::Mutation`].
     pub fn remove_child(&mut self, child: Handle) -> Result<(), DomError> {
         let child = self.resolve(child)?;
+        // Read before the removal: afterwards the node has no parent, and the
+        // change belongs to the list it left rather than to the node.
+        let parent = self.document.node(child).parent;
         self.document.remove_child(child)?;
-        self.bump();
+        if let Some(parent) = parent {
+            self.record(Change::ChildList { parent });
+        }
         Ok(())
     }
 
@@ -373,7 +477,10 @@ impl Dom {
     ) -> Result<(), DomError> {
         let element = self.resolve(element)?;
         self.document.set_attribute(element, name, value)?;
-        self.bump();
+        self.record(Change::Attribute {
+            node: element,
+            name: name.to_string(),
+        });
         Ok(())
     }
 
@@ -385,7 +492,10 @@ impl Dom {
     pub fn remove_attribute(&mut self, element: Handle, name: &str) -> Result<(), DomError> {
         let element = self.resolve(element)?;
         self.document.remove_attribute(element, name)?;
-        self.bump();
+        self.record(Change::Attribute {
+            node: element,
+            name: name.to_string(),
+        });
         Ok(())
     }
 
@@ -852,5 +962,170 @@ mod tests {
 
         dom.set_attribute(handle, "class", "x").expect("sets");
         assert!(dom.epoch() > before);
+    }
+    // -- the change log --------------------------------------------------
+
+    #[test]
+    fn every_epoch_advance_has_a_recorded_change() {
+        // The invariant the whole log rests on. A consumer asks "what changed
+        // since epoch N" precisely because the epoch moved; if the two can
+        // diverge, the answer is wrong in a way the caller cannot detect.
+        //
+        // Structural rather than conventional — `record` is the only way to
+        // advance the epoch — but asserted because the structure is easy to
+        // undo and nothing else would notice.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let start = dom.epoch();
+
+        let node = dom.document().element_by_id("a").expect("exists");
+        // Re-minted each time: every mutation advances the epoch, which makes
+        // every outstanding handle stale. Conservative and deliberate — a
+        // handle taken before a change cannot be assumed to still mean what it
+        // did — but it means a caller performing several mutations re-acquires
+        // between them.
+        let handle = dom.handle(node);
+        dom.set_attribute(handle, "class", "one").expect("sets");
+        let handle = dom.handle(node);
+        dom.set_attribute(handle, "class", "two").expect("sets");
+        let handle = dom.handle(node);
+        dom.remove_attribute(handle, "class").expect("removes");
+
+        let advanced = dom.epoch().value() - start.value();
+        let recorded = dom.changes_since(start).expect("available").len();
+        assert_eq!(advanced, 3);
+        assert_eq!(recorded as u64, advanced, "one change per advance");
+    }
+
+    #[test]
+    fn a_refused_mutation_records_nothing() {
+        // Follows from recording after the fallible step, and worth pinning
+        // separately: a log entry for a change that did not happen would send a
+        // consumer looking for a difference that is not there.
+        let mut dom = dom("<html><body><p>x</p></body></html>");
+        let text = dom.create_text("loose");
+        let settled = dom.epoch();
+
+        assert!(dom.set_attribute(text, "class", "x").is_err());
+
+        assert!(dom.changes_since(settled).expect("available").is_empty());
+        assert_eq!(dom.epoch(), settled);
+    }
+
+    #[test]
+    fn a_change_names_the_node_and_what_changed() {
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+        let before = dom.epoch();
+
+        dom.set_attribute(handle, "data-role", "panel")
+            .expect("sets");
+
+        let changes = dom.changes_since(before).expect("available");
+        assert_eq!(
+            changes,
+            vec![&Change::Attribute {
+                node,
+                name: "data-role".to_string()
+            }]
+        );
+    }
+
+    #[test]
+    fn removing_a_child_records_the_list_it_left() {
+        // The parent has to be read before the removal: afterwards the node has
+        // none, and a change recorded against the detached node would tell a
+        // consumer nothing about which subtree to re-examine.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let parent = dom.document().node(node).parent.expect("has a parent");
+        let handle = dom.handle(node);
+        let before = dom.epoch();
+
+        dom.remove_child(handle).expect("removes");
+
+        assert_eq!(
+            dom.changes_since(before).expect("available"),
+            vec![&Change::ChildList { parent }]
+        );
+    }
+
+    #[test]
+    fn a_query_from_the_current_epoch_is_empty_rather_than_an_error() {
+        // Nothing has changed since now. An error here would make every caller
+        // treat a quiet document as an unknown one.
+        let dom = dom("<html><body><p>x</p></body></html>");
+        assert!(
+            dom.changes_since(dom.epoch())
+                .expect("available")
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn a_query_from_the_future_is_refused() {
+        let dom = dom("<html><body><p>x</p></body></html>");
+        assert!(matches!(
+            dom.changes_since(Epoch::from_value(dom.epoch().value() + 1)),
+            Err(DomError::ChangesUnavailable { .. })
+        ));
+    }
+
+    #[test]
+    fn a_query_older_than_the_retained_history_is_refused() {
+        // Not answered with what remains. A partial answer understates what
+        // changed and a consumer would act on it as though it were complete,
+        // which is worse than being told to assume everything changed.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let start = dom.epoch();
+
+        for i in 0..MAX_RECORDED_CHANGES + 10 {
+            let handle = dom.handle(node);
+            dom.set_attribute(handle, "class", &format!("v{i}"))
+                .expect("sets");
+        }
+
+        assert!(matches!(
+            dom.changes_since(start),
+            Err(DomError::ChangesUnavailable { .. })
+        ));
+        // Recent history is still answerable.
+        let recent = Epoch::from_value(dom.epoch().value() - 5);
+        assert_eq!(dom.changes_since(recent).expect("available").len(), 5);
+    }
+
+    #[test]
+    fn the_log_does_not_grow_without_bound() {
+        // A script mutates in a loop, so this is attacker-influenced and
+        // bounded like every other growth path here.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        for i in 0..MAX_RECORDED_CHANGES * 3 {
+            let handle = dom.handle(node);
+            dom.set_attribute(handle, "class", &format!("v{i}"))
+                .expect("sets");
+        }
+
+        let all = dom.changes_since(dom.oldest_retained()).expect("available");
+        assert_eq!(all.len(), MAX_RECORDED_CHANGES);
+    }
+
+    #[test]
+    fn registering_a_listener_records_nothing() {
+        // Listener registration does not advance the epoch, so it must not
+        // appear in the log either — the two have to agree about what counts as
+        // a change, or a consumer reconciling them finds a discrepancy that is
+        // not real.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+        let before = dom.epoch();
+
+        dom.add_listener(handle, "click", "handler", false, &[])
+            .expect("registers");
+
+        assert_eq!(dom.epoch(), before);
+        assert!(dom.changes_since(before).expect("available").is_empty());
     }
 }

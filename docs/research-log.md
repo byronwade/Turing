@@ -1,5 +1,45 @@
 # Research Log
 
+## 2026-07-20 - A mutation log, and the invalidation shortcut that was refused
+
+Question:
+
+The previous entry ended by naming scoped invalidation as the most valuable next work: layout invalidation is total, and the blueprint's model requires the engine to record which nodes a stage affected. The intended design was a change log plus a router that consults it to skip relayout when a mutation could not have affected geometry.
+
+The rule considered, and why only half was built:
+
+The proposed rule was that a mutation to an attribute no selector references cannot change style, so the router may keep using its cached boxes. Selector-referenced attributes are collectable from the stylesheet, and the rule looks sound.
+
+It is sound only because of what is missing. Attributes reach layout through channels other than selectors: inline `style`, presentational hints such as `<img width>`, and attribute-driven box generation such as `input type`. Every one of those is unimplemented here, which is the only reason the rule holds.
+
+Adding inline-style parsing is an ordinary next step for the CSS crate. On the day it lands, `setAttribute("style", "height:500px")` changes geometry, the router concludes no selector references `style` and keeps its stale boxes, and clicks land on the wrong element. **No test fails**, because the test would need inline style to exist. The defect would be planted now and triggered by unrelated work later, which is the worst version of the failure this project keeps finding.
+
+The deeper objection is that the rule makes the router's correctness depend on a global invariant — nothing outside selector-referenced attributes affects layout — that is not locally checkable and that a distant crate can invalidate without touching the router.
+
+There is also no measured need. Refusing and relaying out is already *correct*, merely conservative, and nothing has established that per-mutation relayout is a bottleneck anywhere. `PB-013` forbids trading for unmeasured performance; the same standard applies to trading away correctness margin.
+
+So the log was built and the router was left conservative. Acting on the log to skip relayout is deferred until there is both a measured need and a dependency model in which whatever computes layout declares its inputs — so a new input like inline style joins the invalidation set by construction rather than by someone remembering.
+
+Method:
+
+`Change` records what one mutation changed: a node created, a parent's child list altered, or a named attribute set or removed on an element. Coarse by design — no old and new values, because retaining them means keeping a copy of every string a page ever set and nothing that consumes this needs them.
+
+`bump` was replaced by `record`, which advances the epoch and appends in one step. Advancing without saying why is now inexpressible. The two were separate for one iteration and nothing enforced that they stayed in step; a consumer trusting the log to explain an epoch change would have been wrong the first time they diverged, with nothing to report it.
+
+The log is bounded, because a script mutating in a loop drives its growth. Past the bound the oldest entries are dropped and a query reaching that far back is refused rather than answered with what remains: a partial answer understates what changed and a caller would act on it as complete, which is worse than being told to assume everything changed. A query from the current epoch is empty rather than an error, so a quiet document does not read as an unknown one.
+
+Removing a child records the list it left, which means reading the parent before the removal — afterwards the node has none, and a change recorded against a detached node tells a consumer nothing about which subtree to re-examine.
+
+Controls:
+
+Making the epoch advance without always recording failed the completeness test and, incidentally, the truncation test. Answering a truncated query with the entries that remained failed the truncation test alone. Both caught.
+
+A property surfaced by the tests rather than by design: every mutation invalidates every outstanding handle, so a caller performing several mutations must re-acquire between them. Three tests failed on this before it was understood. It is correct — a handle taken before a change cannot be assumed to still mean what it did — and it is now stated where a reader will meet it.
+
+Nine tests. The workspace is at 355.
+
+What this does not do: nothing consumes the log yet. It is the record the blueprint asks for and a prerequisite for incremental invalidation, DevTools, and agent snapshots, none of which exist. The router still refuses on any epoch change. Change entries name a node but not what would have to be recomputed, which is the dependency model the deferred work needs and this does not begin.
+
 ## 2026-07-20 - Script mutating the page, and a test that was weaker than its name
 
 Question:
