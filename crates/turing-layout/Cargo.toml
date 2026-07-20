@@ -10,9 +10,15 @@ homepage.workspace = true
 authors.workspace = true
 publish = false
 
+[features]
+# Layout is generic over turing-css's ElementTree. The engine's own DOM is one
+# implementation; embedders lay out their own tree with default-features=false.
+default = ["html"]
+html = ["dep:turing-html", "turing-css/html"]
+
 [dependencies]
-turing-css = { path = "../turing-css" }
-turing-html = { path = "../turing-html" }
+turing-css = { path = "../turing-css", default-features = false }
+turing-html = { path = "../turing-html", optional = true }
 
 [lints]
 workspace = true

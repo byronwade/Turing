@@ -40,7 +40,33 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_html::{Document, NodeData, NodeId};
+
+/// The tree this crate matches selectors against.
+///
+/// Selector matching needs four questions answered about a node and nothing
+/// else. Expressing that as a trait rather than a concrete document type is
+/// what lets this crate style a host's own tree: a game UI, a design tool, a
+/// terminal renderer. The engine's own DOM is one implementation of it, behind
+/// the `html` feature, not a requirement.
+pub trait ElementTree {
+    /// Node handle. Cheap to copy, because matching passes them constantly.
+    type Node: Copy + Eq;
+
+    /// Returns whether the node is an element rather than text or a comment.
+    fn is_element(&self, node: Self::Node) -> bool;
+
+    /// Returns the element's lowercased tag name.
+    fn tag_name(&self, node: Self::Node) -> Option<&str>;
+
+    /// Returns an attribute value by lowercased name.
+    fn attribute(&self, node: Self::Node, name: &str) -> Option<&str>;
+
+    /// Returns the parent node.
+    fn parent(&self, node: Self::Node) -> Option<Self::Node>;
+
+    /// Returns the nearest preceding sibling that is an element.
+    fn previous_element_sibling(&self, node: Self::Node) -> Option<Self::Node>;
+}
 
 /// A construct this implementation does not model.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -533,46 +559,46 @@ fn parse_declarations(block: &str) -> Vec<Declaration> {
 
 // -- matching ------------------------------------------------------------
 
-/// Returns whether `selector` matches `element` in `document`.
+/// Returns whether `selector` matches `element` in `tree`.
 #[must_use]
-pub fn matches(document: &Document, element: NodeId, selector: &Selector) -> bool {
-    if !compound_matches(document, element, &selector.subject) {
+pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) -> bool {
+    if !compound_matches(tree, element, &selector.subject) {
         return false;
     }
     let mut current = element;
     for (combinator, compound) in &selector.ancestors {
         match combinator {
-            Combinator::Descendant => match find_ancestor(document, current, compound) {
+            Combinator::Descendant => match find_ancestor(tree, current, compound) {
                 Some(found) => current = found,
                 None => return false,
             },
             Combinator::Child => {
-                let Some(parent) = document.node(current).parent else {
+                let Some(parent) = tree.parent(current) else {
                     return false;
                 };
-                if !compound_matches(document, parent, compound) {
+                if !compound_matches(tree, parent, compound) {
                     return false;
                 }
                 current = parent;
             }
             Combinator::NextSibling => {
-                let Some(previous) = previous_element_sibling(document, current) else {
+                let Some(previous) = tree.previous_element_sibling(current) else {
                     return false;
                 };
-                if !compound_matches(document, previous, compound) {
+                if !compound_matches(tree, previous, compound) {
                     return false;
                 }
                 current = previous;
             }
             Combinator::SubsequentSibling => {
-                let mut cursor = previous_element_sibling(document, current);
+                let mut cursor = tree.previous_element_sibling(current);
                 let mut found = None;
                 while let Some(candidate) = cursor {
-                    if compound_matches(document, candidate, compound) {
+                    if compound_matches(tree, candidate, compound) {
                         found = Some(candidate);
                         break;
                     }
-                    cursor = previous_element_sibling(document, candidate);
+                    cursor = tree.previous_element_sibling(candidate);
                 }
                 match found {
                     Some(node) => current = node,
@@ -584,48 +610,34 @@ pub fn matches(document: &Document, element: NodeId, selector: &Selector) -> boo
     true
 }
 
-fn find_ancestor(document: &Document, from: NodeId, compound: &Compound) -> Option<NodeId> {
-    let mut cursor = document.node(from).parent;
+fn find_ancestor<T: ElementTree>(tree: &T, from: T::Node, compound: &Compound) -> Option<T::Node> {
+    let mut cursor = tree.parent(from);
     while let Some(candidate) = cursor {
-        if compound_matches(document, candidate, compound) {
+        if compound_matches(tree, candidate, compound) {
             return Some(candidate);
         }
-        cursor = document.node(candidate).parent;
+        cursor = tree.parent(candidate);
     }
     None
 }
 
-fn previous_element_sibling(document: &Document, node: NodeId) -> Option<NodeId> {
-    let parent = document.node(node).parent?;
-    let siblings = &document.node(parent).children;
-    let index = siblings.iter().position(|&id| id == node)?;
-    siblings[..index]
-        .iter()
-        .rev()
-        .copied()
-        .find(|&id| matches!(document.node(id).data, NodeData::Element { .. }))
-}
-
-fn compound_matches(document: &Document, element: NodeId, compound: &Compound) -> bool {
-    let NodeData::Element { name, attributes } = &document.node(element).data else {
+fn compound_matches<T: ElementTree>(tree: &T, element: T::Node, compound: &Compound) -> bool {
+    if !tree.is_element(element) {
         return false;
-    };
+    }
     compound.parts.iter().all(|part| match part {
         SimpleSelector::Universal => true,
-        SimpleSelector::Type(expected) => name == expected,
-        SimpleSelector::Class(expected) => attributes
-            .iter()
-            .find(|attribute| attribute.name == "class")
-            .is_some_and(|attribute| attribute.value.split_whitespace().any(|c| c == expected)),
-        SimpleSelector::Id(expected) => attributes
-            .iter()
-            .any(|attribute| attribute.name == "id" && attribute.value == *expected),
-        SimpleSelector::AttributePresent(expected) => attributes
-            .iter()
-            .any(|attribute| attribute.name == *expected),
-        SimpleSelector::AttributeEquals { name: key, value } => attributes
-            .iter()
-            .any(|attribute| attribute.name == *key && attribute.value == *value),
+        SimpleSelector::Type(expected) => tree.tag_name(element) == Some(expected.as_str()),
+        // A class attribute is a whitespace-separated list, so a substring
+        // test here would leak styles onto unrelated elements.
+        SimpleSelector::Class(expected) => tree
+            .attribute(element, "class")
+            .is_some_and(|value| value.split_whitespace().any(|c| c == expected)),
+        SimpleSelector::Id(expected) => tree.attribute(element, "id") == Some(expected.as_str()),
+        SimpleSelector::AttributePresent(expected) => tree.attribute(element, expected).is_some(),
+        SimpleSelector::AttributeEquals { name: key, value } => {
+            tree.attribute(element, key) == Some(value.as_str())
+        }
     })
 }
 
@@ -651,9 +663,9 @@ pub struct ComputedDeclaration {
 /// and user-agent or user origins are not modeled here; this resolves author
 /// stylesheet rules only.
 #[must_use]
-pub fn cascade(
-    document: &Document,
-    element: NodeId,
+pub fn cascade<T: ElementTree>(
+    tree: &T,
+    element: T::Node,
     stylesheet: &Stylesheet,
 ) -> Vec<(String, ComputedDeclaration)> {
     let mut winners: Vec<(String, ComputedDeclaration)> = Vec::new();
@@ -662,7 +674,7 @@ pub fn cascade(
         let Some(specificity) = rule
             .selectors
             .iter()
-            .filter(|selector| matches(document, element, selector))
+            .filter(|selector| matches(tree, element, selector))
             .map(Selector::specificity)
             .max()
         else {
@@ -707,10 +719,60 @@ fn beats(candidate: &ComputedDeclaration, existing: &ComputedDeclaration) -> boo
     }
 }
 
-#[cfg(test)]
+// -- turing-html adapter -------------------------------------------------
+
+/// Implements [`ElementTree`] for the engine's own document.
+///
+/// Behind the `html` feature so the core selector engine carries no
+/// dependency. This is the reference implementation of the trait, and it is
+/// also the shape an embedder copies for their own tree.
+#[cfg(feature = "html")]
+mod html_tree {
+    use super::ElementTree;
+    use turing_html::{Document, NodeData, NodeId};
+
+    impl ElementTree for Document {
+        type Node = NodeId;
+
+        fn is_element(&self, node: Self::Node) -> bool {
+            matches!(self.node(node).data, NodeData::Element { .. })
+        }
+
+        fn tag_name(&self, node: Self::Node) -> Option<&str> {
+            self.element_name(node)
+        }
+
+        fn attribute(&self, node: Self::Node, name: &str) -> Option<&str> {
+            let NodeData::Element { attributes, .. } = &self.node(node).data else {
+                return None;
+            };
+            attributes
+                .iter()
+                .find(|attribute| attribute.name == name)
+                .map(|attribute| attribute.value.as_str())
+        }
+
+        fn parent(&self, node: Self::Node) -> Option<Self::Node> {
+            self.node(node).parent
+        }
+
+        fn previous_element_sibling(&self, node: Self::Node) -> Option<Self::Node> {
+            let parent = self.node(node).parent?;
+            let siblings = &self.node(parent).children;
+            let index = siblings.iter().position(|&id| id == node)?;
+            siblings[..index]
+                .iter()
+                .rev()
+                .copied()
+                .find(|&id| self.is_element(id))
+        }
+    }
+}
+
+#[cfg(all(test, feature = "html"))]
 mod tests {
     use super::*;
-    use turing_html::{Tokenizer, TreeBuilder};
+    use turing_html::{Document, NodeId, Tokenizer, TreeBuilder};
 
     fn document(html: &str) -> Document {
         let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;

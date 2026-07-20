@@ -10,8 +10,15 @@ homepage.workspace = true
 authors.workspace = true
 publish = false
 
+[features]
+# The engine's own DOM is one ElementTree implementation, not a requirement.
+# Embedders matching against their own tree build with
+# `default-features = false` and get a dependency-free selector engine.
+default = ["html"]
+html = ["dep:turing-html"]
+
 [dependencies]
-turing-html = { path = "../turing-html" }
+turing-html = { path = "../turing-html", optional = true }
 
 [lints]
 workspace = true

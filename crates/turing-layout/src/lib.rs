@@ -46,8 +46,34 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_css::{Stylesheet, cascade};
-use turing_html::{Document, NodeData, NodeId};
+use turing_css::{ElementTree, Stylesheet, cascade};
+
+/// What layout needs from a tree beyond selector matching.
+///
+/// Selector matching answers questions about one element; box generation also
+/// has to walk children and read text. Keeping this separate from
+/// [`ElementTree`] means an embedder implements only what they use.
+pub trait LayoutTree: ElementTree {
+    /// Returns the root node to begin box generation from.
+    fn root(&self) -> Self::Node;
+
+    /// Returns the node's children in document order.
+    fn children(&self, node: Self::Node) -> Vec<Self::Node>;
+
+    /// Returns the node's text, if it is a text node.
+    fn text(&self, node: Self::Node) -> Option<&str>;
+
+    /// Returns whether the node generates no box regardless of style,
+    /// such as a comment or doctype.
+    fn is_non_rendered(&self, node: Self::Node) -> bool;
+
+    /// Returns a stable index identifying the node.
+    ///
+    /// Layout boxes record this rather than `Self::Node` so [`LayoutBox`] stays
+    /// a plain data type an embedder can pass to a painter or a test without
+    /// carrying the tree's type parameter along with it.
+    fn node_index(&self, node: Self::Node) -> usize;
+}
 
 /// A feature this implementation does not model.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -182,8 +208,8 @@ pub struct LayoutBox {
     pub dimensions: Dimensions,
     /// How this box participates in flow.
     pub kind: BoxKind,
-    /// Source element, absent for anonymous boxes.
-    pub node: Option<NodeId>,
+    /// Source node index, absent for anonymous boxes.
+    pub node: Option<usize>,
     /// Text content for [`BoxKind::Text`].
     pub text: Option<String>,
     /// Resolved declarations that painting needs.
@@ -232,13 +258,13 @@ struct Style {
 ///
 /// Returns [`LayoutError`] when a declaration selects a formatting model this
 /// implementation does not provide, rather than placing content wrongly.
-pub fn layout(
-    document: &Document,
+pub fn layout<T: LayoutTree>(
+    tree: &T,
     stylesheet: &Stylesheet,
     width: f32,
     metrics: TextMetrics,
 ) -> Result<LayoutBox, LayoutError> {
-    let root = build_box(document, stylesheet, document.root(), None)?
+    let root = build_box(tree, stylesheet, tree.root(), None)?
         .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
@@ -283,34 +309,33 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
 
 // -- box generation ------------------------------------------------------
 
-fn build_box(
-    document: &Document,
+fn build_box<T: LayoutTree>(
+    tree: &T,
     stylesheet: &Stylesheet,
-    node: NodeId,
+    node: T::Node,
     inherited_color: Option<&str>,
 ) -> Result<Option<LayoutBox>, LayoutError> {
-    match &document.node(node).data {
-        NodeData::Text(text) => {
-            if text.trim().is_empty() {
-                return Ok(None);
-            }
-            return Ok(Some(LayoutBox {
-                dimensions: Dimensions::default(),
-                kind: BoxKind::Text,
-                node: Some(node),
-                text: Some(text.clone()),
-                background: None,
-                // `color` is inherited, so a text run paints in the colour of
-                // the nearest ancestor that set one.
-                color: inherited_color.map(str::to_string),
-                children: Vec::new(),
-            }));
+    if let Some(text) = tree.text(node) {
+        if text.trim().is_empty() {
+            return Ok(None);
         }
-        NodeData::Comment(_) | NodeData::Doctype { .. } => return Ok(None),
-        NodeData::Document | NodeData::Element { .. } => {}
+        return Ok(Some(LayoutBox {
+            dimensions: Dimensions::default(),
+            kind: BoxKind::Text,
+            node: Some(tree.node_index(node)),
+            text: Some(text.to_string()),
+            background: None,
+            // `color` is inherited, so a text run paints in the colour of
+            // the nearest ancestor that set one.
+            color: inherited_color.map(str::to_string),
+            children: Vec::new(),
+        }));
+    }
+    if tree.is_non_rendered(node) {
+        return Ok(None);
     }
 
-    let style = resolve_style(document, stylesheet, node)?;
+    let style = resolve_style(tree, stylesheet, node)?;
     let display = style.display.as_deref().unwrap_or("");
     if display == "none" {
         return Ok(None);
@@ -318,15 +343,14 @@ fn build_box(
 
     let own_color = style.color.as_deref().or(inherited_color);
     let mut children = Vec::new();
-    for &child in &document.node(node).children {
-        if let Some(built) = build_box(document, stylesheet, child, own_color)? {
+    for child in tree.children(node) {
+        if let Some(built) = build_box(tree, stylesheet, child, own_color)? {
             children.push(built);
         }
     }
 
-    let kind = if matches!(document.node(node).data, NodeData::Document) {
-        BoxKind::Block
-    } else if display == "inline" {
+    // The root is not an element and has no `display`, so it stays a block.
+    let kind = if tree.is_element(node) && display == "inline" {
         BoxKind::Inline
     } else {
         BoxKind::Block
@@ -348,7 +372,7 @@ fn build_box(
             ..Dimensions::default()
         },
         kind,
-        node: Some(node),
+        node: Some(tree.node_index(node)),
         text: None,
         background: style.background.clone(),
         color: own_color.map(str::to_string),
@@ -395,17 +419,17 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
     }
 }
 
-fn resolve_style(
-    document: &Document,
+fn resolve_style<T: LayoutTree>(
+    tree: &T,
     stylesheet: &Stylesheet,
-    node: NodeId,
+    node: T::Node,
 ) -> Result<Style, LayoutError> {
     let mut style = Style::default();
-    if matches!(document.node(node).data, NodeData::Document) {
+    if !tree.is_element(node) {
         return Ok(style);
     }
 
-    let declarations = cascade(document, node, stylesheet);
+    let declarations = cascade(tree, node, stylesheet);
     for (property, computed) in &declarations {
         let value = computed.value.as_str();
         match property.as_str() {
@@ -450,7 +474,7 @@ fn resolve_style(
     // a full user-agent stylesheet is not implemented. Treating the known
     // inline elements as inline keeps ordinary text flowing correctly.
     if style.display.is_none()
-        && let Some(name) = document.element_name(node)
+        && let Some(name) = tree.tag_name(node)
     {
         style.display = Some(default_display(name).to_string());
     }
@@ -595,10 +619,50 @@ fn calculate_height(layout_box: &mut LayoutBox) {
     }
 }
 
-#[cfg(test)]
+// -- turing-html adapter -------------------------------------------------
+
+/// Implements [`LayoutTree`] for the engine's own document.
+///
+/// Behind the `html` feature, so layout itself carries no dependency on the
+/// DOM. This is also the shape an embedder copies for their own tree.
+#[cfg(feature = "html")]
+mod html_tree {
+    use super::LayoutTree;
+    use turing_html::{Document, NodeData};
+
+    impl LayoutTree for Document {
+        fn root(&self) -> Self::Node {
+            Document::root(self)
+        }
+
+        fn children(&self, node: Self::Node) -> Vec<Self::Node> {
+            self.node(node).children.clone()
+        }
+
+        fn text(&self, node: Self::Node) -> Option<&str> {
+            match &self.node(node).data {
+                NodeData::Text(text) => Some(text.as_str()),
+                _ => None,
+            }
+        }
+
+        fn is_non_rendered(&self, node: Self::Node) -> bool {
+            matches!(
+                self.node(node).data,
+                NodeData::Comment(_) | NodeData::Doctype { .. }
+            )
+        }
+
+        fn node_index(&self, node: Self::Node) -> usize {
+            node.index()
+        }
+    }
+}
+
+#[cfg(all(test, feature = "html"))]
 mod tests {
     use super::*;
-    use turing_html::{Tokenizer, TreeBuilder};
+    use turing_html::{Document, NodeId, Tokenizer, TreeBuilder};
 
     fn run(html: &str, css: &str, width: f32) -> Result<LayoutBox, LayoutError> {
         let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
@@ -613,8 +677,8 @@ mod tests {
             document: &Document,
             tag: &str,
         ) -> Option<&'tree LayoutBox> {
-            if let Some(id) = node.node
-                && document.element_name(id) == Some(tag)
+            if let Some(index) = node.node
+                && document.element_name(NodeId::from_index(index)) == Some(tag)
             {
                 return Some(node);
             }

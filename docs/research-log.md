@@ -1,5 +1,31 @@
 # Research Log
 
+## 2026-07-20 - Style and layout decoupled from the DOM behind tree traits
+
+Question:
+
+The stated goal is an engine developers can embed in any application. `turing-css` and `turing-layout` were written against `turing-html::Document` directly, on the reasoning that it was the real pipeline shape. That reasoning was right for proving the pipeline works and wrong for the goal: an embedder with their own tree could not use either crate without first converting their document into ours.
+
+Method:
+
+Introduced two traits and moved the concrete document behind a Cargo feature.
+
+`turing_css::ElementTree` is what selector matching needs: `is_element`, `tag_name`, `attribute`, `parent`, `previous_element_sibling`. `matches`, `cascade`, `find_ancestor`, and `compound_matches` are now generic over it.
+
+`turing_layout::LayoutTree: ElementTree` adds what box generation additionally needs: `root`, `children`, `text`, `is_non_rendered`, `node_index`. `layout`, `build_box`, and `resolve_style` are generic over it.
+
+Decision:
+
+The traits are split rather than merged. Selector matching asks questions about one element; box generation walks the tree and reads text. An embedder who only wants the cascade should not have to implement `children` and `text` to get it. Splitting also matches how the crates depend on each other, so `turing-layout` did not need to restate the matching surface.
+
+`LayoutBox.node` became `Option<usize>` rather than a generic node parameter. Threading `T::Node` through `LayoutBox` would push the tree's type parameter into the display list and into every painter and test that touches one. A layout box is output data; it should not carry the type of the input that produced it. `node_index` on the trait is how a tree supplies that identity — this was the alternative to an `Into<usize>` bound on `T::Node`, which the orphan rule blocks anyway, since neither `NodeId` nor `usize` is ours to implement across.
+
+Both crates now default to `html`, which pulls in `turing-html` and provides the adapter implementations. `--no-default-features` builds a selector engine and a layout engine with zero dependencies, which is the shape an embedder consumes. Both configurations are checked: `cargo build --no-default-features` and `cargo clippy --no-default-features -D warnings` pass for each crate, and the default configuration passes its tests.
+
+The adapter modules are the worked example. An embedder implementing `ElementTree` for their own tree copies roughly twenty lines.
+
+What this does not do: `turing-dom` still depends on `turing-html` concretely and has not been given the same treatment. No performance claim is attached to this change — it is an API-shape change, and `PB-013` requires measurement before any speed claim, which the benchmark harness does not yet exist to provide.
+
 ## 2026-07-20 - Exact tracing garbage collector and binding registry implemented
 
 Question:
