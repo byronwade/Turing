@@ -16,6 +16,10 @@ Rechecked the official Speedometer 3.1 methodology page and found no suite-ident
 
 Compared the 91 named function components in the committed Nova JSX source with the surface-contract map. Added an explicit reconciliation for shared primitives, settings subsections, popovers, vault rows, and assistant/DevTools message elements that are intentionally owned by parent component contracts rather than treated as separate product authorities. This closes source-coverage navigation only; no native fixture, accessibility, security, toolkit, or implementation gate changed.
 
+## 2026-07-20 - IPC message-class policy contract
+
+Added a candidate-independent IPC message-class policy proposal covering control envelopes, requests, responses, events, and persisted diagnostics. It makes unknown-field, unknown-variant, malformed-input, stale-state, authority, resource, and diagnostic handling explicit before codec selection. This improves decision readiness only; no wire format, generator, transport, or `PB-011` status changed.
+
 ## 2026-07-20 - Repository-wide source-manifest provenance audit
 
 Audited all thirteen checked source-manifest families and every declared `source_documents` entry. All twelve manifests with document lists resolve to existing files and are referenced by each owning document, including the repository-root `.github/CODEOWNERS` control file. Extended `tools/validate_source_manifest_coverage.py` to enforce this repository-wide identity link invariant so future audits cannot omit non-`docs/` paths. This closes provenance organization only; it does not create implementation evidence or promote M0 or full-build readiness.

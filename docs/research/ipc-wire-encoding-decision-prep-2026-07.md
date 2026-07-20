@@ -46,6 +46,20 @@ Any candidate must provide or be wrapped by an explicit Turing protocol that:
 
 These observations are architectural tradeoffs, not a scorecard. No candidate is preferred until a bounded prototype measures decode cost, allocation behavior, malformed-input behavior, generated-code auditability, and cross-version handling on representative control messages.
 
+## Candidate-independent message-class policy proposal
+
+The following policy is a portable decision input that must be reviewed and either accepted, amended, or rejected with the selected encoding. It keeps wire compatibility separate from authority compatibility.
+
+| Message class | Unknown fields | Unknown variants or versions | Malformed, oversized, stale, or unauthorized input | Required record |
+| --- | --- | --- | --- | --- |
+| Control and authority-bearing envelope | Reject unless the field is explicitly declared ignorable by the versioned envelope contract; never let an unknown field widen identity, route, capability, resource, or deadline | Fail closed before dispatch | Reject before state mutation or unbounded allocation; emit bounded redacted diagnostics | Envelope version, field policy, rejection reason, principal/epoch/channel, and resource outcome |
+| Request | Ignore only explicitly forward-compatible non-authority fields; preserve the exact decoded field set for diagnostics | Reject unknown operation, capability, principal, epoch, or resource-owner meaning | Reject before handler invocation; cancellation and timeout must produce one terminal outcome | Request schema version, operation, capability, identity context, deadline, cancellation, and terminal result |
+| Response | Ignore only explicitly non-authority fields when the request version permits it; never infer success from missing fields | Reject unknown result meaning or incompatible request correlation | Reject and close/quarantine the correlation as specified; never reinterpret an error as success | Correlation, response version, result/error class, resource release, and retry/replay disposition |
+| Event and notification | Ignore explicitly optional presentation/diagnostic fields; never ignore identity, epoch, subscription, or resource-owner fields | Reject unknown event meaning or stale subscription epoch | Drop or quarantine according to event criticality, with bounded accounting and no authority grant | Subscription, event version, sequence, coalescing/drop decision, and delivery outcome |
+| Persisted diagnostic or evidence record | Preserve unknown fields as opaque data only when integrity and size limits hold; never execute or authorize from them | Mark as unsupported or quarantine rather than reinterpret | Reject integrity/size failures without loading unbounded content | Source/schema version, digest, capture context, parser result, and unsupported fields |
+
+This is a protocol-policy proposal, not a selected encoding or compatibility promise. The owner decision must identify which fields are authority-bearing, which optional fields are safely ignorable, whether unknown data is preserved or discarded, and which version transitions are supported. Every exception needs a bounded version range, test case, and rejection rule.
+
 ## Decision gates
 
 Before an owner can select an encoding, the decision packet must contain:
