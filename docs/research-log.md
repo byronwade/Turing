@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Source-manifest coverage regression control
+
+Question:
+
+Can future documentation changes automatically detect when a source manifest, schema, or validator is omitted from its owning lane and the PB-020 control surfaces?
+
+Method:
+
+Added `validate_source_manifest_coverage.py` with an explicit 12-manifest-to-lane map. The aggregate `xtask check` now requires every manifest, schema, and validator to appear in the research crosswalk, build-information ledger, PB-020 audit, closure template, and owning lane. This is a no-claim documentation regression control and does not promote any gate.
+
 ## 2026-07-19 - Lane source-manifest crosswalk reconciliation
 
 Question:
