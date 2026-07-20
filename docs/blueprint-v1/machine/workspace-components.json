@@ -313,6 +313,28 @@
         "turing-layout"
       ],
       "failure_boundary": "reject-glyph-rasterization-and-oversized-canvases"
+    },
+    {
+      "id": "COMP-018",
+      "package": "turing-fuzz",
+      "path": "crates/turing-fuzz",
+      "kind": "tool",
+      "owner_scope": "engine",
+      "privilege": "unprivileged",
+      "hostile_input": true,
+      "public_api": "internal-fuzz-harness",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-html",
+        "turing-css",
+        "turing-layout",
+        "turing-a11y",
+        "turing-js"
+      ],
+      "failure_boundary": "report-unwind-with-reproducing-seed"
     }
   ]
 }

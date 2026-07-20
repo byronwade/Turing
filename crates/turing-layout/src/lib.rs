@@ -98,6 +98,8 @@ pub enum LayoutError {
     WritingModeUnsupported { value: String },
     /// A negative length on a box edge.
     NegativeEdgeUnsupported { property: String, value: String },
+    /// The document nests deeper than this implementation will recurse.
+    NestingTooDeep { limit: usize },
 }
 
 impl From<CssError> for LayoutError {
@@ -125,6 +127,10 @@ impl fmt::Display for LayoutError {
             Self::WritingModeUnsupported { value } => {
                 write!(formatter, "writing mode {value} is not implemented")
             }
+            Self::NestingTooDeep { limit } => write!(
+                formatter,
+                "the document nests deeper than {limit} elements; box generation                  recurses, and continuing would overflow the stack, which aborts                  the process rather than returning an error"
+            ),
             Self::NegativeEdgeUnsupported { property, value } => write!(
                 formatter,
                 "{property}: {value} is not implemented; margin collapsing with negative \
@@ -134,6 +140,15 @@ impl fmt::Display for LayoutError {
         }
     }
 }
+
+/// The deepest element nesting this implementation will lay out.
+///
+/// Every stage after box generation — layout, painting, and hit testing — walks
+/// the box tree recursively, so bounding generation bounds all of them. The
+/// value is well above real documents and well below the depth at which the
+/// stack runs out, which was measured rather than guessed: recursion here
+/// overflows a default test stack somewhere between 100 and 1000 levels.
+pub const MAX_NESTING_DEPTH: usize = 256;
 
 /// A rectangle in CSS pixels, with the origin at the top left.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -289,7 +304,7 @@ pub fn layout<T: LayoutTree>(
     width: f32,
     metrics: TextMetrics,
 ) -> Result<LayoutBox, LayoutError> {
-    let root = build_box(tree, stylesheet, tree.root(), None)?
+    let root = build_box(tree, stylesheet, tree.root(), None, 0)?
         .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
@@ -338,7 +353,18 @@ fn build_box<T: LayoutTree>(
     stylesheet: &Stylesheet,
     node: T::Node,
     inherited_color: Option<Color>,
+    depth: usize,
 ) -> Result<Option<LayoutBox>, LayoutError> {
+    // Box generation recurses, and so do layout, painting, and hit testing over
+    // the box tree it produces. A stack overflow is not a recoverable error:
+    // it aborts the process and cannot be caught, so a document deeper than the
+    // limit is refused here rather than allowed to crash later.
+    if depth > MAX_NESTING_DEPTH {
+        return Err(LayoutError::NestingTooDeep {
+            limit: MAX_NESTING_DEPTH,
+        });
+    }
+
     if let Some(text) = tree.text(node) {
         if text.trim().is_empty() {
             return Ok(None);
@@ -368,7 +394,7 @@ fn build_box<T: LayoutTree>(
     let own_color = style.color.or(inherited_color);
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(tree, stylesheet, child, own_color)? {
+        if let Some(built) = build_box(tree, stylesheet, child, own_color, depth + 1)? {
             children.push(built);
         }
     }
