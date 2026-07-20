@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Full-goal percentage wording alignment
+
+Question:
+
+Could the closure-preparation document's `1/10 blocked_for_full_goal` wording be mistaken for 10% full-build completion when the canonical audit measures `0/10 ready_for_full_goal`?
+
+Method:
+
+Clarified the closure-preparation status sentence to show both facts: nine criteria are ready for contained M0, the single owner-decision criterion is blocked for the full goal, and zero criteria are ready for the full goal. This aligns the closure route with the progress snapshot and machine audit without changing any gate or percentage.
+
 ## 2026-07-19 - Implementation-plan authority regression guard
 
 Question:

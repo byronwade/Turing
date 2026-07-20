@@ -75,7 +75,7 @@ Keep `PB-020` partial and keep the full-build gate closed when any of these is t
 
 ## Promotion boundary
 
-The current machine audit remains `9/10 ready_for_contained_m0` and `1/10 blocked_for_full_goal`; it does not support a `ready_for_full_goal` result. The percentage is a documentation-organization measure, not an implementation percentage. Promotion requires the owner decision record to change the audited blocker state after the evidence and review conditions above are satisfied. Do not calculate readiness from document count, validator count, or the existence of this preparation route.
+The current machine audit remains `9/10 ready_for_contained_m0`, with its single owner-decision criterion `blocked_for_full_goal`, and `0/10 ready_for_full_goal`; it does not support a `ready_for_full_goal` result. The percentage is a documentation-organization measure, not an implementation percentage. Promotion requires the owner decision record to change the audited blocker state after the evidence and review conditions above are satisfied. Do not calculate readiness from document count, validator count, or the existence of this preparation route.
 
 ## Canonical records
 
