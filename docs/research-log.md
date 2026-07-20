@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Historical source-verification freshness boundary
+
+Question:
+
+Could a dated independent Servo source-verification report be mistaken for the current upstream state after a later metadata refresh?
+
+Method:
+
+Compared the 2026-07-17 non-shallow source-verification report with the 2026-07-19 official upstream refresh and provenance packets. The older report's object, ancestry, tree, and file-count observations remain valid for its capture date, but several headings used `current main` without an explicit historical qualifier.
+
+Decision:
+
+Added a freshness boundary to the independent source-verification report, labeled its `main` comparisons as the 2026-07-17 snapshot, and linked the later refresh/provenance packets as the route for current upstream observations.
+
+Impact:
+
+This prevents stale upstream evidence from being reused as current source-strategy evidence. It does not select a source baseline, change `PB-002`, approve Servo or `mozjs`, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which other dated external-evidence reports should receive explicit freshness labels before their observations are reused in an owner decision?
+
 ## 2026-07-19 - Documentation percentage drift control
 
 Question:

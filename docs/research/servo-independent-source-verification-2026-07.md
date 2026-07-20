@@ -5,9 +5,11 @@ Owner: architecture, provenance, release operations, security, legal-review, eng
 Audit date: 2026-07-17
 Confidence: high for independently fetched Git object IDs, refs, ancestry counts, tree IDs, and file counts; medium for local signature posture; low for source approval, full source-contents review, legal approval, release reproducibility, compatibility, performance, and adoption conclusions until owner reviews run
 
+Freshness boundary: this report preserves a historical independent-object capture made on 2026-07-17. In this document, `current main` means the upstream `main` ref observed during that capture (`622600e045c2e5ea688a9b19b8671b6f43112817`), not the later 2026-07-19 head. For the later official metadata refresh, use [Servo Upstream Refresh and Source-Strategy Delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md) and [Servo Upstream Source Provenance](servo-upstream-source-provenance-2026-07.md).
+
 ## Question
 
-Can Turing independently verify Servo's current `main`, the successful external build baseline, and the latest GitHub release source objects from a non-shallow Git fetch, and what remains before `ADR-0009` can select a source baseline?
+Can Turing independently verify Servo's `main` as observed on 2026-07-17, the successful external build baseline, and the latest GitHub release source objects from a non-shallow Git fetch, and what remains before `ADR-0009` can select a source baseline?
 
 This report does not import Servo source into Turing. It does not approve a Servo source baseline, release archive, crates.io package, dependency, license posture, or any `ADR-0009` option.
 
@@ -103,11 +105,11 @@ Interpretation: current fetched `main` remains the same as the upstream provenan
 | Tree | `daa2bc0e189e1981fb021501065fc3466159b00d` |
 | Commit date | 2026-07-17T15:50:14Z |
 | Commit subject | `script: Mechanically migrate more to reflect_dom_object_with_proto (#46593)` |
-| Relation to current `main` | `rev-list --left-right --count <build>...main` returned `0 2` |
+| Relation to `main` observed on 2026-07-17 | `rev-list --left-right --count <build>...main` returned `0 2` |
 | Merge base with current `main` | `4a0b2b1a218606c99fa1d45f6c78ed7d316c1bbe` |
 | Tree file count | `193033` |
 
-Interpretation: the successful external build baseline is an ancestor of current `main` and is exactly two commits behind it. A decision to use current `main` requires rerunning build, dependency, generated-output, native, compatibility, and performance evidence because the current built artifact was produced from the older tree.
+Interpretation: the successful external build baseline is an ancestor of the `main` snapshot observed on 2026-07-17 and is exactly two commits behind that snapshot. A decision to use that historical snapshot or any later `main` commit requires rerunning build, dependency, generated-output, native, compatibility, and performance evidence because the current built artifact was produced from the older tree.
 
 ## Latest GitHub release tag and branch
 
@@ -120,11 +122,11 @@ Interpretation: the successful external build baseline is an ancestor of current
 | Tree | `c41b1defccd9ed47a5ac2a8ad40929bc34de80a0` |
 | Commit date | 2026-06-04T20:29:05+02:00 |
 | Commit subject | `release: Use stylo 0.18 for 0.3 release` |
-| Relation to current `main` | `rev-list --left-right --count v0.3.0...main` returned `1 838` |
+| Relation to `main` observed on 2026-07-17 | `rev-list --left-right --count v0.3.0...main` returned `1 838` |
 | Merge base with current `main` | `61628bb173a5f546688403706c13eac294c1ee84` |
 | Tree file count | `191174` |
 
-Interpretation: `v0.3.0` is not an ancestor of current `main` and current `main` is not a simple fast-forward from the release tag. The release branch has one commit not present on current `main`, while current `main` has 838 commits not present on the release tag side of the comparison. A release-source baseline therefore needs its own build and evidence path.
+Interpretation: `v0.3.0` is not an ancestor of the `main` snapshot observed on 2026-07-17, and that snapshot is not a simple fast-forward from the release tag. The release branch has one commit not present on that historical `main`, while that `main` has 838 commits not present on the release-tag side of the comparison. A release-source baseline therefore needs its own build and evidence path.
 
 ## Signature posture
 
@@ -132,7 +134,7 @@ Interpretation: `v0.3.0` is not an ancestor of current `main` and current `main`
 |---|---|
 | `v0.3.0` tag | `git tag -v v0.3.0` failed because the ref is a lightweight commit tag, not a tag object |
 | Build baseline commit `4a0b2b1a...` | `git verify-commit` found a signature made with RSA key `B5690EEEBB952194`, but exited `1` because the local keyring did not have the public key |
-| Current `main` commit `622600e0...` | `git verify-commit` found a signature made with RSA key `B5690EEEBB952194`, but exited `1` because the local keyring did not have the public key |
+| Historical `main` commit `622600e0...` | `git verify-commit` found a signature made with RSA key `B5690EEEBB952194`, but exited `1` because the local keyring did not have the public key |
 | Release commit `fb6c9d51...` | `git verify-commit` exited `1`; no local signature details were printed |
 
 Earlier GitHub API checks reported valid GitHub commit verification for the build baseline and current `main` commits, and unsigned status for the release commit. Local Git verification does not replace that GitHub metadata because the local GPG trust root was not configured.
@@ -144,8 +146,8 @@ Interpretation: Turing still needs a signed-tag or equivalent provenance policy.
 This report proves, for the inspected date and host only:
 
 - a separate non-shallow bare partial clone can independently fetch Servo's Git object graph;
-- current `main`, the successful external build baseline, and `v0.3.0` resolve to the same object IDs and tree IDs recorded in the upstream provenance report;
-- the successful external build baseline is exactly two commits behind current `main` in the non-shallow clone;
+- the 2026-07-17 `main` snapshot, the successful external build baseline, and `v0.3.0` resolve to the same object IDs and tree IDs recorded in the upstream provenance report;
+- the successful external build baseline is exactly two commits behind the 2026-07-17 `main` snapshot in the non-shallow clone;
 - `v0.3.0` is a lightweight commit tag, points to the same commit as `release/v0.3`, and has a distinct relationship to current `main`;
 - the release tag path and current `main` path cannot share a single build/performance/compatibility evidence bundle without explicit scoping.
 
