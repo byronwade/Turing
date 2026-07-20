@@ -1,0 +1,38 @@
+# Builds the laboratory presenter on every reference desktop platform and
+# runs the engine, chrome, and pipeline tests there.
+#
+# This is build-and-test evidence that the presenter and engine compile and
+# pass on Windows, macOS, and Linux. It is not a product support promise, a
+# packaging pipeline, or a windowing smoke test — CI runners have no display,
+# so the event loop itself is exercised only by the headless --screenshot
+# path, which composes the same frame the window presents.
+
+name: cross-platform-presenter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  presenter:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain
+        run: rustup show
+      - name: Build the presenter
+        run: cargo build --locked -p turing-browser
+      - name: Engine, chrome, and pipeline tests
+        run: cargo test --locked -p turing-engine -p turing-chrome -p turing-ui-model -p turing-raster -p turing-bench
+      - name: Headless composed frame
+        run: cargo run --locked -p turing-browser -- --screenshot frame.bmp
+      - name: Frame artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: composed-frame-${{ matrix.os }}
+          path: frame.bmp

@@ -38,9 +38,10 @@
 
 use std::time::{Duration, Instant};
 
-use turing_css::{SelectorIndex, Stylesheet, cascade};
+use turing_css::{Color, SelectorIndex, Stylesheet, cascade};
 use turing_html::{Document, Tokenizer, TreeBuilder};
-use turing_layout::{TextMetrics, layout};
+use turing_layout::{TextMetrics, build_display_list, layout};
+use turing_raster::rasterize;
 
 /// How many iterations to run before recording, letting caches and the
 /// allocator reach steady state.
@@ -198,6 +199,33 @@ pub fn run() -> Vec<StageResult> {
                 layout(&document, &stylesheet, 1280.0, TextMetrics::default()).expect("lays out")
             }),
         },
+        StageResult {
+            stage: "display-list",
+            measurement: Measurement::of(|| {
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                    .expect("lays out");
+                build_display_list(&root)
+            }),
+        },
+        StageResult {
+            stage: "raster",
+            measurement: Measurement::of(|| {
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                    .expect("lays out");
+                let list = build_display_list(&root);
+                rasterize(
+                    &list,
+                    1280,
+                    720,
+                    Color {
+                        red: 255,
+                        green: 255,
+                        blue: 255,
+                    },
+                )
+                .expect("rasterizes")
+            }),
+        },
     ]
 }
 
@@ -225,7 +253,15 @@ mod tests {
         let stages: Vec<_> = run().iter().map(|r| r.stage).collect();
         assert_eq!(
             stages,
-            vec!["tokenize", "tree-build", "parse-css", "cascade", "layout"]
+            vec![
+                "tokenize",
+                "tree-build",
+                "parse-css",
+                "cascade",
+                "layout",
+                "display-list",
+                "raster"
+            ]
         );
     }
 

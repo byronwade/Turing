@@ -1493,6 +1493,7 @@ dependencies = [
  "turing-css",
  "turing-html",
  "turing-layout",
+ "turing-raster",
 ]
 
 [[package]]

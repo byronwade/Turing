@@ -45,15 +45,33 @@ an allocation or a vector growth step rather than measurement noise.
 
 ## Baselines
 
-Recorded 2026-07-20. Release build.
+Recorded 2026-07-20, later session (two consecutive runs agreed within
+noise). Release build. Two stages were added — `display-list` and `raster`
+at 1280x720 — and layout gained word-level line breaking the same day, so
+the `layout` row reset; earlier layout numbers are not comparable.
 
 | Stage | Min | Median | Max |
 | --- | --- | --- | --- |
-| tokenize | 6.9 µs | 7.1 µs | 7.6 µs |
-| tree-build | 2.5 µs | 2.6 µs | 2.8 µs |
-| parse-css | 4.5 µs | 4.7 µs | 4.9 µs |
-| cascade | 3.4 µs | 3.5 µs | 3.9 µs |
-| layout | 5.2 µs | 6.4 µs | 21.9 µs |
+| tokenize | 7.0 µs | 7.2 µs | 26.1 µs |
+| tree-build | 2.4 µs | 2.6 µs | 3.0 µs |
+| parse-css | 4.6 µs | 4.7 µs | 5.0 µs |
+| cascade | 8.2 µs | 8.3 µs | 13.0 µs |
+| layout | 15.3 µs | 16.5 µs | 24.6 µs |
+| display-list | 17.9 µs | 18.2 µs | 22.4 µs |
+| raster | 611.8 µs | 725.8 µs | 1.54 ms |
+
+The `layout` rise from the morning's 6.4 µs median is attributable: inline
+layout now splits text into words, measures collapsed whitespace, and
+allocates one fragment box per placed word. The `cascade` rise from 3.5 µs
+to 8.3 µs has **no identified cause** — the styling crates did not change
+between the recordings — and is retained as an open observation rather than
+explained away; re-measure on a quiet machine before treating it as real.
+
+`raster` dominates the frame by more than an order of magnitude, which is
+expected for an unoptimised per-pixel reference painter and is the
+measured, recorded reason a faster painter is future work. Even so, a full
+compose-and-paint frame at 1280x720 sits near 750 µs — comfortably inside
+a 60 Hz budget on this machine.
 
 **These rows are not disjoint and must not be summed.** `layout` calls
 `resolve_style`, which calls `cascade`, once per element — so the cascade work
