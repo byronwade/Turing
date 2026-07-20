@@ -50,7 +50,7 @@
     "checked no-claim incident/patch readiness-review template remains current and cannot be cited for incident-response readiness, emergency patch capacity, supported security versions, production-safe browsing, disclosure authority, stable promotion, signing authority, incident closure authority, or implementation evidence",
     "private report channel and confidential evidence handling are available for tabletop material",
     "queue status remains proposed; this specified manifest is non-executable",
-    "source queue digest is A4931C0862FC701CA2A3B8AC22199AB719414E7E8DB56E17EBCD8E5B8D90C56E",
+    "source queue digest is DD56F942100A7007F4AE1E82815BCD851B3A4027FD4B569E7E67CD07AE21C043",
     "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
   ],
   "acceptance_criteria": [
