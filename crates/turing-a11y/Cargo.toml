@@ -1,0 +1,23 @@
+[package]
+name = "turing-a11y"
+description = "Turing-owned accessibility tree derived from engine semantics for WP-009 and REQ-ENG-006"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[features]
+# The engine's own DOM is one SemanticTree implementation, not a requirement.
+default = ["html"]
+html = ["dep:turing-html", "turing-css/html"]
+
+[dependencies]
+turing-css = { path = "../turing-css", default-features = false }
+turing-html = { path = "../turing-html", optional = true }
+
+[lints]
+workspace = true
