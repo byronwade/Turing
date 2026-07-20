@@ -115,6 +115,14 @@ impl Rng {
 /// a separate, deliberate case.
 pub const GENERATED_DEPTH_LIMIT: usize = 12;
 
+/// The deepest expression and statement nesting the script generator emits.
+///
+/// Unlike the markup limit, this deliberately exceeds the engine's own bound
+/// (`turing_js::MAX_NESTING_DEPTH`), so sweeps cover both sides of it. Nesting
+/// past the bound must produce a typed refusal, and that is only tested if the
+/// generator can reach it.
+pub const GENERATED_JS_DEPTH_LIMIT: usize = 200;
+
 /// Generates a document that is plausible HTML but not necessarily valid.
 ///
 /// Structure-aware rather than uniformly random bytes: random bytes almost
@@ -315,6 +323,36 @@ pub fn generate_js(rng: &mut Rng) -> String {
     for _ in 0..rng.below(10) + 1 {
         out.push_str(rng.pick(FRAGMENTS));
         out.push('\n');
+    }
+
+    // Nesting, generated explicitly rather than left to emerge from short
+    // fragments. The first version of this generator emitted only flat
+    // statements, and the JS parser's missing recursion bound was found by hand
+    // afterwards rather than by a sweep: a generator that cannot express a
+    // construct cannot find a defect in it.
+    //
+    // The depth range straddles `turing_js::MAX_NESTING_DEPTH` so sweeps cover
+    // both the accepted and the refused side of the bound.
+    let depth = rng.below(GENERATED_JS_DEPTH_LIMIT);
+    match rng.below(3) {
+        0 => {
+            out.push_str("let deep = ");
+            out.push_str(&"(".repeat(depth));
+            out.push('1');
+            out.push_str(&")".repeat(depth));
+            out.push_str(";\n");
+        }
+        1 => {
+            out.push_str(&"if (1) {".repeat(depth));
+            out.push_str("let d = 1;");
+            out.push_str(&"}".repeat(depth));
+            out.push('\n');
+        }
+        _ => {
+            out.push_str("let deep = ");
+            out.push_str(&"-".repeat(depth));
+            out.push_str("1;\n");
+        }
     }
     out
 }

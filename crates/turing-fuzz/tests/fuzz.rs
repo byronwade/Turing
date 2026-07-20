@@ -220,3 +220,90 @@ fn a_deeply_nested_name_subtree_does_not_overflow() {
         Err(turing_a11y::A11yError::NestingTooDeep { .. })
     ));
 }
+
+// -- generator reach -----------------------------------------------------
+
+#[test]
+fn the_script_generator_reaches_past_the_parser_bound() {
+    // The gap that let the JS parser ship without a recursion bound: the first
+    // generator emitted only short flat fragments, so no sweep could ever reach
+    // deep nesting, and a clean sweep said nothing about it.
+    //
+    // Asserting the generator's reach directly is the fix. A generator that
+    // quietly stops covering a construct otherwise turns a green sweep into a
+    // statement about the generator rather than about the engine.
+    let refused = (1..300u64)
+        .map(|seed| generate_js(&mut Rng::new(seed)))
+        .filter(|source| {
+            matches!(
+                turing_js::compile(source),
+                Err(turing_js::JsError::NestingTooDeep { .. })
+            )
+        })
+        .count();
+    assert!(
+        refused > 10,
+        "300 seeds produced only {refused} scripts deep enough to reach the \
+         parser's nesting bound; the generator is not covering that construct"
+    );
+}
+
+#[test]
+fn deeply_nested_script_is_refused_rather_than_overflowing_the_stack() {
+    // Measured before the bound existed: parsing overflowed a 1 MiB stack at
+    // roughly 95 nested parentheses in a debug build, because the precedence
+    // chain costs about ten frames per expression level.
+    for source in [
+        format!("let a = {}1{};", "(".repeat(500), ")".repeat(500)),
+        format!("{}a=1;{}", "if(1){".repeat(500), "}".repeat(500)),
+        format!("let a = {}1;", "-".repeat(500)),
+    ] {
+        assert!(
+            matches!(
+                turing_js::compile(&source),
+                Err(turing_js::JsError::NestingTooDeep { .. })
+            ),
+            "expected a typed refusal rather than an abort"
+        );
+    }
+}
+
+#[test]
+fn ordinary_script_nesting_still_parses() {
+    // A bound that refuses real programs would be a regression dressed as a
+    // fix. Expressions nest single digits deep in practice.
+    assert!(turing_js::compile("let a = ((((1 + 2))));").is_ok());
+    assert!(turing_js::compile("if (1) { if (1) { if (1) { let a = 1; } } }").is_ok());
+    assert!(turing_js::compile("let a = ---1;").is_ok());
+}
+
+#[test]
+fn every_recursive_consumer_refuses_rather_than_aborting() {
+    // Three crates now recurse over attacker-controlled structure, and all
+    // three had the same defect. Asserting the behaviour in one place is a
+    // prompt to ask the same question of the next recursive consumer, rather
+    // than discovering it the way these were discovered.
+    //
+    // Behaviour, not constants: that a limit is nonzero says nothing about
+    // whether it is enforced.
+    let deep_markup = document_of(&nested(2_000));
+    let sheet = turing_css::Stylesheet::parse("div { display: block; }").expect("parses");
+
+    assert!(matches!(
+        turing_js::compile(&format!("let a = {}1{};", "(".repeat(500), ")".repeat(500))),
+        Err(turing_js::JsError::NestingTooDeep { .. })
+    ));
+    assert!(matches!(
+        turing_layout::layout(
+            &deep_markup,
+            &sheet,
+            800.0,
+            turing_layout::TextMetrics::default()
+        ),
+        Err(turing_layout::LayoutError::NestingTooDeep { .. })
+    ));
+    assert!(matches!(
+        turing_a11y::build(&deep_markup),
+        Err(turing_a11y::A11yError::NestingTooDeep { .. })
+    ));
+}
