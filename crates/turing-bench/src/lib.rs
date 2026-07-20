@@ -38,7 +38,7 @@
 
 use std::time::{Duration, Instant};
 
-use turing_css::{Stylesheet, cascade};
+use turing_css::{SelectorIndex, Stylesheet, cascade};
 use turing_html::{Document, Tokenizer, TreeBuilder};
 use turing_layout::{TextMetrics, layout};
 
@@ -179,11 +179,15 @@ pub fn run() -> Vec<StageResult> {
         StageResult {
             stage: "cascade",
             measurement: Measurement::of(|| {
+                // The index is built inside the measurement because that is
+                // what a real style pass does: once per stylesheet, not once
+                // per element. Excluding it would report a cost nobody pays.
+                let index = SelectorIndex::build(&stylesheet);
                 // Every element, so the figure scales with the document rather
                 // than reflecting whichever single node was picked.
                 let mut matched = 0;
                 for &element in &elements {
-                    matched += cascade(&document, element, &stylesheet).len();
+                    matched += cascade(&document, element, &index).len();
                 }
                 matched
             }),

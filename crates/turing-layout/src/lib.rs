@@ -54,7 +54,7 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_css::{Color, CssError, ElementTree, Stylesheet, cascade};
+use turing_css::{Color, CssError, ElementTree, SelectorIndex, Stylesheet, cascade};
 
 /// What layout needs from a tree beyond selector matching.
 ///
@@ -304,7 +304,10 @@ pub fn layout<T: LayoutTree>(
     width: f32,
     metrics: TextMetrics,
 ) -> Result<LayoutBox, LayoutError> {
-    let root = build_box(tree, stylesheet, tree.root(), None, 0)?
+    // Built once per layout rather than once per element. Rebuilding it inside
+    // box generation would leave the quadratic behaviour it exists to remove.
+    let index = SelectorIndex::build(stylesheet);
+    let root = build_box(tree, &index, tree.root(), None, 0)?
         .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
@@ -350,7 +353,7 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
 
 fn build_box<T: LayoutTree>(
     tree: &T,
-    stylesheet: &Stylesheet,
+    index: &SelectorIndex,
     node: T::Node,
     inherited_color: Option<Color>,
     depth: usize,
@@ -385,7 +388,7 @@ fn build_box<T: LayoutTree>(
         return Ok(None);
     }
 
-    let style = resolve_style(tree, stylesheet, node)?;
+    let style = resolve_style(tree, index, node)?;
     let display = style.display.as_deref().unwrap_or("");
     if display == "none" {
         return Ok(None);
@@ -394,7 +397,7 @@ fn build_box<T: LayoutTree>(
     let own_color = style.color.or(inherited_color);
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(tree, stylesheet, child, own_color, depth + 1)? {
+        if let Some(built) = build_box(tree, index, child, own_color, depth + 1)? {
             children.push(built);
         }
     }
@@ -480,7 +483,7 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
 
 fn resolve_style<T: LayoutTree>(
     tree: &T,
-    stylesheet: &Stylesheet,
+    index: &SelectorIndex,
     node: T::Node,
 ) -> Result<Style, LayoutError> {
     let mut style = Style::default();
@@ -488,7 +491,7 @@ fn resolve_style<T: LayoutTree>(
         return Ok(style);
     }
 
-    let declarations = cascade(tree, node, stylesheet);
+    let declarations = cascade(tree, node, index);
     for (property, computed) in &declarations {
         let value = computed.value.as_str();
         match property.as_str() {

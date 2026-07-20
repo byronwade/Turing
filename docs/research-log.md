@@ -1,5 +1,49 @@
 # Research Log
 
+## 2026-07-20 - Two quadratic paths, and a differential test that was nearly vacuous
+
+Question:
+
+Correctness had been probed hard; growth had not. The baselines measured one small document, which says nothing about how cost scales, and scaling is where an engine becomes unusable while every test still passes. Speed is half the stated mandate and, unlike everything blocking `WP-015`, it is ungated.
+
+Finding:
+
+Two paths are quadratic in document size. Eight times the input cost roughly sixty-seven times the work in both.
+
+Style resolution evaluated every rule against every element: 200 rules over 200 elements took 1.4 ms, 1600 over 1600 took 95.5 ms. Accessibility resolved each `aria-labelledby` IDREF with a linear scan of the document: 0.3 ms at 200, 18.9 ms at 1600.
+
+Both are correct. Every test passed before and after. That is the point — a quadratic path announces itself only at a scale no unit test uses.
+
+Method:
+
+`turing_css::SelectorIndex` files rules by the key of their rightmost compound — id, else class, else type — and the cascade evaluates only the buckets an element can draw from. Selectors with no indexable key, such as `*` or an attribute condition alone, go to a list consulted for every element, because dropping them would silently stop them matching. A selector list is filed under every one of its keys, for the same reason.
+
+The id scan became a map owned by `Document`, built with it. An earlier version made the index a separate opt-in type, justified by "callers that resolve nothing pay nothing" — that was rationalising a micro-optimisation. One pass is nothing beside parsing, every real DOM keeps this map, and owning it means the fix applies without any caller changing.
+
+After: layout 95.5 ms down to 4.9 ms at n=1600, accessibility 18.9 ms down to 2.7 ms, and cost per element roughly flat in both.
+
+The correctness risk, and how it was checked:
+
+An optimisation that changes a result is worse than the slow version it replaced, and every way selector bucketing goes wrong produces a plausible answer rather than an obvious failure — a list filed under one key, an unkeyed selector dropped, a source-order tie resolved differently.
+
+One hazard turned out to be structural rather than a matter of care: `source_order` was already carried explicitly in every candidate rather than implied by iteration order, so visiting rules in bucket order cannot change which declaration wins. That is worth recording because it was luck, not foresight.
+
+The rest is covered by keeping the unindexed cascade as `cascade_reference` and asserting the two agree — inside every existing cascade test, and differentially across generated documents.
+
+The differential was nearly vacuous, and the reach assertion caught it:
+
+Following the previous entry's lesson, the differential shipped with an assertion about its own coverage: some minimum number of elements must draw candidates from more than one bucket, since multi-bucket elements are exactly what the tie-breaking paths need.
+
+It failed. Across 400 seeds, **14** elements drew more than one candidate rule. The equivalence test was green and proving almost nothing, because the markup generator drew class and id values from one pool while the stylesheet generator drew selectors from an unrelated one, so generated elements almost never collided with generated rules.
+
+The fix was to the generators, not the assertion: a small shared vocabulary of four tags, three classes, and two ids that both generators draw from, plus selectors built from that vocabulary — including compounds and selector lists — rather than picked from a fixed table. Collisions became the common case.
+
+This is the third time a coverage check has changed an outcome: a prose-drift detector deleted for failing its positive control, a fuzz harness whose positive control exposed unguarded re-parsing, and now a differential that was measuring nothing. The pattern is consistent enough to state plainly — a green result from an unverified check is indistinguishable from a green result from a broken one, and the check on the check has caught something every time it has been run.
+
+Six tests. The workspace is at 274.
+
+What this does not do: the index helps selectivity, not rule count. A stylesheet of `div` rules against a document of `div` elements remains quadratic, because every pair genuinely matches and no index can remove work that was going to happen. No cross-engine comparison is implied — these are before-and-after figures for this engine against itself, per `PB-013`. The gates are unchanged: `WP-015` still blocked on `IF-003`, `IF-001` still `partial`, both `WP-009` decision gates still open.
+
 ## 2026-07-20 - The JavaScript parser had the same overflow, and the fuzzer could not have found it
 
 Question:

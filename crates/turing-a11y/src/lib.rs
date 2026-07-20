@@ -537,8 +537,7 @@ fn collect_text<T: SemanticTree>(tree: &T, node: T::Node, parts: &mut Vec<String
 #[cfg(feature = "html")]
 mod html_tree {
     use super::SemanticTree;
-    use turing_css::ElementTree;
-    use turing_html::{Document, NodeData, NodeId};
+    use turing_html::{Document, NodeData};
 
     impl SemanticTree for Document {
         fn root(&self) -> Self::Node {
@@ -557,11 +556,10 @@ mod html_tree {
         }
 
         fn element_by_id(&self, id: &str) -> Option<Self::Node> {
-            // Document order, so a malformed document with duplicate ids
-            // resolves the way `getElementById` is specified to.
-            (0..self.len())
-                .map(NodeId::from_index)
-                .find(|&node| self.attribute(node, "id") == Some(id))
+            // Constant time: the document maintains the map. This was a linear
+            // scan, which made resolving a list of aria-labelledby references
+            // quadratic in document size.
+            Document::element_by_id(self, id)
         }
 
         fn node_index(&self, node: Self::Node) -> usize {

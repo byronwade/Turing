@@ -108,6 +108,26 @@ impl Rng {
     }
 }
 
+/// Tag names, class names, and ids shared by the markup and stylesheet
+/// generators.
+///
+/// Deliberately tiny. The first version of these generators drew selectors and
+/// attributes from unrelated pools, so a generated element almost never matched
+/// more than one generated rule — 400 seeds produced 14 elements with more than
+/// one candidate rule, which made the cascade differential very nearly vacuous.
+///
+/// A small shared vocabulary makes collisions the common case instead of the
+/// rare one, which is what puts elements in several selector buckets at once
+/// and exercises specificity and source-order tie-breaking.
+pub mod vocabulary {
+    /// Element names both generators use.
+    pub const TAGS: &[&str] = &["div", "p", "span", "a"];
+    /// Class names both generators use.
+    pub const CLASSES: &[&str] = &["one", "two", "three"];
+    /// Id values both generators use.
+    pub const IDS: &[&str] = &["x", "y"];
+}
+
 /// The deepest nesting a generator will emit.
 ///
 /// Below `turing_layout::MAX_NESTING_DEPTH` so the general sweep exercises the
@@ -131,9 +151,11 @@ pub const GENERATED_JS_DEPTH_LIMIT: usize = 200;
 /// not at all. This emits real tags, real attributes, and then corrupts them.
 #[must_use]
 pub fn generate_html(rng: &mut Rng) -> String {
+    // The shared vocabulary first, so those tags dominate, then the wider set
+    // so structural and refusal paths are still reached.
     const TAGS: &[&str] = &[
-        "div", "p", "span", "a", "h1", "ul", "li", "nav", "header", "footer", "img", "input",
-        "button", "script", "style", "table", "template",
+        "div", "p", "span", "a", "div", "p", "span", "a", "h1", "ul", "li", "nav", "header",
+        "footer", "img", "input", "button", "script", "style", "table", "template",
     ];
     const ATTRS: &[&str] = &[
         "id",
@@ -177,9 +199,20 @@ pub fn generate_html(rng: &mut Rng) -> String {
                 out.push_str(tag);
                 for _ in 0..rng.below(3) {
                     out.push(' ');
-                    out.push_str(rng.pick(ATTRS));
+                    // Class and id are drawn from the shared vocabulary most of
+                    // the time, so generated elements collide with generated
+                    // selectors. Without this the cascade differential almost
+                    // never sees an element in more than one selector bucket.
+                    let (attribute, value) = if rng.one_in(3) {
+                        ("class", *rng.pick(vocabulary::CLASSES))
+                    } else if rng.one_in(4) {
+                        ("id", *rng.pick(vocabulary::IDS))
+                    } else {
+                        (*rng.pick(ATTRS), *rng.pick(VALUES))
+                    };
+                    out.push_str(attribute);
                     out.push_str("='");
-                    out.push_str(rng.pick(VALUES));
+                    out.push_str(value);
                     // Sometimes leave the quote unterminated.
                     if !rng.one_in(8) {
                         out.push('\'');
@@ -226,21 +259,6 @@ pub fn generate_html(rng: &mut Rng) -> String {
 /// Generates a stylesheet that is plausible CSS but not necessarily valid.
 #[must_use]
 pub fn generate_css(rng: &mut Rng) -> String {
-    const SELECTORS: &[&str] = &[
-        "div",
-        ".a",
-        "#b",
-        "p.lead",
-        "a[href]",
-        "div p",
-        "div > p",
-        "*",
-        "li:first-child",
-        "::before",
-        "@media screen",
-        "div,",
-        "",
-    ];
     const PROPERTIES: &[&str] = &[
         "display",
         "width",
@@ -279,7 +297,7 @@ pub fn generate_css(rng: &mut Rng) -> String {
 
     let mut out = String::new();
     for _ in 0..rng.below(12) + 1 {
-        out.push_str(rng.pick(SELECTORS));
+        out.push_str(&selector(rng));
         out.push_str(" {");
         for _ in 0..rng.below(4) {
             out.push_str(rng.pick(PROPERTIES));
@@ -295,6 +313,61 @@ pub fn generate_css(rng: &mut Rng) -> String {
         }
     }
     out
+}
+
+/// Builds one selector, mostly from the shared vocabulary.
+///
+/// Selector lists and compound selectors are generated rather than drawn from a
+/// fixed table, because both are where the selector index can go wrong: a list
+/// must be filed under every one of its keys, and a compound must be filed
+/// under the most specific one.
+fn selector(rng: &mut Rng) -> String {
+    // Malformed and unsupported selectors, kept so refusal paths stay covered.
+    // Ordinary selectors are built from the shared vocabulary instead, by
+    // `selector` below.
+    const ODD_SELECTORS: &[&str] = &[
+        "a[href]",
+        "*",
+        "li:first-child",
+        "::before",
+        "@media screen",
+        "div,",
+        "",
+    ];
+    if rng.one_in(6) {
+        return (*rng.pick(ODD_SELECTORS)).to_string();
+    }
+
+    let mut parts = Vec::new();
+    for _ in 0..rng.below(2) + 1 {
+        let mut one = String::new();
+        // A descendant or child combinator, sometimes, so ancestor matching is
+        // exercised alongside subject matching.
+        if rng.one_in(4) {
+            one.push_str(rng.pick(vocabulary::TAGS));
+            one.push_str(if rng.one_in(2) { " > " } else { " " });
+        }
+        match rng.below(4) {
+            0 => one.push_str(rng.pick(vocabulary::TAGS)),
+            1 => {
+                one.push('.');
+                one.push_str(rng.pick(vocabulary::CLASSES));
+            }
+            2 => {
+                one.push('#');
+                one.push_str(rng.pick(vocabulary::IDS));
+            }
+            _ => {
+                // A compound: tag and class together, which must be filed under
+                // the class rather than the tag.
+                one.push_str(rng.pick(vocabulary::TAGS));
+                one.push('.');
+                one.push_str(rng.pick(vocabulary::CLASSES));
+            }
+        }
+        parts.push(one);
+    }
+    parts.join(", ")
 }
 
 /// Generates a script that is plausible JavaScript but not necessarily valid.

@@ -756,7 +756,204 @@ pub struct ComputedDeclaration {
 /// and user-agent or user origins are not modeled here; this resolves author
 /// stylesheet rules only.
 #[must_use]
+/// The key a rule is filed under, taken from its subject compound.
+///
+/// Most selectors name something specific about the element they end on, so
+/// most rules can be skipped without being evaluated at all.
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+enum Key {
+    Id(String),
+    Class(String),
+    Type(String),
+}
+
+/// Rules grouped by what their rightmost compound requires.
+///
+/// # Why this exists
+///
+/// Matching every rule against every element is quadratic in document size,
+/// and measurably so: 200 rules over 200 elements took 1.4 ms, while 1600 over
+/// 1600 took 95 ms — eight times the input for sixty-seven times the work.
+/// Correct the whole way, and unusable on a real page.
+///
+/// # What it does not help
+///
+/// Selectivity, not rule count. A stylesheet of `div` rules against a document
+/// of `div` elements still evaluates every pair, because every pair genuinely
+/// matches. The index removes work that was never going to match; it cannot
+/// remove work that was.
+#[derive(Debug, Default)]
+pub struct SelectorIndex {
+    buckets: std::collections::HashMap<Key, Vec<usize>>,
+    /// Rules whose subject names nothing indexable — `*`, or an attribute
+    /// condition alone. Evaluated for every element, because skipping them
+    /// would silently drop matches.
+    unkeyed: Vec<usize>,
+    rules: Vec<Rule>,
+}
+
+impl SelectorIndex {
+    /// Builds an index over `stylesheet`.
+    #[must_use]
+    pub fn build(stylesheet: &Stylesheet) -> Self {
+        let mut index = Self {
+            rules: stylesheet.rules.clone(),
+            ..Self::default()
+        };
+        for (order, rule) in stylesheet.rules.iter().enumerate() {
+            // Every selector in a list is filed separately, all pointing at the
+            // same rule. Filing `div, .foo` under one key only would silently
+            // stop the other selector from ever matching.
+            for selector in &rule.selectors {
+                match subject_key(&selector.subject) {
+                    Some(key) => index.buckets.entry(key).or_default().push(order),
+                    None => index.unkeyed.push(order),
+                }
+            }
+        }
+        index
+    }
+
+    /// Returns how many rules would be evaluated for `element`.
+    ///
+    /// A diagnostic, and the basis of the regression test for this index: the
+    /// mechanism is "consider fewer rules", and asserting that directly is
+    /// deterministic where asserting elapsed time is not. A wall-clock check in
+    /// a test suite is a flaky failure waiting for a loaded machine.
+    #[must_use]
+    pub fn candidate_count<T: ElementTree>(&self, tree: &T, element: T::Node) -> usize {
+        self.candidates(tree, element).len()
+    }
+
+    /// Returns the total number of rules in the stylesheet.
+    #[must_use]
+    pub fn rule_count(&self) -> usize {
+        self.rules.len()
+    }
+
+    /// Returns the rule indices that could match `element`, in source order.
+    fn candidates<T: ElementTree>(&self, tree: &T, element: T::Node) -> Vec<usize> {
+        let mut candidates = self.unkeyed.clone();
+
+        if let Some(id) = tree.attribute(element, "id")
+            && let Some(bucket) = self.buckets.get(&Key::Id(id.to_string()))
+        {
+            candidates.extend(bucket);
+        }
+        if let Some(classes) = tree.attribute(element, "class") {
+            for class in classes.split_whitespace() {
+                if let Some(bucket) = self.buckets.get(&Key::Class(class.to_string())) {
+                    candidates.extend(bucket);
+                }
+            }
+        }
+        if let Some(tag) = tree.tag_name(element)
+            && let Some(bucket) = self.buckets.get(&Key::Type(tag.to_string()))
+        {
+            candidates.extend(bucket);
+        }
+
+        // A rule reached through several selectors appears more than once.
+        // Evaluating it twice would be wasteful rather than wrong; sorting also
+        // restores source order, which keeps iteration deterministic.
+        candidates.sort_unstable();
+        candidates.dedup();
+        candidates
+    }
+}
+
+/// Returns the key a compound is filed under.
+///
+/// Id beats class beats type, which is the order of how much each narrows the
+/// candidate set. `*`, and compounds carrying only attribute conditions, have
+/// no key and go to the unkeyed list rather than being dropped.
+fn subject_key(compound: &Compound) -> Option<Key> {
+    let mut class = None;
+    let mut tag = None;
+    for part in &compound.parts {
+        match part {
+            SimpleSelector::Id(name) => return Some(Key::Id(name.clone())),
+            SimpleSelector::Class(name) if class.is_none() => class = Some(name.clone()),
+            SimpleSelector::Type(name) if tag.is_none() => tag = Some(name.clone()),
+            _ => {}
+        }
+    }
+    class.map(Key::Class).or_else(|| tag.map(Key::Type))
+}
+
+/// Resolves the declarations that apply to `element`, considering only the
+/// rules the index says could match.
+///
+/// Equivalent to [`cascade_reference`] by construction and by test. Every
+/// candidate carries its `source_order` explicitly rather than inheriting it
+/// from iteration, so visiting rules in bucket order cannot change which
+/// declaration wins — the failure this optimisation would otherwise invite.
+#[must_use]
 pub fn cascade<T: ElementTree>(
+    tree: &T,
+    element: T::Node,
+    index: &SelectorIndex,
+) -> Vec<(String, ComputedDeclaration)> {
+    let mut winners: Vec<(String, ComputedDeclaration)> = Vec::new();
+
+    for order in index.candidates(tree, element) {
+        let rule = &index.rules[order];
+        let Some(specificity) = rule
+            .selectors
+            .iter()
+            .filter(|selector| matches(tree, element, selector))
+            .map(Selector::specificity)
+            .max()
+        else {
+            continue;
+        };
+        accumulate(&mut winners, rule, specificity, order);
+    }
+
+    winners.sort_by(|left, right| left.0.cmp(&right.0));
+    winners
+}
+
+/// Folds one matching rule's declarations into the winning set.
+///
+/// Shared by both cascades so they cannot drift in how a tie is resolved.
+fn accumulate(
+    winners: &mut Vec<(String, ComputedDeclaration)>,
+    rule: &Rule,
+    specificity: Specificity,
+    order: usize,
+) {
+    for declaration in &rule.declarations {
+        let candidate = ComputedDeclaration {
+            value: declaration.value.clone(),
+            important: declaration.important,
+            specificity,
+            source_order: order,
+        };
+        match winners
+            .iter_mut()
+            .find(|(property, _)| *property == declaration.property)
+        {
+            Some((_, existing)) => {
+                if beats(&candidate, existing) {
+                    *existing = candidate;
+                }
+            }
+            None => winners.push((declaration.property.clone(), candidate)),
+        }
+    }
+}
+
+/// The unindexed cascade, kept as the reference the indexed one is checked
+/// against.
+///
+/// Public so a differential test in another crate can reach it. Not for
+/// production use: it evaluates every rule against every element, which is the
+/// quadratic behaviour [`SelectorIndex`] exists to remove. It stays because an
+/// optimisation with nothing to compare against is an assertion rather than a
+/// result.
+#[must_use]
+pub fn cascade_reference<T: ElementTree>(
     tree: &T,
     element: T::Node,
     stylesheet: &Stylesheet,
@@ -773,25 +970,7 @@ pub fn cascade<T: ElementTree>(
         else {
             continue;
         };
-        for declaration in &rule.declarations {
-            let candidate = ComputedDeclaration {
-                value: declaration.value.clone(),
-                important: declaration.important,
-                specificity,
-                source_order: order,
-            };
-            match winners
-                .iter_mut()
-                .find(|(property, _)| *property == declaration.property)
-            {
-                Some((_, existing)) => {
-                    if beats(&candidate, existing) {
-                        *existing = candidate;
-                    }
-                }
-                None => winners.push((declaration.property.clone(), candidate)),
-            }
-        }
+        accumulate(&mut winners, rule, specificity, order);
     }
 
     winners.sort_by(|left, right| left.0.cmp(&right.0));
@@ -882,7 +1061,19 @@ mod tests {
     fn declarations(html: &str, css: &str, element: &str) -> Vec<(String, String)> {
         let doc = document(html);
         let sheet = Stylesheet::parse(css).expect("parses");
-        cascade(&doc, find(&doc, element), &sheet)
+        let node = find(&doc, element);
+
+        // Every cascade test below is also a differential test: the indexed and
+        // reference paths must agree, or the index has changed a result rather
+        // than only skipping work that could not have matched.
+        let indexed = cascade(&doc, node, &SelectorIndex::build(&sheet));
+        let reference = cascade_reference(&doc, node, &sheet);
+        assert_eq!(
+            indexed, reference,
+            "selector index disagreed with the reference cascade"
+        );
+
+        indexed
             .into_iter()
             .map(|(property, computed)| (property, computed.value))
             .collect()

@@ -307,3 +307,153 @@ fn every_recursive_consumer_refuses_rather_than_aborting() {
         Err(turing_a11y::A11yError::NestingTooDeep { .. })
     ));
 }
+
+// -- selector index equivalence ------------------------------------------
+
+/// Parses a generated pair, skipping seeds the engine refuses. A refusal is a
+/// pass everywhere else in this file and is not interesting here either.
+fn generated_pair(seed: u64) -> Option<(turing_html::Document, turing_css::Stylesheet)> {
+    let mut rng = Rng::new(seed);
+    let html = generate_html(&mut rng);
+    let css = generate_css(&mut rng);
+    let tokens = turing_html::Tokenizer::new(&html).tokenize().ok()?;
+    let document = turing_html::TreeBuilder::new().build(&tokens.tokens).ok()?;
+    let sheet = turing_css::Stylesheet::parse(&css).ok()?;
+    Some((document, sheet))
+}
+
+#[test]
+fn the_indexed_cascade_agrees_with_the_reference_everywhere() {
+    // Differential rather than a hand corpus. An optimisation that changes a
+    // result is worse than the slow version it replaced, and every way selector
+    // bucketing goes wrong — a selector list filed under one key only, an
+    // unkeyed selector dropped, a source-order tie resolved differently —
+    // produces a plausible answer rather than an obvious failure.
+    for seed in 1..400u64 {
+        let Some((document, sheet)) = generated_pair(seed) else {
+            continue;
+        };
+        let index = turing_css::SelectorIndex::build(&sheet);
+        for raw in 0..document.len() {
+            let node = turing_html::NodeId::from_index(raw);
+            assert_eq!(
+                turing_css::cascade(&document, node, &index),
+                turing_css::cascade_reference(&document, node, &sheet),
+                "seed {seed}, node {raw}: the index disagreed with the reference"
+            );
+        }
+    }
+}
+
+#[test]
+fn the_differential_actually_reaches_multi_candidate_elements() {
+    // The equivalence test proves nothing if no generated element ever draws
+    // rules from more than one bucket: the tie-breaking paths bucketing
+    // endangers are exactly the ones that need two buckets to reach.
+    //
+    // Same lesson as the script generator's nesting depth. A green differential
+    // over a corpus that cannot express the failure is a statement about the
+    // corpus.
+    let mut reached = 0;
+    for seed in 1..400u64 {
+        let Some((document, sheet)) = generated_pair(seed) else {
+            continue;
+        };
+        let index = turing_css::SelectorIndex::build(&sheet);
+        for raw in 0..document.len() {
+            let node = turing_html::NodeId::from_index(raw);
+            if index.candidate_count(&document, node) > 1 {
+                reached += 1;
+            }
+        }
+    }
+    assert!(
+        reached > 100,
+        "only {reached} elements drew more than one candidate rule; the \
+         differential is not reaching the cases bucketing endangers"
+    );
+}
+
+fn element_named(document: &turing_html::Document, tag: &str) -> turing_html::NodeId {
+    (0..document.len())
+        .map(turing_html::NodeId::from_index)
+        .find(|&n| document.element_name(n) == Some(tag))
+        .expect("the element exists")
+}
+
+fn document_from(html: &str) -> turing_html::Document {
+    let tokens = turing_html::Tokenizer::new(html)
+        .tokenize()
+        .expect("tokenizes")
+        .tokens;
+    turing_html::TreeBuilder::new()
+        .build(&tokens)
+        .expect("builds")
+}
+
+#[test]
+fn the_index_actually_narrows_the_candidate_set() {
+    // The mechanism, asserted deterministically. Elapsed time is the obvious
+    // thing to check and would fail on a loaded machine for reasons unrelated
+    // to the code.
+    let css: String = (0..200)
+        .map(|i| format!(".c{i} {{ color: red; }}"))
+        .collect();
+    let document = document_from("<html><body><div class='c7'>x</div></body></html>");
+    let sheet = turing_css::Stylesheet::parse(&css).expect("parses");
+    let index = turing_css::SelectorIndex::build(&sheet);
+
+    assert_eq!(index.rule_count(), 200);
+    assert_eq!(
+        index.candidate_count(&document, element_named(&document, "div")),
+        1,
+        "an element with one class should reach one of two hundred rules"
+    );
+}
+
+#[test]
+fn an_unkeyed_selector_is_still_considered() {
+    // A universal or attribute-only selector has no bucket. Dropping it rather
+    // than putting it in the always-considered list would silently stop it
+    // matching anything, which no test of keyed selectors would notice.
+    let sheet =
+        turing_css::Stylesheet::parse("* { color: red; } [id] { color: blue; }").expect("parses");
+    let index = turing_css::SelectorIndex::build(&sheet);
+    let document = document_from("<html><body><p id='a'>x</p></body></html>");
+    let p = element_named(&document, "p");
+
+    assert_eq!(index.candidate_count(&document, p), 2);
+    assert_eq!(
+        turing_css::cascade(&document, p, &index),
+        turing_css::cascade_reference(&document, p, &sheet)
+    );
+}
+
+#[test]
+fn a_selector_list_is_filed_under_every_key() {
+    // `div, .foo` must match through either selector. Filing the rule under one
+    // key only makes the other silently stop matching.
+    let sheet = turing_css::Stylesheet::parse("div, .foo { color: red; }").expect("parses");
+    let index = turing_css::SelectorIndex::build(&sheet);
+    let document = document_from("<html><body><span class='foo'>x</span></body></html>");
+    let span = element_named(&document, "span");
+
+    assert_eq!(
+        index.candidate_count(&document, span),
+        1,
+        "reached through the class selector, not the type one"
+    );
+    assert!(!turing_css::cascade(&document, span, &index).is_empty());
+}
+
+#[test]
+fn a_duplicate_id_resolves_to_the_first_in_document_order() {
+    // The one correctness constraint on the id index. A map that let a later
+    // element overwrite an earlier one would disagree with the linear scan it
+    // replaced, and with what getElementById is specified to do.
+    let document = document_from(
+        "<html><body><p id='dup'>first</p><span id='dup'>second</span></body></html>",
+    );
+    let found = document.element_by_id("dup").expect("resolves");
+    assert_eq!(document.element_name(found), Some("p"));
+}
