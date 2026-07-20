@@ -34,6 +34,23 @@ EXPECTED_SCOPES = {
     frozenset({"PB-020"}),
 }
 
+CLOSURE_PREPARATION = (
+    ROOT / "docs/research/build-readiness-closure-and-owner-decision-preparation-2026-07.md"
+)
+
+REQUIRED_CLOSURE_WORKSHEET_TERMS = [
+    "pb-020 closure worksheet",
+    "review identity and snapshot",
+    "gate reconciliation",
+    "task and authority boundary",
+    "evidence and failure accounting",
+    "decision and exception",
+    "claim and authority scope",
+    "synchronization result",
+    "final promotion decision",
+    "does not replace their evidence",
+]
+
 
 def fail(errors: list[str], message: str) -> None:
     errors.append(message)
@@ -93,6 +110,16 @@ def validate_template(data: dict[str, Any], errors: list[str]) -> None:
     for phrase in ("no owner review", "no independent review", "no task approval", "no production claim"):
         if phrase not in claim_status:
             fail(errors, f"template claim_status is missing: {phrase}")
+
+
+def validate_closure_preparation(errors: list[str]) -> None:
+    if not CLOSURE_PREPARATION.is_file():
+        fail(errors, f"missing PB-020 closure preparation: {CLOSURE_PREPARATION}")
+        return
+    content = CLOSURE_PREPARATION.read_text(encoding="utf-8").lower()
+    for phrase in REQUIRED_CLOSURE_WORKSHEET_TERMS:
+        if phrase not in content:
+            fail(errors, f"PB-020 closure preparation is missing worksheet term: {phrase}")
 
 
 def validate_real(data: dict[str, Any], errors: list[str]) -> None:
@@ -212,6 +239,7 @@ def main() -> int:
         validate_template(data, errors)
     else:
         validate_real(data, errors)
+    validate_closure_preparation(errors)
     if errors:
         for error in errors:
             print(f"validation failed: {error}", file=sys.stderr)
