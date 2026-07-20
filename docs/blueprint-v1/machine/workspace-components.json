@@ -186,6 +186,25 @@
         "turing-html"
       ],
       "failure_boundary": "reject-unmodeled-selectors-and-at-rules"
+    },
+    {
+      "id": "COMP-011",
+      "package": "turing-layout",
+      "path": "crates/turing-layout",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "neutral",
+      "hostile_input": true,
+      "public_api": "internal-box-tree-and-display-list",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-html",
+        "turing-css"
+      ],
+      "failure_boundary": "reject-unmodeled-formatting-models"
     }
   ]
 }
