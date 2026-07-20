@@ -42,6 +42,8 @@ The secure-development and provenance lane now also has a no-claim [Secure Devel
 
 The human-capacity lane now also has a no-claim [Human Release, Legal, and Incident Capacity Research](human-release-legal-and-incident-capacity-research-2026-07.md) packet for `RQ-66`. It connects staffing, backups, separation of duties, legal scope, signing, support, on-call, incident rehearsal, and cross-lane closure without naming owners or granting authority.
 
+The stable-scope lane now also has a no-claim [Stable v1 Scope and Platform Contract Research](stable-v1-scope-and-platform-contract-research-2026-07.md) packet for `RQ-61`. It connects the targetless stable-scope registry, supported-platform matrix, and `PB-006` scorecard to finite capability, platform, denominator, support, and promotion evidence without selecting a stable scope or platform.
+
 The focused validator checks that:
 
 - all required source records exist;

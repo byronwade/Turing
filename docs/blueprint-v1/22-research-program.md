@@ -390,6 +390,8 @@ Which combinations of separate agents, human review, conformance suites, fuzzing
 
 What finite capability and support boundary provides meaningful daily use while remaining maintainable by the actual team?
 
+Current preparation starts with the no-claim [Stable v1 Scope and Platform Contract research packet](../research/stable-v1-scope-and-platform-contract-research-2026-07.md), the targetless stable-scope registry, supported-platform matrix, and `PB-006` scorecard. It must become an owner-reviewed finite capability/support record with complete workflow denominators, platform and hardware scope, accessibility, security, compatibility, recovery, SLO, ownership, legal, update, incident, and support evidence before it can support stable scope, supported-platform, compatibility, accessibility, performance, production, or daily-driver claims.
+
 ## RQ-62 — Product SLOs and error budgets
 
 Which numeric reliability, performance, energy, compatibility, accessibility, migration, update, and agent-safety targets predict a supportable stable browser?

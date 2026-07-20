@@ -544,6 +544,13 @@ These reports must remain linked from the research index and mapped back to the 
 - [`docs/research/window-input-accessibility-spike-inventory-2026-07.md`](research/window-input-accessibility-spike-inventory-2026-07.md).
 - [`docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md`](research/native-ui-and-accessibility-closure-preparation-2026-07.md).
 
+### Product scope and platform research reports
+
+These reports must remain linked from the research index and mapped back to the owning product, platform, compatibility, accessibility, performance, release, support, and readiness records:
+
+- [`docs/research/reference-platform-support-scorecard-2026-07.md`](research/reference-platform-support-scorecard-2026-07.md);
+- [`docs/research/stable-v1-scope-and-platform-contract-research-2026-07.md`](research/stable-v1-scope-and-platform-contract-research-2026-07.md).
+
 ### Storage and profile research reports
 
 These reports must remain linked from the research index and mapped back to the owning storage, product, readiness, risk, and release records:

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-61 stable scope and platform contract route
+
+Question:
+
+What finite capability and platform support boundary can provide meaningful daily use without creating an unmaintainable stable promise?
+
+Method:
+
+Reconciled the targetless stable-v1 scope, supported-platform and hardware matrix, `PB-006` reference-platform scorecard, native UI/accessibility route, compatibility denominator policy, benchmark contract, update/recovery, incident, ownership, and support records.
+
+Result:
+
+Added a no-claim `RQ-61` packet that defines the stable-scope record fields, status vocabulary, platform decision sequence, denominator rules, promotion criteria, and rejection cases. It keeps stable scope, platform selection, support, compatibility, accessibility, performance, security, and release decisions separate until owner-reviewed evidence exists.
+
+Impact:
+
+The Blueprint, research index, repository map, documentation-readiness audit, machine audit source list, and research log now route `RQ-61` to one finite-scope/platform evidence path. This does not select a platform or capability set, change active/deferred counts, authorize broad implementation, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can an owner-reviewed stable-scope packet preserve complete workflow and platform denominators while keeping unsupported and not-evaluated cases visible in public support language?
+
 ## 2026-07-19 - RQ-66 human release, legal, and incident capacity route
 
 Question:
