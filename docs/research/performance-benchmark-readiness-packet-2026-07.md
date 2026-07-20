@@ -2,7 +2,7 @@
 
 Status: readiness packet for `PB-013` with checked no-claim benchmark readiness-review template; no owner-reviewed benchmark readiness, browser-run benchmark runner, benchmark result, competitor result, or performance claim
 Owner: performance measurement, benchmark operations, architecture, quality, security, accessibility, and release operations
-Packet date: 2026-07-19
+Packet date: 2026-07-20
 Confidence: high for evidence requirements; low for implementation readiness until hardware, expanded corpus, runner, and raw-artifact storage exist
 
 ## Question
@@ -56,7 +56,7 @@ Internal inputs:
 - [Pre-build readiness registry](../blueprint-v1/machine/pre-build-readiness.json)
 - [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md)
 
-External sources checked on 2026-07-17; official BrowserBench methodology refreshed on 2026-07-19:
+External sources checked on 2026-07-17; official BrowserBench methodology refreshed on 2026-07-20:
 
 - BrowserBench home page: https://browserbench.org/
 - Speedometer 3.1 about page: https://browserbench.org/Speedometer3.1/about.html
@@ -80,7 +80,7 @@ The BrowserBench pages are inputs for suite selection, not proof that a single s
 
 ## Current official methodology findings
 
-The 2026-07-19 refresh adds suite-specific controls to `PB13-EV-009` and `PB13-EV-010`: Speedometer 3.1 no-duration subtests invalidate the run rather than becoming omitted or zero samples; clean profile, focused-page, quiet-host, power, and thermal controls are recorded; JetStream 3.0 retains per-workload output, uses its documented startup/worst/average treatment and geometric-mean aggregation, and forbids cross-version comparison; MotionMark records warmup, target frame rate, viewport class, orientation, display refresh, GPU, and power state and applies its documented change-point/bootstrap method. These are diagnostic validity controls, not performance results or approval of a Chrome-class claim.
+The 2026-07-20 refresh adds suite-specific controls to `PB13-EV-009` and `PB13-EV-010`: Speedometer 3.1 no-duration subtests invalidate the run rather than becoming omitted or zero samples; clean profile, focused-page, quiet-host, power, and thermal controls are recorded; JetStream 3.0 retains per-workload output, uses its documented startup/worst/average treatment and geometric-mean aggregation, and forbids cross-version comparison; MotionMark records warmup, target frame rate, viewport class, orientation, display refresh, GPU, and power state and applies its documented change-point/bootstrap method. These are diagnostic validity controls, not performance results or approval of a Chrome-class claim.
 
 ## Current posture
 

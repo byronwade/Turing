@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Benchmark handoff freshness reconciliation
+
+Aligned the performance benchmark readiness packet and benchmark evidence/claim closure route with the checked 2026-07-20 BrowserBench source refresh and runbook. Historical source-table retrieval dates remain unchanged, and the suite-specific validity rules remain diagnostic only. No browser run, competitor result, performance claim, or `PB-013` readiness promotion was added.
+
 ## 2026-07-20 - Chrome-class traceability validator
 
 Added a standalone validator for the Chrome-class capability traceability map. It checks all 12 cross-domain capability rows, the L0-L3 performance evidence ladder, required trace fields, local references, and explicit unsupported-claim boundaries, then runs as part of the aggregate repository check. This closes a consistency-control gap without adding a capability, performance result, readiness promotion, or Chrome-class claim.
