@@ -99,6 +99,7 @@
     "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
     "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
     "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    "docs/research/chrome-class-capability-traceability-map-2026-07.md",
     "docs/storage/machine/profile-session-source-manifest.json",
     "docs/storage/machine/profile-session-source-manifest.schema.json",
     "tools/validate_profile_session_sources.py",

@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Chrome-class capability route synchronization
+
+Question:
+
+Does the active readiness crosswalk and PB-020 closure evidence expose the Chrome-class capability traceability map as a cross-domain control, rather than leaving it only in the research index and build-information ledger?
+
+Method:
+
+Bound the no-claim capability traceability map to the ownership/PB-020 crosswalk lane, the human lane index, the PB-020 audit, and the closure-review template. Updated the crosswalk count from 227 to 228 resolved evidence paths. This preserves the distinction between capability routing and actual Chrome-class, compatibility, security, accessibility, performance, or production evidence.
+
 ## 2026-07-19 - PB-020 source-control inventory synchronization
 
 Question:
