@@ -37,6 +37,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-layout"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-html",
+]
+
+[[package]]
 name = "turing-shell"
 version = "0.1.0"
 dependencies = [

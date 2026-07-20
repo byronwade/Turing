@@ -1,5 +1,35 @@
 # Research Log
 
+## 2026-07-20 - Layout and display list implemented
+
+Question:
+
+`WP-008` resolves which declarations apply to each node. `WP-009` asks where the resulting boxes go and what is drawn. What can be built honestly without a font stack?
+
+Method:
+
+Implemented `crates/turing-layout` from the CSS box model, visual formatting model, and display specifications, deriving from no existing engine.
+
+Decision:
+
+The crate generates a box tree from the styled document, lays it out, and emits a flat display list of paint commands. It does not rasterize; the display list is the handoff to a painter.
+
+Text measurement forced an explicit choice. Real advance width depends on font selection, shaping, kerning, and fallback, none of which exist. Rather than hard-code a number inside the line breaker, the crate takes a `TextMetrics` parameter describing a monospace advance and line height. Layout is then correct *given* those metrics, and the placeholder is visible in the signature instead of hidden in the algorithm. When a font stack lands, the metrics become real and the layout code does not change.
+
+Implemented: block and inline formatting in a horizontal writing mode, auto width resolution from the containing block, padding and border reducing content width, margin collapse between adjacent siblings, anonymous block generation when a block box has mixed block and inline children, and greedy line breaking.
+
+Four feature families return `LayoutError`: floats and clearance, `position` other than `static`, `display` values with their own algorithm such as flex, grid, and table, and vertical or right-to-left writing modes. Each produces a materially different geometry rather than a missing detail, so ignoring one would place content in the wrong place while appearing to succeed.
+
+One test failure was worth the correction it forced. The end-to-end case asserted that `p { color: navy }` reached the painted text, and it did not, because `color` is an inherited property and text boxes were carrying `None`. The fix was to thread an inherited colour through box generation rather than to weaken the test. That is real missing behaviour caught by an assertion about output rather than about internals.
+
+Seventeen tests, bringing the workspace to 123. They pin the quiet failures: padding and border must reduce content width rather than growing the border box, adjacent margins must collapse to the larger rather than summing, `display: none` and head elements must generate no boxes at all, background must paint before the text sitting on it, and no painted box may escape the viewport.
+
+What this does not do: no rasterization, no compositing, no fonts, no images, no scrolling, no script.
+
+Next question:
+
+`WP-007` is DOM events and mutation, which is what makes the tree respond to input rather than being a static render.
+
 ## 2026-07-20 - CSS parsing, selector matching, and cascade implemented
 
 Question:
