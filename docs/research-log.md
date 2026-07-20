@@ -10166,3 +10166,21 @@ Decision:
 Next question:
 
 When will the owner define the M1 reference-platform scope and authorize the platform evidence task needed to replace the scorecard with an executed decision packet?
+
+# 2026-07-20 - Storage engine and recovery policy research
+
+Question:
+
+Which storage-engine families and process models should be compared for browser-owned state before Turing selects a backend or makes durability, migration, data-loss, privacy, or performance claims?
+
+Method:
+
+Compared the storage Blueprint and engineering book, profile/session format inventory, data-safety closure route, `RQ-14`/`RQ-27` crosswalk lane, `TASK-000007` boundary, and official SQLite, LMDB, and RocksDB transaction/recovery documentation. Added a no-claim research route covering SQLite journal/WAL, memory-mapped copy-on-write, and append/log or store-specific candidates, with per-state-class decision fields, fault/recovery evidence, privacy boundaries, comparable measurements, rejection rules, and the next synthetic-fixture proof.
+
+Decision:
+
+The research route makes the storage backend decision and evidence contract explicit only. `PB-016` remains partial, no backend or durability policy is selected, no dependency is approved, and no data-loss, privacy, migration, performance, production, or Chrome-class claim changed.
+
+Next question:
+
+When will an owner-approved `TASK-000007` extension define the first synthetic state classes, candidate configurations, fault points, and retained artifact schema?

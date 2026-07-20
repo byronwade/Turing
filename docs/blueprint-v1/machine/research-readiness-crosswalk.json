@@ -396,6 +396,7 @@
       "research_questions": ["RQ-14", "RQ-27", "RQ-49", "RQ-50", "RQ-53", "RQ-54"],
       "evidence_start": [
         "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/research/storage-engine-and-recovery-policy-research-2026-07.md",
         "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
         "docs/storage/README.md",
         "docs/storage/machine/profile-session-source-manifest.json",

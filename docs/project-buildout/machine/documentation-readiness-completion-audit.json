@@ -100,6 +100,7 @@
     "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
     "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
     "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/storage-engine-and-recovery-policy-research-2026-07.md",
     "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
     "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
     "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
@@ -232,7 +233,7 @@
       "id": "DOC-READY-RESEARCH_LANES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The research index, crosswalk, seven active packets with observation/inference/next-work/source-context controls, checked no-claim source manifests, deferred open-web feature-lifecycle packet, Nova visual source and surface-contract map, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
+        "The research index, crosswalk, eight active packets with observation/inference/next-work/source-context controls, checked no-claim source manifests, deferred open-web feature-lifecycle packet, Nova visual source and surface-contract map, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
       ],
       "missing_for_full_goal": [
         "Research lane existence does not answer the remaining research questions or provide accepted decisions, executable proof, raw benchmark results, security evidence, compatibility results, accessibility results, or owner approvals."
@@ -455,6 +456,7 @@
       "missing_before_full_goal": "Profile/session, package/update, incident-response, ownership, and build-readiness closure review still need executable schemas beyond the checked no-claim schema-package template, migration and fault tests, update metadata parsers and update-lab packages beyond the checked no-claim update-lab package template, signature/threshold fixtures, rollback and migration labs, incident tabletop and emergency patch records beyond the checked no-claim incident patch rehearsal template, named qualified backups and two-person control beyond the checked no-claim backup-owner qualification template, owner-reviewed backup ownership readiness beyond the checked no-claim backup-ownership readiness-review template, owner-reviewed build-readiness closure beyond the checked no-claim build-readiness closure-review template, legal approval, release authority, and owner review.",
       "source_refs": [
         "docs/research/profile-session-format-inventory-2026-07.md",
+        "docs/research/storage-engine-and-recovery-policy-research-2026-07.md",
         "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
         "docs/storage/machine/profile-session-schema-package.schema.json",
         "docs/storage/machine/profile-session-schema-packages/no-claim-profile-session-schema-template.json",
