@@ -28,6 +28,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/research/native-ui-component-fixture-inventory-2026-07.md",
     "docs/research/page-surface-composition-inventory-2026-07.md",
     "docs/research/window-input-accessibility-spike-inventory-2026-07.md",
+    "docs/research/nova-native-build-entry-criteria-2026-07.md",
     "docs/ui-runtime/README.md",
     "docs/ui-runtime/02-framework-landscape-and-selection-method.md",
     "docs/ui-runtime/03-rust-state-command-and-adapter-architecture.md",
@@ -230,6 +231,18 @@ REQUIRED_REVIEW_FILES = [
     "docs/ui-runtime/machine/native-ui-readiness-review.schema.json",
     "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json",
     "tools/validate_native_ui_readiness_review.py",
+]
+
+NOVA_HANDOFF_TERMS = [
+    "nova extraction worksheet",
+    "source identity",
+    "surface and states",
+    "rust state and commands",
+    "trust and identity",
+    "native fixture evidence",
+    "page-surface and accessibility",
+    "review and promotion",
+    "design_input_only",
 ]
 
 
@@ -512,12 +525,21 @@ def validate_crosswalk() -> None:
             fail(f"native shell lane must mention {phrase}")
 
 
+def validate_nova_handoff() -> None:
+    path = DOCS / "research" / "nova-native-build-entry-criteria-2026-07.md"
+    content = normalize(path.read_text(encoding="utf-8"))
+    for phrase in NOVA_HANDOFF_TERMS:
+        if normalize(phrase) not in content:
+            fail(f"{path}: missing Nova handoff term: {phrase}")
+
+
 def main() -> int:
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_REVIEW
     validate_review(path)
     validate_readiness_registry()
     validate_task_queue()
     validate_crosswalk()
+    validate_nova_handoff()
     print(f"native UI readiness review validation passed: {path}")
     return 0
 

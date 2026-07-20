@@ -10005,6 +10005,24 @@ Compared the research-readiness crosswalk with the proposed build-readiness task
 
 Compared the active research packets validated by `validate_research_index.py` with the central documentation-readiness audit source list. Added the five missing active packet paths to the machine audit, and added a validator assertion that every active research packet is named there. The human audit now names all `7/7` active packets. This closes source-list continuity only; no research question, owner decision, readiness gate, task, implementation, or performance claim changed.
 
+# 2026-07-20 - Nova native extraction worksheet
+
+Question:
+
+Can the supplied Nova visual/layout source enter a future native task through a resumable worksheet that separates visual identity from Rust authority, page-surface identity, accessibility evidence, and review promotion?
+
+Method:
+
+Compared the Nova source manifest and surface-contract map with the native UI closure preparation, component-fixture inventory, page-surface composition, accessibility source manifest, `TASK-000006`, and native UI readiness-review template. Added a required extraction worksheet for source identity, surface/state coverage, Rust state/commands, trust identity, native fixtures, page-surface/accessibility, and review/promotion. Added validator coverage for the worksheet and `design_input_only` boundary.
+
+Decision:
+
+Nova remains the primary visual/layout reference, React/JSX remains design-lab-only, no toolkit or native adapter is selected, and no UI gate or native implementation claim changed. The worksheet improves handoff completeness only.
+
+Next question:
+
+When will an approved `TASK-000006` manifest and independent reviewer authorize the first toolkit-neutral Nova fixture slice?
+
 # 2026-07-20 - Benchmark closure worksheet
 
 Question:

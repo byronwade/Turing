@@ -45,6 +45,22 @@ Before native implementation begins, the maintainer must produce versioned, revi
 
 Extraction must preserve source-region traceability. A token or component that cannot be mapped back to the captured source and forward to a behavioral or fixture contract remains a design-lab hypothesis.
 
+## Nova extraction worksheet
+
+The real design-to-native handoff must complete one worksheet for each Nova surface or shared primitive before it enters an approved native task. The visual source remains the input; the worksheet records the independent behavioral and evidence owners.
+
+| Required field | Handoff must record | Rejection condition |
+|---|---|---|
+| Source identity | Manifest hash, source region/component, capture date, token version, and any intentional visual deviation | Source bytes or region cannot be reproduced, or a deviation has no review record |
+| Surface and states | Stable component ID, parent contract, loading/error/empty/recovery/permission states, density, theme, locale, and text-fit cases | A screenshot or happy-path composition stands in for the state inventory |
+| Rust state and commands | Snapshot fields, typed commands, identity/epoch, deadline/cancellation, confirmation/rejection, diagnostics, and persistence scope | JSX state, toolkit callback, page event, or renderer output owns authority |
+| Trust and identity | Service owner, profile/site/frame/document/process/device/generation identity, untrusted inputs, capability boundary, and prohibited authority | Page content, renderer texture, extension, agent, or visual event mints permission or identity |
+| Native fixture evidence | Keyboard, focus, IME, screen reader, forced color/high contrast, reduced motion, localization, fault, recovery, and stale-state fixture IDs | Visual parity is treated as accessibility, fault, performance, or security evidence |
+| Page-surface and accessibility | Typed/brokered handle, page/chrome focus and tree composition, platform API, assistive-technology workflow, unsupported cases, and UI-gate references | Page surface, semantic model, or one platform snapshot is generalized into readiness |
+| Review and promotion | Owner and independent reviewer, artifact hashes, exact task/ADR/gate scope, limitations, expiry, rollback, and synchronized registry changes | Template, placeholder reviewer, or visual diff authorizes toolkit selection or native implementation |
+
+Until the native UI readiness review and approved task replace this no-claim handoff, every worksheet row remains `design_input_only`, React/JSX remains design-lab-only, no toolkit is selected, and no Nova surface is trusted browser chrome.
+
 ## Build-entry gates
 
 Nova-driven native work may enter an approved implementation task only when all applicable conditions are true:
