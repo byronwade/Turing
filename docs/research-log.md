@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-60 independent verification for agent-generated code
+
+Question:
+
+Which evidence combinations are genuinely independent enough to evaluate agent-generated browser work across semantics, security, state, accessibility, performance, and release operations?
+
+Method:
+
+Reconciled the agent task/provenance controls, independent-verification baseline, QA suites, security/adversarial review, accessibility evaluation, benchmark claim route, incident rehearsal, and release evidence requirements. Defined common-mode risks, oracle independence, denominator rules, verifier boundaries, and the evidence-bundle sequence.
+
+Result:
+
+Added an active `RQ-60` packet that distinguishes independent evidence from a second invocation, separate process, agent-authored test, or passing repository check. It requires task-scoped provenance, independent oracles, negative and recovery cases, raw artifacts, common-mode analysis, and reviewer disposition.
+
+Impact:
+
+The research index, crosswalk lane documentation, repository map, documentation-readiness audit, machine audit source list, and research log now route `RQ-60` to one independent-evidence path. This does not accept a task, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can the first approved task manifest bind its acceptance criteria to independent oracles and verifier roles without allowing the implementation agent to certify its own work?
+
 ## 2026-07-19 - RQ-65 service and offline architecture route
 
 Question:

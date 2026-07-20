@@ -531,6 +531,7 @@ These reports must remain linked from the research index and mapped back to the 
 
 - [`docs/research/deterministic-replay-and-causal-observability-research-2026-07.md`](research/deterministic-replay-and-causal-observability-research-2026-07.md).
 - [`docs/research/product-slos-and-error-budgets-research-2026-07.md`](research/product-slos-and-error-budgets-research-2026-07.md).
+- [`docs/research/independent-verification-for-agent-generated-code-research-2026-07.md`](research/independent-verification-for-agent-generated-code-research-2026-07.md).
 
 ### Native UI research reports
 

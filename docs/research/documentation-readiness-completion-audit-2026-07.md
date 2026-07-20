@@ -46,6 +46,8 @@ The stable-scope lane now also has a no-claim [Stable v1 Scope and Platform Cont
 
 The service-continuity lane now also has a no-claim [Service and Offline Architecture Research](service-and-offline-architecture-research-2026-07.md) packet for `RQ-65`. It connects service classification, authority, data handling, offline degradation, export, self-hosting, shutdown, privacy, and support evidence without selecting a provider or making an availability claim.
 
+The independent-verification lane now also has an active no-claim [Independent Verification for Agent-Generated Browser Code Research](independent-verification-for-agent-generated-code-research-2026-07.md) packet for `RQ-60`. It connects agent provenance, independent oracles, conformance, security, model, accessibility, performance, release, and common-mode evidence without accepting a task or verification result.
+
 The focused validator checks that:
 
 - all required source records exist;
