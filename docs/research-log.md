@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Nova visual authority added to the canonical-owner map
+
+Question:
+
+Can a new maintainer identify the Nova artifact as the browser-face visual/layout authority without treating the React design lab as trusted runtime behavior or a toolkit decision?
+
+Method:
+
+Compared the documentation-policy source-of-truth table with the Nova design-lab README, design-source manifest, native build-entry criteria, UI runtime book, and current build-readiness stop/resume records.
+
+Decision:
+
+Added separate canonical-owner rows for Nova visual/layout composition and trusted-chrome runtime, page-surface, accessibility, and behavior. The policy now records the authority boundary directly where contributors look for source ownership.
+
+Impact:
+
+This closes an authority-map ambiguity without changing Nova's source hash, selecting a toolkit, authorizing native UI implementation, or changing the 90% contained-M0 / 0% full-build measures. React remains design-lab-only, and accepted UI contracts and ADRs remain behavior-authoritative.
+
+Next question:
+
+Which reviewed extraction manifest and native fixture package will first translate the Nova source into toolkit-neutral contracts after UI implementation is authorized?
+
 ## 2026-07-19 - Servo performance capture freshness boundary
 
 Question:

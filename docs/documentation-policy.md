@@ -31,6 +31,8 @@ Each fact should have one canonical owner.
 | performance, memory, energy, tab-lifecycle measurement | `blueprint-v1/09-performance-memory.md` |
 | AI observation, grant, action, provider, audit model | `blueprint-v1/10-ai-agent-platform.md` |
 | UI, accessibility, DevTools, automation | `blueprint-v1/11-product-ui-devtools.md` |
+| browser-face visual/layout reference | `ui-runtime/design-lab/README.md`, `ui-runtime/design-lab/turing-nova-design-source.jsx`, and `ui-runtime/machine/design-source-manifest.json`; Nova owns visual language and composition only |
+| trusted-chrome runtime, toolkit, page-surface, and accessibility behavior | `ui-runtime/README.md`, `blueprint-v1/11-product-ui-devtools.md`, `blueprint-v1/12-testing-compatibility.md`, accepted UI ADRs, and UI machine registries; these remain authoritative over Nova behavior and implementation |
 | compatibility, conformance, fuzzing, quality gates | `blueprint-v1/12-testing-compatibility.md` |
 | build, signing, update, release, incident operations | `blueprint-v1/13-build-release-operations.md` |
 | milestones and work sequencing | `blueprint-v1/14-roadmap-work-breakdown.md` |
