@@ -143,6 +143,71 @@ fn resizing_reflows_text_onto_more_lines() {
 }
 
 #[test]
+fn a_click_runs_the_script_listener_and_repaints() {
+    // The full interactive loop: script registers a listener at load, a
+    // dispatched click reports the invocation, the engine calls the named
+    // function, the function mutates the DOM, layout re-runs, and the next
+    // paint shows the change.
+    let html = "<html><head><style>\
+        .off { background: red; } .on { background: lime; }\
+        </style></head><body><div id='box' class='off'>toggle</div>\
+        <script>\
+        function flip() { setAttribute('box', 'class', 'on'); }\
+        addEventListener('box', 'click', 'flip');\
+        </script></body></html>";
+    let mut page = Page::load(html, 100.0).expect("loads");
+    assert_eq!(
+        page.render(100, 32).expect("renders").pixel(50, 8),
+        Some(color("red")),
+        "before the click the box is red"
+    );
+
+    let dispatch = page
+        .dispatch_at(Point { x: 4.0, y: 8.0 }, &Event::new("click"))
+        .expect("dispatches")
+        .expect("hits the box");
+    assert_eq!(dispatch.invocations.len(), 1, "the listener ran once");
+    assert_eq!(dispatch.invocations[0].listener, "flip");
+
+    assert_eq!(
+        page.render(100, 32).expect("renders").pixel(50, 8),
+        Some(color("lime")),
+        "the click's mutation is visible in the next paint"
+    );
+}
+
+#[test]
+fn a_listener_naming_a_missing_function_is_a_script_error() {
+    let html = "<html><body><div id='box'>x</div>\
+        <script>addEventListener('box', 'click', 'ghost');</script></body></html>";
+    let mut page = Page::load(html, 100.0).expect("loads");
+    let result = page.dispatch_at(Point { x: 4.0, y: 8.0 }, &Event::new("click"));
+    assert!(
+        matches!(result, Err(EngineError::Script(_))),
+        "a registered-but-undefined listener must refuse, got {result:?}"
+    );
+}
+
+#[test]
+fn a_function_defined_by_run_script_is_callable_from_a_listener() {
+    let html = "<html><head><style>.on { background: lime; }</style></head>\
+        <body><div id='box'>x</div></body></html>";
+    let mut page = Page::load(html, 100.0).expect("loads");
+    page.run_script(
+        "function arm() { setAttribute('box', 'class', 'on'); }\
+         addEventListener('box', 'click', 'arm');",
+    )
+    .expect("runs");
+    page.dispatch_at(Point { x: 4.0, y: 8.0 }, &Event::new("click"))
+        .expect("dispatches")
+        .expect("hits");
+    assert_eq!(
+        page.render(100, 32).expect("renders").pixel(50, 8),
+        Some(color("lime"))
+    );
+}
+
+#[test]
 fn scrolling_translates_paint_without_touching_geometry() {
     let page = Page::load(PAGE, 320.0).expect("loads");
     let scrolled = page.render_scrolled(320, 64, 8.0).expect("renders");

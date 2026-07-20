@@ -62,7 +62,10 @@ const INTERFACE: &str = "Document";
 /// Named in one place so [`DomHost::read_only`] cannot fall behind the set
 /// [`DomHost::new`] registers: adding a mutator without adding it here would
 /// silently widen the read-only surface, which is the direction that matters.
-const MUTATING_OPERATIONS: &[&str] = &["setAttribute", "removeAttribute"];
+// `addEventListener` mutates no tree node, but it changes what future
+// dispatches do, which is a document-behaviour mutation; a read-only
+// principal must not get it.
+const MUTATING_OPERATIONS: &[&str] = &["setAttribute", "removeAttribute", "addEventListener"];
 
 /// A [`Host`] exposing read-only document operations to script.
 #[derive(Debug)]
@@ -82,6 +85,7 @@ impl<'dom> DomHost<'dom> {
         bindings.register(INTERFACE, "textContent", 1);
         bindings.register(INTERFACE, "setAttribute", 3);
         bindings.register(INTERFACE, "removeAttribute", 2);
+        bindings.register(INTERFACE, "addEventListener", 3);
         Self { dom, bindings }
     }
 
@@ -184,6 +188,23 @@ impl Host for DomHost<'_> {
                 let name = arguments[1].to_string();
                 self.dom
                     .remove_attribute(handle, &name)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
+            "addEventListener" => {
+                // `addEventListener(id, kind, functionName)`. The listener is
+                // registered in the DOM's own dispatch machinery with the
+                // function's name as its identifier and no declarative
+                // effects; whoever owns the interpreter maps the reported
+                // invocation back to the named function and calls it. This
+                // keeps propagation order the DOM's business and execution
+                // the embedder's, with the invocation record as the seam.
+                let node = self.element(&first)?;
+                let handle = self.dom.handle(node);
+                let kind = arguments[1].to_string();
+                let function = arguments[2].to_string();
+                self.dom
+                    .add_listener(handle, &kind, &function, false, &[])
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
