@@ -177,6 +177,32 @@ fn a_click_runs_the_script_listener_and_repaints() {
 }
 
 #[test]
+fn a_listener_receives_the_event_kind_and_target_per_its_arity() {
+    // The two-parameter listener writes both arguments where the page can
+    // show them: the kind becomes the class, the target id an attribute.
+    let html = "<html><head><style>.click { background: lime; }</style></head>\
+        <body><div id='box'>x</div>\
+        <script>\
+        function on(kind, target) {\
+          setAttribute('box', 'class', kind);\
+          setAttribute('box', 'from', target);\
+        }\
+        addEventListener('box', 'click', 'on');\
+        </script></body></html>";
+    let mut page = Page::load(html, 100.0).expect("loads");
+    page.dispatch_at(Point { x: 4.0, y: 8.0 }, &Event::new("click"))
+        .expect("dispatches")
+        .expect("hits");
+    let target = page
+        .target_at(Point { x: 4.0, y: 8.0 })
+        .expect("routes")
+        .expect("still hittable");
+    let document = page.dom().document();
+    assert_eq!(document.attribute_of(target, "class"), Some("click"));
+    assert_eq!(document.attribute_of(target, "from"), Some("box"));
+}
+
+#[test]
 fn a_listener_naming_a_missing_function_is_a_script_error() {
     let html = "<html><body><div id='box'>x</div>\
         <script>addEventListener('box', 'click', 'ghost');</script></body></html>";

@@ -1,5 +1,21 @@
 # Research Log
 
+## 2026-07-20 - Hover, a scrollbar, event arguments, and CSS pixels that mean it
+
+Four gaps between "renders correctly" and "feels like an application", closed in one pass.
+
+Hover. `ChromeModel` carries the pointer when it is over the window; the chrome derives every hover affordance from it — `.ib:hover` surfaces behind enabled buttons (never disabled ones), `.ttab:hover` on inactive tabs, the close glyph revealed on whichever tab the pointer is over, the site pill surfacing only under the pointer as Nova draws it. Because the press point is by definition the hover point, the close region now closes any tab it is pressed in, active or not — the affordance was visible there. `None` paints the resting state, which is also what a screenshot shows, so the static artifacts stay meaningful.
+
+The scrollbar. A translucent rounded thumb over the page area, proportional to the visible fraction, present only when there is somewhere to scroll — the compositor's alpha and radius doing product work two commits after they existed.
+
+Event arguments. The interpreter's arity check is strict, so the event reaches a listener as exactly what it declared: one parameter receives the kind, two also receive the target's id, zero receive nothing, three is refused with a message naming the limit. Plain values rather than an event object, which is the honest shape while objects crossing the boundary remain a bindings decision.
+
+CSS pixels. The engine always worked in CSS pixels; the presenter previously conflated them with physical pixels, so a 150% display showed everything small. Composition, chrome, input, and scrolling now all happen in logical pixels — pointer positions and wheel deltas divide by the scale factor on the way in — and one nearest-neighbour mapping at the blit turns the logical canvas into the physical buffer. At integer scales the bitmap glyphs double crisply; at fractional scales the duplication is uneven and stated, not smoothed — a filter would blur the one font whose identity is its hard edges.
+
+The workspace is at 390 tests.
+
+Not done: page-content hover (no `:hover` selector support in the cascade, so nothing to repaint yet), scrollbar dragging (the thumb indicates, the wheel scrolls), removeEventListener, and per-glyph scaling for fractional DPI.
+
 ## 2026-07-20 - The second painter: alpha, radii, and anti-aliasing, anchored to the reference
 
 The reference rasterizer's whole purpose was to be the painter a faster or richer one is diffed against. That painter now exists. `crates/turing-paint`, registered as `COMP-024`, adds exactly the three things the Nova design needs and the reference deliberately refuses: source-over alpha, rounded-corner fills, and anti-aliased edges.

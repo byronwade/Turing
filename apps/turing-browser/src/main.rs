@@ -120,6 +120,9 @@ struct Browser {
     surface: Option<softbuffer::Surface<Rc<Window>, Rc<Window>>>,
     cursor: PhysicalPosition<f64>,
     modifiers: Modifiers,
+    /// Whether the pointer was over the chrome bar at the last move, so
+    /// hover redraws happen when entering, moving inside, or leaving it.
+    hover_in_bar: bool,
 }
 
 impl Browser {
@@ -136,6 +139,7 @@ impl Browser {
             surface: None,
             cursor: PhysicalPosition::new(0.0, 0.0),
             modifiers: Modifiers::default(),
+            hover_in_bar: false,
         };
         let tab = browser.open_tab(source)?;
         browser.tabs.push(tab);
@@ -166,14 +170,35 @@ impl Browser {
         &mut self.tabs[self.active]
     }
 
+    /// The display's scale factor: physical pixels per CSS pixel.
+    #[allow(clippy::cast_possible_truncation)]
+    fn scale(&self) -> f32 {
+        self.window
+            .as_ref()
+            .map_or(1.0, |window| window.scale_factor() as f32)
+    }
+
+    /// The window's size in CSS (logical) pixels — the coordinate space the
+    /// engine, chrome, and input all work in.
     #[allow(clippy::cast_precision_loss, clippy::cast_possible_truncation)]
     fn window_size(&self) -> (f32, f32) {
         match &self.window {
             Some(window) => {
                 let size = window.inner_size();
-                (size.width as f32, size.height as f32)
+                let scale = self.scale();
+                (size.width as f32 / scale, size.height as f32 / scale)
             }
             None => (INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32),
+        }
+    }
+
+    /// The pointer in CSS pixels.
+    #[allow(clippy::cast_possible_truncation)]
+    fn cursor_point(&self) -> Point {
+        let scale = self.scale();
+        Point {
+            x: self.cursor.x as f32 / scale,
+            y: self.cursor.y as f32 / scale,
         }
     }
 
@@ -422,12 +447,40 @@ impl Browser {
         list.items
             .extend(PaintList::from_display_list(&page_items).items);
 
+        // Scrollbar: a translucent rounded thumb over the page area,
+        // proportional to the visible fraction, only when there is anywhere
+        // to scroll.
+        let viewport = window_height - bar;
+        let content = tab.page.content_height();
+        if content > viewport && viewport > 0.0 {
+            let thumb_height = (viewport / content * viewport).max(24.0);
+            let travel = viewport - thumb_height;
+            let progress = (tab.scroll_y / (content - viewport)).clamp(0.0, 1.0);
+            list.items.push(PaintItem::Fill {
+                rect: turing_layout::Rect {
+                    x: window_width - 8.0,
+                    y: progress.mul_add(travel, bar),
+                    width: 6.0,
+                    height: thumb_height,
+                },
+                color: self.theme.text3,
+                alpha: 0.5,
+                radius: 3.0,
+            });
+        }
+
+        let hover = if self.palette.is_some() {
+            None
+        } else {
+            Some(self.cursor_point())
+        };
         let snapshot = self.snapshot();
         let model = ChromeModel {
             snapshot: &snapshot,
             width: window_width,
             can_go_back: self.tabs[self.active].can_go_back(),
             can_go_forward: self.tabs[self.active].can_go_forward(),
+            hover,
         };
         list.items
             .extend(turing_chrome::render(&model, &self.theme).items);
@@ -450,14 +503,19 @@ impl Browser {
             return; // A minimised window has no surface to paint.
         }
 
-        #[allow(clippy::cast_precision_loss)]
-        let list = self.compose(size.width as f32, size.height as f32);
-        let canvas = match paint(
-            &list,
-            size.width as usize,
-            size.height as usize,
-            self.theme.ink,
-        ) {
+        // Compose and paint in CSS pixels, then map to the physical buffer.
+        // At scale 1 the mapping is the identity; at higher scales it is a
+        // nearest-neighbour upscale, which keeps the bitmap glyphs crisp at
+        // integer factors and is honestly chunky at fractional ones.
+        let scale = self.scale();
+        let (logical_width, logical_height) = self.window_size();
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let (canvas_width, canvas_height) = (
+            (logical_width.round() as usize).max(1),
+            (logical_height.round() as usize).max(1),
+        );
+        let list = self.compose(logical_width, logical_height);
+        let canvas = match paint(&list, canvas_width, canvas_height, self.theme.ink) {
             Ok(canvas) => canvas,
             Err(error) => {
                 eprintln!("turing-browser: render refused: {error}");
@@ -483,7 +541,20 @@ impl Browser {
             eprintln!("turing-browser: presenter buffer unavailable; skipping frame");
             return;
         };
-        for (slot, pixel) in buffer.iter_mut().zip(canvas.pixels()) {
+        let physical_width = size.width as usize;
+        for (index, slot) in buffer.iter_mut().enumerate() {
+            let px = index % physical_width;
+            let py = index / physical_width;
+            #[allow(
+                clippy::cast_precision_loss,
+                clippy::cast_possible_truncation,
+                clippy::cast_sign_loss
+            )]
+            let (sx, sy) = (
+                ((px as f32 / scale) as usize).min(canvas_width - 1),
+                ((py as f32 / scale) as usize).min(canvas_height - 1),
+            );
+            let pixel = canvas.pixel(sx, sy).unwrap_or(self.theme.ink);
             *slot = (u32::from(pixel.red) << 16)
                 | (u32::from(pixel.green) << 8)
                 | u32::from(pixel.blue);
@@ -494,11 +565,7 @@ impl Browser {
     }
 
     fn click(&mut self) {
-        #[allow(clippy::cast_possible_truncation)]
-        let window_point = Point {
-            x: self.cursor.x as f32,
-            y: self.cursor.y as f32,
-        };
+        let window_point = self.cursor_point();
 
         // An open palette owns the pointer: any press closes it, which is
         // the flat-render stand-in for clicking the veil.
@@ -518,6 +585,7 @@ impl Browser {
                 width: self.window_size().0,
                 can_go_back,
                 can_go_forward,
+                hover: Some(window_point),
             };
             if let Some(command) = turing_chrome::command_at(&model, window_point) {
                 self.apply(command);
@@ -626,9 +694,8 @@ impl ApplicationHandler for Browser {
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
             WindowEvent::RedrawRequested => self.redraw(),
-            WindowEvent::Resized(size) => {
-                #[allow(clippy::cast_precision_loss)]
-                let width = size.width as f32;
+            WindowEvent::Resized(_) => {
+                let width = self.window_size().0;
                 for index in 0..self.tabs.len() {
                     if let Err(error) = self.tabs[index].page.resize(width) {
                         eprintln!("turing-browser: relayout refused: {error}");
@@ -644,12 +711,32 @@ impl ApplicationHandler for Browser {
                         // common platform default.
                         MouseScrollDelta::LineDelta(_, lines) => lines * 48.0,
                         #[allow(clippy::cast_possible_truncation)]
-                        MouseScrollDelta::PixelDelta(position) => position.y as f32,
+                        MouseScrollDelta::PixelDelta(position) => position.y as f32 / self.scale(),
                     };
                     self.scroll_by(pixels);
                 }
             }
-            WindowEvent::CursorMoved { position, .. } => self.cursor = position,
+            WindowEvent::CursorMoved { position, .. } => {
+                self.cursor = position;
+                let in_bar = self.cursor_point().y < turing_chrome::bar_height();
+                // Redraw while over the bar or on leaving it, so hover
+                // affordances appear and disappear; page hover is not a
+                // repaint trigger yet.
+                if in_bar || self.hover_in_bar {
+                    self.request_redraw();
+                }
+                self.hover_in_bar = in_bar;
+            }
+            WindowEvent::ScaleFactorChanged { .. } => {
+                let width = self.window_size().0;
+                for index in 0..self.tabs.len() {
+                    if let Err(error) = self.tabs[index].page.resize(width) {
+                        eprintln!("turing-browser: relayout refused: {error}");
+                    }
+                }
+                self.clamp_scroll();
+                self.request_redraw();
+            }
             WindowEvent::ModifiersChanged(modifiers) => self.modifiers = modifiers,
             WindowEvent::MouseInput {
                 state: ElementState::Pressed,

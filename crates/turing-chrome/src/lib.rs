@@ -51,6 +51,10 @@ pub struct ChromeModel<'a> {
     pub can_go_back: bool,
     /// Whether the active tab can traverse forward in its history.
     pub can_go_forward: bool,
+    /// The pointer's position in window coordinates, when it is over the
+    /// window. Hover affordances derive from this; `None` paints the resting
+    /// state, which is also what a static screenshot shows.
+    pub hover: Option<Point>,
 }
 
 /// The chrome bar's height in CSS pixels (cozy density).
@@ -93,6 +97,10 @@ fn icon_rect(x: f32) -> Rect {
         width: tokens::ICON_BUTTON_SIZE,
         height: tokens::ICON_BUTTON_SIZE,
     }
+}
+
+fn hovered(model: &ChromeModel<'_>, rect: Rect) -> bool {
+    model.hover.is_some_and(|point| contains(rect, point))
 }
 
 fn contains(rect: Rect, point: Point) -> bool {
@@ -316,7 +324,9 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> PaintList {
     glyph_in(&mut list, geometry.reload, 'R', theme.text2);
 
     if let Some(pill) = geometry.site_pill {
-        rounded(&mut list, pill, theme.surface3, 10.0);
+        if hovered(model, pill) {
+            rounded(&mut list, pill, theme.surface3, 10.0);
+        }
         let address = model
             .snapshot
             .tabs
@@ -366,6 +376,9 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> PaintList {
             // `.ttab.on`: surface 3 with a 1px `--line2` inset ring, at
             // Nova's 10px tab radius.
             ring(&mut list, tab.rect, theme.line2, theme.surface3, 10.0);
+        } else if hovered(model, tab.rect) {
+            // `.ttab:hover`: surface 3, no ring.
+            rounded(&mut list, tab.rect, theme.surface3, 10.0);
         }
         let title_color = match (tab.active, tab.lifecycle) {
             (true, _) => theme.text,
@@ -394,9 +407,9 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> PaintList {
             title_color,
             tokens::TAB_PADDING_X,
         );
-        // Nova reveals the close affordance on hover; a static frame shows it
-        // on the active tab, where the design also keeps it visible.
-        if tab.active {
+        // Nova reveals the close affordance on hover and keeps it visible on
+        // the active tab.
+        if tab.active || hovered(model, tab.rect) {
             glyph_in(&mut list, tab.close, 'x', theme.text3);
         }
     }
@@ -461,8 +474,10 @@ pub fn command_at(model: &ChromeModel<'_>, point: Point) -> Option<ShellCommand>
         });
     }
     for tab in &geometry.tabs {
-        // The close region wins over the tab it sits inside.
-        if tab.active && contains(tab.close, point) {
+        // The close region wins over the tab it sits inside. The pointer is
+        // at the press point, so the close glyph was visible there — hover
+        // reveals it on every tab.
+        if contains(tab.close, point) {
             return Some(ShellCommand::CloseTab { tab: tab.tab });
         }
         if contains(tab.rect, point) {
@@ -598,6 +613,7 @@ mod tests {
             width: 800.0,
             can_go_back: false,
             can_go_forward: false,
+            hover: None,
         };
         let list = render(&model, &LIGHT);
         assert!(matches!(
@@ -629,6 +645,7 @@ mod tests {
             width: 800.0,
             can_go_back: false,
             can_go_forward: false,
+            hover: None,
         };
         let geometry = geometry(&model);
 
@@ -678,6 +695,7 @@ mod tests {
             width: 800.0,
             can_go_back: false,
             can_go_forward: false,
+            hover: None,
         };
         let geometry = geometry(&model);
         assert!(geometry.tabs.is_empty());
@@ -702,12 +720,14 @@ mod tests {
             width: 800.0,
             can_go_back: false,
             can_go_forward: false,
+            hover: None,
         };
         let able = ChromeModel {
             snapshot: &snapshot,
             width: 800.0,
             can_go_back: true,
             can_go_forward: true,
+            hover: None,
         };
         let geometry = geometry(&inert);
         assert_eq!(command_at(&inert, center(geometry.back)), None);
@@ -720,6 +740,36 @@ mod tests {
         assert_eq!(
             command_at(&able, center(geometry.forward)),
             Some(ShellCommand::Forward {
+                tab: TabId::new(1).expect("nonzero")
+            })
+        );
+    }
+
+    #[test]
+    fn hover_reveals_the_close_affordance_and_the_hover_surface() {
+        let snapshot = snapshot(3, 2);
+        let base = ChromeModel {
+            snapshot: &snapshot,
+            width: 800.0,
+            can_go_back: false,
+            can_go_forward: false,
+            hover: None,
+        };
+        let geometry = geometry(&base);
+        let over_first = ChromeModel {
+            hover: Some(center(geometry.tabs[0].rect)),
+            ..base
+        };
+        let resting = render(&base, &LIGHT);
+        let hovering = render(&over_first, &LIGHT);
+        assert!(
+            hovering.items.len() > resting.items.len(),
+            "hovering paints the surface and the close glyph"
+        );
+        // Clicking the revealed close region on an inactive tab closes it.
+        assert_eq!(
+            command_at(&over_first, center(geometry.tabs[0].close)),
+            Some(ShellCommand::CloseTab {
                 tab: TabId::new(1).expect("nonzero")
             })
         );

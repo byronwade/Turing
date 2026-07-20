@@ -280,7 +280,13 @@ impl Page {
         let dispatch = self.router.dispatch_at(&self.dom, point, event)?;
         if let Some(record) = &dispatch {
             for invocation in &record.invocations {
-                self.call_listener(&invocation.listener)?;
+                let target = self
+                    .dom
+                    .document()
+                    .attribute_of(invocation.node, "id")
+                    .unwrap_or_default()
+                    .to_owned();
+                self.call_listener(&invocation.listener, &event.kind, &target)?;
             }
         }
         if self.dom.epoch() != before {
@@ -291,22 +297,46 @@ impl Page {
 
     /// Calls the named listener function from whichever retained script
     /// defines it.
-    fn call_listener(&mut self, name: &str) -> Result<(), EngineError> {
-        let index = self.programs.iter().position(|program| {
-            program
-                .functions
-                .iter()
-                .skip(1)
-                .any(|function| function.name == name)
-        });
-        let Some(index) = index else {
+    ///
+    /// The event reaches script as plain values rather than an event object:
+    /// a listener declaring one parameter receives the event kind, one
+    /// declaring two also receives the target element's id (empty when the
+    /// target has none). Zero parameters receives nothing. The interpreter's
+    /// arity check is strict, so this passes exactly what the function
+    /// declared — a three-parameter listener is refused rather than padded.
+    fn call_listener(&mut self, name: &str, kind: &str, target: &str) -> Result<(), EngineError> {
+        let found = self
+            .programs
+            .iter()
+            .enumerate()
+            .find_map(|(index, program)| {
+                program
+                    .functions
+                    .iter()
+                    .skip(1)
+                    .find(|function| function.name == name)
+                    .map(|function| (index, function.arity))
+            });
+        let Some((index, arity)) = found else {
             return Err(EngineError::Script(JsError::HostOperationFailed {
                 name: "addEventListener".to_owned(),
                 message: format!("no retained script defines the listener function {name:?}"),
             }));
         };
+        let available = [
+            turing_js::Value::String(kind.to_owned()),
+            turing_js::Value::String(target.to_owned()),
+        ];
+        let Some(arguments) = available.get(..arity) else {
+            return Err(EngineError::Script(JsError::HostOperationFailed {
+                name: "addEventListener".to_owned(),
+                message: format!(
+                    "the listener {name:?} declares {arity} parameters; the event supplies                      at most two (kind, target id)"
+                ),
+            }));
+        };
         let mut host = DomHost::new(&mut self.dom);
-        Vm::default().call(&self.programs[index], name, Vec::new(), &mut host)?;
+        Vm::default().call(&self.programs[index], name, arguments.to_vec(), &mut host)?;
         Ok(())
     }
 
