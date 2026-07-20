@@ -60,6 +60,8 @@ def load(path: Path) -> dict:
 
 
 def main() -> int:
+    if set(CONTROL) != set(VALIDATOR):
+        fail("manifest and validator maps must cover the same paths")
     crosswalk = load(CROSSWALK)
     ledger = load(LEDGER)
     audit = load(AUDIT)
@@ -82,6 +84,8 @@ def main() -> int:
         required = [manifest, schema]
         required.append(VALIDATOR[manifest])
         for path in required:
+            if not (ROOT / path).is_file():
+                missing.append(f"filesystem:{path}")
             if path not in crosswalk_entries:
                 missing.append(f"crosswalk:{path}")
             if path not in ledger_entries:
