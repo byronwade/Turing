@@ -2,7 +2,7 @@
 
 Turing's high-risk architectural choices must be tested against alternatives before they become irreversible. This document defines the initial research questions and required evidence.
 
-The checked [research-question coverage audit](machine/research-question-coverage.json), [schema](machine/research-question-coverage.schema.json), and [validator](../../tools/validate_research_question_coverage.py) distinguish the 37 questions currently routed through the active readiness crosswalk from 29 questions explicitly deferred outside current pre-build closure lanes. Deferred status preserves each question, owner route, revisit trigger, and future evidence requirement; it does not answer or reject the question.
+The checked [research-question coverage audit](machine/research-question-coverage.json), [schema](machine/research-question-coverage.schema.json), and [validator](../../tools/validate_research_question_coverage.py) distinguish the 37 questions currently routed through the active readiness crosswalk from 29 questions explicitly deferred outside current pre-build closure lanes. The validator also keeps the evidence-path denominator synchronized with the maintainer-facing [build-readiness progress snapshot](../project-buildout/22-build-readiness-progress-snapshot.md). Deferred status preserves each question, owner route, revisit trigger, and future evidence requirement; it does not answer or reject the question.
 
 ## RQ-01 — Can compact Rust data structures materially reduce engine memory?
 

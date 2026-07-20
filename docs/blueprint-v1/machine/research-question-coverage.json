@@ -6,6 +6,7 @@
   "claim_status": "No-claim research-question coverage audit only; this record distinguishes active pre-build crosswalk questions from explicitly deferred program questions but does not answer a research question, accept a decision, approve a task, establish evidence, promote readiness, or support a compatibility, security, accessibility, performance, production, or Chrome-class claim.",
   "program_source": "docs/blueprint-v1/22-research-program.md",
   "crosswalk_source": "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
+  "progress_snapshot_source": "docs/project-buildout/22-build-readiness-progress-snapshot.md",
   "active_question_ids": [
     "RQ-02", "RQ-04", "RQ-05", "RQ-13", "RQ-14", "RQ-15", "RQ-16", "RQ-20", "RQ-22", "RQ-23", "RQ-25", "RQ-27", "RQ-29", "RQ-30", "RQ-31", "RQ-34", "RQ-35", "RQ-36", "RQ-37", "RQ-38", "RQ-40", "RQ-44", "RQ-45", "RQ-46", "RQ-47", "RQ-48", "RQ-49", "RQ-50", "RQ-53", "RQ-54", "RQ-55", "RQ-56", "RQ-57", "RQ-60", "RQ-63", "RQ-64", "RQ-66"
   ],

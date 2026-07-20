@@ -14,6 +14,7 @@ SCHEMA = ROOT / "docs/blueprint-v1/machine/research-question-coverage.schema.jso
 PROGRAM = ROOT / "docs/blueprint-v1/22-research-program.md"
 CROSSWALK = ROOT / "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
 HUMAN_AUDIT = ROOT / "docs/research/research-question-coverage-audit-2026-07.md"
+PROGRESS_SNAPSHOT = ROOT / "docs/project-buildout/22-build-readiness-progress-snapshot.md"
 
 # These rows previously passed identifier-only validation while pointing to
 # unrelated research domains. Keep a small, explicit guard until the registry
@@ -60,6 +61,7 @@ def main() -> int:
         program = PROGRAM.read_text(encoding="utf-8")
         crosswalk = json.loads(CROSSWALK.read_text(encoding="utf-8"))
         human_audit = HUMAN_AUDIT.read_text(encoding="utf-8")
+        progress_snapshot = PROGRESS_SNAPSHOT.read_text(encoding="utf-8")
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"cannot read source: {exc}")
 
@@ -73,6 +75,8 @@ def main() -> int:
             fail(f"claim_status must preserve {phrase!r} boundary")
     if not (ROOT / audit.get("program_source", "")).is_file() or not (ROOT / audit.get("crosswalk_source", "")).is_file():
         fail("program_source and crosswalk_source must resolve")
+    if not (ROOT / audit.get("progress_snapshot_source", "")).is_file():
+        fail("progress_snapshot_source must resolve")
     required_commands = strings(audit.get("validation_commands"), "validation_commands", 3)
     if "python3 -B tools/validate_research_question_coverage.py" not in required_commands:
         fail("validation_commands must include this validator")
@@ -124,6 +128,13 @@ def main() -> int:
     )
     if expected_audit_sentence not in human_audit:
         fail("human research-question coverage audit is stale relative to the machine crosswalk")
+    expected_snapshot_sentence = (
+        f"Research-route coverage is mechanically checked: all `{len(crosswalk_ids)}/{len(crosswalk_ids)}` active research questions "
+        f"have at least one `docs/research/` route, and all `{evidence_entries}/{evidence_entries}` crosswalk evidence paths "
+        "resolve to existing repository files or directories."
+    )
+    if expected_snapshot_sentence not in progress_snapshot:
+        fail("build-readiness progress snapshot is stale relative to the machine crosswalk")
 
     active = strings(audit.get("active_question_ids"), "active_question_ids", 1)
     active_set = set(active)

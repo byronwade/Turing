@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Research crosswalk count drift control
+
+Question:
+
+Can the maintainer-facing progress snapshot remain synchronized with the machine research crosswalk when evidence routes change?
+
+Method:
+
+Corrected the snapshot's stale `256/256` evidence-path count to the machine-derived `259/259` count and extended the research-question coverage registry and validator with an explicit progress-snapshot source. The validator now rejects a stale snapshot sentence while preserving the 66-question, 37-active, 29-deferred, 10-lane, no-claim boundaries. This improves status tracking only; it does not answer a research question, approve a task, promote readiness, or create build evidence.
+
 ## 2026-07-19 - Accessibility source-manifest inbound-link audit
 
 Question:
