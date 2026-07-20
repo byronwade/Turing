@@ -88,6 +88,11 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md",
     "docs/research/process-topology-isolation-adjusted-memory-research-2026-07.md",
     "docs/research/nova-native-build-entry-criteria-2026-07.md",
+    "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
+    "docs/research/capacity-and-sustainability-research-2026-07.md",
+    "docs/research/project-controls-and-review-system-research-2026-07.md",
+    "docs/research/sustained-performance-policy-research-2026-07.md",
+    "docs/research/traceability-at-browser-scale-research-2026-07.md",
     "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
     "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
     "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
@@ -528,6 +533,23 @@ def validate_review_template_routes(source_records: set[str], owner: Path) -> No
             )
 
 
+def validate_active_research_packets(source_records: set[str], owner: Path) -> None:
+    """Keep the central audit's source list aligned with active research packets."""
+    active_packets: set[str] = set()
+    for packet in sorted((DOCS / "research").glob("*.md")):
+        if packet.name == "README.md":
+            continue
+        header = "\n".join(packet.read_text(encoding="utf-8").splitlines()[:12])
+        if re.search(r"^Status:\s*active\b", header, flags=re.MULTILINE):
+            active_packets.add(packet.relative_to(ROOT).as_posix())
+    missing_packets = sorted(active_packets - source_records)
+    if missing_packets:
+        fail(
+            f"{owner}: active research packets missing from audit source records: "
+            f"{', '.join(missing_packets)}"
+        )
+
+
 def validate_audit(path: Path) -> None:
     data = load_json(path)
     if not isinstance(data, dict):
@@ -566,6 +588,7 @@ def validate_audit(path: Path) -> None:
             fail(f"{path}: referenced source record does not exist: {source}")
     validate_lane_closure_routes(source_records, path)
     validate_review_template_routes(source_records, path)
+    validate_active_research_packets(source_records, path)
 
     criteria = require_list(data, "criteria")
     criteria_by_id: dict[str, dict[str, Any]] = {}

@@ -139,6 +139,11 @@
     "docs/agent-execution/machine/tasks/TASK-000010.json",
     "docs/agent-execution/TASK-000001-owner-review.md",
     "docs/research/README.md",
+    "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
+    "docs/research/capacity-and-sustainability-research-2026-07.md",
+    "docs/research/project-controls-and-review-system-research-2026-07.md",
+    "docs/research/sustained-performance-policy-research-2026-07.md",
+    "docs/research/traceability-at-browser-scale-research-2026-07.md",
     "tools/validate_research_index.py",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/blueprint-v1/20-definition-of-done.md",
@@ -227,7 +232,7 @@
       "id": "DOC-READY-RESEARCH_LANES",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "The research index, crosswalk, checked no-claim source manifests, deferred open-web feature-lifecycle packet, Nova visual source and surface-contract map, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
+        "The research index, crosswalk, seven active packets with observation/inference/next-work/source-context controls, checked no-claim source manifests, deferred open-web feature-lifecycle packet, Nova visual source and surface-contract map, and reference-platform scorecard connect source-strategy, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, and ownership lanes to primary RQ, PB, and TASK records."
       ],
       "missing_for_full_goal": [
         "Research lane existence does not answer the remaining research questions or provide accepted decisions, executable proof, raw benchmark results, security evidence, compatibility results, accessibility results, or owner approvals."
@@ -236,6 +241,11 @@
       "claim_boundary": "No Chrome-class, extreme-performance, compatibility, security, accessibility, production, or daily-driver claim from indexed research alone.",
       "evidence_refs": [
         "docs/research/README.md",
+        "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
+        "docs/research/capacity-and-sustainability-research-2026-07.md",
+        "docs/research/project-controls-and-review-system-research-2026-07.md",
+        "docs/research/sustained-performance-policy-research-2026-07.md",
+        "docs/research/traceability-at-browser-scale-research-2026-07.md",
         "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
         "docs/blueprint-v1/22-research-program.md",
         "docs/research/research-question-coverage-audit-2026-07.md",
