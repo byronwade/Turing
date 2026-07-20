@@ -414,6 +414,8 @@ Current preparation starts with the no-claim [Secure Development and Provenance 
 
 Which optional services materially improve safety or continuity, and how should the browser degrade, export, self-host, or shut down without lock-in?
 
+Current preparation starts with the no-claim [Service and Offline Architecture research packet](../research/service-and-offline-architecture-research-2026-07.md) and the targetless [Service Dependencies and Offline Behavior](../production-readiness/10-service-dependencies-and-offline-behavior.md) contract. It must become owner-reviewed service classifications, data and authority boundaries, offline/degraded workflow evidence, export/self-hosting/shutdown decisions, privacy and support terms, and synchronized profile, agent, update, incident, SLO, and `PB-020` records before it can support service, continuity, self-hosting, privacy, availability, production, or release claims.
+
 ## RQ-66 — Human release, legal, and incident capacity
 
 What staffing, separation of duties, legal approval, signing ceremony, support term, on-call, and incident-rehearsal evidence is necessary before beta and stable?

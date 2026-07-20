@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-65 service and offline architecture route
+
+Question:
+
+Which optional services improve safety or continuity, and what must remain functional, exportable, replaceable, or safely shut down without lock-in?
+
+Method:
+
+Reconciled the production-readiness service-dependency contract with profile/session, networking, update, privacy, agent, SLO, incident, support, and legal records. Classified service roles by local/remote necessity and authority, then defined failure, offline, export, self-hosting, migration, and shutdown evidence requirements.
+
+Result:
+
+Added a no-claim `RQ-65` packet covering service classification, data and authority boundaries, offline/degraded workflows, stale and replay behavior, export, self-hosting, provider migration, shutdown, privacy, support, and end-of-life evidence.
+
+Impact:
+
+The Blueprint, research index, repository map, documentation-readiness audit, machine audit source list, and research log now route `RQ-65` to one service-continuity evidence path. This does not select a provider, make a self-hosting or availability promise, change active/deferred counts, authorize broad implementation, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can service rows be captured in one owner-reviewed registry without allowing remote availability, model output, stale cache, or provider response to widen local browser authority?
+
 ## 2026-07-19 - RQ-61 stable scope and platform contract route
 
 Question:

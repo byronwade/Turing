@@ -44,6 +44,8 @@ The human-capacity lane now also has a no-claim [Human Release, Legal, and Incid
 
 The stable-scope lane now also has a no-claim [Stable v1 Scope and Platform Contract Research](stable-v1-scope-and-platform-contract-research-2026-07.md) packet for `RQ-61`. It connects the targetless stable-scope registry, supported-platform matrix, and `PB-006` scorecard to finite capability, platform, denominator, support, and promotion evidence without selecting a stable scope or platform.
 
+The service-continuity lane now also has a no-claim [Service and Offline Architecture Research](service-and-offline-architecture-research-2026-07.md) packet for `RQ-65`. It connects service classification, authority, data handling, offline degradation, export, self-hosting, shutdown, privacy, and support evidence without selecting a provider or making an availability claim.
+
 The focused validator checks that:
 
 - all required source records exist;

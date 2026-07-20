@@ -551,6 +551,12 @@ These reports must remain linked from the research index and mapped back to the 
 - [`docs/research/reference-platform-support-scorecard-2026-07.md`](research/reference-platform-support-scorecard-2026-07.md);
 - [`docs/research/stable-v1-scope-and-platform-contract-research-2026-07.md`](research/stable-v1-scope-and-platform-contract-research-2026-07.md).
 
+### Service and continuity research reports
+
+These reports must remain linked from the research index and mapped back to the owning service, storage, privacy, agent, release, support, and readiness records:
+
+- [`docs/research/service-and-offline-architecture-research-2026-07.md`](research/service-and-offline-architecture-research-2026-07.md).
+
 ### Storage and profile research reports
 
 These reports must remain linked from the research index and mapped back to the owning storage, product, readiness, risk, and release records:
