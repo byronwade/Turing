@@ -1,0 +1,22 @@
+[package]
+name = "turing-input"
+description = "Turing-owned routing from a pointer location to a DOM event target for WP-007 and REQ-ENG-002/005"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-dom = { path = "../turing-dom" }
+turing-html = { path = "../turing-html" }
+turing-layout = { path = "../turing-layout" }
+
+[dev-dependencies]
+turing-css = { path = "../turing-css" }
+
+[lints]
+workspace = true
