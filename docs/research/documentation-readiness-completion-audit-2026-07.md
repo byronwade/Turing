@@ -40,6 +40,8 @@ The deferred product-contract lane now also has a no-claim [Product SLOs and Err
 
 The secure-development and provenance lane now also has a no-claim [Secure Development and Provenance Level Research](secure-development-and-provenance-level-research-2026-07.md) packet for `RQ-64`. It separates SSDF practices, SLSA source/build evidence, SBOMs, reproducibility, attestations, review, and release authorization without selecting a maturity or compliance claim.
 
+The human-capacity lane now also has a no-claim [Human Release, Legal, and Incident Capacity Research](human-release-legal-and-incident-capacity-research-2026-07.md) packet for `RQ-66`. It connects staffing, backups, separation of duties, legal scope, signing, support, on-call, incident rehearsal, and cross-lane closure without naming owners or granting authority.
+
 The focused validator checks that:
 
 - all required source records exist;

@@ -567,6 +567,7 @@ These reports must remain linked from the research index and mapped back to the 
 - [`docs/research/wp-003-sandbox-probe-plan-2026-07.md`](research/wp-003-sandbox-probe-plan-2026-07.md);
 - [`docs/research/incident-patch-rehearsal-inventory-2026-07.md`](research/incident-patch-rehearsal-inventory-2026-07.md).
 - [`docs/research/incident-response-and-emergency-patch-decision-prep-2026-07.md`](research/incident-response-and-emergency-patch-decision-prep-2026-07.md).
+- [`docs/research/human-release-legal-and-incident-capacity-research-2026-07.md`](research/human-release-legal-and-incident-capacity-research-2026-07.md).
 
 ### Benchmark research reports
 

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-66 human release, legal, and incident capacity route
+
+Question:
+
+What evidence is required before Turing can support beta or stable operations with qualified human release, legal, support, signing, and incident capacity?
+
+Method:
+
+Reviewed NIST SP 800-61 Rev. 3 incident-response guidance, GitHub protected-branch controls, and the existing Turing incident-response, backup-ownership, package/update, SLO, secure-development, and production-readiness records. Mapped the shared authority boundaries, capacity fields, rehearsal cases, and synchronization requirements.
+
+Result:
+
+Added a no-claim `RQ-66` packet covering named primary and backup roles, qualification, availability, recusal, two-person control, support scope, legal boundaries, signing, on-call, incident exercises, disclosure, rollback, and independent review. It explicitly rejects role names, templates, automation, and agent output as substitutes for human capacity or authority.
+
+Impact:
+
+The Blueprint, research index, repository map, documentation-readiness audit, machine audit source list, and research log now route `RQ-66` to one cross-lane evidence path. This does not name owners, grant authority, select a support term, change active/deferred counts, authorize broad implementation, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can one owner-reviewed capacity and rehearsal record reconcile the exact support, ownership, incident, update, legal, and release scopes without creating a second status registry?
+
 ## 2026-07-19 - RQ-64 secure-development and provenance maturity route
 
 Question:
