@@ -70,6 +70,24 @@ REQUIRED_SCOPE_PATHS = {
         "docs/research/sandbox-probe-result-packet-examples-2026-07.md",
         "docs/research-log.md",
     ),
+    "TASK-000005": (
+        "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    ),
+    "TASK-000006": (
+        "docs/research/native-ui-and-accessibility-closure-preparation-2026-07.md",
+    ),
+    "TASK-000007": (
+        "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    ),
+    "TASK-000008": (
+        "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    ),
+    "TASK-000009": (
+        "docs/research/package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    ),
+    "TASK-000010": (
+        "docs/research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    ),
 }
 
 

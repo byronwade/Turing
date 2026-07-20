@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Proposed-lane closure-route scope audit
+
+Question:
+
+Do the proposed benchmark, native UI, profile/session, ownership, package/update, and incident-response task manifests include the closure-preparation records that their readiness handoffs depend on?
+
+Method:
+
+Audited the queue-owned `allowed_paths` for all ten specified manifests against the canonical closure-preparation routes in the readiness board and build-information ledger. Added the missing exact paths for `TASK-000005` through `TASK-000010`, extended the scope validator to enforce all six routes, and recomputed the queue digest across every specified manifest.
+
+Decision:
+
+All ten proposed manifests now declare the closure route needed by their lane, while remaining non-executable and owner-approval-required. This improves task/document coherence without creating execution evidence, approving a task, promoting a gate, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+When any lane is approved, can the retained evidence bundle and changed-file record demonstrate that execution stayed within this synchronized scope and its prohibited-path boundary?
+
 ## 2026-07-19 - Specified-task closure-route scope guard
 
 Question:
