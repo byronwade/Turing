@@ -13,7 +13,7 @@ An agent implementation begins from an approved requirement and design, not from
 4. Implement the smallest bounded change.
 5. Add conformance and regression tests.
 6. Run security, performance, accessibility, compatibility, and recovery evidence appropriate to the task.
-7. Produce a signed or hashed evidence bundle.
+7. Produce a signed or hashed evidence bundle. Each retained command log identifies its command, acceptance or negative-test scope, exact source commit, start time, duration, and captured environment reference.
 8. Obtain independent review.
 
 Tests written by the implementation agent are necessary but not sufficient. WPT, Test262, model/property tests, differential oracles, fuzzers, platform accessibility review, and fixed-hardware measurement provide separate evidence lanes.

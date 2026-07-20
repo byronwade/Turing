@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Command-log environment and scope binding
+
+Question:
+
+Do command-log artifacts identify enough context for an independent reviewer to replay a result without inferring its scope, source commit, or environment?
+
+Method:
+
+Compared the evidence-bundle schema, validator, TASK-000011 review handoff, and agent evidence workflow. The first command-log contract required only a command and exit code; it did not bind each log to a unique command ID, acceptance or negative-test scope, exact source commit, timing, or the captured environment object.
+
+Decision:
+
+Added required validation fields for command logs: unique `command_id`, `scope`, bundle-matching `source_commit`, `started_at`, non-negative `duration_ms`, and `environment_ref` equal to `bundle.environment`. The schema and review handoff now describe the same contract.
+
+Impact:
+
+Future independent evidence bundles can be reviewed as a set of explicit command records rather than unscoped hashes. This does not create a command log, accept TASK-000011, promote PB-011, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which retained-log path and artifact-package convention should the first independent reviewer use for command logs outside the repository tree?
+
 ## 2026-07-19 - Evidence-bundle command-artifact control
 
 Question:

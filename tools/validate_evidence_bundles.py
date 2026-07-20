@@ -118,10 +118,20 @@ def validate_artifact(path: Path, commit: str, artifact: Any) -> None:
         if not artifact_path.startswith("https://github.com/byronwade/Turing/actions/runs/"):
             fail(path, "github_actions_run artifact must use the repository Actions run URL")
     elif artifact_type == "command_log":
+        require_string(path, artifact, "command_id")
+        require_string(path, artifact, "scope")
+        if artifact.get("source_commit") != commit:
+            fail(path, "command_log source_commit must match bundle source_commit")
         require_string(path, artifact, "command")
         exit_code = artifact.get("exit_code")
         if not isinstance(exit_code, int) or isinstance(exit_code, bool):
             fail(path, "command_log exit_code must be an integer")
+        require_string(path, artifact, "started_at")
+        duration_ms = artifact.get("duration_ms")
+        if not isinstance(duration_ms, int) or isinstance(duration_ms, bool) or duration_ms < 0:
+            fail(path, "command_log duration_ms must be a non-negative integer")
+        if artifact.get("environment_ref") != "bundle.environment":
+            fail(path, "command_log environment_ref must be bundle.environment")
     else:
         fail(path, f"unsupported artifact type {artifact_type!r}")
 
@@ -159,6 +169,7 @@ def validate_bundle(path: Path) -> None:
     if not artifacts:
         fail(path, "artifacts must not be empty")
     artifact_keys: set[tuple[str, str]] = set()
+    command_ids: set[str] = set()
     command_log_count = 0
     for artifact in artifacts:
         validate_artifact(path, source_commit, artifact)
@@ -168,6 +179,10 @@ def validate_bundle(path: Path) -> None:
         artifact_keys.add(artifact_key)
         if artifact["type"] == "command_log":
             command_log_count += 1
+            command_id = artifact["command_id"]
+            if command_id in command_ids:
+                fail(path, f"duplicate command_id: {command_id}")
+            command_ids.add(command_id)
 
     failures = require_array(path, data, "failures")
     for failure in failures:

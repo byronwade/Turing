@@ -53,8 +53,17 @@
           "path": { "type": "string", "minLength": 1 },
           "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "result": { "type": "string", "minLength": 1 },
+          "command_id": { "type": "string", "minLength": 1 },
+          "scope": { "type": "string", "minLength": 1 },
+          "source_commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
           "command": { "type": "string", "minLength": 1 },
-          "exit_code": { "type": "integer" }
+          "exit_code": { "type": "integer" },
+          "started_at": { "type": "string", "minLength": 1 },
+          "duration_ms": { "type": "integer", "minimum": 0 },
+          "environment_ref": { "type": "string", "minLength": 1 }
         }
       }
     },

@@ -133,7 +133,7 @@ Acceptance requires a machine-readable evidence bundle that follows [`docs/agent
 - `task_id` to `TASK-000011`;
 - `source_commit` to the exact 40-hex commit reviewed;
 - environment details for OS, shell, Rust, Cargo, Git, and relevant path/tool settings;
-- hashed `command_log` artifacts for generation, validation, formatting, linting, tests, shell self-test, and prototype checks;
+- hashed `command_log` artifacts for generation, validation, formatting, linting, tests, shell self-test, and prototype checks; each log must identify a unique command, acceptance/negative-test scope, exact `source_commit`, start time, duration, and `bundle.environment` reference;
 - artifact hashes or retained logs for each reviewed command;
 - any failure, retry, waiver, or skipped command;
 - a reviewer identity distinct from the implementation owner;
