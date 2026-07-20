@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 source-observation provenance control
+
+Question:
+
+Does the primary ADR-0009 source-observation manifest enforce the same unique-document provenance rule as every other source manifest in the repository?
+
+Method:
+
+Audited all schema files containing `source_documents` and their focused validators. ADR-0009 was the final source-observation manifest without a schema uniqueness constraint or validator rejection for duplicate paths; the reference-platform scorecard was excluded because it does not contain a source-document provenance array.
+
+Decision:
+
+Added `uniqueItems` to the ADR-0009 source-observation schema and made `validate_adr_0009_source_observations.py` reject duplicate paths.
+
+Impact:
+
+The source-strategy provenance family is now consistent and machine-enforced. This does not select Servo or any other source, approve dependencies, establish equivalence, or change `PB-002`, `ADR9-EV-018`, or the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which freshness and selected-baseline identity fields must be bound together when a real ADR-0009 decision-review record replaces the no-claim template?
+
 ## 2026-07-19 - Source-manifest provenance invariant completed
 
 Question:
