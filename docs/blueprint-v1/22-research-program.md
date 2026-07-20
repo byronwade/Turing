@@ -317,6 +317,8 @@ The [ADR-0009 decision draft and public-claim impact template](../project-buildo
 
 Which ownership, review, traceability, phase, and evidence controls reduce defects without blocking work?
 
+The [Project Controls and Review System Research](../research/project-controls-and-review-system-research-2026-07.md) defines the active source-backed route for authority, scope, baselines, verification, review, exceptions, gates, recovery, bypass visibility, and false-block/missed-block measurement. It does not approve governance, task authority, reviewer sufficiency, or readiness.
+
 ## RQ-46 — Reproducible environment
 
 Which bootstrap, cache, linker, test runner, and host matrix is fast and maintainable?

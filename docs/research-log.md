@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Project controls and review system research
+
+Question:
+
+Which ownership, review, traceability, phase, exception, and evidence controls reduce defects without blocking legitimate work or allowing unsafe shortcuts?
+
+Method:
+
+Checked NIST SP 800-218 SSDF lifecycle practices, NASA technical-management and configuration-management guidance, and GitHub protected-branch, ruleset, and code-owner controls on 2026-07-19. Reconciled the observations with `RQ-45`, `RQ-47`, `RQ-48`, `RQ-60`, `PB-019`, `PB-020`, the professional owner/review/exception/phase registries, task authority controls, traceability route, and documentation policy.
+
+Decision:
+
+Added an active no-claim packet defining authority, scope, baseline, verification, review, exception, gate, recovery, and bypass controls; phase states; adversarial control fixtures; and false-block/missed-block measurements. Added the packet to the ownership/review-capacity crosswalk evidence start. No governance, task-authority, reviewer, gate, release, security, or production decision changed.
+
+Next question:
+
+Which first adversarial control trial should test a proposed task, review, exception, and gate-promotion path, and what failure must prevent the system from advancing?
+
 ## 2026-07-19 - Traceability at browser scale research
 
 Question:
