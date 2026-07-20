@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-20 - Theme toggle, cross-platform CI, and the frame measured
+
+Three closures toward the running product, none of them large, each one turning an implicit property into a checked one.
+
+The presenter toggles between Nova's two palettes on Ctrl+D. Both palettes were already extracted into `design/tokens.json`; the toggle chooses between token sets and repaints — no colour lives outside the tokens, which is the point of having them.
+
+Cross-platform stopped being an assertion. The presenter's crates were platform-neutral by construction (winit and softbuffer abstract Windows, macOS, X11, and Wayland), but nothing built them anywhere except this Windows machine. `.github/workflows/cross-platform-presenter.yml` now builds the presenter and runs the engine, chrome, and pipeline tests on all three desktop platforms, and uploads the headless composed frame from each as an artifact. Stated boundary: CI runners have no display, so the event loop is exercised only through the `--screenshot` path — this is build-and-test evidence, not a support promise and not a windowing smoke test.
+
+The bench gained the two missing stages: `display-list` and `raster` at 1280x720. The numbers say what was suspected: everything from tokenize through display list fits in ~60 µs, and the reference rasterizer's per-pixel fill dominates the frame at ~750 µs median — still inside a 60 Hz budget, and now the measured, recorded justification for a faster painter rather than a guess. One observation is retained unexplained: the cascade row roughly doubled against the morning baseline with no change in the styling crates; `docs/performance-baselines.md` records it as open rather than rationalising it.
+
+The workspace is at 383 tests.
+
 ## 2026-07-20 - Session history as a cursor over sources
 
 Per-tab back and forward. A tab's history is a list of sources and a cursor; navigation truncates the forward entries and appends (which is what session history does everywhere), traversal moves the cursor and re-reads the entry, and reload re-reads without moving. Traversal re-reads from the source rather than caching page state — for a file-backed lab that is the honest behaviour, and it means a page whose file changed shows the change on back, which is stated rather than hidden.

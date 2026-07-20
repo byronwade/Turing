@@ -44,7 +44,7 @@ use turing_types::{ProfileId, SpaceId, TabId, ViewId, WindowId};
 use turing_ui_model::{ShellCommand, ShellSnapshot, TabLifecycle, TabSummary};
 use winit::application::ApplicationHandler;
 use winit::dpi::{LogicalSize, PhysicalPosition};
-use winit::event::{ElementState, MouseButton, MouseScrollDelta, WindowEvent};
+use winit::event::{ElementState, Modifiers, MouseButton, MouseScrollDelta, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{Key, NamedKey};
 use winit::window::{Window, WindowAttributes, WindowId as WinitWindowId};
@@ -119,6 +119,7 @@ struct Browser {
     window: Option<Rc<Window>>,
     surface: Option<softbuffer::Surface<Rc<Window>, Rc<Window>>>,
     cursor: PhysicalPosition<f64>,
+    modifiers: Modifiers,
 }
 
 impl Browser {
@@ -134,6 +135,7 @@ impl Browser {
             window: None,
             surface: None,
             cursor: PhysicalPosition::new(0.0, 0.0),
+            modifiers: Modifiers::default(),
         };
         let tab = browser.open_tab(source)?;
         browser.tabs.push(tab);
@@ -642,6 +644,7 @@ impl ApplicationHandler for Browser {
                 }
             }
             WindowEvent::CursorMoved { position, .. } => self.cursor = position,
+            WindowEvent::ModifiersChanged(modifiers) => self.modifiers = modifiers,
             WindowEvent::MouseInput {
                 state: ElementState::Pressed,
                 button: MouseButton::Left,
@@ -654,6 +657,18 @@ impl ApplicationHandler for Browser {
                 if event.logical_key == Key::Named(NamedKey::F5) {
                     let id = self.active_tab().id;
                     self.reload_tab(id);
+                }
+                // Ctrl+D flips between Nova's two token palettes. Both are
+                // extracted in design/tokens.json; the toggle just chooses.
+                if self.modifiers.state().control_key()
+                    && event.logical_key == Key::Character("d".into())
+                {
+                    self.theme = if self.theme == turing_chrome::LIGHT {
+                        turing_chrome::DARK
+                    } else {
+                        turing_chrome::LIGHT
+                    };
+                    self.request_redraw();
                 }
             }
             _ => {}
