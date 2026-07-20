@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Technology and dependency decision research
+
+Question:
+
+Which languages, frameworks, and foundational dependencies minimize total security, performance, build, license, and maintenance cost for an independent browser while preserving replaceability and reproducibility?
+
+Method:
+
+Checked the Rust Reference's unsafe and undefined-behavior boundaries, the Cargo Reference's dependency, source-replacement, workspace, registry, and build-script model, and SPDX 3.0.1 licensing/SBOM metadata on 2026-07-19. Reconciled the observations with `RQ-41`, `RQ-44`, `RQ-46`, `ADR-0009`, `PB-002`, `PB-008`, `PB-009`, `PB-020`, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet that separates language safety from unsafe escape hatches, dependency resolution from provenance, SPDX identification from legal approval, and local build success from reproducibility. It defines candidate foundation classes, evidence fields, measurements, rejection rules, and owner-review promotion conditions. No language, framework, dependency, source strategy, license, security, performance, or release decision changed.
+
+Next question:
+
+Which owner-approved candidate foundation and exact feature profile should receive the first independent source, dependency, unsafe/FFI, clean-host, legal, maintenance, and replacement review?
+
 ## 2026-07-19 - JavaScript and DOM wrapper lifetime research
 
 Question:

@@ -292,6 +292,8 @@ A benchmark result cannot decide a security boundary alone. A decision that affe
 
 Which languages, frameworks, and foundations minimize total security, performance, build, license, and maintenance cost?
 
+The [Technology and Dependency Decision Research](../research/technology-and-dependency-decision-research-2026-07.md) defines the deferred source-backed comparison for language safety, dependency resolution, provenance, unsafe/FFI and build-script boundaries, licensing, maintenance, reproducibility, replaceability, and rejection evidence. It does not select a technology or approve a dependency.
+
 ## RQ-42 — Native Plug-ins
 
 Which capability/Wasm/WebExtensions architecture is safest and most useful?
