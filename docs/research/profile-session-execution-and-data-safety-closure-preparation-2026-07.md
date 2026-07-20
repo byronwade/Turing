@@ -3,7 +3,7 @@
 Status: no-claim `PB-016` and `TASK-000007` execution/review preparation; no profile implementation, real-profile migration, sync, credential, or data-loss claim
 Owner: storage, profile data, migration, recovery, privacy-data, product, security, quality, and release operations
 Related gate: `PB-016` Profile, Space, session, and migration formats
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Purpose
 
@@ -17,7 +17,7 @@ Credential state is a separate trust boundary. Microsoft's [Credential Manager](
 
 ## Required evidence sequence
 
-1. Freeze versioned record contracts for profile, Space, session, snapshot, and migration records. Each contract must identify its owner, identity and epoch fields, schema window, integrity marker, authority boundary, privacy class, retention, export, deletion, and downgrade behavior.
+1. Freeze versioned record contracts and the checked lifecycle transition matrix for profile, Space, session, snapshot, and migration records. Each contract must identify its owner, identity and epoch fields, schema window, integrity marker, authority boundary, privacy class, retention, export, deletion, and downgrade behavior; every transition must name its precondition, journal point, failure result, and recovery boundary.
 2. Use only generated synthetic profiles, fake credentials, private-session markers, protected-work markers, corrupt journals, quota limits, and bounded temporary roots. A current user profile is not a fixture. A fixture policy must state creation, classification, retention, destruction, and review.
 3. Implement a dependency-free parse, validate, write, read, and redacted-export harness for the proposed records. It must reject unknown authority, cross-profile references, missing epochs, malformed records, secret material, private-session persistence, and unsupported schema versions.
 4. Exercise migration forward, resume, rollback, downgrade rejection, unknown fields, interrupted steps, quarantined records, and idempotent restart. A version number or a successful write is not migration or durability evidence.

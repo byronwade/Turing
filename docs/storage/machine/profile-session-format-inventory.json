@@ -2,7 +2,7 @@
   "schema_version": 1,
   "inventory_id": "STORAGE.FORMAT.NOCLAIM_PROFILE_SESSION.2026_07",
   "status": "no_claim_format_inventory",
-  "updated": "2026-07-18",
+  "updated": "2026-07-20",
   "source_manifest": "docs/storage/machine/profile-session-source-manifest.json",
   "claim_status": "no-claim planning inventory only; no profile implementation, no real-profile migration, no sync support, no credential storage support, no user-data handling readiness, no data-loss safety claim, no production profile-format claim, and no implementation claim",
   "record_types": [
@@ -346,6 +346,95 @@
         "post-operation evidence"
       ],
       "safe_failure": "Stop the operation, keep existing data unchanged, and require owner-reviewed recovery evidence before retrying destructive flows."
+    }
+  ],
+  "lifecycle_matrix": [
+    {
+      "lifecycle_id": "STO-LIFECYCLE-PROFILE",
+      "record_type_id": "STO-FORMAT-PROFILE",
+      "states": ["created", "active", "locked", "exporting", "deleting", "deleted", "quarantined"],
+      "allowed_transitions": [
+        "created -> active: validated initial record",
+        "active -> locked: explicit lock or vault unavailability",
+        "locked -> active: authenticated unlock",
+        "active -> exporting: explicit scoped export",
+        "active -> deleting: confirmed profile deletion",
+        "deleting -> deleted: journal commit and cleanup verification",
+        "active -> quarantined: integrity or migration failure"
+      ],
+      "identity_requirements": ["profile_id", "installation_or_channel", "schema_version", "integrity_marker", "privacy_class"],
+      "recovery_boundary": "Recover only from the last verified journal checkpoint; quarantine records that cannot be authenticated or safely restored.",
+      "unsupported": ["no production profile lifecycle is approved", "no real-profile deletion or export evidence exists"]
+    },
+    {
+      "lifecycle_id": "STO-LIFECYCLE-SPACE",
+      "record_type_id": "STO-FORMAT-SPACE",
+      "states": ["created", "active", "paused", "exporting", "restoring", "archived", "deleted", "quarantined"],
+      "allowed_transitions": [
+        "created -> active: profile-scoped Space record validated",
+        "active -> paused: user or resource policy pause",
+        "paused -> active: explicit resume with generation check",
+        "active -> exporting: explicit item-scoped export",
+        "archived -> restoring: verified snapshot selected",
+        "restoring -> active: all required records validated",
+        "active -> quarantined: corruption or cross-profile reference"
+      ],
+      "identity_requirements": ["profile_id", "space_id", "space_generation", "member_record_ids", "export_scope"],
+      "recovery_boundary": "Restore a Space only with matching profile identity and generation; quarantine partial or cross-profile membership instead of merging it.",
+      "unsupported": ["no cross-device Space sync is approved", "no collaborative Space transfer is implemented"]
+    },
+    {
+      "lifecycle_id": "STO-LIFECYCLE-SESSION",
+      "record_type_id": "STO-FORMAT-SESSION",
+      "states": ["open", "checkpointed", "suspended", "crashed", "recovering", "restored", "abandoned", "closed"],
+      "allowed_transitions": [
+        "open -> checkpointed: bounded journal checkpoint committed",
+        "checkpointed -> suspended: lifecycle policy freezes work",
+        "open -> crashed: process or browser failure observed",
+        "crashed -> recovering: recovery flow selects verified checkpoint",
+        "recovering -> restored: identity and document epochs revalidated",
+        "recovering -> abandoned: checkpoint is stale, corrupt, or explicitly declined",
+        "open -> closed: explicit close with protected-work resolution"
+      ],
+      "identity_requirements": ["profile_id", "space_id", "session_id", "document_or_site_identity", "process_epoch", "checkpoint_epoch"],
+      "recovery_boundary": "Recover a session only after matching document, site, profile, and process epochs; otherwise reject revival and show loss and protected-work outcomes separately.",
+      "unsupported": ["no crash-recovery execution evidence exists", "no automatic replay of consequential actions is supported"]
+    },
+    {
+      "lifecycle_id": "STO-LIFECYCLE-SNAPSHOT",
+      "record_type_id": "STO-FORMAT-SNAPSHOT",
+      "states": ["capturing", "sealed", "restoring", "forked", "expired", "deleted", "quarantined"],
+      "allowed_transitions": [
+        "capturing -> sealed: redaction and integrity manifest complete",
+        "sealed -> restoring: explicit user-selected restore",
+        "sealed -> forked: explicit copy with new identity",
+        "sealed -> expired: retention policy reached",
+        "restoring -> quarantined: identity, checksum, or schema mismatch",
+        "expired -> deleted: retention cleanup verified"
+      ],
+      "identity_requirements": ["snapshot_id", "source_profile_id", "source_space_id", "source_epoch", "retention_class", "redaction_manifest"],
+      "recovery_boundary": "A snapshot is never authoritative live state; restore or fork must create a new generation and reject stale or unredacted content.",
+      "unsupported": ["no snapshot durability claim exists", "no snapshot export or restore harness has run"]
+    },
+    {
+      "lifecycle_id": "STO-LIFECYCLE-MIGRATION",
+      "record_type_id": "STO-FORMAT-MIGRATION",
+      "states": ["planned", "classified", "validated", "prepared", "running", "paused", "committed", "rolled_back", "quarantined", "failed"],
+      "allowed_transitions": [
+        "planned -> classified: source and data classes identified",
+        "classified -> validated: input and privacy rules pass",
+        "validated -> prepared: temporary snapshot and journal created",
+        "prepared -> running: explicit migration start",
+        "running -> paused: interruption with resumable journal",
+        "paused -> running: source and target generations revalidated",
+        "running -> committed: all records and cleanup checks pass",
+        "running -> rolled_back: fault or cancellation before commit",
+        "running -> quarantined: unsupported or corrupt source record",
+        "running -> failed: unrecoverable error with source preserved"
+      ],
+      "identity_requirements": ["migration_id", "source_schema_version", "target_schema_version", "source_profile_id", "journal_epoch", "fixture_class"],
+      "recovery_boundary": "Migration must be resumable or rolled back from a verified journal; unsupported, corrupt, or privacy-violating records are quarantined without silent rewriting.",
+      "unsupported": ["no real-profile migration is approved", "no migration safety or rollback claim exists"]
     }
   ],
   "unsupported_boundaries": [

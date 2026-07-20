@@ -2,7 +2,7 @@
 
 Status: no-claim planning evidence for `PB-016`; checked schema-package template only; no profile implementation or real-profile migration
 Owner: storage, profile data, migration, recovery, privacy-data, product, and release operations
-Date: 2026-07-18
+Date: 2026-07-20
 
 ## Question
 
@@ -50,12 +50,13 @@ The inventory was shaped as a dependency-free machine registry with a validator 
 The checked inventory now contains:
 
 - 5 required record types: profile, Space, session, snapshot, and migration;
+- 5 checked lifecycle matrices that define allowed transitions, identity requirements, recovery boundaries, and unsupported states for those record types;
 - 11 required behavior rows covering disk-full, power-loss, corruption, downgrade, export, deletion, private-session, crash-recovery, protected-work, privacy, and data-loss cases;
 - required versioning, authority-boundary, privacy-rule, failure-case, and unsupported-boundary fields for each record type;
 - no-claim language that blocks profile implementation, real-profile migration, sync support, credential storage support, user-data handling readiness, data-loss safety, production profile-format, and implementation claims;
 - a checked no-claim schema-package template for future executable profile, Space, session, snapshot, and migration schema packages, with fixture policy, lifecycle, rejection rules, and unsupported boundaries.
 
-The dated [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) adds the state-class and durability distinctions needed before executable schemas, migration, export, deletion, or recovery experiments are accepted.
+The dated [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) adds the state-class, durability, and lifecycle-transition distinctions needed before executable schemas, migration, export, deletion, or recovery experiments are accepted.
 
 The checked profile/session source manifest also records Windows Credential Manager, macOS Keychain Services, and freedesktop Secret Service as separate credential-vault inputs. These records keep vault access, locked/unavailable behavior, deletion, migration, export, diagnostics, and backup handling outside ordinary profile/session state; they do not approve a credential implementation or secret-handling policy.
 
@@ -82,6 +83,7 @@ This report does not support any of these conclusions:
 `PB-016` still requires:
 
 - executable schema proposals and parsers for profile, Space, session, snapshot, and migration records beyond the checked no-claim schema-package template;
+- executable transition enforcement and recovery fixtures that replace the checked lifecycle matrix with retained results;
 - malformed-input, downgrade, corrupt input, disk-full, power-loss, partial-write, deletion, export, private-session, crash-recovery, protected-work, privacy, and data-loss tests;
 - real user profile fixture policy and owner-approved privacy review before any real-profile migration experiment;
 - migration rehearsal with rollback, resume, journal, and quarantine behavior;

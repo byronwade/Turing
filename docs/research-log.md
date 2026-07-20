@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Profile/session lifecycle transition matrix
+
+Added a checked lifecycle matrix to the profile/session format inventory for Profile, Space, Session, Snapshot, and Migration records. Each lifecycle now names states, allowed transitions, identity requirements, recovery boundaries, and unsupported claims; the schema and validator enforce all five record classes. Updated the profile/session inventory and closure routes to use the matrix as planning evidence. This does not implement storage or migration, permit real user data, or change `PB-016`; it closes a state-transition documentation gap needed by Nova recovery and future synthetic-fixture work.
+
 ## 2026-07-20 - Chrome-class performance objective and claim ladder
 
 Connected the performance requirements to the existing benchmark evidence ladder. The product requirements now define Chrome-class/extreme performance as a measured, scoped destination rather than a numeric or marketing claim, and the traceability map records L0 contract/self-test, L1 local browser diagnostics, L2 equal-workload competitor diagnostics, and L3 owner-reviewed public-claim candidates with their boundaries. No threshold, result, competitor ranking, or performance claim was added; `PB-013` remains documented without a browser runner.

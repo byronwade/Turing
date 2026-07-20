@@ -29,6 +29,7 @@ INVENTORY_ID = re.compile(r"^STORAGE\.FORMAT\.[A-Z0-9._-]+$")
 RECORD_TYPE_ID = re.compile(r"^STO-FORMAT-[A-Z0-9._-]+$")
 BEHAVIOR_ID = re.compile(r"^STO-BEHAVIOR-[A-Z0-9._-]+$")
 SCHEMA_PACKAGE_ID = re.compile(r"^PROFILE_SESSION\.SCHEMA_PACKAGE\.[A-Z0-9._-]+$")
+LIFECYCLE_ID = re.compile(r"^STO-LIFECYCLE-[A-Z0-9._-]+$")
 
 REQUIRED_RECORD_TYPES = {
     "STO-FORMAT-PROFILE",
@@ -49,6 +50,13 @@ REQUIRED_BEHAVIORS = {
     "STO-BEHAVIOR-PROTECTED-WORK",
     "STO-BEHAVIOR-PRIVACY",
     "STO-BEHAVIOR-DATA-LOSS",
+}
+REQUIRED_LIFECYCLES = {
+    "STO-FORMAT-PROFILE",
+    "STO-FORMAT-SPACE",
+    "STO-FORMAT-SESSION",
+    "STO-FORMAT-SNAPSHOT",
+    "STO-FORMAT-MIGRATION",
 }
 REQUIRED_CLAIM_PHRASES = {
     "no profile implementation",
@@ -332,6 +340,67 @@ def validate_behaviors(path: Path, value: object) -> None:
         fail(path, "missing required behaviors: " + ", ".join(sorted(missing)))
 
 
+def validate_lifecycles(path: Path, value: object) -> None:
+    if not isinstance(value, list):
+        fail(path, "lifecycle_matrix must be an array")
+    seen_records: list[str] = []
+    seen_lifecycles: list[str] = []
+    required = {
+        "lifecycle_id",
+        "record_type_id",
+        "states",
+        "allowed_transitions",
+        "identity_requirements",
+        "recovery_boundary",
+        "unsupported",
+    }
+    for index, lifecycle_value in enumerate(value, start=1):
+        lifecycle = require_object(path, lifecycle_value, f"lifecycle_matrix[{index}]")
+        reject_extra(path, lifecycle, required, f"lifecycle_matrix[{index}]")
+        require_keys(path, lifecycle, required, f"lifecycle_matrix[{index}]")
+        lifecycle_id = require_string(
+            path, lifecycle, "lifecycle_id", f"lifecycle_matrix[{index}]"
+        )
+        if not LIFECYCLE_ID.fullmatch(lifecycle_id):
+            fail(path, f"invalid lifecycle_id: {lifecycle_id}")
+        seen_lifecycles.append(lifecycle_id)
+        record_type_id = require_string(
+            path, lifecycle, "record_type_id", f"lifecycle_matrix[{index}]"
+        )
+        seen_records.append(record_type_id)
+        states = require_string_array(
+            path, lifecycle, "states", f"lifecycle_matrix[{index}]"
+        )
+        transitions = require_string_array(
+            path, lifecycle, "allowed_transitions", f"lifecycle_matrix[{index}]"
+        )
+        if not any("->" in transition for transition in transitions):
+            fail(path, f"{lifecycle_id}.allowed_transitions must use from -> to notation")
+        require_string_array(
+            path, lifecycle, "identity_requirements", f"lifecycle_matrix[{index}]"
+        )
+        recovery = require_string(
+            path, lifecycle, "recovery_boundary", f"lifecycle_matrix[{index}]"
+        ).lower()
+        if not any(
+            term in recovery
+            for term in ("recover", "quarantine", "reject", "discard", "restore")
+        ):
+            fail(path, f"{lifecycle_id}.recovery_boundary must define recovery behavior")
+        unsupported = require_string_array(
+            path, lifecycle, "unsupported", f"lifecycle_matrix[{index}]"
+        )
+        if not states or len(states) < 2:
+            fail(path, f"{lifecycle_id}.states must contain at least two states")
+        if not any("no " in item.lower() or "not " in item.lower() for item in unsupported):
+            fail(path, f"{lifecycle_id}.unsupported must preserve a no-claim boundary")
+    ensure_unique(path, seen_lifecycles, "lifecycle_id")
+    ensure_unique(path, seen_records, "lifecycle record_type_id")
+    missing = REQUIRED_LIFECYCLES - set(seen_records)
+    if missing:
+        fail(path, "lifecycle_matrix missing record types: " + ", ".join(sorted(missing)))
+
+
 def validate_inventory(path: Path, payload: object) -> None:
     inventory = require_object(path, payload, "inventory")
     required = {
@@ -343,6 +412,7 @@ def validate_inventory(path: Path, payload: object) -> None:
         "claim_status",
         "record_types",
         "behavior_matrix",
+        "lifecycle_matrix",
         "unsupported_boundaries",
     }
     reject_extra(path, inventory, required, "inventory")
@@ -370,6 +440,7 @@ def validate_inventory(path: Path, payload: object) -> None:
 
     validate_record_types(path, inventory.get("record_types"))
     validate_behaviors(path, inventory.get("behavior_matrix"))
+    validate_lifecycles(path, inventory.get("lifecycle_matrix"))
 
 
 def validate_schema_package(path: Path, payload: object) -> None:

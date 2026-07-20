@@ -3,7 +3,7 @@
 Status: no-claim `PB-016` lifecycle research; no profile format, migration, sync, credential, or real-user-data policy is approved
 Owner: storage, profile data, migration, recovery, privacy-data, product, security, and release operations
 Related gate: `PB-016` Profile, Space, session, and migration formats
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Question
 
@@ -35,6 +35,8 @@ The web specifications define web-visible semantics. They do not define Turing's
 | Private-session state | private profile/session identity; privacy owner | ephemeral by default and excluded from normal persistence | close, crash, export, diagnostics, and migration must prove exclusion | remnants and in-memory retention remain a separate review axis |
 
 The categories are deliberately separate even when they share a storage engine. A storage key or origin does not authorize access to browser-owned profile data, and a successful transaction does not establish power-loss durability for every state class.
+
+The checked lifecycle matrix in [`profile-session-format-inventory.json`](../storage/machine/profile-session-format-inventory.json) now gives each browser-owned record class an explicit state vocabulary and transition boundary. It is planning evidence only: transition strings describe the evidence a future harness must produce, not behavior already implemented. In particular, `recovering`, `restoring`, and `running` transitions must reject stale identity, corrupt input, privacy violations, unsupported versions, and incomplete journal state rather than silently falling back to a successful-looking record.
 
 ## Research findings that affect the format contract
 

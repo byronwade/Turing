@@ -13,6 +13,7 @@
     "claim_status",
     "record_types",
     "behavior_matrix",
+    "lifecycle_matrix",
     "unsupported_boundaries"
   ],
   "properties": {
@@ -53,6 +54,13 @@
       "minItems": 1,
       "items": {
         "$ref": "#/$defs/behavior"
+      }
+    },
+    "lifecycle_matrix": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "$ref": "#/$defs/lifecycle"
       }
     },
     "unsupported_boundaries": {
@@ -149,6 +157,61 @@
         },
         "safe_failure": {
           "type": "string"
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifecycle_id",
+        "record_type_id",
+        "states",
+        "allowed_transitions",
+        "identity_requirements",
+        "recovery_boundary",
+        "unsupported"
+      ],
+      "properties": {
+        "lifecycle_id": {
+          "type": "string",
+          "pattern": "^STO-LIFECYCLE-[A-Z0-9._-]+$"
+        },
+        "record_type_id": {
+          "type": "string",
+          "pattern": "^STO-FORMAT-[A-Z0-9._-]+$"
+        },
+        "states": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_transitions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "identity_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "recovery_boundary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unsupported": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
