@@ -20,7 +20,7 @@
 //! inputs chosen by the same person who wrote the code.
 //!
 //! An `Err` is a **pass** here, not a failure. Refusing malformed input is the
-//! designed behaviour. The only finding is an unwind, a hang, or an abort.
+//! designed behaviour. The only findings are an unwind and a hang.
 //!
 //! # Determinism
 //!
@@ -43,6 +43,9 @@
 #![forbid(unsafe_code)]
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::mpsc;
+use std::time::Duration;
 
 /// A small deterministic pseudo-random generator.
 ///
@@ -430,17 +433,25 @@ pub fn generate_js(rng: &mut Rng) -> String {
     out
 }
 
-/// What a single fuzz iteration produced.
+/// What a fuzz iteration produced.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Outcome {
     /// The stage returned, with either a value or a typed error. Both pass.
     Returned,
-    /// The stage unwound. This is the finding.
+    /// The stage unwound.
     Panicked {
         seed: u64,
         stage: &'static str,
         input: String,
     },
+    /// The sweep stopped making progress.
+    ///
+    /// Reported separately from a panic because the cause is different in kind:
+    /// an unwind is a defect the code noticed, a hang is one it did not. The
+    /// seed is whichever was in flight when the deadline passed, which is where
+    /// to start looking rather than a proven culprit — the seed before it may
+    /// have been the slow one.
+    HungAt { seed: u64 },
 }
 
 /// Runs `body`, returning its value or the finding if it unwound.
@@ -565,4 +576,59 @@ pub fn run_seed(seed: u64) -> Vec<Outcome> {
 #[must_use]
 pub fn sweep(first: u64, count: u64) -> Vec<Outcome> {
     (first..first + count).flat_map(run_seed).collect()
+}
+
+/// Runs a sweep under a deadline, reporting a hang if it stops progressing.
+///
+/// # Why this exists
+///
+/// [`catch_unwind`] observes a panic. It cannot observe a loop that never
+/// finishes, and an input that makes a parser spin is as effective a denial of
+/// service as one that makes it crash — more so, because it consumes the
+/// processor while doing it. Sweeping without this checks half the claim the
+/// engine makes about hostile input.
+///
+/// # Why a watchdog rather than a proof
+///
+/// Termination is not decidable in general and these parsers are not written in
+/// a form that makes it checkable, so the honest instrument is an observation:
+/// work that normally finishes in milliseconds has not finished in `budget`.
+///
+/// The budget should be enormous relative to the work, so it fires on a genuine
+/// hang rather than on a loaded machine. A tight deadline here would be a flaky
+/// test, which is worse than no test because it teaches people to rerun rather
+/// than look.
+///
+/// # Reporting
+///
+/// The in-flight seed is per-call rather than a global. A process-wide counter
+/// was the obvious shape and is wrong: test harnesses run tests in parallel, so
+/// two sweeps would overwrite each other's progress and each would report a
+/// seed from the other. It starts at `first`, so a deadline that passes before
+/// any work completes still names a seed from this sweep instead of zero.
+///
+/// A hang leaves the worker thread running, since a stuck thread cannot be
+/// killed safely. The process is expected to be a test binary about to fail.
+#[must_use]
+pub fn sweep_under_deadline(first: u64, count: u64, budget: Duration) -> Vec<Outcome> {
+    let in_flight = std::sync::Arc::new(AtomicU64::new(first));
+    let worker_progress = std::sync::Arc::clone(&in_flight);
+    let (sender, receiver) = mpsc::channel();
+
+    std::thread::spawn(move || {
+        let mut findings = Vec::new();
+        for seed in first..first + count {
+            worker_progress.store(seed, Ordering::Relaxed);
+            findings.extend(run_seed(seed));
+        }
+        // A closed channel means the watchdog already gave up; nothing to do.
+        let _ = sender.send(findings);
+    });
+
+    match receiver.recv_timeout(budget) {
+        Ok(findings) => findings,
+        Err(_) => vec![Outcome::HungAt {
+            seed: in_flight.load(Ordering::Relaxed),
+        }],
+    }
 }

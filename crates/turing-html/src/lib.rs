@@ -210,6 +210,16 @@ pub struct Tokenizer<'input> {
     tag_is_end: bool,
     tag_self_closing: bool,
     attributes: Vec<Attribute>,
+    /// Names already seen on the current tag.
+    ///
+    /// The specification drops a duplicate attribute, which reads as "check the
+    /// ones collected so far" and was implemented that way — a linear scan per
+    /// attribute, so quadratic in attribute count. Measured at 3.3 ms for two
+    /// thousand attributes on one element and 80 ms for eight thousand: four
+    /// times the input for twenty-four times the work, from markup a page can
+    /// emit in a line. The set restores the specified behaviour at constant
+    /// cost per attribute; `attributes` still owns order and first-wins.
+    attribute_names: std::collections::HashSet<String>,
     attribute_name: String,
     attribute_value: String,
     comment: String,
@@ -248,6 +258,7 @@ impl<'input> Tokenizer<'input> {
             tag_is_end: false,
             tag_self_closing: false,
             attributes: Vec::new(),
+            attribute_names: std::collections::HashSet::new(),
             attribute_name: String::new(),
             attribute_value: String::new(),
             comment: String::new(),
@@ -420,6 +431,7 @@ impl<'input> Tokenizer<'input> {
     fn begin_tag(&mut self, is_end: bool) {
         self.tag_name.clear();
         self.attributes.clear();
+        self.attribute_names.clear();
         self.tag_is_end = is_end;
         self.tag_self_closing = false;
     }
@@ -605,7 +617,7 @@ impl<'input> Tokenizer<'input> {
         }
         let name = core::mem::take(&mut self.attribute_name);
         let value = core::mem::take(&mut self.attribute_value);
-        if self.attributes.iter().any(|existing| existing.name == name) {
+        if !self.attribute_names.insert(name.clone()) {
             self.error(ParseErrorKind::DuplicateAttribute);
             return;
         }

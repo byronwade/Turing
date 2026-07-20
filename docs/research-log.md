@@ -1,5 +1,35 @@
 # Research Log
 
+## 2026-07-20 - Termination checked at last, and a third quadratic path in tokenizing
+
+Question:
+
+Two entries ago the fuzz harness was described as catching unwinds but not hangs, and that gap was listed as remaining and then not addressed for two iterations. An input that makes a parser spin is as effective a denial of service as one that makes it crash — more so, because it holds the processor while doing it. Sweeping without a deadline checks half the claim the engine makes about hostile input.
+
+Method:
+
+Six pathological input shapes were measured for growth before anything was built: many attributes on one element, one enormous text node, many sibling elements, many unmatched close tags, a long unterminated comment, and many declarations in a single block.
+
+Findings:
+
+Nothing hangs. All six terminate, and five are linear. That is a real negative result and worth stating as one rather than passing over: the parsers were written iteratively where it mattered, and the earlier recursion bounds already covered the depth cases.
+
+Attribute handling is quadratic. Dropping a duplicate attribute is specified as removing a new attribute whose name already appears on the token, which reads as "check the ones collected so far" and was implemented exactly that way — a scan per attribute. Two thousand attributes on one element took 3.3 ms; eight thousand took 80.3 ms. Four times the input for twenty-four times the work, from markup a page emits in a single line.
+
+Replaced with a set of seen names. The attribute vector still owns source order and first-occurrence-wins, which is the part that must not change: a set that let a later duplicate overwrite an earlier one would be faster and wrong. After: 4.0 ms at eight thousand, and linear out to thirty-two thousand.
+
+The deadline, and the defect its own test found:
+
+`sweep_under_deadline` runs a sweep on a worker thread and reports `HungAt` if it stops progressing. Termination is not decidable in general and these parsers are not written in a form that makes it checkable, so the honest instrument is an observation rather than a proof: work that normally finishes in milliseconds has not finished in the budget. The budget is deliberately enormous relative to the work, because a tight deadline would be a flaky test, and a flaky test is worse than no test — it teaches people to rerun rather than look.
+
+The first version published the in-flight seed through a process-global static. Its positive control failed, and the reason was not the one being tested: test harnesses run tests in parallel, so two concurrent sweeps would overwrite each other's progress and each would report a seed belonging to the other. The counter is now per-call, and starts at the sweep's first seed so a deadline that passes before any work completes still names a seed from this sweep rather than zero.
+
+That is the fourth consecutive time a check-on-the-check has found something: a prose-drift detector deleted for failing its positive control, a fuzz harness whose control exposed unguarded re-parsing, a differential that was measuring almost nothing, and now a watchdog with a cross-test race. The rate has not dropped. Writing the verification of a new check should now be assumed to be part of writing the check, not an optional extra.
+
+Four tests. The workspace is at 278.
+
+What this does not do: the deadline observes a hang, it does not prove termination. The generators still do not cover script execution, the collector, or the raster path, so those surfaces have neither panic nor hang coverage. Memory growth was not measured at all — an input that allocates without bound would pass every check here. The gates are unchanged: `WP-015` blocked on `IF-003`, `IF-001` `partial`, both `WP-009` decision gates open.
+
 ## 2026-07-20 - Two quadratic paths, and a differential test that was nearly vacuous
 
 Question:

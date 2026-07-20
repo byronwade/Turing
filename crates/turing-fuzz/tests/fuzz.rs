@@ -7,6 +7,7 @@
 //! An `Err` from any stage is a pass: refusing malformed input is the designed
 //! behaviour. The only finding is an unwind.
 
+use std::time::Duration;
 use turing_fuzz::{Outcome, Rng, generate_css, generate_html, generate_js, run_seed, sweep};
 
 // -- the harness itself --------------------------------------------------
@@ -104,7 +105,7 @@ fn findings_carry_enough_to_reproduce() {
             assert_eq!(stage, "layout");
             assert!(!input.is_empty());
         }
-        Outcome::Returned => unreachable!(),
+        Outcome::Returned | Outcome::HungAt { .. } => unreachable!(),
     }
 }
 
@@ -456,4 +457,96 @@ fn a_duplicate_id_resolves_to_the_first_in_document_order() {
     );
     let found = document.element_by_id("dup").expect("resolves");
     assert_eq!(document.element_name(found), Some("p"));
+}
+
+// -- termination ---------------------------------------------------------
+
+#[test]
+fn no_generated_input_makes_a_sweep_stop_progressing() {
+    // catch_unwind observes a panic; it cannot observe a loop that never ends.
+    // An input that makes a parser spin is as effective a denial of service as
+    // one that makes it crash, and sweeping without a deadline checks half the
+    // claim the engine makes about hostile input.
+    //
+    // The budget is enormous relative to the work — this sweep finishes in a
+    // few seconds — so it fires on a genuine hang rather than on a loaded
+    // machine. A tight deadline would be a flaky test, which is worse than no
+    // test because it teaches people to rerun rather than look.
+    let findings = turing_fuzz::sweep_under_deadline(1, 1_000, Duration::from_secs(120));
+    assert!(
+        findings.is_empty(),
+        "sweep findings: {:#?}",
+        findings.iter().take(5).collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn the_watchdog_reports_a_hang_when_one_happens() {
+    // Positive control for the deadline, matching the one for the panic guard.
+    // A deadline that never fires is indistinguishable from one that cannot,
+    // and the previous three times a check went unverified here it turned out
+    // to be measuring nothing.
+    //
+    // A zero budget makes the deadline pass before any real work completes,
+    // which exercises the timeout path itself rather than a real hang.
+    let findings = turing_fuzz::sweep_under_deadline(1, 1_000_000, Duration::from_millis(0));
+    assert!(
+        matches!(findings.as_slice(), [Outcome::HungAt { .. }]),
+        "expected a hang report, got {findings:#?}"
+    );
+}
+
+#[test]
+fn a_hang_report_names_the_seed_in_flight() {
+    let findings = turing_fuzz::sweep_under_deadline(7, 1_000_000, Duration::from_millis(0));
+    match findings.as_slice() {
+        [Outcome::HungAt { seed }] => assert!(*seed >= 7, "seed {seed} is from this sweep"),
+        other => panic!("expected a hang report, got {other:#?}"),
+    }
+}
+
+// -- attribute handling --------------------------------------------------
+
+#[test]
+fn many_attributes_stay_linear_and_specified() {
+    // Duplicate-attribute dropping reads as "check the ones collected so far"
+    // and was implemented as a scan per attribute, which is quadratic in
+    // attribute count: 3.3 ms for two thousand attributes on one element, 80 ms
+    // for eight thousand, from markup a page emits in a line.
+    //
+    // Asserted as behaviour rather than elapsed time. What must not change is
+    // that a duplicate is still dropped, the first occurrence still wins, and
+    // order is still source order — a set that replaced the scan but let a
+    // later duplicate overwrite an earlier one would be faster and wrong.
+    let mut markup = String::from("<div");
+    for i in 0..5_000 {
+        markup.push_str(&format!(" a{i}='{i}'"));
+    }
+    // Duplicates of the first and last real attributes, with different values.
+    markup.push_str(" a0='late' a4999='late'>");
+
+    let result = turing_html::Tokenizer::new(&markup)
+        .tokenize()
+        .expect("tokenizes");
+
+    let turing_html::Token::StartTag { attributes, .. } = &result.tokens[0] else {
+        panic!("expected a start tag");
+    };
+    assert_eq!(
+        attributes.len(),
+        5_000,
+        "duplicates dropped, originals kept"
+    );
+    assert_eq!(attributes[0].name, "a0", "source order preserved");
+    assert_eq!(attributes[0].value, "0", "the first occurrence wins");
+    assert_eq!(attributes[4_999].value, "4999");
+    assert_eq!(
+        result
+            .errors
+            .iter()
+            .filter(|e| e.kind == turing_html::ParseErrorKind::DuplicateAttribute)
+            .count(),
+        2,
+        "both duplicates reported"
+    );
 }
