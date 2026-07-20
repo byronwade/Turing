@@ -81,7 +81,16 @@ def main() -> int:
     program_ids = set(re.findall(r"^## (RQ-[0-9]{2})\s+—", program, re.MULTILINE))
     if len(program_ids) != 66:
         fail(f"research program must contain 66 numbered questions, found {len(program_ids)}")
-    crosswalk_ids = {question for lane in crosswalk.get("lanes", []) for question in lane.get("research_questions", [])}
+    crosswalk_ids: set[str] = set()
+    research_evidence_by_question: dict[str, set[str]] = {}
+    for lane in crosswalk.get("lanes", []):
+        questions = lane.get("research_questions", [])
+        evidence = lane.get("evidence_start", [])
+        for question in questions:
+            crosswalk_ids.add(question)
+            research_evidence_by_question.setdefault(question, set()).update(
+                entry for entry in evidence if entry.startswith("docs/research/")
+            )
     if not crosswalk_ids <= program_ids:
         fail("crosswalk contains a research question absent from the program")
 
@@ -110,6 +119,14 @@ def main() -> int:
     active_set = set(active)
     if len(active_set) != len(active) or active_set != crosswalk_ids:
         fail("active_question_ids must exactly match crosswalk research_questions")
+    missing_research_routes = sorted(
+        question for question in active_set if not research_evidence_by_question.get(question)
+    )
+    if missing_research_routes:
+        fail(
+            "active questions must each have at least one docs/research evidence route: "
+            + ", ".join(missing_research_routes)
+        )
     deferred = audit.get("deferred_questions")
     if not isinstance(deferred, list):
         fail("deferred_questions must be an array")
@@ -149,7 +166,8 @@ def main() -> int:
     print(
         f"research-question coverage validation passed: {len(program_ids)} questions, "
         f"{len(active_set)} active, {len(deferred_ids)} explicitly deferred, "
-        f"{evidence_entries} crosswalk evidence paths resolved"
+        f"{evidence_entries} crosswalk evidence paths resolved, "
+        f"{len(missing_research_routes)} active questions missing research routes"
     )
     return 0
 
