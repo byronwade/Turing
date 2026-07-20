@@ -88,6 +88,11 @@ pub enum GcError {
     WeakReferenceUnsupported,
     /// A reference into another heap cannot be traced from this one.
     CrossHeapReferenceUnsupported,
+    /// Two interfaces expose an operation of the same name.
+    AmbiguousOperation {
+        name: String,
+        interfaces: Vec<String>,
+    },
     /// The interface or operation is not bound.
     UnboundOperation {
         interface: String,
@@ -119,6 +124,13 @@ impl fmt::Display for GcError {
             Self::CrossHeapReferenceUnsupported => write!(
                 formatter,
                 "cross-heap references are not implemented; they cannot be traced from inside one heap"
+            ),
+            Self::AmbiguousOperation { name, interfaces } => write!(
+                formatter,
+                "the operation {name} is exposed by {}; script names an operation \
+                 without its interface, so resolving to one of them would hand a \
+                 script a capability its author did not name",
+                interfaces.join(" and ")
             ),
             Self::UnboundOperation {
                 interface,
@@ -539,6 +551,55 @@ impl Bindings {
     #[must_use]
     pub fn operations(&self) -> &[Operation] {
         &self.operations
+    }
+
+    /// Removes an operation, returning whether one was removed.
+    ///
+    /// The registry's stated purpose is that a capability which cannot be
+    /// listed cannot be granted or revoked. Listing was implemented and
+    /// revocation was not, which left half of that rationale decorative.
+    /// Because invocation resolves through this same table, removing an entry
+    /// takes effect on the next call rather than needing a separate kill switch
+    /// that could disagree with it.
+    pub fn revoke(&mut self, interface: &str, name: &str) -> bool {
+        let before = self.operations.len();
+        self.operations
+            .retain(|operation| operation.interface != interface || operation.name != name);
+        self.operations.len() != before
+    }
+
+    /// Looks up an operation by name alone, across interfaces.
+    ///
+    /// Script names an operation without naming its interface, so the flat
+    /// script namespace has to map onto the interface-qualified registry.
+    /// A name exposed by two interfaces is refused rather than resolved to
+    /// whichever was registered first: picking one silently gives a script a
+    /// capability its author did not name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GcError::UnboundOperation`] when nothing matches and
+    /// [`GcError::AmbiguousOperation`] when more than one does.
+    pub fn resolve_global(&self, name: &str) -> Result<&Operation, GcError> {
+        let matches: Vec<&Operation> = self
+            .operations
+            .iter()
+            .filter(|operation| operation.name == name)
+            .collect();
+        match matches.as_slice() {
+            [] => Err(GcError::UnboundOperation {
+                interface: "*".to_string(),
+                operation: name.to_string(),
+            }),
+            [only] => Ok(only),
+            several => Err(GcError::AmbiguousOperation {
+                name: name.to_string(),
+                interfaces: several
+                    .iter()
+                    .map(|operation| operation.interface.clone())
+                    .collect(),
+            }),
+        }
     }
 
     /// Looks up an operation.

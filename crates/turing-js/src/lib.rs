@@ -39,7 +39,7 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_gc::{GcRef, Heap, Trace};
+use turing_gc::{Bindings, GcRef, Heap, Trace};
 
 /// A construct this implementation does not model, or a program error.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -62,6 +62,17 @@ pub enum JsError {
     StepLimitExceeded { limit: u64 },
     /// Execution produced more string data than the byte budget allows.
     ByteLimitExceeded { limit: u64 },
+    /// A name was called that is neither a script function nor a bound
+    /// operation.
+    UnboundOperation { name: String },
+    /// A bound operation was called with the wrong number of arguments.
+    OperationArity {
+        name: String,
+        expected: usize,
+        got: usize,
+    },
+    /// A bound operation refused or failed.
+    HostOperationFailed { name: String, message: String },
 }
 
 impl fmt::Display for JsError {
@@ -89,6 +100,25 @@ impl fmt::Display for JsError {
                 write!(formatter, "assignment to constant {name}")
             }
             Self::TypeError { message } => write!(formatter, "TypeError: {message}"),
+            Self::UnboundOperation { name } => write!(
+                formatter,
+                "{name} is neither a declared function nor a bound operation; \
+                 treating an unknown call as no-op or `undefined` would turn a \
+                 typo into silence"
+            ),
+            Self::OperationArity {
+                name,
+                expected,
+                got,
+            } => write!(
+                formatter,
+                "{name} is bound with {expected} parameter(s) and was called with \
+                 {got}; the registry records arity, so a mismatch is a declared \
+                 contract being broken rather than a convention"
+            ),
+            Self::HostOperationFailed { name, message } => {
+                write!(formatter, "the bound operation {name} failed: {message}")
+            }
             Self::ByteLimitExceeded { limit } => write!(
                 formatter,
                 "execution produced more than {limit} bytes of string data; a step \
@@ -1064,6 +1094,8 @@ pub enum Op {
     NewObject,
     /// Push a copy of the top of stack.
     Dup,
+    /// Call a bound operation by name with `n` arguments from the stack.
+    HostCall(String, usize),
     /// Pop key then object; push the property value, or `undefined`.
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
@@ -1458,9 +1490,19 @@ impl Compiler {
                 let Some(&(_, index, arity)) =
                     self.signatures.iter().find(|(name, _, _)| name == callee)
                 else {
-                    return Err(JsError::UndefinedVariable {
-                        name: callee.clone(),
-                    });
+                    // Not a declared function, so it may be a bound operation.
+                    // Script functions are resolved first and therefore win a
+                    // name collision: a program's own declaration must not be
+                    // shadowed by whatever the embedder happens to expose.
+                    //
+                    // Whether the name is bound is a property of the host, which
+                    // the compiler does not have, so it is checked at the call.
+                    for argument in arguments {
+                        self.expression(argument)?;
+                    }
+                    self.code
+                        .push(Op::HostCall(callee.clone(), arguments.len()));
+                    return Ok(());
                 };
                 if arguments.len() != arity {
                     return Err(JsError::TypeError {
@@ -1577,10 +1619,64 @@ impl Vm {
     /// Returns [`JsError`] on a runtime type error, when the instruction budget
     /// is exhausted, or when the byte budget is exhausted.
     pub fn run(&self, program: &Program) -> Result<Value, JsError> {
+        self.run_with_host(program, &mut NoHost::default())
+    }
+
+    /// Calls a named function in `program` and returns its value.
+    ///
+    /// # Why this exists
+    ///
+    /// The top level's completion value is discarded, so `run` reports nothing
+    /// an embedder can use — a script's result was observable only from inside
+    /// this crate's own tests. That was a real gap rather than a design: an
+    /// embedder that cannot read a result cannot use the interpreter for
+    /// anything but side effects it also cannot observe.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`JsError::UndefinedVariable`] when no function has that name,
+    /// [`JsError::OperationArity`] on an argument-count mismatch, and any error
+    /// the call itself produces.
+    pub fn call(
+        &self,
+        program: &Program,
+        name: &str,
+        arguments: Vec<Value>,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        let Some((index, function)) = program
+            .functions
+            .iter()
+            .enumerate()
+            .skip(1)
+            .find(|(_, function)| function.name == name)
+        else {
+            return Err(JsError::UndefinedVariable {
+                name: name.to_string(),
+            });
+        };
+        if function.arity != arguments.len() {
+            return Err(JsError::OperationArity {
+                name: name.to_string(),
+                expected: function.arity,
+                got: arguments.len(),
+            });
+        }
+        let mut runtime = Runtime::default();
+        self.run_function(program, index, arguments, &mut runtime, host)
+    }
+
+    /// Runs `program` with `host` supplying the bound operations.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`JsError`] on a runtime type error, an exhausted budget, or a
+    /// call to an operation the host does not expose.
+    pub fn run_with_host(&self, program: &Program, host: &mut dyn Host) -> Result<Value, JsError> {
         // One heap for the whole run, so a reference stays meaningful across
         // calls.
         let mut runtime = Runtime::default();
-        self.run_function(program, 0, Vec::new(), &mut runtime)
+        self.run_function(program, 0, Vec::new(), &mut runtime, host)
     }
 
     fn run_function(
@@ -1589,6 +1685,7 @@ impl Vm {
         index: usize,
         arguments: Vec<Value>,
         runtime: &mut Runtime,
+        host: &mut dyn Host,
     ) -> Result<Value, JsError> {
         let function = &program.functions[index];
         let mut locals = vec![Value::Undefined; function.locals.max(arguments.len())];
@@ -1643,6 +1740,36 @@ impl Vm {
                         _ => Value::Number(to_number(&left) + to_number(&right)),
                     };
                     stack.push(result);
+                }
+                Op::HostCall(name, count) => {
+                    let mut arguments = Vec::with_capacity(*count);
+                    for _ in 0..*count {
+                        arguments.push(pop(&mut stack));
+                    }
+                    arguments.reverse();
+
+                    // Resolution goes through the registry the host publishes,
+                    // so the callable set and the auditable set are one table
+                    // and cannot drift apart.
+                    let operation = host
+                        .bindings()
+                        .resolve_global(name)
+                        .map_err(|_| JsError::UnboundOperation { name: name.clone() })?;
+                    if operation.arity != arguments.len() {
+                        return Err(JsError::OperationArity {
+                            name: name.clone(),
+                            expected: operation.arity,
+                            got: arguments.len(),
+                        });
+                    }
+                    let interface = operation.interface.clone();
+                    let value = host
+                        .invoke(&interface, name, &arguments)
+                        .map_err(|message| JsError::HostOperationFailed {
+                            name: name.clone(),
+                            message,
+                        })?;
+                    stack.push(value);
                 }
                 Op::Dup => {
                     let top = stack.last().cloned().unwrap_or(Value::Undefined);
@@ -1782,7 +1909,7 @@ impl Vm {
                         let restore = runtime.outer.len();
                         runtime.outer.extend(stack.iter().cloned());
                         runtime.outer.extend(locals.iter().cloned());
-                        let outcome = self.run_function(program, *index, arguments, runtime);
+                        let outcome = self.run_function(program, *index, arguments, runtime, host);
                         runtime.outer.truncate(restore);
                         outcome
                     }?;
@@ -1852,6 +1979,67 @@ fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
     runtime.heap.collect();
     for reference in &live {
         runtime.heap.remove_root(*reference);
+    }
+}
+
+/// What the interpreter needs from its embedder to call out of the script.
+///
+/// # Why a trait rather than a dependency
+///
+/// The interpreter must not know what a DOM is, the same way selector matching
+/// must not know what `turing-html` is. An embedder exposing something else
+/// entirely — a test double, a different document model, a restricted subset
+/// for an untrusted principal — implements this and nothing changes here.
+///
+/// # Why the registry is part of the contract
+///
+/// `REQ-AI-001` treats agents as separately identified principals, and the
+/// blueprint's justification for a registry rather than direct calls is that a
+/// capability which cannot be listed cannot be granted or revoked. That only
+/// holds if the callable set and the listed set are the *same* set, so
+/// invocation here resolves through [`Host::bindings`] rather than through any
+/// separate dispatch table. There is no path by which a host can expose an
+/// operation that auditing would not show.
+pub trait Host {
+    /// Returns the operations this host exposes.
+    fn bindings(&self) -> &Bindings;
+
+    /// Performs a bound operation.
+    ///
+    /// Only ever called after the operation resolved in [`Host::bindings`] and
+    /// its arity matched, so an implementation does not repeat those checks.
+    ///
+    /// # Errors
+    ///
+    /// Returns a message describing why the operation could not be performed.
+    fn invoke(&mut self, interface: &str, name: &str, arguments: &[Value])
+    -> Result<Value, String>;
+}
+
+/// A host exposing nothing.
+///
+/// The default, so a script that calls out fails with an unbound operation
+/// rather than the interpreter having to treat "no host" as a special case.
+#[derive(Debug, Default)]
+pub struct NoHost {
+    bindings: Bindings,
+}
+
+impl Host for NoHost {
+    fn bindings(&self) -> &Bindings {
+        &self.bindings
+    }
+
+    fn invoke(
+        &mut self,
+        _interface: &str,
+        name: &str,
+        _arguments: &[Value],
+    ) -> Result<Value, String> {
+        // Unreachable through the interpreter, which resolves first against an
+        // empty registry. Stated rather than left to `unreachable!`, which would
+        // turn a future dispatch mistake into a panic.
+        Err(format!("{name} is not bound: this host exposes nothing"))
     }
 }
 
@@ -1961,7 +2149,13 @@ mod tests {
     fn run_main_source(source: &str) -> Value {
         let program = compile(source).expect("compiles");
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut Runtime::default(),
+                &mut NoHost::default(),
+            )
             .expect("runs")
     }
 
@@ -1972,7 +2166,13 @@ mod tests {
     fn run_main(body: &str) -> Value {
         let program = compile(&format!("function main() {{ {body} }} main();")).expect("compiles");
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut Runtime::default(),
+                &mut NoHost::default(),
+            )
             .expect("runs")
     }
 
@@ -1982,7 +2182,13 @@ mod tests {
         let program = compile(&format!("{wrapped} main();")).expect("compiles");
         // The top level's last value is discarded, so call directly.
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut Runtime::default(),
+                &mut NoHost::default(),
+            )
             .expect("runs")
     }
 
@@ -2053,7 +2259,13 @@ mod tests {
             compile("function f() { let a = 1; a = a + 4; return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -2066,7 +2278,13 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(20.0)
         );
@@ -2081,7 +2299,13 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(10.0)
         );
@@ -2094,7 +2318,13 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    2,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -2109,7 +2339,13 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    2,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(120.0)
         );
@@ -2121,7 +2357,13 @@ mod tests {
             .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(7.0)
         );
@@ -2132,7 +2374,13 @@ mod tests {
         let program = compile("function f() { let a = 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Undefined
         );
@@ -2145,7 +2393,13 @@ mod tests {
             compile("function f() { let a = 1; { let a = 2; } return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -2179,7 +2433,13 @@ mod tests {
             ..Vm::default()
         };
         let error = vm
-            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut Runtime::default(),
+                &mut NoHost::default(),
+            )
             .expect_err("aborted");
         assert!(matches!(error, JsError::StepLimitExceeded { .. }));
     }
@@ -2216,7 +2476,13 @@ mod tests {
             compile("// leading\nfunction f() { /* inner */ return 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+                .run_function(
+                    &program,
+                    1,
+                    Vec::new(),
+                    &mut Runtime::default(),
+                    &mut NoHost::default()
+                )
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -2485,7 +2751,13 @@ mod tests {
         let program = compile(&source).expect("compiles");
         let mut runtime = Runtime::default();
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut runtime,
+                &mut NoHost::default(),
+            )
             .expect("runs");
 
         assert!(
@@ -2509,7 +2781,13 @@ mod tests {
         let program = compile(&source).expect("compiles");
         let mut runtime = Runtime::default();
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut runtime,
+                &mut NoHost::default(),
+            )
             .expect("runs");
 
         assert!(
@@ -2532,7 +2810,13 @@ mod tests {
         let program = compile(&source).expect("compiles");
         let mut runtime = Runtime::default();
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .run_function(
+                &program,
+                1,
+                Vec::new(),
+                &mut runtime,
+                &mut NoHost::default(),
+            )
             .expect("runs");
 
         assert!(

@@ -1,5 +1,47 @@
 # Research Log
 
+## 2026-07-20 - DOM operations bound, and the registry's rationale made real
+
+Question:
+
+`WP-011` is "exact tracing GC and Web IDL bindings". The collector was built and wired last iteration; the binding registry existed with nothing registered in it. This registers real operations over a real document, completing the work package's named scope.
+
+Decision on what a node is, which shaped everything:
+
+Nothing takes or returns a live node. A node reference is an index into the document's arena, a different address space from the interpreter's heap. If a node became a script value, the interpreter's tracing would see an index it is entitled to read as a heap reference — a category confusion invisible until a node is held across a collection. Node identity crosses as an `id` string instead.
+
+Read-only for the matching reason in the other direction: a mutating operation advances the document epoch, which invalidates any layout a `turing-input` router is holding. That interaction deserves its own treatment rather than arriving as a side effect of binding a getter.
+
+Both are limits, not omissions, and both defer work whose hazards are already understood.
+
+The property the registry exists for, made structural:
+
+The blueprint's justification for a registry rather than direct calls is that a capability which cannot be listed cannot be granted or revoked. That only holds if the callable set and the listed set are the *same* set, and the way it fails is an operation script can invoke that auditing does not show.
+
+So invocation resolves through `Host::bindings` — the same table `operations()` returns. There is no separate dispatch map to drift out of step with the listing, and both directions are tested: every listed operation is callable, and an unlisted one is refused.
+
+Two things the rationale needed and did not have:
+
+The registry had `register` but no `revoke`. Listing was implemented and revocation was not, which left half of the stated reason decorative. `revoke` now exists, and because invocation resolves through the same table it takes effect on the next call without a second enforcement point that could disagree with the first.
+
+Arity was recorded and nothing checked it. A recorded contract nothing enforces is decoration, and here it also meant a host indexing past the end of its argument list. Checked at the call site now, with a typed error.
+
+Script names an operation without naming its interface, so the flat script namespace has to map onto an interface-qualified registry. A name exposed by two interfaces is refused rather than resolved to whichever was registered first, because picking one hands a script a capability its author did not name and nothing about that is visible at the call site.
+
+A gap found by using the thing:
+
+`run` returns the top level's completion value, which is discarded, so an embedder could not observe a script's result at all — the tests here could not be written. This had been noted twice in previous entries as a curiosity and was in fact a hole: an interpreter whose results are unreadable is useful only for side effects that are also unobservable. `Vm::call` now invokes a named function and returns its value.
+
+The controls:
+
+Twelve tests passed on the first run, which by now is not evidence. Two injections:
+
+Disabling the arity check failed exactly the one test written for it. Making invocation fall back to a synthesised operation when the registry has no entry — the shape of a dispatch path that drifts from the listing — failed exactly three: the unlisted-operation test, the revocation test, and the no-host test. Those three are the security property, and they fail together because they are one property.
+
+Twelve tests. The workspace is at 335.
+
+What this does not do: no node values, no mutation, no method-call syntax, and no `Payload::HostObject` producer despite the shape existing for it. Per-principal surfaces are possible in the sense that a caller can revoke operations before handing the host to a script, but nothing models principals — `REQ-AI-001` is a requirement this makes reachable rather than one it satisfies. The `Document` interface here is four getters, not Web IDL.
+
 ## 2026-07-20 - The collector wired to the interpreter, and the rooting protocol that makes it safe
 
 Question:
