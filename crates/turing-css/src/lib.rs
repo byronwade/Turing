@@ -81,6 +81,94 @@ pub enum CssError {
     MalformedSelector { text: String },
     /// A declaration block was not closed.
     UnterminatedBlock { offset: usize },
+    /// A colour notation this implementation does not parse.
+    ColorUnsupported { value: String },
+}
+
+/// An opaque sRGB colour.
+///
+/// # Why this is parsed here
+///
+/// A display list carrying colours as unparsed CSS strings pushes colour
+/// parsing into every painter that consumes one, and those implementations
+/// diverge. Parsing once, in the layer that owns CSS values, means a painter
+/// receives channels it can use directly and an invalid colour is reported
+/// against the stylesheet that contains it rather than at paint time.
+///
+/// Opaque only. Alpha requires compositing rules — what a translucent colour
+/// blends against depends on stacking order and group opacity — and a painter
+/// that ignored alpha would silently render translucent content as solid.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct Color {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
+}
+
+impl Color {
+    /// Parses a CSS colour value.
+    ///
+    /// Accepts `#rgb`, `#rrggbb`, and the subset of named colours below.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CssError::ColorUnsupported`] for any other notation. This
+    /// includes valid CSS that is simply not implemented — `rgb()`, `hsl()`,
+    /// eight-digit hex, `currentColor` — because falling back to a default
+    /// renders a plausible wrong colour that no one notices.
+    pub fn parse(value: &str) -> Result<Self, CssError> {
+        let value = value.trim();
+        let unsupported = || CssError::ColorUnsupported {
+            value: value.to_string(),
+        };
+
+        if let Some(hex) = value.strip_prefix('#') {
+            // Three digits expand by repeating each, so `#abc` is `#aabbcc`,
+            // not `#0a0b0c`.
+            let expanded = match hex.len() {
+                3 => hex.chars().flat_map(|c| [c, c]).collect::<String>(),
+                6 => hex.to_string(),
+                _ => return Err(unsupported()),
+            };
+            let channel = |range: core::ops::Range<usize>| {
+                u8::from_str_radix(&expanded[range], 16).map_err(|_| unsupported())
+            };
+            return Ok(Self {
+                red: channel(0..2)?,
+                green: channel(2..4)?,
+                blue: channel(4..6)?,
+            });
+        }
+
+        // The sixteen original HTML colours. A principled boundary rather than
+        // an arbitrary one: CSS defines 148 named colours, and stopping at a
+        // set with its own definition means the line can be explained. Anything
+        // outside it is refused, not approximated to the nearest match.
+        let named = match value.to_ascii_lowercase().as_str() {
+            "black" => (0, 0, 0),
+            "silver" => (192, 192, 192),
+            "gray" | "grey" => (128, 128, 128),
+            "white" => (255, 255, 255),
+            "maroon" => (128, 0, 0),
+            "red" => (255, 0, 0),
+            "purple" => (128, 0, 128),
+            "fuchsia" => (255, 0, 255),
+            "green" => (0, 128, 0),
+            "lime" => (0, 255, 0),
+            "olive" => (128, 128, 0),
+            "yellow" => (255, 255, 0),
+            "navy" => (0, 0, 128),
+            "blue" => (0, 0, 255),
+            "teal" => (0, 128, 128),
+            "aqua" => (0, 255, 255),
+            _ => return Err(unsupported()),
+        };
+        Ok(Self {
+            red: named.0,
+            green: named.1,
+            blue: named.2,
+        })
+    }
 }
 
 impl fmt::Display for CssError {
@@ -104,6 +192,11 @@ impl fmt::Display for CssError {
             Self::UnterminatedBlock { offset } => {
                 write!(formatter, "unterminated declaration block at byte {offset}")
             }
+            Self::ColorUnsupported { value } => write!(
+                formatter,
+                "colour {value} is not parsed here; defaulting it would paint a \
+                 plausible wrong colour rather than report a gap"
+            ),
         }
     }
 }

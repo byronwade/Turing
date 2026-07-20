@@ -1,5 +1,53 @@
 # Research Log
 
+## 2026-07-20 - CPU reference rasterizer, and colour moved into the value layer
+
+Question:
+
+The reference raster was the last named `WP-009` output. Before designing it, two things needed checking rather than assuming.
+
+First, what backs it. No requirement names a raster: `REQ-ENG-004`, `005`, and `006` cover fragments, the display list with hit testing, and accessibility. The raster appears in the `WP-009` title, in the M2 gate's `blocking_outputs` as "CPU reference raster", and in `IF-003` as the "reference raster input" contract. So it is a gate output under `REQ-ENG-005` rather than a requirement of its own, and `COMP-017` traces there. Saying this plainly matters more than the crate: a work-package title is not a requirement, and letting one invent scope is how unbudgeted work enters.
+
+Second, the gates. `WP-009` carries two decision gates in the execution graph — `text-font-foundation-review` and `graphics-foundation-review` — and neither has a state record anywhere in the repository. Both are open.
+
+Decision on text:
+
+Text is refused. `DisplayItem::Text` returns `RasterError::GlyphRasterizationUnsupported`.
+
+The tempting alternative was an opt-in mode drawing coverage blocks where glyphs belong, by analogy with `TextMetrics`. The analogy does not hold. `TextMetrics` is an injected measurement of a real quantity, so layout is correct *given* it; a glyph shape is not a number a caller can supply, so blocks would not be a stand-in for text but a different picture entirely. It would look like a rendered page, and the whole purpose of a reference rasterizer is to be diffed against another renderer — output that invites that comparison while not being text is worse than no output. And with `text-font-foundation-review` unresolved, inventing a glyph representation would preempt an owner decision.
+
+Decision on colour, which changed three crates:
+
+Colours reached the display list as unparsed CSS strings, and nothing anywhere validated them. The rasterizer would therefore have been the first place CSS colour parsing happened — which contradicts the display list being the embeddable painter handoff, since every embedder's painter would then re-implement colour parsing and they would diverge.
+
+So `turing_css::Color` now exists, parsed during the cascade, and the display list carries typed channels. An invalid colour is reported against the stylesheet that contains it rather than at paint time, and a painter receives values it can use directly. This was worth doing before writing the rasterizer rather than after: it is the same shape as `element_by_id` last iteration, where the alternative was discovering the need mid-implementation and refactoring.
+
+The named-colour set is the sixteen original HTML colours. CSS defines 148, and a subset needs a defensible edge — a set with its own definition can be explained, an arbitrary cut cannot. Everything outside it, including `rgb()`, `hsl()`, eight-digit hex, and `currentColor`, is refused. Defaulting an unparsed colour to black would paint something plausible and wrong, which is the failure mode nobody reports.
+
+Colours are opaque. Alpha needs compositing rules — what a translucent colour blends against depends on stacking order and group opacity — so refusing it at the value layer keeps the rasterizer's compositing an exact overwrite rather than an approximation.
+
+Method:
+
+`crates/turing-raster`, registered as `COMP-017`. Written to be read rather than to be quick: no tiling, no batching, no incremental damage. When a faster painter disagrees with it, this one is the definition of right.
+
+Four rules pinned because each fails quietly:
+
+Coverage is half-open. A rect at `x = 0` with `width = 2` covers columns 0 and 1. Closing the interval makes every fill one pixel wider and makes adjacent boxes overlap, which no single-box test notices.
+
+Edges round rather than truncate, and both edges round the same way. Truncating pulls every edge toward zero, so a box starting at 10.6 and a box ending at 10.6 both land on column 10 and overlap instead of abutting.
+
+Rects clip to the canvas. Without clamping, a row running past the right edge continues into the start of the next row and draws a diagonal smear that reads as a bug somewhere else entirely.
+
+Later items overwrite earlier ones. The display list's ordering is only meaningful if this holds, and drawing in reverse yields an image that looks reasonable with the wrong content on top wherever anything overlaps.
+
+Canvas allocation is bounded and the size computation is checked. Dimensions trace back to a viewport, so an unbounded allocation driven by document-influenced input is a denial of service, and on a 32-bit host the product of two plausible dimensions can wrap to a small number and allocate at the wrong size.
+
+Sixteen rasterizer tests, all driving display lists built by hand rather than produced by layout, which proves the rasterizer consumes the list as a contract independent of how it was made — the same role the foreign tree played for style, layout, and accessibility. The workspace is at 251.
+
+One test was wrong and was corrected rather than the code: the negative-coordinate case used a rect that happened to cover the whole canvas, so it would have passed whether or not the negative side was clamped.
+
+What this does not do: no text, no images, no borders as distinct from background fills, no alpha, no transforms, no clipping beyond the canvas edge, and no anti-aliasing — every edge is hard. `WP-009` is now complete to the extent its open decision gates allow.
+
 ## 2026-07-20 - Accessibility tree implemented, completing WP-009
 
 Question:
