@@ -10004,3 +10004,21 @@ Which owner-controlled evidence lane should replace its no-claim preparation rec
 Compared the research-readiness crosswalk with the proposed build-readiness task queue, requirements, and risks. Added explicit lane-level requirement and risk bindings and validator checks that they mirror the task queue, then synchronized the crosswalk schema, research index, coverage audit, evidence matrix, and repository map. This closes task-to-requirement/risk traceability only; it does not approve tasks, answer research questions, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
 
 Compared the active research packets validated by `validate_research_index.py` with the central documentation-readiness audit source list. Added the five missing active packet paths to the machine audit, and added a validator assertion that every active research packet is named there. The human audit now names all `7/7` active packets. This closes source-list continuity only; no research question, owner decision, readiness gate, task, implementation, or performance claim changed.
+
+# 2026-07-20 - ADR-0009 owner decision worksheet
+
+Question:
+
+Can the source-strategy closure route make the exact owner inputs and synchronized record changes explicit for every option without selecting an option by implication?
+
+Method:
+
+Compared the ADR-0009 option matrix, decision-review template, evidence registry, evidence traceability matrix, PB-002 readiness record, and owner-decision closure board. Added a required pre-review worksheet covering option disposition, charter effect, source boundary, all 18 evidence statuses, authority/review, authorization scope, operations/rollback, and synchronized document/registry changes. Added validator coverage for those fields and the unresolved-template boundary.
+
+Decision:
+
+The worksheet improves decision completeness and resumability only. All five option rows remain unresolved, no option is selected, `PB-002` remains blocked, and no source import, component approval, release-code authorization, compatibility, security, performance, or Chrome-class claim changed.
+
+Next question:
+
+When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?

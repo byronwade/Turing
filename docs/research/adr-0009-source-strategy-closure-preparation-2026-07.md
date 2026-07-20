@@ -47,6 +47,23 @@ This matrix normalizes the owner review before any option is scored or selected.
 
 The owner must record the selected, rejected, or deferred option, the rationale, the evidence disposition, and the exact claim boundary. A lower implementation burden does not override charter, security, provenance, legal, compatibility, or maintenance requirements.
 
+## Pre-review decision worksheet
+
+The real owner review must complete one worksheet row for each of Options A-E. A row is not complete because an option is described or because evidence exists; it is complete only when the disposition, scope, reviewers, limitations, and synchronized record changes are explicit.
+
+| Required field | What the reviewer must record | Rejection condition |
+|---|---|---|
+| Option disposition | `selected`, `rejected`, or `deferred`, with rationale and rejected alternatives | Missing rationale, multiple selected options, or a decision inferred from evidence presence |
+| Charter and independence effect | Whether the current independent-engine boundary is preserved, narrowed, or replaced, with exact affected ADR/requirement paths | Any release-boundary change without charter and dependent-record review |
+| Source boundary | Exact baseline/ref/archive/package, feature and target profiles, included and excluded source/components, generated-output scope, and provenance policy | `latest`, `Servo`, or `upstream` without an immutable identity and equivalence policy |
+| Evidence disposition | Status for every `ADR9-EV-001` through `ADR9-EV-018`: observed, reproduced, reviewed, decided, or explicitly held by an expiring exception | Any unresolved evidence hidden by a general approval or omitted from the denominator |
+| Authority and review | Named decision owner, independent reviewer, legal/community reviewer where applicable, review date, and dissenting evidence | Self-approval, title-only identity, or missing independent review |
+| Authorization scope | Exact implementation, release, dependency, component, platform, and claim scope unlocked; explicit prohibited scope | Planning evidence treated as source import, component approval, or release-code authorization |
+| Operations and rollback | Primary/backup ownership, maintenance and security response, rollback, replacement, abandonment, and revisit trigger | No qualified backup, rollback path, expiry, or support-boundary update |
+| Synchronized diff | Paths and hashes for the ADR, Blueprint, requirements, risks, work packages, registries, support language, and public claim changes | Any affected canonical or machine record left stale |
+
+Until a real review replaces the no-claim template, every worksheet row is `unresolved_template`, every option disposition is unset, and no authorization scope exists. The worksheet makes the missing owner decision visible; it does not select an option or increase `PB-002` readiness.
+
 ## Provenance policy boundary for source identity
 
 The [Git tag documentation](https://git-scm.com/docs/git-tag) distinguishes a lightweight tag, which directly names an object, from an annotated tag object that can carry a message and cryptographic signature; it describes signed annotated tags as the normal release-oriented form. [`git verify-tag`](https://git-scm.com/docs/git-verify-tag) validates signatures on tag objects, so it cannot turn a lightweight tag into a signed release assertion. GitHub's [commit-signature documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification) separately describes verified GPG, SSH, and S/MIME commit or tag signatures and notes that repository policy can enforce signed commits.

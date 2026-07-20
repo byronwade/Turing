@@ -17,6 +17,7 @@ DECISION_REVIEW = (
     / "no-claim-decision-review-template.json"
 )
 MATRIX = ROOT / "docs" / "project-buildout" / "15-adr-0009-evidence-traceability-matrix.md"
+SOURCE_STRATEGY_CLOSURE = ROOT / "docs" / "research" / "adr-0009-source-strategy-closure-preparation-2026-07.md"
 OWNERS = MACHINE / "professional-owners.json"
 READINESS = MACHINE / "pre-build-readiness.json"
 CLEAN_GENERATED_OUTPUT_REPORT = (
@@ -126,6 +127,19 @@ REQUIRED_DECISION_REJECTION_TERMS = [
     "document",
     "exception",
     "release-code authorization",
+]
+
+REQUIRED_CLOSURE_WORKSHEET_TERMS = [
+    "pre-review decision worksheet",
+    "option disposition",
+    "charter and independence effect",
+    "source boundary",
+    "evidence disposition",
+    "authority and review",
+    "authorization scope",
+    "operations and rollback",
+    "synchronized diff",
+    "unresolved_template",
 ]
 
 
@@ -403,6 +417,15 @@ def validate_readiness() -> None:
         fail("PB-002 evidence_required must retain the owner-reviewed source-to-output provenance blocker")
 
 
+def validate_closure_preparation() -> None:
+    text = normalize(SOURCE_STRATEGY_CLOSURE.read_text(encoding="utf-8"))
+    for term in REQUIRED_CLOSURE_WORKSHEET_TERMS:
+        if normalize(term) not in text:
+            fail(
+                f"{relative(SOURCE_STRATEGY_CLOSURE)} must retain decision-worksheet term: {term}"
+            )
+
+
 def validate_decision_review() -> None:
     payload = require_object(load_json(DECISION_REVIEW), "decision review")
     if payload.get("schema_version") != 1:
@@ -514,6 +537,7 @@ def main() -> int:
         validate_decision_review()
         validate_matrix(items)
         validate_readiness()
+        validate_closure_preparation()
     except ValidationError as error:
         print(f"ADR-0009 evidence validation failed: {error}", file=sys.stderr)
         return 1
