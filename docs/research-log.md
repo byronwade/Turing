@@ -1,5 +1,41 @@
 # Research Log
 
+## 2026-07-20 - Hit testing completes REQ-ENG-005, and found negative margins were mispositioned
+
+Question:
+
+The four named engine work packages — `WP-007` through `WP-010` — are implemented. What remained unstarted inside them was the tail of `WP-009`: `REQ-ENG-005` names a "paint display-list **and** hit-test pipeline" and only the display list existed, `REQ-ENG-006` wants an accessibility tree, and the work package title also names a reference raster.
+
+Decision on scope:
+
+Hit testing only, this iteration. It is the one of the three that finishes an in-flight requirement rather than opening a subsystem: it consumes the `LayoutBox` tree that already exists, returns the same `Option<usize>` node index that boxes already carry, and is bounded to one function. The accessibility tree is ARIA role mapping plus accessible-name computation, which is spec-heavy enough to deserve its own iteration. The reference raster needs glyph rendering, which `TextMetrics` deliberately stands in for. Both are deferred explicitly rather than half-done.
+
+Method:
+
+`hit_test(&LayoutBox, Point) -> Option<usize>`. Four rules, each chosen because the alternative fails quietly:
+
+Boxes are tested in paint order and a later hit replaces an earlier one, so the answer is the topmost box. The natural implementation — a pre-order walk returning its first containing box — answers with the outermost element for any nested content, and passes every test that probes a single box.
+
+The border box is the hit area, not the margin box. Margins are transparent separation rather than part of the element, so a point in the gap between two blocks does not belong to the nearer sibling.
+
+Children are tested even when the parent misses. `overflow` is `visible` by default, so a child can paint outside its parent and must stay reachable. Pruning the descent on a parent miss is a plausible optimisation that silently loses those hits.
+
+Anonymous and text boxes resolve to the nearest enclosing element. An anonymous block carries no source node, and a text box's node is a text node. Answering `None` for a point plainly over content would be wrong, but answering with a text node would be too: input routing needs an event target, and text nodes are not event targets.
+
+Containment is half-open on the right and bottom edges, so boxes sharing a seam do not both claim the boundary and the winner does not depend on visit order.
+
+Finding:
+
+Writing the overlap test found an unrelated defect. To make two sibling boxes overlap I reached for a negative margin, and the resulting test failed. The cause is that margin collapsing here is `max(top, previous_bottom)`, which is the rule for positive margins only. The specification adds the most negative adjoining margin to the largest positive one; `max(-50, 0)` gives `0` where the rule gives `-50`. Negative margins were being accepted and silently mispositioned.
+
+Fixed by refusing them: `LayoutError::NegativeEdgeUnsupported`, consistent with how this crate treats every other construct whose geometry it does not compute. Negative padding and border are refused under the same variant for a different reason — they are invalid CSS, and refusing surfaces an authoring error rather than computing a nonsense box.
+
+The overlap test was then rebuilt on nested blocks, which overlap by construction without needing any unimplemented feature, and asserts the probe really is inside the outer box before checking that the inner one wins. Otherwise the test proves nothing when the geometry changes underneath it.
+
+Nine hit-testing tests, one of them on the foreign `HostTree` so the pipeline is proven on a tree the engine does not own. The workspace is at 205 tests.
+
+What this does not do: no hit testing through transforms, stacking contexts, `pointer-events`, or clipping, none of which exist yet; the answer is a node index rather than a dispatched event, so wiring it to `turing-dom` remains open.
+
 ## 2026-07-20 - Per-stage benchmark harness and first recorded baselines
 
 Question:
