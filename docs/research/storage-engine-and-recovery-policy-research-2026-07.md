@@ -18,6 +18,8 @@ This packet compares policy and evidence obligations for three candidate familie
 
 The candidates are not interchangeable. The comparison must be made per state class and workload, not by selecting one database for every browser store. Credentials, private-session data, sync, real-profile migration, and production profile formats remain outside the current proof boundary.
 
+The checked no-claim [profile/session source manifest](../storage/machine/profile-session-source-manifest.json) is the machine provenance companion for the storage observations below. It records source identity, retrieval date, evidence axes, and decision consequences; it does not select a backend or establish durability.
+
 ## Source observations
 
 The following are source observations retrieved 2026-07-20. They define constraints and test obligations; they do not select a Turing backend.

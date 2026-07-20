@@ -2,13 +2,14 @@
   "schema_version": 1,
   "manifest_id": "STORAGE.PROFILE_SESSION.SOURCES.2026_07",
   "status": "no_claim_profile_session_source_manifest",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "related_gate": "PB-016",
-  "claim_status": "No-claim profile/session source observations only; these web-platform sources are not a Turing profile format, migration protocol, credential vault, sync design, data-loss result, real-user-data approval, production readiness decision, or implementation evidence.",
+  "claim_status": "No-claim profile/session and storage-backend source observations only; these sources are not a Turing profile format, migration protocol, credential vault, sync design, data-loss result, real-user-data approval, production readiness decision, or implementation evidence.",
   "evidence_axes": [
     "origin_and_partition_identity",
     "storage_bucket_and_state_class",
     "transaction_commit_and_durability",
+    "storage_backend_and_process_model",
     "abort_failure_and_quota",
     "origin_scoped_clearing",
     "browser_owned_state_separation",
@@ -72,6 +73,33 @@
       "decision_consequence": "Profile/session tests must exercise concurrent access, journal pairing, lock and sync failures, direct-file interference controls, corruption detection, quarantine, and the difference between a consistent rollback and a durably committed record."
     },
     {
+      "source_id": "STORAGE-PROFILE-SOURCE-LMDB-TRANSACTIONS",
+      "title": "LMDB Python Documentation",
+      "publisher": "py-lmdb project",
+      "url": "https://lmdb.readthedocs.io/en/latest/",
+      "retrieved": "2026-07-20",
+      "observation": "LMDB documents memory-mapped copy-on-write transactions, one simultaneous writer, many readers, reader lifetime effects, map-size limits, and the distinction between atomicity/consistency/isolation and durability when synchronization is relaxed.",
+      "decision_consequence": "A Turing comparison must record map sizing, reader lifetime, remap and resize behavior, writer serialization, synchronization policy, platform virtual-memory constraints, and recovery outcomes; a memory-mapped design is not approved by these observations."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-ROCKSDB-TRANSACTIONS",
+      "title": "Transactions",
+      "publisher": "RocksDB project",
+      "url": "https://github.com/facebook/rocksdb/wiki/Transactions",
+      "retrieved": "2026-07-20",
+      "observation": "RocksDB documents a log-oriented transaction family with explicit transaction, conflict, recovery, and compaction concerns that differ from a single relational profile database.",
+      "decision_consequence": "A Turing comparison must measure log growth, conflict and retry behavior, replay, compaction, checkpoint, corruption, and bounded recovery separately; this upstream documentation does not approve RocksDB as a Turing dependency or profile backend."
+    },
+    {
+      "source_id": "STORAGE-PROFILE-SOURCE-ROCKSDB-WAL",
+      "title": "Write-Ahead Log",
+      "publisher": "RocksDB project",
+      "url": "https://github.com/facebook/rocksdb/wiki/Write-Ahead-Log",
+      "retrieved": "2026-07-20",
+      "observation": "RocksDB documents write-ahead-log identity and lifecycle concerns for recovery and durability, including the relationship between log retention and flushing or checkpoint behavior.",
+      "decision_consequence": "A Turing log candidate must pin log and checkpoint policy, flush assumptions, retention and deletion rules, corruption handling, replay bounds, and cleanup evidence rather than treating a WAL file as proof of durable user data."
+    },
+    {
       "source_id": "STORAGE-PROFILE-SOURCE-WINDOWS-FLUSH",
       "title": "Flushing System-Buffered I/O Data to Disk",
       "publisher": "Microsoft",
@@ -111,6 +139,7 @@
   "source_documents": [
     "docs/research/profile-session-data-lifecycle-decision-prep-2026-07.md",
     "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "docs/research/storage-engine-and-recovery-policy-research-2026-07.md",
     "docs/research/profile-session-format-inventory-2026-07.md",
     "docs/storage/README.md",
     "docs/storage/07-migrations-corruption-disk-full-and-power-loss.md",
