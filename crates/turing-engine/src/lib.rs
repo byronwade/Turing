@@ -184,12 +184,48 @@ impl Page {
     ///
     /// Returns the rasterizer's allocation refusal for an oversized canvas.
     pub fn render(&self, width: usize, height: usize) -> Result<Canvas, EngineError> {
+        self.render_scrolled(width, height, 0.0)
+    }
+
+    /// Paints with the viewport scrolled `scroll_y` CSS pixels down the page.
+    ///
+    /// Scrolling is a paint-time translation: geometry stays in page
+    /// coordinates, so layout, hit testing, and the mutation-epoch guard are
+    /// untouched by where the viewport happens to be. The caller owns the
+    /// mapping of window points to page points (add `scroll_y`) and the
+    /// clamping of `scroll_y` against [`Self::content_height`].
+    ///
+    /// # Errors
+    ///
+    /// Returns the rasterizer's allocation refusal for an oversized canvas.
+    pub fn render_scrolled(
+        &self,
+        width: usize,
+        height: usize,
+        scroll_y: f32,
+    ) -> Result<Canvas, EngineError> {
         let background = turing_css::Color {
             red: 255,
             green: 255,
             blue: 255,
         };
-        Ok(rasterize(&self.display_list(), width, height, background)?)
+        let mut list = self.display_list();
+        if scroll_y != 0.0 {
+            for item in &mut list.items {
+                match item {
+                    turing_layout::DisplayItem::SolidColor { rect, .. }
+                    | turing_layout::DisplayItem::Text { rect, .. } => rect.y -= scroll_y,
+                }
+            }
+        }
+        Ok(rasterize(&list, width, height, background)?)
+    }
+
+    /// The full laid-out height of the page in CSS pixels, independent of the
+    /// window. This is what scroll offsets clamp against.
+    #[must_use]
+    pub fn content_height(&self) -> f32 {
+        self.layout.dimensions.margin_box().height
     }
 
     /// Re-lays the page out at a new viewport width.
