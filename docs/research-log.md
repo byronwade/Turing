@@ -1,5 +1,707 @@
 # Research Log
 
+## 2026-07-20 - Subset-blindness audit of validator patterns
+
+Question:
+
+The matcher audit could only find patterns matching nothing. The chronology bug matched 155 of 414 headings, so that screen would have missed it. Is the subset-blindness class reachable systematically?
+
+Method:
+
+Generalized the bug rather than the symptom. For every compiled validator pattern containing a literal separator, built a variant with the separator relaxed to a character class, and compared match counts against the documentation corpus. A strict pattern matching materially fewer items than its relaxed form is blind to part of its own target set.
+
+Decision:
+
+Zero findings across all validators. The separator-blindness class is clean.
+
+The number means something only because the method was verified against the known instance first. Run against the pre-fix chronology pattern, the check reports strict 155 against relaxed 416 and flags it. Run against the corrected pattern, it reports 416 against 416 and does not. The screen detects the exact bug it was built from, so a clean sweep is evidence rather than an untested null.
+
+That ordering was the point. Four times today a search returning zero was a fact about the search rather than about the repository, and three earlier checks written this session were themselves wrong. A negative result from an unverified checker is worth nothing, and this one was verified before it was believed.
+
+The class is now closed by construction: patterns matching nothing were screened, patterns matching a separator-defined subset were screened, and both came back clean apart from the one legitimate failure detector in `validate_build_foundation.py`. What remains unreachable is a pattern blind along some dimension other than separators, which would need per-validator review against the policy each one implements.
+
+No document changed beyond this entry. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+None. The three lines opened by the misordered research log are closed: the ordering itself, the blind chronology check, and the systematic question of whether other validators share that blindness.
+
+## 2026-07-20 - Policy-enforcement screen
+
+Question:
+
+The matcher audit could not reach patterns that match a subset of what they claim. The em-dash bug was found instead by checking a policy the file was supposed to follow. Does that method find anything else?
+
+Method:
+
+Extracted the 19 "must" statements from `documentation-policy.md` and asked which are mechanically checkable and whether each is enforced.
+
+Decision:
+
+No defect found.
+
+Most of the 19 are process obligations addressed to a human changing the repository: changes must inspect the affected books, must answer the impact-review questions, must update the production-readiness or agent-execution records when scope touches them. Those are review responsibilities, and the repository already treats them that way. They are not candidates for mechanization.
+
+The specific and checkable ones are already enforced and named in the policy text itself: research-index lane and crosswalk coverage, active-packet observation/inference/next-work/source-context quality, documentation-readiness matrix and completion-audit synchronization, and the stop/resume map in the three entry points.
+
+One statement looked unenforced and was not. "Dated product and project studies must state when information may become stale" returned nothing for a search on stale, expires, or revisit across three sampled studies. Reading them showed the obligation is met in different words: each carries a `Date`, a `Confidence` line separating well-documented architecture from unmeasured comparison, an explicit retrieval-date sentence, and in the landscape study a source manifest described as improving provenance and freshness tracking. The apparent gap was the search term, not the documents.
+
+That is the fourth time in this session that a narrow pattern produced an apparent finding that dissolved on reading. The first three were caught before anything was reported; so was this one. The recurring shape is worth stating plainly: a search that returns zero is evidence about the search until the underlying text has been read.
+
+No document changed beyond this entry. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+None. This method is exhausted for the documentation policy; the remaining "must" statements are human review obligations by design.
+
+## 2026-07-20 - Deliberate audit of validator matcher coverage
+
+Question:
+
+Two validators were found this session enforcing less than they appeared to, both by accident. Were there others?
+
+Method:
+
+Extracted every `re.compile` literal from the 79 validators and tested each against a corpus of all Markdown, JSON, Python, YAML, and schema files in the repository, on the theory that a pattern matching nothing is either dead or a silent no-op.
+
+The first version of this screen was wrong and produced 121 false positives. Most validator patterns are anchored with `^` and `$` and are applied to extracted field values rather than raw file text, so a pattern such as `^ADR9-EV-\d{3}$` cannot match a JSON line reading `"id": "ADR9-EV-001"`. Relaxing the anchors before searching fixed the screen.
+
+Decision:
+
+One pattern matches nothing: `unsafe\s*\{` in `validate_build_foundation.py`. It is not a defect. It belongs to `FORBIDDEN_SOURCE_PATTERNS`, a failure detector, and it matches nothing because every crate carries `#![forbid(unsafe_code)]`. A failure detector finding nothing is the check succeeding.
+
+So no additional blind validators were found. The chronology em-dash pattern and the `RISK-###` prefix appear to have been the only two, and both are fixed.
+
+The screen has a stated limit worth recording rather than glossing: it only covers patterns written as `re.compile` literals. There are 21 inline `re.match`, `re.search`, and `re.fullmatch` calls across the validators that it does not examine, and it says nothing about patterns that match the wrong thing rather than nothing at all. The `RISK-###` bug would have been caught by this screen; the em-dash bug would not, because that pattern did match 155 real headings while silently missing 258.
+
+That is the sharper lesson. A matcher can be substantially blind while still matching plenty, and no coverage screen based on "matches nothing" will find that case. It was found by checking a policy the file was supposed to follow, not by inspecting the checker.
+
+No document changed beyond this entry. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+None pursued further. The remaining risk class, patterns matching a subset of what they claim, is not reachable by this method and would need per-validator review against the policy each one implements.
+
+## 2026-07-20 - Research-log chronology check was blind to 62% of the file
+
+Question:
+
+Twenty-one entries were written to the wrong end of the research log this session and the chronology check passed throughout. The previous entry asked whether that check asserts descending date order. It does. So why did it pass?
+
+Method:
+
+Read `check_research_log_chronology` in `validate_blueprint.py`, then measured its heading regex against the file.
+
+Decision:
+
+The check is correct in intent and was matching almost nothing. Its heading pattern required an em dash after the date, `^## (\d{4}-\d{2}-\d{2}) — .+`, but the log uses both an em dash and a plain hyphen. Of 414 dated headings, 155 use the em dash and 258 use a hyphen, so 62% of the file was invisible to the ordering rule, including every entry written this session.
+
+The consequence was not hypothetical. A block of five `2026-07-19` entries had been appended below the oldest `2026-07-15` entry in an earlier session and sat there undetected, because both the stranded block and the entries around it were hyphen-style. Those five are now moved into the `2026-07-19` region, and the file is newest-first across all 414 headings for the first time that can be verified. Content was checked unchanged by sorted line comparison ignoring blanks.
+
+The regex now accepts either dash. Behaviour was confirmed with a negative test: moving a hyphen entry to the bottom produces "research log dated entries must be newest-first; 2026-07-19 appears after 2026-07-15", which the previous pattern would have passed silently.
+
+This is the second validator this session found to be enforcing less than it appeared to, after the risk-identifier pattern in the new cross-reference validator matched `RISK-###` against a repository that uses `R-###`. Both printed reassuring output while checking nothing. A validator that passes is evidence only if its matcher has been shown to match.
+
+No entry text changed. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+Are there other validators whose patterns silently match a subset of what they claim to cover? The two found so far were both discovered by accident rather than by a deliberate audit of matcher coverage.
+
+## 2026-07-20 - Research-log ordering corrected
+
+Question:
+
+The documentation policy requires research-log entries in newest-first order "so readers do not have to search past older material for newer evidence". Twenty-one entries were written this session. Were they placed correctly?
+
+Method:
+
+Compared the file's actual ordering against the policy sentence in `documentation-policy.md`.
+
+Decision:
+
+They were not. Every entry written this session was appended to the end of the file, placing the newest evidence below roughly ten thousand lines of older material, in a log that is otherwise strictly newest-first. That is the exact reading cost the policy exists to prevent, and it was introduced twenty-one times without noticing, because appending is the obvious way to add to a file and the convention was never checked.
+
+All twenty-one entries were moved to the top in reverse order, so the newest sits first. Content was verified unchanged: the entry-heading set is identical before and after, and a sorted line-level comparison ignoring blank lines shows no substantive difference. Only redundant blank lines between entries were collapsed.
+
+The move then failed the aggregate check with `docs/research-log.md:10757: new blank line at EOF`, introduced by the rewrite. The `git diff --check` step in `xtask check` caught it. That is worth recording as a small positive: the mechanical checks caught a defect introduced while fixing another defect, which is the failure mode most likely to slip through.
+
+No entry text changed. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+Should `validate_blueprint.py`'s research-log chronology check assert descending date order, given that it passed throughout the period when twenty-one entries were in the wrong position?
+
+## 2026-07-20 - Nova build-entry readiness verification
+
+Question:
+
+The Nova design is the owner's stated target for native work once its gate opens. Of the nine build-entry gates in the [Nova Native Build Entry Criteria](research/nova-native-build-entry-criteria-2026-07.md), one is mechanically checkable today: that component fixtures cover the Nova surface inventory. Is that condition already satisfied?
+
+Method:
+
+Compared the `component_id` set in `component-fixture-inventory.json` against the contracts named in the [surface-contract map](ui-runtime/design-lab/surface-contract-map.md), in both directions, and checked the 13-entry `surface_inventory` in the design-source manifest against the map's reconciliation sections.
+
+Decision:
+
+The condition is satisfied. Sixteen component contracts exist in the fixture inventory and the same sixteen are named in the surface-contract map, with nothing unmatched in either direction. The map routes each Nova source surface to a contract, the gates it touches, and the next evidence required. The thirteen design-source surfaces are reconciled through the map's covered-contract, newly-represented, supporting-component, and source-region sections.
+
+This is coverage of one gate condition, not Nova readiness. The other eight gates remain unmet: `ADR-0013`, `ADR-0014`, and `ADR-0016` are proposed, `UI-GATE-7` and `UI-GATE-10` have no executable evidence, no native adapter exists, and no approved task manifest names an owner and independent reviewer. Nova remains visual and layout authority only, and the fixtures are planning surfaces rather than rendered output.
+
+The practical value is that when the gate does open, this condition does not need investigating; it is already verified with a stated method that can be re-run.
+
+Two checks written during this verification were themselves wrong and were caught before anything was reported: one read component identifiers from an `id` field when the records use `component_id`, returning zero contracts and implying total divergence; the other matched design-surface lead phrases as substrings and reported "agent mode and approval queue" as unmapped when the map routes it to `UI-COMPONENT-AGENT-CONFIRMATION`. Both would have produced false findings. Verifying the checker before trusting the check is the habit that was missing earlier in this session.
+
+No document changed. No gate was promoted and no Nova readiness claim is made.
+
+Next question:
+
+None. The nine surfaces examined on 2026-07-20 are closed, and the four open items are owner decisions rather than defects.
+
+## 2026-07-20 - Ownership routing enforcement check
+
+Question:
+
+CI was found to enforce a fraction of the documented validator gate. Does the same documented-versus-enforced divergence exist for ownership routing?
+
+Method:
+
+Checked every path rule in `.github/CODEOWNERS` against the filesystem, and reconciled the routing against `professional-owners.json`.
+
+Decision:
+
+Clean. All 31 path rules resolve to paths that exist, and the 29 owner records are internally consistent: one primary, `@byronwade`, on every scope, with every backup null.
+
+That is not coverage, and the file says so in its own first line: "Provisional single-owner routing. Qualified backups are required before preview." The routing is coherent with the blocked state rather than concealing it, which is the opposite of the CI finding, where the documented gate and the enforced gate had silently diverged.
+
+The absence of branch protection was already captured in the [Backup Ownership Gap Inventory](research/backup-ownership-gap-inventory-2026-07.md), which records that preview and release gates cannot rely on GitHub enforcement at its capture date. Nothing new is added here beyond confirming the routing itself is not stale.
+
+No document changed. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+None for this class. The surfaces examined on 2026-07-20 are book chapters, entry documents, machine registries against each other, external link liveness, approval vocabulary, decision-assertion prose, the session's own diff, CI workflow coverage, and ownership routing.
+
+## 2026-07-20 - CI enforces a fraction of the documented gate
+
+Question:
+
+Every coherence sweep so far checked documents against registries. Nothing checked whether the repository's continuous integration actually enforces the gate the documentation tells maintainers to run.
+
+Method:
+
+Parsed the validator list out of `fn check` in `tools/xtask/src/main.rs` and out of `.github/workflows/`, and compared both against the validators present on disk.
+
+Decision:
+
+There are 79 validators on disk. `xtask check`, the documented handoff gate, runs 36. CI runs 7. Twenty-nine validators in the documented gate are never executed by CI, and no workflow invokes `xtask -- check` at all. CI runs `xtask doctor --ci`, which verifies toolchain versions and required-file presence but executes no validator.
+
+A change breaking any of those 29 merges green. The set includes the validator that computes the readiness percentage the program reports, the research-index check, owner-decision synchronization, specified task manifests, readiness-review templates, every source-manifest validator, and both validators added earlier today. The two added today were described in this log as "wired into `xtask check`", which is accurate and, on its own, misleading: it implies an enforcement that CI does not provide.
+
+This may be deliberate, since some checks are slow and CI already runs the Cargo steps `xtask check` would duplicate. Nothing records it as deliberate, and the code points the other way: `validate_blueprint.py` contains `check_xtask_aggregate_check`, which reconciles a named subset of validators between `main.rs` and the workflow. Something was built to keep the two in step, and it currently keeps seven of thirty-six in step.
+
+The recommendation is to invoke `xtask check` from `repository-validation.yml` and drop the duplicated Cargo steps, or to record explicitly which validators are merge-gating and which are local-only. It was not changed here. Altering which checks block a merge changes the repository's enforcement boundary, and that is an owner decision rather than a defect with one right answer in a registry.
+
+This is the fourth open item now briefed rather than fixed, alongside `ADR9-EV-001`, the independent-review ruling, and `ADR-0011`.
+
+All 79 validators and the aggregate check pass locally.
+
+Next question:
+
+Does the same documented-versus-enforced divergence exist for branch protection, given that the backup-ownership inventory already records that no protected-branch configuration was found?
+
+## 2026-07-20 - Working-tree continuity note in the progress snapshot
+
+Question:
+
+The progress snapshot is the designated single-screen starting state, and this pass left a large uncommitted change set that the snapshot did not describe. Someone resuming would find a dirty tree with no explanation on the page built to explain the current state.
+
+Method:
+
+Added a short working-tree section to `22-build-readiness-progress-snapshot.md`, above the readiness lane dashboard.
+
+Decision:
+
+The section states what the change set contains, that every change is a dated entry in this log, and that an independent review found fourteen defects in it plus three more hidden by a truncated summary. It records that a human pass is recommended before committing, and that none of the work moved the readiness percentage.
+
+The change set is deliberately left uncommitted. Committing seventy-two files carrying a measured defect rate, with no reviewer, would be the same mistake this pass spent the day documenting.
+
+All 79 validators and the aggregate check pass.
+
+Next question:
+
+None. Every item found on 2026-07-20 is corrected or briefed, and the continuity path from the snapshot to this log is explicit.
+
+## 2026-07-20 - Extensibility principal ownership briefing
+
+Question:
+
+The last open item on the coherence surface was which book owns the extensibility principal. It had been recorded as a scope decision and left there. Can it at least be briefed, as the other two owner decisions were?
+
+Method:
+
+Read both books against the normative records rather than against each other.
+
+Decision:
+
+Added `docs/research/extensibility-principal-ownership-briefing-2026-07.md`. Reading the normative records changes the question rather than answering it.
+
+The `plugins` book states that "Turing calls extensibility units Plug-ins" and defines Tier A through Tier D, with WebExtensions demoted to a restricted Tier C compatibility adapter. That principal, the tier model, and that demotion are the content of `ADR-0011`, whose status is **proposed**. Meanwhile Blueprint Capability Parity §8, which `extensions-enterprise` names as its canonical overview, still frames the target as "a documented WebExtensions compatibility layer, beginning with a deliberately small Manifest V3-style subset", and does not use the Plug-in principal at all.
+
+So the books did not diverge arbitrarily between two teams. One writes a proposed architecture as the project's established vocabulary while the normative Blueprint chapter still uses the other. Framing this as "which book wins" hides that the divergence is downstream of an unaccepted ADR.
+
+This is not a readiness overclaim; the Plug-in book's status line is honest that no runtime or store exists. It is a vocabulary divergence, and the same shape as the two positive status overclaims found earlier in the day: a proposed decision written as settled.
+
+The briefing recommends marking the Plug-in book's principal and tier model as `ADR-0011`-dependent, which costs one edit and defers structure to the decision that should own it. It explicitly recommends against rescoping `extensions-enterprise` to enterprise and sync only, because restructuring five chapters would commit to the ADR's outcome through documentation structure rather than through the ADR.
+
+It also records why earlier passes fixed defects directly but this one was not: every correction applied on 2026-07-20 had a single verifiable right answer in a machine registry. This has none, and the underlying ADR is unaccepted, so an agent restructuring here would be deciding `ADR-0011` by editorial action.
+
+No ruling was made, no book rescoped, and `ADR-0011` was neither accepted nor rejected. All 79 validators and the aggregate check pass.
+
+Next question:
+
+None outstanding on the coherence surface. Every item found on 2026-07-20 is either corrected or briefed for an owner.
+
+## 2026-07-20 - Prose decision-assertion sweep
+
+Question:
+
+The provenance validator covers machine fields. The open question it left was whether prose can assert a decision was made without any machine field involved, since two such assertions were found earlier the same day.
+
+Method:
+
+Swept `docs/` for two phrasings the machine check cannot see: an owner as the subject of a decision verb ("the owner has selected", "the owner approved", "the owner signed off"), and passive or collective assertions ("the decision was made", "we chose", "has been ratified", "is now approved"). Conditional and negated forms were excluded, since this repository writes those constantly and correctly.
+
+Decision:
+
+Both sweeps are clean. No prose asserts that a decision was made.
+
+The two real instances found earlier took a different grammatical shape. Neither said a decision happened; both attached approval vocabulary to a noun — "the accepted `turing-types` boundaries", "the approved `PB-002` source-strategy crosswalk". The claim was carried by an adjective, not a verb, which is why it survived and why it reads as background fact rather than an announcement.
+
+That narrows the class usefully. The risk in prose is not narrative claims that a decision occurred; it is approval adjectives modifying a record that has not been approved. The earlier approval-vocabulary sweep already covered that shape and was also clean.
+
+Both sweeps were manual and human-read rather than shipped as tooling. The earlier attempt to mechanize this class failed its positive control and was deleted; nothing learned since suggests a proximity rule would do better, because the signature is a two-place comparison against a specific registry field rather than a text pattern.
+
+No document changed. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+None outstanding for this class. The remaining work on the coherence surface is the book-owner ruling on extensibility-principal ownership, and it is a scope decision rather than a defect.
+
+## 2026-07-20 - Human-decision provenance validator
+
+Question:
+
+The worst defect this session was an agent writing `"accepted_by": "@byronwade"` with a `decision_date` into a machine record, on the strength of a chat instruction. Every validator passed: the field was schema-valid, the name was real, and nothing distinguished an agent-drafted approval from an owner-countersigned one. Can that be made impossible to repeat?
+
+Method:
+
+Surveyed every field across the 198 machine registries that names who accepted, approved, reviewed, or signed something, or when. Forty registries carry such fields.
+
+The survey showed the repository's convention was already correct everywhere except the record the agent wrote. Every no-claim readiness template keeps `owner_reviewer` and `independent_reviewer` null. The proposed task manifests use flagged role placeholders such as "program reviewer (name required before ready)". The `TASK-000011` evidence bundles mark machine provenance explicitly with `agent:gpt-5.6-pro-validation-capture`. The benchmark sample uses `not-applicable-no-claim`. The convention existed; nothing enforced it.
+
+Decision:
+
+Added `tools/validate_human_decision_provenance.py` and wired it into `xtask check`. A field asserting a human decision must be null, a role placeholder requiring a real name, an `agent:`-prefixed machine identity, an explicit non-applicability marker, or accompanied by countersignature provenance in the same record. Date fields are covered too, since a populated `decision_date` implies a completed decision as strongly as a name does. Schema type declarations are skipped, because they describe shape rather than assert a decision.
+
+Behaviour was confirmed against the exact defect it targets: reintroducing `accepted_by: "@byronwade"` and `decision_date: "2026-07-20"` with the caveat fields removed produces two failures naming both fields; the corrected record passes. This was tested by reproducing the original mistake rather than by constructing a synthetic case.
+
+The evidence matrix records what the check proves and does not: it keeps agent-drafted and owner-countersigned records distinguishable, and it does not verify that a countersignature is genuine, that the named owner is qualified, or that the described decision is correct.
+
+The aggregate check now runs 79 validators. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+The same substitution risk exists in prose, where a document can describe a decision as made without any machine field involved. Is that checkable, or does it remain a review responsibility?
+
+## 2026-07-20 - Completing the self-review remediation
+
+Question:
+
+The self-review confirmed fourteen defects, but its output was read through a truncated summary. Were all fourteen actually fixed?
+
+Method:
+
+Re-read every confirmed verdict from the run journal rather than the summary, and mapped each against the corrections already applied.
+
+Decision:
+
+Eleven had been fixed. Three had not, because they were below the truncation point and were never seen. All three are now corrected.
+
+The most important of the three concerns this session's own conduct. `professional-exceptions.json` was written with `"status": "owner_accepted_residual_risk"`, `"accepted_by": "@byronwade"`, and a `decision_date`. An agent wrote a machine record asserting that a named human had accepted something. The owner did select "document as accepted solo-owner risk" in a chat session, but that is an instruction to draft, not the owner-review process this repository defines: it carries no independent reviewer and synchronizes no registry. In a repository whose central control is that approval must be named, independent, and durable, an agent-authored approval record is the precise failure mode the control exists to prevent.
+
+The record is now `agent_drafted_pending_owner_countersignature` with `accepted_by` and `decision_date` null, an explicit provenance caveat, the owner attributed only as pending countersignature, and stated countersignature requirements. The human record carries the same caveat.
+
+The same correction removed an assertion in the human record that the owner "has read the Backup Ownership Gap Inventory, understands that every build-critical scope is primary-only, and has chosen to continue". The drafting agent has no evidence of what the owner read or understood. That sentence now states only what was instructed, and notes that countersigning is the act that supplies the rest.
+
+The other two: an index paragraph still described the extensions-enterprise source mismatch as "remaining" after it had been resolved earlier the same day, and a citation credited the WebExtensions Community Group draft with defining the permission model when it records cross-vendor behaviour and divergence, with Chrome and MDN as the behavioural references.
+
+The general lesson is narrow and worth keeping: a review is only complete if its full output is read. Eleven of fourteen were fixed and the work was reported as done, because the summary that was read stopped partway. The journal held the rest the entire time.
+
+All 79 validators and the aggregate check pass. No readiness gate was promoted, and one previously recorded acceptance was downgraded to a draft.
+
+Next question:
+
+Should any machine record whose fields assert a human decision carry a mandatory provenance field distinguishing agent-drafted from owner-countersigned, so the distinction cannot be lost by omission?
+
+## 2026-07-20 - Dead external-link repair
+
+Question:
+
+The self-review found that a claim of "zero confirmed-dead URLs" was false and that ten were dead. They were recorded as open work. Can they be repaired?
+
+Method:
+
+Researched each current canonical location and verified every replacement by fetching it before substituting. Re-ran the checker after each batch rather than trusting a single pass.
+
+Decision:
+
+Eight were genuinely dead and are repaired. Two were defects in the checker.
+
+The Microsoft Windows accessibility design URL, cited in eighteen files across the accessibility and platform books, 404s as a bare directory; it now points at `accessibility-overview`, verified to cover UI Automation, assistive technology, and screen-reader support. The Windows process-mitigation-policy URL, cited in four files, now points at the `SetProcessMitigationPolicy` API reference. The WebKit web-platform-tests page moved to `docs.webkit.org/Infrastructure/WPTTests.html`. Four Chromium and catapult links were repaired: two catapult links pinned to a commit that no longer resolves, one `chromium/src` link carrying a `%2B` encoding error where `+` was meant, and one carrying a malformed `+/show/HEAD/` path segment.
+
+One repair is worth naming separately. `llvm.org/docs/ControlFlowIntegrity.html` is cited by security-engine chapters 07 through 09, and earlier the same day this session examined those exact citations, judged them correctly matched to their chapters, and left them in place. The judgement was right and the link was dead. Topical fit and liveness are independent properties, and checking one says nothing about the other.
+
+The two false positives both produced tool fixes. `crates.io` returns 404 to a plain GET for crates that exist because it serves a single-page app, so it is now treated as a bot-blocking host. The Apple XPC selector URL was never dead: it contains parentheses, and the bare-URL regex stopped at the first `)`, truncating a valid link into a 404. The extractor now parses Markdown link targets with one level of balanced parentheses before falling back to bare-URL matching.
+
+A repo-wide run now reports 534 URLs, 0 dead, 40 unconfirmed.
+
+Repointing a pinned commit to `HEAD` is a deliberate trade and is recorded as one. A pinned URL is better provenance, but a pinned URL that 404s is no evidence at all; restoring true pinning requires finding a commit that still exists and re-verifying that its content matches what the citing text claims.
+
+No readiness gate was promoted and no claim changed.
+
+Next question:
+
+Should the external-link check run on a schedule, given that two of these had been dead long enough to predate the session and nothing in the repository would have surfaced them?
+
+## 2026-07-20 - Self-review of the session diff
+
+Question:
+
+One agent made 41 file changes in a single session with no human review, in a repository whose central discipline is that no one certifies their own work. What did it get wrong?
+
+Method:
+
+Six independent reviewers over the uncommitted diff, by lens: factual accuracy, claim discipline, link correctness, correctness-of-corrections, new tooling, and source citations. Each candidate was then passed to a separate agent instructed to refute it. Nineteen candidates, fourteen confirmed.
+
+Decision:
+
+The review was worth more than any audit run against the pre-existing documentation. Findings, all now corrected:
+
+**A fabricated count.** Seven entries and three documents asserted "ninety `tools/validate_*.py` checks". The real number is 78. The count was never measured; the session tracked its own +1 delta accurately, stepping to "ninety-one" after adding a validator, while the base was invented. It had propagated to sixteen places across four files, including the solo-owner residual-risk record where it quantified the strength of the mechanical reviewer standing in for a human. Corrected to the measured value everywhere.
+
+**A silent no-op in the new validator.** `validate_registry_cross_references.py` matched risk identifiers as `RISK-\d+`, but this repository uses `R-###`. The risk invariant checked nothing while the pass line printed a reassuring `RISK=40`. Corrected, and confirmed with a negative test: an injected `R-999` is now caught. The research-question sets also lacked the loud-failure guard applied to the other registries, so a renamed coverage key would have emptied the authoritative set and made every reference look valid; that guard is now present.
+
+**A false verification claim.** This document reported that a repo-wide external-link run "found zero confirmed-dead URLs". It found ten. The tool prints confirmed-dead URLs to `stderr` and unconfirmed ones to `stdout`, and the run was read through a pipe that surfaced only the tail of `stdout`. The tool had reported correctly and exited non-zero; the reading was wrong. The ten dead URLs are pre-existing citations, including one cited in eighteen files, and are recorded as open work rather than silently corrected.
+
+**A wrong date claim.** The residual-risk record said its 2026-10-16 expiry aligned with the `next_review` date recorded "for every scope". Sixteen scopes carry that date; six carry 2026-10-17. Restated as the earlier of the two, chosen so the acceptance never outlives a scope's scheduled review.
+
+**A stale status left on an edited line.** The memory-object packet still said "`PB-013` remains partial" on a line rewritten this session, while the registry records `documented_no_runner` — the same mismatch corrected elsewhere in the same session.
+
+**Two miscounts.** The research index described "four open findings" after three had moved to resolved, and a log entry announced "six verified coherence defects" above five bullets.
+
+The pattern across all six is one thing: numbers and statuses asserted without measuring at the moment of writing. That is the same defect class the session spent the day finding in other people's prose, reproduced by the agent auditing for it. It is also precisely what an independent reviewer catches and self-review does not, which is the argument the repository's own controls have been making.
+
+All 79 validators and the aggregate check pass. No readiness gate was promoted and no claim was strengthened.
+
+Next question:
+
+Should any prose asserting a count of repository artifacts be required to name the command that produces it, so the number can be re-derived rather than trusted?
+
+## 2026-07-20 - Independent review capacity decision briefing
+
+Question:
+
+The independent-reviewer requirement gates all eleven owner-decision closure scopes at once, which is more leverage than any single gate decision including `ADR-0009`. A briefing existed for `ADR-0009` but not for this. What do the records actually say about whether that reviewer must be a `PB-019` backup owner?
+
+Method:
+
+Read the requirement across its sources instead of assuming the equivalence recorded earlier in the day. Separated transcription from inference explicitly, following the correction applied to the fifteen dependency-graph edges.
+
+Decision:
+
+Added `docs/research/independent-review-capacity-decision-briefing-2026-07.md`. Four transcribed findings shift the picture:
+
+Independence is defined relative to authorship, not ownership rank. The [independent verification book](agent-execution/08-independent-verification-and-adversarial-review.md) specifies "code-owner and architecture review independent of the authoring run" and prohibits a verifier from patching what it certifies. The constraint is non-authorship and non-self-certification.
+
+The synchronization matrix names reviewer roles, not people, and states in its own `unsupported` list that it "does not name human owners or reviewers".
+
+Two-person control is scoped narrowly, to stable signing, update trust, supported-version changes, security disclosure, irreversible profile migration, release promotion, legal approval, and incident closure. Every item is a release-path or authority action; none is required to close a contained-M0 evidence gate.
+
+`PB-019` is about continuity rather than review. Its axes include succession, inactivity, and emergency replacement, which answer what happens when the owner is unavailable, not who checks a specific piece of evidence.
+
+The briefing recommends the qualified-non-author reading with two-person control preserved unchanged for the eight named actions, on the grounds that it matches the written definition, separates a continuity problem from a review problem, weakens no release-path control, and converts one additional person into eleven unlocked scopes. It records explicitly that no document states the equivalence either way, so the natural reading is still a reading and the ruling is the owner's.
+
+It also records what the ruling does not do: it does not close `PB-019`, does not close any gate by itself, grants no release or signing or disclosure authority, and does not make the documentation ready for a full build.
+
+No ruling was made, no reviewer named, no scope closed, and `PB-019` remains blocked. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Will the owner rule on whether independent review requires `PB-019` backup qualification or qualified non-authorship, and what happens to the fifteen proposed dependency-graph edges under that ruling?
+
+## 2026-07-20 - Approval-vocabulary sweep
+
+Question:
+
+Two positive status overclaims were found in two passes: `docs/prototype.md` calling `review_pending` crate boundaries "accepted", and `docs/web-platform/README.md` calling a `no_claim_research_control` crosswalk "approved". The general status-word detector failed. Is the narrower pattern — approval vocabulary attached to a record that has not been accepted or approved — checkable, and are there more instances?
+
+Method:
+
+Established the authoritative acceptance baseline first: `ADR-0001` through `ADR-0008` are accepted, `ADR-0009` through `ADR-0020` are proposed. Then swept `docs/` for "accepted" and "approved" adjacent to `ADR-*`, `PB-*`, `TASK-*`, and `WP-*` identifiers, and separately for the definite-article shape ("the accepted X", "the approved X") that both real defects took. Every hit was read rather than filtered mechanically.
+
+Decision:
+
+The sweep is clean. No further instances exist.
+
+Nearly every hit is a required-evidence list or a conditional, where "accepted `ADR-0013`" or "approved `TASK-000002`" is the object of a requirement rather than a description of current state — "every accepted `ADR-0009` outcome must update these records" is correct, as is listing "Accepted `ADR-0013`" in a column headed by what is still missing. The definite-article hits resolve the same way, or refer to things that genuinely are accepted: the independent-engine boundary rests on accepted `ADR-0002`, and "46 accepted requirements" is established repository vocabulary.
+
+One hit was checked carefully and left alone. `implementation-plan/01-program-sequence-and-critical-path.md` says "The accepted work-package graph is:". Unlike the two real defects, no registry contradicts it: `backlog.json` carries per-item statuses but no top-level flag denying acceptance, and the phrasing parallels the accepted-requirements vocabulary. The two genuine defects each had a registry stating the opposite in its own fields — `review_pending` and `partial` in one case, `status: no_claim_research_control` plus "no source-strategy decision is approved by this registry" in the other. Absent that contradiction, this is repository vocabulary and not an overclaim, and it was not changed.
+
+That distinction is the useful output. The detectable signature is not the word "accepted" near an identifier; it is approval vocabulary applied to a record whose own registry field asserts the opposite. That is narrow, but it is a two-place comparison against a specific field rather than a text-proximity rule, which is why the proximity detector could not express it.
+
+Combined with the cross-registry validator, the entry-document pass, and the thirty-domain audit, the coherence surface examined this day is: book chapters, entry documents, machine registries against each other, external link liveness, and approval vocabulary. All 79 validators and the aggregate check pass. No readiness gate was promoted and no claim changed.
+
+Next question:
+
+Should acceptance state live in a single machine field per record, so that approval vocabulary in prose can be checked against one authoritative source instead of a different field per registry?
+
+## 2026-07-20 - Attempted prose/registry drift detector, and why it was not shipped
+
+Question:
+
+Every coherence defect found this day shared one shape: prose asserting a status the registry contradicts, while identifiers and links stayed valid so every validator passed. Can that whole class be caught mechanically?
+
+Method:
+
+Built a scanner that looks for a status word near a `PB-*`, `TASK-*`, or `RQ-*` identifier and flags it when the owning registry disagrees. Then tested it properly, with a positive control: the two known defects repaired earlier in the day were temporarily reintroduced to see whether the detector would find them.
+
+Decision:
+
+Do not ship it. The detector failed.
+
+At a loose window it produced 95 candidates, nearly all false. The dominant false-positive source is conditional and negated phrasing, which this repository uses constantly and correctly: "must not promote `PB-008` or `PB-009` to ready without independent evidence" is a correct sentence containing an identifier and a contradicting status word.
+
+Tightening the match to the same clause reduced output to two candidates, both false, and — decisively — the positive control then failed. Neither reintroduced defect was caught. The two known real defects have opposite shapes: in `docs/prototype.md` the status word precedes the identifier and is separated from it by a code span, while in the continuation pack the status sits in the next table cell, past a `|` delimiter. No single proximity rule captures both without readmitting the conditional-phrasing noise. Loose has no precision; tight has no recall.
+
+Shipping a detector that catches neither known instance of the class it targets, while emitting a review queue of mostly-false candidates, would be worse than shipping nothing: it would invite bad edits and imply coverage that does not exist. The file was deleted.
+
+The attempt was not worthless. Reading its output by hand surfaced one genuine defect it had not flagged: `docs/web-platform/README.md` described "the approved `PB-002` source-strategy crosswalk", while [`research-readiness-crosswalk.json`](blueprint-v1/machine/research-readiness-crosswalk.json) carries `status: no_claim_research_control` and states explicitly that no source-strategy decision is approved by it, and `PB-002` remains blocked. It was the sole occurrence of that phrasing in the repository, the same signature as the `docs/prototype.md` "accepted" overclaim. It is now corrected with both contradicting records named inline.
+
+That is the second positive status overclaim found in two passes. The pattern is narrower than the detector assumed: the risk is not status words generally, but approval vocabulary — "accepted", "approved" — attached to a record that has not been accepted or approved.
+
+No readiness gate was promoted, no task approved, and no implementation, security, compatibility, performance, accessibility, production, or Chrome-class claim changed. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Is approval vocabulary narrow enough to check precisely — flagging only "accepted" or "approved" applied directly to a `PB-*`, `TASK-*`, or `ADR-*` identifier outside a decision record — where the general status-word approach failed?
+
+## 2026-07-20 - Cross-registry consistency validator
+
+Question:
+
+Both audit passes checked prose against the machine registries. Nothing had ever checked the registries against each other. Is the authoritative layer that every document defers to internally consistent?
+
+Method:
+
+Built a probe over all 198 registry files under `docs/*/machine/`, extracting every `REQ-*`, `WP-*`, `PB-*`, `RQ-*`, and `RISK-*` reference and every repository path, then checking each against the registry owning that identifier space and against the filesystem.
+
+Two false-positive classes had to be eliminated before the result meant anything. Schema `$id` values such as `https://turing.invalid/schemas/benchmark-manifest-v1.json` and Chromium documentation URLs both end in strings that look like repository paths, so URLs are stripped before path extraction. An early version also silently passed because it read work packages from a `work_packages` key that does not exist in `backlog.json`, where the records live under `items`; an empty authoritative set makes every reference look valid, so a missing or wrong key now fails loudly instead.
+
+Decision:
+
+The result is clean: 198 registries, zero dangling identifiers across `REQ=46`, `WP=20`, `PB=20`, `RISK=40`, and `RQ=66`, active and deferred research-question sets disjoint, and all 541 distinct referenced repository paths present. This is a measured negative result rather than an absence of checking, and it means the registry layer does not need re-auditing.
+
+Promoted the probe to `tools/validate_registry_cross_references.py` and wired it into `xtask check`. Unlike the external-link checker it is dependency-free, offline, and deterministic, so it is safe in the aggregate path. Its behaviour was confirmed with a negative test: injecting `WP-999` and `REQ-BOGUS-1` into `risks.json` produced both expected failures, and the file was restored.
+
+Adding it surfaced the governance working correctly. `validate_blueprint.py` rejected the change until the new validator was named in the documentation-readiness evidence matrix, so the matrix now carries both the command and a row stating what the check does and does not prove: referential consistency only, never that a record's content is correct, that a gate is ready, or that any requirement is satisfied.
+
+The aggregate check now runs 78 validators. No readiness gate was promoted, no task approved, and no implementation, security, compatibility, performance, accessibility, production, or Chrome-class claim changed.
+
+Next question:
+
+Should the same cross-reference discipline extend to identifiers cited in prose rather than only in registries, given that both audit passes found prose drifting from registry truth?
+
+## 2026-07-20 - Entry-document audit
+
+Question:
+
+The first coherence audit swept the `docs/*/` book directories but never the entry points themselves. Do the root and docs-root documents that a new or returning maintainer reads first contain defects?
+
+Method:
+
+Audited eleven entry documents — the root `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, and the `docs/` root files — cross-checking every factual assertion against the machine registries, with each candidate passed to an independent reviewer instructed to refute it. Six candidates, four confirmed. `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/start-here.md`, `docs/security.md`, and `docs/contributing.md` returned clean.
+
+Decision:
+
+Corrected four defects. The most serious: `docs/prototype.md` described the `turing-types`, `turing-ipc`, and `turing-kernel` boundaries as accepted, while `TASK-000011` is `review_pending`, `IF-001` is `partial` and still requires accepted `WP-002` tasks, a wire codec, a transport binding, a negative harness, and security review, and the root README states the manifest is "not accepted". The word was removed and both blocking records named inline.
+
+Also corrected: `docs/README.md` and `docs/research/README.md` labelled `RQ-35` deferred when the coverage registry lists it in `active_question_ids` and the crosswalk binds it to the benchmark and extreme-performance lane; the owning research packet made the same claim and was corrected too. And `docs/repository-map.md` described the fresh-host toolchain and profile/session manifests as nine evidence axes each when both define ten, after axes were added without updating the map.
+
+The `prototype.md` case is the most instructive finding across both audit passes. "Accepted" is this program's load-bearing maturity term, so a positive status overclaim in an entry document is more damaging than any missing-evidence statement, and it is the exact inverse of what the no-claim discipline guards: the discipline protects statements about what is not proven, and nothing was guarding a statement that something was.
+
+Two candidates were refuted: the README's expanded name for `OP-007` elaborates the registry rather than contradicting it, and the documentation policy's list of eight book directories carries no exhaustivity marker.
+
+No readiness gate was promoted, no task approved, no research question reclassified in any registry, and no implementation, security, compatibility, performance, accessibility, production, or Chrome-class claim changed. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Should a validator assert that no document outside an accepted-decision record applies the word "accepted" to a `review_pending` task or a `partial` interface freeze?
+
+## 2026-07-20 - ADR-0009 owner decision briefing
+
+Question:
+
+The ADR-0009 packet, evidence matrix, and decision draft are each complete and each large. What does the owner actually need to decide, in what order?
+
+Method:
+
+Read each of the eighteen `ADR9-EV-*` items' `next_action` field rather than only their status, and traced the dependency structure between them.
+
+Decision:
+
+Added `docs/research/adr-0009-owner-decision-briefing-2026-07.md`. The central finding is that the seventeen `partial` items are not seventeen units of work that must precede the decision. At least five of them are gated behind it: `ADR9-EV-009`, `ADR9-EV-011`, `ADR9-EV-013`, and `ADR9-EV-014` all begin by selecting the source baseline or candidate boundary, and `ADR9-EV-017` explicitly begins "after an owner selects, rejects, or supersedes an ADR-0009 option". `ADR9-EV-001` is the head of the chain. The decision is not waiting on more evidence gathering; a good deal of the evidence gathering is waiting on the decision.
+
+The briefing also identifies `ADR9-EV-012` as the question that forks the program: options A, B, and C preserve `ADR-0004` and the independent-engine charter, while options D and E supersede it, making those a product and identity decision rather than an implementation shortcut.
+
+It records an analytical recommendation of Option A or Option C on the documented trade-offs, on the grounds that they preserve the charter, do not expand the legal and SBOM surface while `PB-019` leaves no second reviewer, and remain reversible toward Option B later. It states explicitly that this is analysis of documented trade-offs and not an owner decision.
+
+It also records what accepting ADR-0009 does not unlock: not broad M1, not release or production authority, not `PB-020` closure, and not the independent-review requirement, which still needs a second qualified person.
+
+No option was selected, no ADR accepted, no `ADR9-EV-*` item closed, and `PB-002` remains blocked. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Will the owner rule on `ADR9-EV-001`, the source baseline model and provenance/equivalence policy, since it unblocks the largest number of downstream evidence items?
+
+## 2026-07-20 - External-link liveness check
+
+Question:
+
+The WebExtensions specification moved and every citation to it went stale while all 78 validators kept passing. Should the repository be able to detect that class of decay?
+
+Method:
+
+Confirmed the gap: the repository's link validation resolves internal repository paths and never touches external URLs, so a cited specification can move or be withdrawn with no internal signal. Built and tested a checker against the book that had just been repaired, then ran it repository-wide.
+
+Decision:
+
+Added `tools/check_external_links.py`. It extracts external URLs from `docs/`, probes each, and fails only on a confirmed `404` or `410`. Timeouts, bot-blocking `403`s, and rate-limiting `429`s are reported but never fail the run, because an access condition is not evidence that a source is gone. URLs inside inline code or fenced blocks are skipped, since that is how this repository records a URL that has died rather than cites it as live.
+
+It is deliberately excluded from `xtask check`. The aggregate check must stay offline and deterministic, and `xtask` lists its validators explicitly, so adding this file does not change that path. The tool is named `check_*` rather than `validate_*` to keep it outside the validator-sweep convention.
+
+A repository-wide run found zero confirmed-dead URLs after the WebExtensions repair and 43 unconfirmed results, almost all `www.w3.org` returning `403` to automated clients.
+
+This adds detection capability only. No readiness gate was promoted, no task approved, and no implementation, security, compatibility, performance, accessibility, production, or Chrome-class claim changed.
+
+Next question:
+
+Should the external-link check run on a schedule, and who owns repairing a specification that moves?
+
+## 2026-07-20 - Extensions-enterprise per-chapter sources and a dead specification link
+
+Question:
+
+Do the remaining extensions-enterprise chapters need per-chapter primary sources, and is the shared-source-list pattern a defect across the repository?
+
+Method:
+
+Measured the pattern mechanically before acting: swept every `## Primary sources` block in `docs/`, finding 85 distinct lists, 17 shared by more than one chapter, covering 106 chapters across 17 books. Then researched per-chapter sources for the six remaining extensions-enterprise chapters, with every candidate individually fetched and checked for identity, reachability, canonical form, and topical fit.
+
+Decision:
+
+Sharing is not itself a defect. In networking, accessibility, storage, release-operations, quality-assurance, web-platform, platform, media-documents, benchmark-lab, product-experience, developer-experience, and performance, the shared list is a book-wide foundational specification set that genuinely applies to every chapter. Security-engine chapters 07, 08, and 09 are also correctly matched to Spectre, RLBox, and LLVM CFI, which is why only chapters 10 through 12, which inherited that list without the topic, were defective. The working conclusion is that a book-level foundational list is an accepted convention and per-chapter sources are required only where a chapter's topic diverges.
+
+The one genuine mismatch was extensions-enterprise, where JWE and HKDF applied only to the sync chapter. All six remaining chapters now carry verified topic-specific sources, and RFC 7516 and RFC 5869 are carried only by chapter 07.
+
+The source research also found a dead external link: `https://wicg.github.io/webextensions/` returns HTTP 404 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. It was cited by all seven chapters and the book README and is now repaired in all eight files. No validator covers this class; the repository's link checks resolve internal repository paths, not external URLs, so an external specification can move or die silently.
+
+No readiness gate was promoted, no task approved, no research question closed, and no security, compatibility, performance, accessibility, production, or Chrome-class claim changed. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Should the repository add an external-link liveness check, given that a cited specification moved without any internal signal?
+
+## 2026-07-20 - Source-depth research for shallow security and enterprise lanes
+
+Question:
+
+Can the research-depth gaps found by the coherence audit be closed with real verified primary sources rather than by marking the lanes source-pending?
+
+Method:
+
+Ran a source-research fan-out over the three security-engine advanced chapters that shared chapter 07's sources, with every candidate source individually fetched and checked for identity, reachability, canonical form, and topical fit before it could be cited. Researched the `extensions-enterprise` enterprise-policy chapter directly against Chromium, Microsoft, Apple, and NIST documentation.
+
+Decision:
+
+Replaced copy-pasted Spectre, RLBox, and LLVM CFI source lists in three chapters with topic-specific verified sources. Chapter 10 (capability provenance, attenuation, revocation) now cites Hardy's confused-deputy paper, Capsicum, the seL4 reference manual's capability derivation tree and revoke semantics, Macaroons, and Zircon handles. Chapter 11 (developer, extension, automation, and agent attack surfaces) cites Barth et al. on extension vulnerabilities, Chrome native messaging, WebDriver Level 2, WebDriver BiDi as the citable CDP-class successor, Greshake et al. on indirect prompt injection, and NIST AI 100-2e2025. Chapter 12 (anti-phishing, reputation, trusted UI) cites UTS #39, RFC 5894, Safe Browsing v5, Porter Felt et al. on connection security indicators, Jackson et al. on picture-in-picture attacks, and Ye et al. on trusted paths.
+
+Replaced `extensions-enterprise` chapter 06's WebExtensions, JWE, and HKDF list with Chromium policy templates, the Microsoft ADMX policy model including its Enabled/Disabled/Not Configured precedence semantics, Apple device-management payloads, and NIST SP 800-92 for audit logging.
+
+Two caveats were recorded rather than smoothed over: Hardy states the confused-deputy argument but does not use the later term "ambient authority", and Capsicum's 2010 attenuation primitive is `cap_new` rather than the later `cap_rights_limit`. One on-topic candidate, Miller's *Robust Composition* thesis, was rejected because `erights.org` was unreachable at verification time.
+
+Also restated the AI book's `RQ-10` comparison as an open working hypothesis rather than settled rationale.
+
+These changes add source backing and correct attribution only. No research question was closed, no readiness gate promoted, no task approved, and no security, compatibility, performance, accessibility, production, or Chrome-class claim changed. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Do the remaining `extensions-enterprise` chapters 01 through 05 and 07 require per-chapter primary sources, and which book owns the extensibility principal?
+
+## 2026-07-20 - Coherence audit continuation and findings record
+
+Question:
+
+Which of the remaining audit findings are factual corrections an agent may apply, and which are documentation-scope decisions that must be held for a book owner?
+
+Method:
+
+Worked the remaining confirmed findings from the same thirty-domain audit. Verified each against the owning machine registry before editing, and separated factual drift from scope judgement.
+
+Decision:
+
+Applied four further verified corrections: `storage/README.md` described the profile/session source manifest as nine evidence axes against a validator-enforced ten; `implementation-plan/01-program-sequence-and-critical-path.md` omitted `WP-020` from the graph it declares synchronized with `backlog.json` and omitted `WP-015`'s `WP-002` dependency; `implementation-plan/16-work-package-playbooks.md` listed fewer requirements than the backlog for `WP-009`, `WP-013`, `WP-014`, `WP-017`, and `WP-019`, so a task shaped from a playbook would have silently dropped accepted requirements; and `market-strategy/06-resource-truth-and-lifecycle-control.md` defined a tab-lifecycle state set that dropped the normative and implemented `Throttled` state while adding `Restoring` and `Terminated`. Also routed `RQ-42` to `docs/plugins/README.md`, which owns the Tier A-D capability model, WIT-based Wasm components, and the WebExtensions adapter that the question asks about.
+
+A sixth apparent playbook defect at `WP-016` was a detection artifact from range notation and was not edited.
+
+Recorded the full audit in `docs/research/documentation-coherence-audit-findings-2026-07.md`, including four open findings held for book-owner decisions: extensibility-principal ownership between the `extensions-enterprise` and `plugins` books, per-chapter source backing in `extensions-enterprise`, the AI book presenting the open `RQ-10` comparison as settled, and security-engine chapters 10 through 12 carrying chapter 07's unrelated primary sources.
+
+No readiness gate was promoted, no task approved, no research question closed, and no implementation, performance, compatibility, security, accessibility, production, or Chrome-class claim changed. All 79 validators and the aggregate check pass.
+
+Next question:
+
+Which book owns the extensibility principal, and do the `extensions-enterprise` and advanced security-engine lanes require topic-specific primary sources at their current maturity?
+
+## 2026-07-20 - Documentation coherence audit and solo-owner risk acceptance
+
+Question:
+
+Can a multi-agent adversarial audit find documentation defects that the 79 `tools/validate_*.py` checks structurally cannot catch, and can the owner's acceptance of single-owner risk be recorded without promoting `PB-019`?
+
+Method:
+
+Ran a thirty-domain fan-out audit over `docs/`, with each candidate finding passed to an independent agent instructed to refute it. Twenty-eight candidates were produced and eleven were refuted, leaving seventeen confirmed. Verified each applied finding directly against the machine registries before editing. Separately recorded the owner's time-bounded acceptance of single-owner residual risk across the twenty-two build-critical scopes.
+
+Decision:
+
+Corrected five verified coherence defects that no validator covers, because each is prose bound to a stale or wrong value while IDs, links, and schemas all remain valid:
+
+- `docs/blueprint-v1/01-charter-and-principles.md` section 4 bound `REQ-ENG-002`, `REQ-A11Y-001`, `REQ-AI-001`, and `REQ-OPS-001` to subject matter the canonical `requirements.json` assigns to other stable IDs. Eight of the twelve listed IDs already matched, confirming one shared namespace and an un-synced ID expansion rather than deliberate coarseness. The list now names the correct registry IDs, including `REQ-ENG-003` through `REQ-ENG-006`, `REQ-A11Y-002`, `REQ-AI-003`, `REQ-AI-004`, and `REQ-SEC-004`.
+- `docs/start-here.md` and `docs/project-buildout/11-pre-build-readiness-checklist.md` described the component-fixture inventory as 15 surfaces with 9 core shell surfaces; `component-fixture-inventory.json` holds 16 with 10 core, and the owning research packet already said 16/10/6. Both summaries now read 16 and 10.
+- `docs/project-buildout/22-build-readiness-progress-snapshot.md` reported `7/7` active research packets; eight packets carry an active status and the completion audit already named eight. The snapshot now reads `8/8`.
+- `docs/project-buildout/20-build-continuation-readiness-pack.md` recorded `PB-013` as partial in two rows while `pre-build-readiness.json` records `documented_no_runner`. Both rows now match the registry.
+- `docs/agent-execution/TASK-000001-owner-review.md` presented `617B0BE3...` as the source-queue digest gate. The canonical-JSON digest is `6F6C7542...`, matching all ten specified task manifests and `validate_specified_task_manifests.py`. The handoff now carries the correct value, names the canonical-JSON method, and records the superseded value as unusable.
+
+Recorded `OWN.EXCEPTION.SOLO_OWNER_RESIDUAL_RISK.2026_07` in `professional-exceptions.json` with the human record in `docs/research/solo-owner-residual-risk-acceptance-2026-07.md`. It expires 2026-10-16, is not self-renewing, and carries revisit triggers and compensating controls. `PB-019` deliberately remains `blocked`: two enforcement points in `validate_blueprint.py` require it, and the gate's own `evidence_required` names single-owner residual risk as a reason to stay blocked. Owner acceptance of a risk is not remediation of it.
+
+Added fifteen `proposed_independent_review_dependency` edges from `PB-019` to the gates whose closure needs an independent reviewer, marked `proposed_no_claim_pending_owner_ratification`. The transcribed part holds: all eleven closure scopes require a named independent reviewer, self-approval is a rejection condition, and every build-critical scope resolves to one person, so the distinct-reviewer requirement cannot presently be satisfied. The inferred part is explicitly flagged: no repository document states that `PB-019` backup ownership and independent-reviewer availability are the same condition, so the edges await owner ratification and are not sequencing rules.
+
+No readiness gate was promoted, no task approved, and no implementation, performance, compatibility, security, accessibility, production, or Chrome-class claim changed. All 79 validators pass.
+
+Next question:
+
+Will the owner rule that independent review for closure scopes requires a `PB-019`-qualified backup owner, or a separately defined lighter reviewer role, so the proposed dependency edges can be ratified or removed?
+
 ## 2026-07-20 - Deferred research route index enforced
 
 Added a machine-checked route index for all 29 questions intentionally deferred outside the active pre-build crosswalk. Each deferred question now resolves to at least one concrete research packet or detailed engineering book, while retaining planned/deferred status and its no-claim boundary. This closes a traceability gap in future-build planning; it does not answer the questions, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
@@ -141,6 +843,895 @@ Do the ownership, CODEOWNERS, release-operations, backup-gap, and two-person-con
 Method:
 
 Compared the `GOVERNANCE.OWNERSHIP.SOURCES.2026_07` source-document list with its six missing inbound references. Added direct no-claim manifest links to the two ownership research routes and two project-buildout operating documents, added a source-identity comment to `CODEOWNERS`, and added the manifest to the backup-gap registry's existing `source_registries`. This closes provenance navigation only; ownership remains provisional and `PB-019` remains blocked.
+
+## 2026-07-19 - Fresh-host toolchain reproduction closure preparation
+
+Question:
+
+What exact replay and review evidence can close `PB-008`/`PB-009` without treating a current-host rerun or a checked template as independent reproduction?
+
+Inputs:
+
+- [Build Information Readiness Ledger](research/build-information-readiness-ledger-2026-07.md);
+- [Fresh Host Reproduction Inventory](research/fresh-host-reproduction-inventory-2026-07.md);
+- [Fresh-Host Toolchain Reproduction Closure Preparation](research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md);
+- the checked fresh-host registries, schemas, templates, validators, and `TASK-000002` route.
+
+Method:
+
+Consolidated evidence classes for reference hosts, same-host reruns, clean-VM equivalents, and independent fresh hosts. Defined pre-run facts, the bootstrap/doctor/check/`xtask` replay sequence, retained command-log/hash requirements, cache and target-directory controls, source-tree cleanliness proof, failure denominator, cleanup/rollback record, and owner-review axes.
+
+Decision:
+
+Keep `PB-008` and `PB-009` partial. This is a no-claim replay and review contract only; it does not execute `TASK-000002`, produce independent toolchain or fresh-host evidence, approve a clean-VM waiver, promote either gate, or support broad implementation, release, production, performance, compatibility, security, accessibility, or Chrome-class claims.
+
+Next question:
+
+Which owner-approved `TASK-000002` execution environment will produce the first retained run record and readiness review?
+## 2026-07-19 - IPC transport and authority closure preparation
+
+Question:
+
+What evidence order separates `TASK-000011` M0 policy review, wire-format selection, and later real-transport proof without expanding IPC authority or claims?
+
+Inputs:
+
+- [IPC Capability Boundary Inventory](research/ipc-capability-boundary-inventory-2026-07.md);
+- [WP-002 kernel identity, capability, and bounded IPC reference](research/wp-002-kernel-ipc-2026-07.md);
+- [TASK-000011 WP-002 Review Handoff](research/task-000011-wp002-review-handoff-2026-07.md);
+- [IPC Wire-Encoding Decision Preparation](research/ipc-wire-encoding-decision-prep-2026-07.md);
+- the specified `TASK-000003` and `TASK-000011` manifests, schemas, templates, validators, and non-accepting evidence capture.
+
+Method:
+
+Separated the M0 policy-reference review, wire decision, and transport execution scopes. Added a no-claim sequence for exact-commit independent review, explicit encoding disposition, control-envelope freeze, per-platform authenticated transport experiments, hostile/negative coverage, lifecycle/resource accounting, and owner-reviewed readiness. Added rejection rules for using a template, in-process test, generated output, or passing validator as production IPC evidence.
+
+Decision:
+
+Keep `PB-011` partial. The new route improves execution traceability only; it does not accept `TASK-000011`, select a wire codec or generator, authorize a platform transport, approve `TASK-000003`, promote IPC readiness, or support renderer-security, agent-security, process-isolation, site-isolation, production IPC, or Chrome-class claims.
+
+Next question:
+
+Which owner-approved reviewer will produce the first independent `TASK-000011` evidence bundle on the exact commit?
+## 2026-07-19 - Sandbox probe execution and containment closure preparation
+
+Question:
+
+What execution and review order can convert the `WP-003` probe contract into platform containment evidence without counting stubs or policy names as sandbox proof?
+
+Inputs:
+
+- [Sandbox Probe Inventory](research/sandbox-probe-inventory-2026-07.md);
+- [WP-003 Sandbox Probe Contract](research/wp-003-sandbox-probe-plan-2026-07.md);
+- [Sandbox Platform-Evidence Decision Preparation](research/sandbox-platform-evidence-decision-prep-2026-07.md);
+- the specified `TASK-000004` manifest, probe catalog, evidence schema, package/readiness-review templates, security policy, and platform containment book.
+
+Method:
+
+Separated role/authority freeze, host-safe fixture preparation, unsandboxed controls, real constrained-role launch, expected-deny operations, compromised-client/lifecycle cases, per-platform effective-policy capture, full-denominator artifact retention, and owner-reviewed readiness. Added explicit rejection rules for application-level stubs, policy names without effective state, substituted helper processes, unsupported primitives treated as pass, success-only logs, and templates treated as containment evidence.
+
+Decision:
+
+Keep `PB-012` partial. The new route improves execution traceability only; it does not execute `TASK-000004`, prove platform containment, satisfy `SEC-GATE-1` or `SEC-GATE-6`, promote sandbox readiness, or support renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claims.
+
+Next question:
+
+Which owner-approved platform and real process role will produce the first reviewed sandbox probe package with an unsandboxed control?
+## 2026-07-19 - Benchmark evidence and claim closure preparation
+
+Question:
+
+What transition separates benchmark infrastructure self-tests, browser-run diagnostics, competitor comparisons, and public Chrome-class or extreme-performance claims?
+
+Inputs:
+
+- [Performance Benchmark Readiness Packet](research/performance-benchmark-readiness-packet-2026-07.md);
+- [Chrome-Class Performance Runbook](research/chrome-class-performance-runbook-2026-07.md);
+- [Benchmark Engine Baseline Harness Readiness Map](research/benchmark-engine-baseline-harness-readiness-map-2026-07.md);
+- [Benchmark Statistics Analysis Contract](research/benchmark-statistics-analysis-contract-2026-07.md);
+- benchmark manifests, browser-pin capture contracts, competitor inventories, runner self-tests, and the specified `TASK-000005` manifest.
+
+Method:
+
+Separated L0 contract/self-test evidence, L1 local browser-run diagnostics, L2 equal-workload competitor diagnostics, and L3 owner-reviewed public-claim candidates. Defined identity/control capture, runner and browser-run transitions, raw artifact and failure-denominator requirements, competitor pinning, statistical treatment, claim wording, expiry, rerun triggers, and rejection rules for silent reduction or unequal security/lifecycle settings.
+
+Decision:
+
+Keep `PB-013` partial and `TASK-000005` proposed-only. The new route improves evidence and claim traceability only; it does not run a browser, approve hardware, produce a competitor result, accept statistics, promote benchmark readiness, or support faster, lower-memory, lower-energy, Chrome-class, compatibility, production, or daily-driver claims.
+
+Next question:
+
+Which owner-approved fixed host and no-real-profile browser-run configuration will produce the first reviewed L1 diagnostic package?
+## 2026-07-19 - Native UI and accessibility closure preparation
+
+Question:
+
+What evidence order can connect toolkit selection, page-surface composition, component fixtures, input/IME, and assistive technology without expanding toolkit authority?
+
+Inputs:
+
+- [Toolkit-Neutral UI Adapter Contract Inventory](research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md);
+- [Native UI Framework Bake-Off Inventory](research/native-ui-framework-bakeoff-inventory-2026-07.md);
+- [Native UI Component Fixture Inventory](research/native-ui-component-fixture-inventory-2026-07.md);
+- [Page Surface Composition Inventory](research/page-surface-composition-inventory-2026-07.md);
+- [Window Input Accessibility Spike Inventory](research/window-input-accessibility-spike-inventory-2026-07.md);
+- UI-runtime/accessibility machine registries, readiness-review templates, and specified `TASK-000006` manifest.
+
+Method:
+
+Connected toolkit-neutral contracts, equivalent adapter runs, authority-separation tests, page-surface identity and fault evidence, component fixtures, reference-platform workflows, manual assistive-technology review, performance/recovery traces, and cross-lane owner review. Added rejection rules for toolkit-owned authority, substituted renderers, semantic models treated as platform accessibility proof, stale surface identity, and one-toolkit or one-platform leadership claims.
+
+Decision:
+
+Keep `PB-003`, `PB-004`, `PB-005`, `PB-014`, and `PB-015` partial and `TASK-000006` proposed-only. The new route improves execution traceability only; it does not select a toolkit, accept an ADR, satisfy `UI-GATE-7`/`UI-GATE-10`, promote accessibility or trusted-chrome readiness, or support release-path UI, performance, Chrome-class, production, or implementation claims.
+
+Next question:
+
+Which owner-approved toolkit-neutral adapter slice and reference platform will produce the first reviewed native UI/accessibility evidence package?
+# 2026-07-19 - Profile/session execution and data-safety closure preparation
+
+Question:
+
+What evidence must replace the checked profile/session planning templates before `PB-016` or `TASK-000007` can be treated as executable or data-safety evidence?
+
+Inputs:
+
+- [Profile Session Format Inventory](research/profile-session-format-inventory-2026-07.md);
+- [Profile and Session Data-Lifecycle Decision Preparation](research/profile-session-data-lifecycle-decision-prep-2026-07.md);
+- [profile-session-format-inventory.json](storage/machine/profile-session-format-inventory.json);
+- checked no-claim schema-package and readiness-review templates;
+- `TASK-000007` and the `PB-016` continuation/readiness records.
+
+Method:
+
+Added a no-claim closure route that sequences synthetic-fixture schema execution, forward/resume/rollback/downgrade migration, disk-full/power-loss/partial-write/corruption/crash fault injection, privacy and origin/private-session isolation, recovery and protected-work accounting, and named owner/independent review. Added rejection rules for real profiles, secrets, success-only evidence, silent downgrade/deletion, missing denominators, and template-only readiness.
+
+Decision:
+
+Keep `PB-016` partial and `TASK-000007` specified/proposed-only. The new report improves the handoff from planning templates to an evidence packet but does not approve profile implementation, real-profile migration, sync, credential storage, private-session readiness, protected-work readiness, data-loss safety, user-data handling, a production profile format, or release-path behavior.
+
+Impact:
+
+The profile/session lane now has one explicit execution and review sequence tied to the state-class decisions, machine ledger, crosswalk, continuation pack, and documentation audit. The next acceptable artifact is a retained synthetic-fixture execution packet with redacted logs, hashes, fault coverage, migration transitions, recovery accounting, cleanup evidence, and named review.
+
+Next question:
+
+Which synthetic profile/session schema package and fault boundary should be implemented first under a separately reviewed immutable task manifest?
+# 2026-07-19 - Profile/session closure route synchronization
+
+Question:
+
+Did the profile/session execution and data-safety closure route reach every canonical human-facing handoff that describes `PB-016` and `TASK-000007`?
+
+Method:
+
+Audited the task queue, pre-build checklist, build-readiness start guide, documentation-readiness evidence matrix, storage book, product-experience book, research index, continuation pack, operating board, machine crosswalk, build-information ledger, and documentation-readiness audit. Added the closure-preparation report to stale template-only routes and made the required evidence sequence consistent: synthetic fixtures, executable schema harness, migration/fault/recovery accounting, privacy isolation, and named owner review.
+
+Decision:
+
+The route is now synchronized without changing `PB-016` from `partial` or `TASK-000007` from proposed/specified-only. No profile implementation, real-profile migration, sync, credential storage, data-loss safety, user-data handling readiness, production profile format, or release-path claim was made.
+
+Validation:
+
+Focused profile/session, audit, Blueprint-link, and diff checks passed. The full PowerShell aggregate check passed with 387 Markdown files and 5,179 relative links; only existing CRLF normalization warnings were emitted.
+
+Next question:
+
+Which owner-reviewed dependency lane should produce the first real evidence packet after a reviewed immutable task manifest is approved?
+# 2026-07-19 - Closure-preparation route index synchronization
+
+Question:
+
+Do the dated closure-preparation reports have one coherent stop/resume route across the root docs entrypoint, operating board, task queue, evidence matrix, continuation pack, research index, crosswalk, and machine ledgers?
+
+Method:
+
+Compared all seven active closure-preparation reports for `PB-002`, `PB-008`/`PB-009`, `PB-011`, `PB-012`, `PB-013`, native UI/accessibility, and `PB-016` against their canonical references. Added a shared route index to the operating board, proposed task queue, evidence matrix, and root documentation entrypoint, and repaired missing lane-specific references in the continuation pack and stop/resume prose.
+
+Decision:
+
+Keep every lane no-claim and below owner-reviewed readiness. The route index is documentation organization and evidence sequencing only; it does not approve a task, source, toolkit, transport, sandbox policy, benchmark claim, profile format, production path, or broad build.
+
+Impact:
+
+Maintainers can now start from one cross-lane closure route and reach the matching report before shaping a reviewed immutable task manifest. The canonical percentage remains unchanged because route completeness does not equal owner-reviewed evidence or decision closure.
+
+Next question:
+
+Which first closure packet will receive the required named owner and independent review record without weakening the no-claim boundaries?
+# 2026-07-19 - Operational closure-preparation contracts
+
+Question:
+
+Can the package/update, incident-response, backup-ownership, and `PB-020` closure lanes use the same evidence-order and review discipline as the engineering lanes?
+
+Method:
+
+Added no-claim execution/review preparation reports for `PB-017`/`TASK-000009`, `PB-018`/`TASK-000010`, and `PB-019`/`PB-020`/`TASK-000008`. Each report defines synthetic or fake-key fixtures, ordered evidence, fault and failure accounting, privacy/access controls, rejection rules, named owner and independent review, and explicit unsupported authority boundaries. Synchronized the reports through the research index, root docs index, route crosswalk, build-information ledger, documentation audit, repository map, task queue, operating board, evidence matrix, and continuation pack.
+
+Decision:
+
+Keep `PB-017` and `PB-018` partial, `PB-019` blocked, and `PB-020` unresolved. The reports improve documentation completeness and stop/resume continuity but do not approve an updater, signing hierarchy, incident authority, disclosure, qualified backups, two-person control, release path, production authority, or broad build.
+
+Impact:
+
+All ten active closure routes now have a common no-claim handoff shape before a task can become a reviewed immutable execution manifest. The documentation percentage remains a gate measure: route completeness does not equal owner-reviewed evidence or readiness closure.
+
+Next question:
+
+Which operational evidence packet can be reviewed first without using production keys, live incident data, placeholder owners, or unbounded authority?
+# 2026-07-19 - Operational closure routes added to primary entrypoints
+
+Question:
+
+Can a maintainer starting from `Start Here`, the progress snapshot, or the owner-decision board reach the same package/update, incident-response, and backup-ownership closure packet as the machine registries and research index?
+
+Method:
+
+Audited the root README, `docs/start-here.md`, the progress snapshot, and the owner-decision closure board after adding the three operational closure-preparation reports. Added each report to the primary human handoff surfaces and preserved the existing no-claim status and owner-decision boundaries.
+
+Decision:
+
+The operational lanes are now discoverable from the primary entrypoints, but `PB-017`/`PB-018` remain partial, `PB-019` remains blocked, and `PB-020` remains unresolved. Entry-point completeness does not establish execution evidence, authority, or full-build readiness.
+
+Impact:
+
+A stopping or continuing maintainer can follow the same route from root orientation through the owner board, task queue, closure report, evidence matrix, machine crosswalk, and validation commands without relying on chat history.
+
+Next question:
+
+Which owner-approved evidence packet should be admitted into the closure board first, with all names, hashes, review records, and exception expiry fields populated?
+# 2026-07-19 - Progress and readiness-claim consistency audit
+
+Question:
+
+Do the repository's documented percentages, gate distributions, and broad-build statements still match the authoritative documentation-readiness and build-information registries after the closure-route expansion?
+
+Method:
+
+Searched the root README, documentation index and policy, start page, progress snapshot, owner-decision board, research index, repository map, Blueprint research program, implementation audit, capability traceability map, and current readiness reports for percentage, broad-build, all-information-ready, and documentation-completion claims. No contradictory percentage or authorization claim was found. Added the three operational closure routes to the completion-audit blocker table so the prose audit points directly to the same package/update, incident-response, and backup-ownership evidence contracts as the machine records.
+
+Decision:
+
+Retain **90% contained-M0 documentation organization** and **0% full-build closure**. The percentages remain machine-audited gate measures, not document-count estimates. No readiness or owner decision was promoted.
+
+Next question:
+
+Which owner-reviewed decision record can change a machine-audited criterion without weakening the broad-build claim boundary?
+
+# 2026-07-19 - PB-020 closure and owner-decision preparation
+
+Question:
+
+Does the checked closure-review template have a usable final handoff without being mistaken for an approval record?
+
+Method:
+
+Reviewed the closure schema and no-claim template, implementation kickoff inventory, dependency graph, owner-decision board, documentation audit, and current continuation surfaces. Added a human-readable closure-preparation route that defines evidence collection order, decision-record fields, immutable task-authority checks, named owner and independent review, exception handling, rejection rules, and the promotion boundary. Linked it from all relevant discovery, tracking, and repository-index documents.
+
+Decision:
+
+Keep `PB-020` partial and preserve **90% contained-M0 documentation organization** and **0% full-build closure**. The new route improves stop/resume continuity and does not authorize tasks, close gates, or establish all-information-ready-for-building.
+
+Next question:
+
+Which named owner-reviewed gate record, with retained evidence and independent review, is ready to replace a no-claim template?
+
+# 2026-07-19 - PB-020 closure handoff entrypoint synchronization
+
+Question:
+
+Do the one-screen and first-entry documents point to the same final closure-preparation route as the indexes and machine audit?
+
+Method:
+
+Added the PB-020 closure and owner-decision preparation report to the progress snapshot, Start Here, root README, and machine documentation-audit evidence references. Re-ran the documentation-readiness validator and relative-link validation.
+
+Decision:
+
+The closure route is now reachable from every primary stop/resume entrypoint. The audit remains 9 of 10 criteria ready for contained M0 and 0 of 10 ready for the full goal; no owner decision or readiness state changed.
+
+Next question:
+
+Which unresolved lane can produce the next real, independently reviewed evidence packet without expanding authority or weakening claim boundaries?
+
+# 2026-07-19 - ADR-0009 closure-route synchronization
+
+Question:
+
+Can a maintainer reach the source-strategy evidence-order handoff from every primary `PB-002` continuation surface?
+
+Method:
+
+Compared the ADR-0009 closure-preparation report, source packet, evidence matrix, decision draft, evidence registry, operating board, continuation pack, and owner-decision board. Added the closure-preparation route to the ordered `PB-002` continuation step, both source-strategy readiness tables, and the owner-decision action row.
+
+Decision:
+
+The source-strategy documentation route is now coherent and still explicitly no-claim. `PB-002` remains blocked because the evidence registry is partial/blocked and no owner-reviewed decision exists.
+
+Next question:
+
+Which `ADR9-EV-*` item can be converted from preparation to independently reproduced evidence under an approved, immutable task manifest?
+
+# 2026-07-19 - Fresh-host closure-route synchronization
+
+Question:
+
+Can a maintainer reach the same pinned-toolchain and fresh-host evidence-order contract from the ordered operating path, progress snapshot, and owner-decision board?
+
+Method:
+
+Compared the fresh-host reproduction inventory, run-record and readiness-review templates, closure-preparation report, task queue, operating board, progress snapshot, and owner-decision board. Added the closure route to the ordered `PB-008`/`PB-009` step, the progress dashboard, and the owner-decision action row.
+
+Decision:
+
+The lane is now coherently routed without changing its status. `PB-008` and `PB-009` remain partial, `TASK-000002` remains proposed-only, and no fresh-host, reproducibility, release-confidence, or broad-build claim is supported.
+
+Next question:
+
+Which evidence lane can be executed only after a reviewed immutable task manifest is available?
+
+# 2026-07-19 - Cross-lane closure index and IPC/sandbox route synchronization
+
+Question:
+
+Does the documentation readiness matrix and owner board expose both the final PB-020 reconciliation route and the security-lane evidence order?
+
+Method:
+
+Compared the operating-board route index, task-queue route index, documentation-readiness evidence matrix, owner-decision board, IPC closure report, sandbox closure report, and primary stop/resume pages. Added the final PB-020 route to the cross-lane indexes and linked the IPC and sandbox closure reports from their owner-decision actions.
+
+Decision:
+
+The closure indexes now cover all ten evidence lanes plus final PB-020 reconciliation. IPC and sandbox remain partial; templates and validators do not establish transport, containment, renderer-security, site-isolation, or production claims.
+
+Next question:
+
+Which security-lane evidence packet can be admitted only after task authority, source identity, and independent review are present?
+
+# 2026-07-19 - Benchmark and extreme-performance route synchronization
+
+Question:
+
+Can the Chrome-competitor performance objective be followed from the progress dashboard and task/owner decisions to one claim-gated evidence contract?
+
+Method:
+
+Compared the Chrome-class performance lane map, benchmark evidence and claim closure preparation, statistics-analysis contract, benchmark readiness and claim-bundle templates, task queue, progress snapshot, and owner-decision board. Added the closure route to the `PB-013` owner action, `TASK-000005` handoff, and performance research dashboard.
+
+Decision:
+
+The performance route is now coherent and remains explicitly no-claim. `PB-013` is still documented without a browser runner, `TASK-000005` remains proposed-only, and no speed, memory, energy, competitor, Chrome-class, or daily-driver claim is supported.
+
+Next question:
+
+What reviewed L1 browser-run evidence packet must exist before any competitor comparison is even considered?
+
+# 2026-07-19 - Native UI and accessibility route synchronization
+
+Question:
+
+Can a maintainer reach the native-shell, page-surface, IME, and assistive-technology evidence order from the task, owner, and progress records?
+
+Method:
+
+Compared the native UI/accessibility closure report, native readiness-review template, component/page-surface/window-input inventories, `TASK-000006`, the progress snapshot, and the owner-decision board. Added the closure route to the native owner action, task handoff, and native research dashboard.
+
+Decision:
+
+The native-shell route is now coherent and remains no-claim. `PB-003`, `PB-004`, `PB-005`, `PB-014`, and `PB-015` remain partial; `TASK-000006` remains proposed-only; no toolkit, trusted-chrome, page-surface, accessibility, screen-reader, or release-path UI claim is supported.
+
+Next question:
+
+Which native workflow evidence can be reviewed without selecting a release toolkit or granting toolkit-owned authority?
+
+# 2026-07-19 - Profile and session data-safety route synchronization
+
+Question:
+
+Can a maintainer reach the profile/session migration and data-loss evidence order from the task, owner, and progress records before real user data is involved?
+
+Method:
+
+Compared the profile/session format inventory, lifecycle decision preparation, execution/data-safety closure report, schema-package and readiness-review templates, `TASK-000007`, the progress snapshot, and owner-decision board. Added the closure route to the `PB-016` owner action and profile/session research dashboard.
+
+Decision:
+
+The profile/session route is now coherent and remains no-claim. `PB-016` remains partial, `TASK-000007` remains proposed-only, and no real-profile migration, sync, credential, private-session, protected-work, data-loss, or production-format claim is supported.
+
+Next question:
+
+Which synthetic-fixture migration packet can demonstrate fault and recovery behavior without accessing real user data?
+
+# 2026-07-19 - Package/update release-safety route synchronization
+
+Question:
+
+Can a maintainer reach the package identity, fake-key, rollback, migration, and release-safety evidence order from the owner and progress records?
+
+Method:
+
+Compared the package/update lab inventory, trust decision preparation, execution/release-safety closure report, package and readiness-review templates, `TASK-000009`, the progress snapshot, and owner-decision board. Added the closure route to the `PB-017` owner action and package/update research dashboard.
+
+Decision:
+
+The package/update route is now coherent and remains no-claim. `PB-017` remains partial, `TASK-000009` remains proposed-only, and no package format, updater, signing, stable-channel, rollback-safety, supported-security, release, or production claim is supported.
+
+Next question:
+
+Which fake-key local lab packet can demonstrate metadata and staged-install failure handling without approaching production release authority?
+
+# 2026-07-19 - Owner-decision board scope synchronization
+
+Question:
+
+Does the human owner-decision closure board preserve the same canonical gate scopes as the machine synchronization matrix?
+
+Method:
+
+Compared the owner-decision closure board, synchronization matrix, closure-review template, pre-build readiness, and both owner-decision validators. The check found that the board combined `PB-019` backup ownership and `PB-020` build-readiness closure even though the machine matrix treats them as separate scopes.
+
+Decision:
+
+Split the board into distinct `PB-019` and `PB-020` rows and added a validator check requiring exactly 11 board decision-lane scopes to match the machine matrix. Backup ownership and build-readiness closure remain unresolved and no-claim.
+
+Next question:
+
+Which owner-reviewed evidence packet can close one of the separate scopes without conflating backup coverage with readiness promotion?
+
+# 2026-07-19 - Research packet ownership metadata audit
+
+Question:
+
+Can a maintainer identify the status and responsible role for every durable research packet without inferring ownership from a linked gate?
+
+Method:
+
+Scanned all 103 indexed durable research Markdown files for explicit `Status` and `Owner` metadata, then compared the missing entries with each packet's gate, scope, and existing governance language.
+
+Decision:
+
+Added role-based owner metadata to the nine previously incomplete packets and the final closure-record example found during validation. Strengthened `validate_research_index.py` so future durable research files cannot enter the index without both fields. This improves handoff metadata only and does not promote any gate or research claim.
+
+Next question:
+
+Which remaining research packets require a dated evidence-refresh trigger beyond their owner and status metadata?
+
+# 2026-07-19 - JavaScript JIT requirement routing audit
+
+Question:
+
+Can accepted baseline-JIT and hardened no-JIT requirements be followed from the requirements registry into design, work-package, milestone, dependency, and evidence planning without implying implementation?
+
+Method:
+
+Compared `REQ-JS-004` and `REQ-JS-005` across the requirements registry, professional traceability, Blueprint 06, the JavaScript engineering book, M6 implementation plan, work-package playbooks, backlog, execution graph, task sequence, and Chrome-class traceability map. The audit found that the M6 prose existed but no canonical work package or design references routed the two requirements.
+
+Decision:
+
+Added planned `WP-019` for baseline JIT and hardened JavaScript execution, synchronized the backlog, dependency graph, roadmap, M6 sequence, playbook, and traceability records, and preserved explicit no-claim status. `WP-019` remains non-executable until its interpreter/GC, W^X, differential, no-JIT, security, and owner-review gates are satisfied.
+
+Next question:
+
+Which accepted requirement family next lacks a dedicated work-package or verification route after the JavaScript runtime correction?
+
+# 2026-07-19 - Accepted requirement to work-package coverage audit
+
+Question:
+
+Does every accepted requirement have a canonical work-package owner and design route before implementation planning is considered complete?
+
+Method:
+
+Compared all 46 accepted requirements with the work-package backlog, execution graph, implementation plan, professional traceability, and Chrome-class capability map. The audit found six unmapped requirements: web-content accessibility bridging, WebAssembly, CORS/CSP policy, supported-version and emergency-patch capacity, ephemeral private sessions, and history/bookmarks/downloads/settings surfaces.
+
+Decision:
+
+Attached five requirements to their existing domain packages, added design references, and created planned `WP-020` for everyday product surfaces and browser workflows. Synchronized the roadmap, implementation plan, dependency graph, task sequence, traceability records, and capability map. All 46 requirements now have work-package coverage; no implementation, acceptance, compatibility, security, accessibility, product, or performance claim was promoted.
+
+Next question:
+
+Which accepted requirements still lack non-empty verification or evidence plans after their ownership routes are present?
+
+# 2026-07-19 - Work-package playbook completeness control
+
+Question:
+
+Can a maintainer rely on every canonical work package having an executable documentation shape before task manifests are considered?
+
+Method:
+
+Audited all 20 backlog packages against `16-work-package-playbooks.md` for a package section, acceptance criteria, negative tests, handoff, and unsupported-scope statement. Separately checked that the union of package requirement mappings covers all 46 accepted requirements without unknown IDs.
+
+Decision:
+
+The current playbooks satisfy those conditions. Strengthened `validate_implementation_plan.py` to enforce them on every future change. This validates documentation structure and requirement routing only; it does not approve a package, task, implementation, or readiness gate.
+
+Next question:
+
+Which evidence class still has no package-specific collection route beyond generic acceptance prose?
+
+# 2026-07-19 - Professional requirement design-route audit
+
+Question:
+
+Can every accepted requirement be traced from the stable registry to canonical design sources before implementation begins?
+
+Method:
+
+Compared all 46 requirements in `professional-traceability.json` with the owning Blueprint and detailed engineering books. Thirty-six requirements had empty design arrays despite existing canonical design material.
+
+Decision:
+
+Added existing canonical design sources for all 46 requirements. Implementation, source adoption, tests, reviews, and evidence remain empty unless separately supported. Strengthened `validate_blueprint.py` so future changes cannot omit design routes or point at missing files.
+
+Next question:
+
+Which requirement-specific verification or evidence route should be formalized first after design routing is complete?
+
+# 2026-07-19 - Requirement verification matrix audit
+
+Question:
+
+Does every accepted requirement have a concrete verification and evidence-collection route before implementation work is approved?
+
+Method:
+
+Compared all 46 accepted requirements, 20 work packages, the implementation evidence catalog, professional traceability registry, detailed engineering books, and existing no-claim readiness lanes. Forty-four requirements had no explicit planned test or evidence route; the two existing reference-test records were not production evidence.
+
+Decision:
+
+Added the no-claim Requirement Verification Matrix with 11 domain lanes. Each lane records requirement coverage, work-package ownership, existing source documents, evidence classes, test layers, negative and failure cases, required artifacts, and a next-proof condition. Added validator enforcement for exact 46-requirement coverage, valid work packages/evidence classes, and existing source paths. This creates a verification plan without populating actual tests, reviews, or evidence in professional traceability.
+
+Next question:
+
+Which owner-approved evidence lane should be selected first after the unresolved source-strategy, fresh-host, IPC, sandbox, native-shell, and ownership gates are closed?
+
+# 2026-07-19 - Requirement verification navigation sync
+
+Question:
+
+Can a maintainer reach the planned verification layer from both the requirements handbook and the documentation-readiness evidence matrix without relying on chat history?
+
+Method:
+
+Reconciled the new requirement verification matrix, professional traceability registry, requirements registry, work-package backlog, implementation evidence catalog, project-buildout handbook, documentation-readiness matrix, documentation index, and repository navigation.
+
+Decision:
+
+Added explicit inbound routes from the requirements/evidence handbook, documentation-readiness matrix, and stop/resume documentation index. The synchronization clarifies that planned verification is distinct from actual source, tests, reviews, and evidence and does not change the 90% contained-M0 or 0% full-build measurements.
+
+Next question:
+
+Which planned verification lane should receive the first owner-approved task manifest after the remaining source-strategy and readiness gates are resolved?
+
+# 2026-07-19 - Semantic maturity-language audit
+
+Question:
+
+Do canonical entry points distinguish the validation-backed M0 foundation from browser implementation, supported capability, production readiness, and Chrome-class claims?
+
+Method:
+
+Scanned the root README, documentation index, project-buildout handbook, Blueprint chapters, readiness records, research packets, and validator policy markers for maturity terms such as implemented, verified, supported, complete, production-ready, compatible, faster, and Chrome-class. Compared each positive statement with its surrounding scope and claim boundary.
+
+Decision:
+
+Reworded the root README heading from `Implemented foundation` to `Contained M0 foundation currently present and validation-backed` and added the requirement verification matrix to the root canonical-status route. No unsupported product, security, compatibility, performance, accessibility, release, or production claim was found or promoted.
+
+Next question:
+
+Which remaining human-facing status statement should be reviewed after the next evidence lane changes its maturity state?
+
+# 2026-07-19 - Servo upstream freshness refresh
+
+Question:
+
+Has upstream Servo moved since the dated `ADR-0009` provenance and maintenance evidence, and does that change any Turing source-strategy conclusion?
+
+Method:
+
+Read the official `servo/servo` GitHub repository, `main` branch, latest-release API, and crates.io package metadata on 2026-07-19. Compared the refreshed observations with the 2026-07-17 provenance, security/maintenance, and ADR-0009 packet records. No upstream checkout, source archive, build, dependency extraction, or artifact was copied into Turing.
+
+Decision:
+
+Recorded that upstream `main` now points to `736ad1bda08c1af419aadc903e82938f8610a65d` and that the repository was pushed/updated on 2026-07-19. The latest release remains immutable `v0.3.0` and the latest crates.io package remains `servo 0.4.0`. The prior build comparison is explicitly historical; no build, compatibility, security, performance, license, maintenance, or source-baseline conclusion transfers to the newer `main` commit, and `PB-002` remains blocked.
+
+Next question:
+
+Will an owner select the historical build baseline, refresh and rebuild upstream `main`, select the release/archive/package surface, or reject Servo as a release-code source?
+
+# 2026-07-19 - Current-host toolchain wrapper diagnostic
+
+Question:
+
+Does the documented Windows doctor entry point execute against the pinned contained-M0 toolchain without changing the fresh-host claim boundary?
+
+Method:
+
+Ran `tools/doctor.ps1 --ci` from the current checkout with `CARGO_TARGET_DIR` set to `%TEMP%\turing-current-host-doctor`. The command reported Rust/Cargo `1.97.1`, rustfmt and Clippy `1.97.1`, Python `3.12.10`, Git `2.52.0.windows.1`, and `doctor: ready for contained M0 development`.
+
+Decision:
+
+The Windows doctor wrapper is executable in this checkout and uses an external target directory as documented. This is same-host diagnostic evidence only: no independent host was provisioned, no fresh-host run record or retained log bundle was created, and `PB-008`, `PB-009`, `PB-020`, and `TASK-000002` remain unchanged. The result does not support a clean-host, reproducibility, release-confidence, production, broad-implementation, or Chrome-class claim.
+
+Next question:
+
+When will the owner provide the named independent reviewer and fresh reference host or explicitly scoped clean VM required to execute `TASK-000002`?
+
+# 2026-07-19 - Memory representation and tab lifecycle research handoff
+
+Question:
+
+Can the deferred memory/object-representation and tab-lifecycle questions be made executable as a source-backed experiment route without turning compactness or lifecycle vocabulary into a performance claim?
+
+Method:
+
+Checked the Rust type-layout and allocation documentation and Chromium's public tab-discard/lifecycle documentation and source on 2026-07-19. Reconciled those observations with `RQ-01`, `RQ-03`, `RQ-35`, `REQ-PERF-002`, `REQ-PERF-003`, the performance engineering book, the benchmark closure route, resource attribution, security identity rules, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim research packet defining representation families, legal corpus and 5/15/30/100-tab workloads, memory categories, lifecycle/recovery/accessibility measures, safety and authority constraints, required artifacts, statistical treatment, and rejection rules. The packet explicitly rejects relying on unspecified default Rust layout, a single memory number, silent tab discard, hidden failures, or reduced security/accessibility/recovery workloads. No representation, allocator, process model, lifecycle policy, benchmark result, performance claim, or readiness gate changed.
+
+Next question:
+
+After source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark authority prerequisites are resolved, which owner-approved experiment manifest and synthetic fixture package will execute this lane?
+
+# 2026-07-19 - Process topology and isolation-adjusted memory research handoff
+
+Question:
+
+Can the process-topology question be made executable without confusing lower process count or lower memory with security-equivalent performance?
+
+Method:
+
+Checked the official Chromium process-model/site-isolation, process-model, and RenderingNG documentation plus Firefox process-model, process-role, and accessibility architecture documentation on 2026-07-19. Reconciled those observations with `RQ-02`, `RQ-20`, `RQ-36`, `PB-011`, `PB-012`, `PB-013`, the IPC and sandbox closure routes, the benchmark 30-tab contract, and the existing memory/lifecycle research packet.
+
+Decision:
+
+Added an active no-claim process-topology research packet defining site-instance identity, candidate sharing models, helper roles, security-equivalence constraints, 8/16/32 GiB and 5/15/30/100-tab workloads, process/resource/IPC/accessibility/recovery measures, required artifacts, and rejection rules. It explicitly prevents site-isolation relaxation, omitted helper processes, hidden failures, or lower process count from becoming an optimization claim. No topology, IPC, sandbox, benchmark, security, performance, or readiness decision changed.
+
+Next question:
+
+After task authority, real transport, sandbox-policy, and benchmark prerequisites are resolved, which owner-approved topology manifest and synthetic process/lifecycle fixture package will execute this route?
+
+# 2026-07-19 - Completion-audit research-lane synchronization
+
+Question:
+
+Does the central documentation-readiness completion audit include the newly added performance and process-topology research packets, rather than leaving them discoverable only through the general research index?
+
+Method:
+
+Compared the research index, completion-audit machine source list, completion-audit validator requirements, research-lane evidence references, and the human completion-audit narrative after adding the memory/lifecycle and process-topology packets.
+
+Decision:
+
+Added both packets to the checked completion-audit source set and `DOC-READY-RESEARCH_LANES` evidence references, added them to the validator's required source records, and updated the human audit to name them as active performance/security research inputs. The audit remains `9/10` ready for contained M0 and `0%` full-build closure; this synchronization does not answer a research question, approve a task, or promote a gate.
+
+Next question:
+
+Which remaining active research route should receive the next source-backed packet without duplicating an existing closure preparation or bypassing task authority?
+
+# 2026-07-19 - Nova native build-entry criteria
+
+Question:
+
+Can the supplied Nova visual/layout source become an unambiguous future native-build input without allowing React, JSX, page content, or visual previews to own trusted browser behavior?
+
+Method:
+
+Compared the Nova source manifest and surface-contract map with the UI runtime book, token authoring workflow, component-fixture inventory, page-surface contract, native UI closure preparation, trusted UI rules, and current `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020` boundaries.
+
+Decision:
+
+Added a no-claim Nova Native Build Entry Criteria packet defining source identity, visual-versus-behavioral authority, semantic token and surface extraction, typed state/command mapping, native fixture requirements, page-surface identity, build-entry gates, review artifacts, and rejection rules. Linked it from the UI runtime book, research indexes, progress snapshot, repository map, and chronology. Nova remains the primary visual/layout reference, React remains design-lab-only, and no toolkit, native adapter, UI gate, page-surface, accessibility, performance, or implementation decision changed.
+
+Next question:
+
+When the native UI predecessors and task authority are accepted, which owner-approved extraction manifest and toolkit-neutral fixture package will be used to start the Nova handoff?
+# 2026-07-19 - Research packet continuity contract
+
+Question:
+
+Can every durable research packet preserve enough local context for a new maintainer or agent to resume it without relying on chat history or a narrow index row?
+
+Method:
+
+Audited all 127 durable Markdown packets after the existing research-index validator confirmed indexing, status, and owner metadata. The audit used flexible vocabulary rather than requiring identical headings: question or scope, evidence or method, disposition or next step, and an explicit no-claim or unsupported boundary.
+
+Decision:
+
+Strengthened `tools/validate_research_index.py` to enforce those four continuity fields for every durable packet, added the missing market-research question to `browser-market-gap-2026-07.md`, and documented the contract in the research index and documentation-readiness evidence matrix. This improves resumability and catches structurally incomplete packets without promoting any research result, readiness gate, implementation task, performance claim, or product claim.
+
+Next question:
+
+Which owner-controlled evidence lane should replace its no-claim preparation records with retained executable evidence after task authority and independent review are available?
+# 2026-07-20
+
+Compared the research-readiness crosswalk with the proposed build-readiness task queue, requirements, and risks. Added explicit lane-level requirement and risk bindings and validator checks that they mirror the task queue, then synchronized the crosswalk schema, research index, coverage audit, evidence matrix, and repository map. This closes task-to-requirement/risk traceability only; it does not approve tasks, answer research questions, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Compared the active research packets validated by `validate_research_index.py` with the central documentation-readiness audit source list. Added the five missing active packet paths to the machine audit, and added a validator assertion that every active research packet is named there. The human audit now names all `7/7` active packets. This closes source-list continuity only; no research question, owner decision, readiness gate, task, implementation, or performance claim changed.
+
+# 2026-07-20 - Nova native extraction worksheet
+
+Question:
+
+Can the supplied Nova visual/layout source enter a future native task through a resumable worksheet that separates visual identity from Rust authority, page-surface identity, accessibility evidence, and review promotion?
+
+Method:
+
+Compared the Nova source manifest and surface-contract map with the native UI closure preparation, component-fixture inventory, page-surface composition, accessibility source manifest, `TASK-000006`, and native UI readiness-review template. Added a required extraction worksheet for source identity, surface/state coverage, Rust state/commands, trust identity, native fixtures, page-surface/accessibility, and review/promotion. Added validator coverage for the worksheet and `design_input_only` boundary.
+
+Decision:
+
+Nova remains the primary visual/layout reference, React/JSX remains design-lab-only, no toolkit or native adapter is selected, and no UI gate or native implementation claim changed. The worksheet improves handoff completeness only.
+
+Next question:
+
+When will an approved `TASK-000006` manifest and independent reviewer authorize the first toolkit-neutral Nova fixture slice?
+
+# 2026-07-20 - Benchmark closure worksheet
+
+Question:
+
+Can the `PB-013` benchmark route make the exact evidence, equivalence, denominator, review, and claim-expiry inputs explicit before any L0/L1/L2/L3 promotion?
+
+Method:
+
+Compared the benchmark evidence-level contract, benchmark claim-bundle template, statistics-analysis plan, readiness-review template, browser-pin/corpus/runner/artifact registries, and PB-013 task/crosswalk records. Added a required closure worksheet covering evidence level, measurement identity, workload/security equivalence, raw artifacts, denominator/analysis, review/claim scope, and promotion/rollback. Added validator coverage for the worksheet and its no-runner boundary.
+
+Decision:
+
+The worksheet improves benchmark handoff completeness only. `PB-013` remains `documented_no_runner`, `TASK-000005` remains proposed-only, and no browser, competitor, speed, memory, energy, or Chrome-class claim changed.
+
+Next question:
+
+When will an owner-approved `TASK-000005` manifest and independent reviewer authorize the first retained L1 browser-run package?
+
+# 2026-07-20 - ADR-0009 owner decision worksheet
+
+Question:
+
+Can the source-strategy closure route make the exact owner inputs and synchronized record changes explicit for every option without selecting an option by implication?
+
+Method:
+
+Compared the ADR-0009 option matrix, decision-review template, evidence registry, evidence traceability matrix, PB-002 readiness record, and owner-decision closure board. Added a required pre-review worksheet covering option disposition, charter effect, source boundary, all 18 evidence statuses, authority/review, authorization scope, operations/rollback, and synchronized document/registry changes. Added validator coverage for those fields and the unresolved-template boundary.
+
+Decision:
+
+The worksheet improves decision completeness and resumability only. All five option rows remain unresolved, no option is selected, `PB-002` remains blocked, and no source import, component approval, release-code authorization, compatibility, security, performance, or Chrome-class claim changed.
+
+Next question:
+
+When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?
+
+# 2026-07-20 - Sandbox containment closure worksheet
+
+Question:
+
+Can each future sandbox probe package distinguish requested policy from effective OS enforcement while preserving expected-deny, compromised-client, lifecycle, host-safety, cleanup, platform, and review evidence?
+
+Method:
+
+Compared the sandbox probe inventory, WP-003 contract, platform-source manifest, expected-deny package template, readiness-review template, `TASK-000004`, and sandbox crosswalk lane. Added a required package worksheet for role/package identity, requested versus effective policy, allowed controls, expected-deny operations, compromised-client/lifecycle cases, host safety/cleanup, and platform/review scope. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves containment evidence handoff completeness only. No packaged probe was executed; `PB-012` remains partial, `TASK-000004` remains proposed-only, and no sandbox, renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved `TASK-000004` package and independent security/platform review produce the first retained expected-deny result?
+
+# 2026-07-20 - IPC authority closure worksheet
+
+Question:
+
+Can the IPC route preserve the distinction between the contained M0 policy reference, wire-format decision, and authenticated platform transport while making negative, lifecycle, resource, and review evidence resumable?
+
+Method:
+
+Compared the IPC capability inventory, `TASK-000011` review handoff and evidence bundles, control-envelope template, wire-source manifest, transport closure preparation, `TASK-000003`, readiness-review template, and IPC crosswalk lane. Added a required worksheet for scope/maturity, schema/wire authority, peer/channel identity, negative/lifecycle coverage, resource/handle bounds, platform evidence, and review/promotion. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves IPC evidence handoff completeness only. `TASK-000011` remains review-pending, `PB-011` remains partial, no wire encoding or transport is approved, and no production IPC, renderer-security, agent-security, process-isolation, site-isolation, or Chrome-class claim changed.
+
+Next question:
+
+When will an independent reviewer create an accepted evidence bundle for the exact `TASK-000011` commit so the wire/transport scope can be reviewed separately?
+
+# 2026-07-20 - Fresh-host closure worksheet
+
+Question:
+
+Can the pinned-toolchain and fresh-host route preserve host class, source identity, command denominator, cache behavior, acquisition/replay mode, failures, cleanup, and promotion boundaries in one resumable handoff?
+
+Method:
+
+Compared the fresh-host reproduction inventory and registry with the toolchain-source manifest, run-record schema/template, readiness-review template, build-information ledger, `TASK-000002`, and fresh-host crosswalk lane. Added a required closure worksheet for host identity, source checkout, toolchain/commands, cache/artifact roots, acquisition/replay, failure/cleanup denominator, and review/promotion. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves reproducibility handoff completeness only. No independent fresh-host run was executed; `PB-008`/`PB-009` remain partial, `TASK-000002` remains proposed-only, and no release-confidence, production, implementation, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved `TASK-000002` manifest and independent host or owner-approved clean VM produce the first retained run record?
+
+# 2026-07-20 - Profile/session closure worksheet
+
+Question:
+
+Can the profile/session lane preserve data-class identity, schema authority, isolation, fault recovery, migration, privacy, loss accounting, and named review in one resumable handoff without implying profile implementation or data-safety approval?
+
+Method:
+
+Compared the profile/session format inventory, source manifest, schema-package template, readiness-review template, `TASK-000007`, PB-016 crosswalk lane, and data-safety closure route. Added a required worksheet for scope/data classes, schema authority, profile/Space/session isolation, fault and recovery coverage, migration/rollback identity, privacy and credential boundaries, loss/restoration accounting, and review/promotion. Added validator coverage for the worksheet and its no-claim boundary.
+
+Decision:
+
+The worksheet improves profile/session evidence handoff completeness only. `PB-016` remains partial, `TASK-000007` remains specified/proposed-only, and no profile implementation, real-profile migration, credential, sync, private-session, protected-work, data-loss, release, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved synthetic-fixture packet with fault-injected migration and recovery evidence receive named storage, privacy-data, security, quality, product, release-operations, and independent review?
+
+# 2026-07-20 - PB-020 closure worksheet
+
+Question:
+
+Can the final build-readiness packet reconcile every gate, task, evidence denominator, exception, claim boundary, and synchronized registry update without turning a template or green validator into broad-build authorization?
+
+Method:
+
+Compared the PB-020 closure preparation, no-claim closure-review template and schema, owner-decision board, documentation-readiness audit, implementation kickoff review, dependency graph, task queue, and lane-specific closure preparations. Added a required cross-lane worksheet for review identity and digests, gate reconciliation, task authority, evidence/failure accounting, decisions and exceptions, claim scope, synchronized updates, and final promotion status. Added validator coverage for the worksheet and its no-claim boundary.
+
+Decision:
+
+The worksheet improves final owner-decision handoff completeness only. `PB-020` remains unresolved, the documentation audit remains `ready_for_contained_m0_only_full_goal_partial`, and no all-information-ready-for-building, broad M1, release, production, Chrome-class, performance, compatibility, security, or accessibility claim changed.
+
+Next question:
+
+When will the owner provide the immutable review snapshot, named independent reviewer, and accepted decision record for each remaining prerequisite gate?
+
+# 2026-07-20 - PB-006 deferred-platform reconciliation
+
+Question:
+
+Does the final `PB-020` closure handoff preserve the deliberately separate `PB-006` platform decision without letting its exclusion from the active owner board look like a completed platform selection?
+
+Method:
+
+Compared the reference-platform scorecard and machine record, the `PB-006` pre-build readiness row, build-information ledger, owner-decision board, PB-020 closure worksheet, closure-review template, and validator. Added an explicit deferred/not-selected `PB-006` disposition, revisit trigger, and support-boundary requirement to the final worksheet and validator.
+
+Decision:
+
+`PB-006` remains not selected and outside the 11 active owner-decision rows until M1 product-support scope, native-shell decisions, and platform budget are accepted. The reconciliation prevents omission from being mistaken for closure; it does not select Windows, macOS, or Linux or change any support, compatibility, accessibility, performance, security, release, or production claim.
+
+Next question:
+
+When will the owner define the M1 reference-platform scope and authorize the platform evidence task needed to replace the scorecard with an executed decision packet?
+
+# 2026-07-20 - Storage engine and recovery policy research
+
+Question:
+
+Which storage-engine families and process models should be compared for browser-owned state before Turing selects a backend or makes durability, migration, data-loss, privacy, or performance claims?
+
+Method:
+
+Compared the storage Blueprint and engineering book, profile/session format inventory, data-safety closure route, `RQ-14`/`RQ-27` crosswalk lane, `TASK-000007` boundary, and official SQLite, LMDB, and RocksDB transaction/recovery documentation. Added a no-claim research route covering SQLite journal/WAL, memory-mapped copy-on-write, and append/log or store-specific candidates, with per-state-class decision fields, fault/recovery evidence, privacy boundaries, comparable measurements, rejection rules, and the next synthetic-fixture proof.
+
+Decision:
+
+The research route makes the storage backend decision and evidence contract explicit only. `PB-016` remains partial, no backend or durability policy is selected, no dependency is approved, and no data-loss, privacy, migration, performance, production, or Chrome-class claim changed.
+
+Next question:
+
+When will an owner-approved `TASK-000007` extension define the first synthetic state classes, candidate configurations, fault points, and retained artifact schema?
 
 ## 2026-07-19 - Incident-response provenance route completion
 
@@ -9296,891 +10887,3 @@ Affected requirements, risks, ADRs, work packages, and documents:
 Unresolved questions:
 Next evidence required:
 ```
-## 2026-07-19 - Fresh-host toolchain reproduction closure preparation
-
-Question:
-
-What exact replay and review evidence can close `PB-008`/`PB-009` without treating a current-host rerun or a checked template as independent reproduction?
-
-Inputs:
-
-- [Build Information Readiness Ledger](research/build-information-readiness-ledger-2026-07.md);
-- [Fresh Host Reproduction Inventory](research/fresh-host-reproduction-inventory-2026-07.md);
-- [Fresh-Host Toolchain Reproduction Closure Preparation](research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md);
-- the checked fresh-host registries, schemas, templates, validators, and `TASK-000002` route.
-
-Method:
-
-Consolidated evidence classes for reference hosts, same-host reruns, clean-VM equivalents, and independent fresh hosts. Defined pre-run facts, the bootstrap/doctor/check/`xtask` replay sequence, retained command-log/hash requirements, cache and target-directory controls, source-tree cleanliness proof, failure denominator, cleanup/rollback record, and owner-review axes.
-
-Decision:
-
-Keep `PB-008` and `PB-009` partial. This is a no-claim replay and review contract only; it does not execute `TASK-000002`, produce independent toolchain or fresh-host evidence, approve a clean-VM waiver, promote either gate, or support broad implementation, release, production, performance, compatibility, security, accessibility, or Chrome-class claims.
-
-Next question:
-
-Which owner-approved `TASK-000002` execution environment will produce the first retained run record and readiness review?
-## 2026-07-19 - IPC transport and authority closure preparation
-
-Question:
-
-What evidence order separates `TASK-000011` M0 policy review, wire-format selection, and later real-transport proof without expanding IPC authority or claims?
-
-Inputs:
-
-- [IPC Capability Boundary Inventory](research/ipc-capability-boundary-inventory-2026-07.md);
-- [WP-002 kernel identity, capability, and bounded IPC reference](research/wp-002-kernel-ipc-2026-07.md);
-- [TASK-000011 WP-002 Review Handoff](research/task-000011-wp002-review-handoff-2026-07.md);
-- [IPC Wire-Encoding Decision Preparation](research/ipc-wire-encoding-decision-prep-2026-07.md);
-- the specified `TASK-000003` and `TASK-000011` manifests, schemas, templates, validators, and non-accepting evidence capture.
-
-Method:
-
-Separated the M0 policy-reference review, wire decision, and transport execution scopes. Added a no-claim sequence for exact-commit independent review, explicit encoding disposition, control-envelope freeze, per-platform authenticated transport experiments, hostile/negative coverage, lifecycle/resource accounting, and owner-reviewed readiness. Added rejection rules for using a template, in-process test, generated output, or passing validator as production IPC evidence.
-
-Decision:
-
-Keep `PB-011` partial. The new route improves execution traceability only; it does not accept `TASK-000011`, select a wire codec or generator, authorize a platform transport, approve `TASK-000003`, promote IPC readiness, or support renderer-security, agent-security, process-isolation, site-isolation, production IPC, or Chrome-class claims.
-
-Next question:
-
-Which owner-approved reviewer will produce the first independent `TASK-000011` evidence bundle on the exact commit?
-## 2026-07-19 - Sandbox probe execution and containment closure preparation
-
-Question:
-
-What execution and review order can convert the `WP-003` probe contract into platform containment evidence without counting stubs or policy names as sandbox proof?
-
-Inputs:
-
-- [Sandbox Probe Inventory](research/sandbox-probe-inventory-2026-07.md);
-- [WP-003 Sandbox Probe Contract](research/wp-003-sandbox-probe-plan-2026-07.md);
-- [Sandbox Platform-Evidence Decision Preparation](research/sandbox-platform-evidence-decision-prep-2026-07.md);
-- the specified `TASK-000004` manifest, probe catalog, evidence schema, package/readiness-review templates, security policy, and platform containment book.
-
-Method:
-
-Separated role/authority freeze, host-safe fixture preparation, unsandboxed controls, real constrained-role launch, expected-deny operations, compromised-client/lifecycle cases, per-platform effective-policy capture, full-denominator artifact retention, and owner-reviewed readiness. Added explicit rejection rules for application-level stubs, policy names without effective state, substituted helper processes, unsupported primitives treated as pass, success-only logs, and templates treated as containment evidence.
-
-Decision:
-
-Keep `PB-012` partial. The new route improves execution traceability only; it does not execute `TASK-000004`, prove platform containment, satisfy `SEC-GATE-1` or `SEC-GATE-6`, promote sandbox readiness, or support renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claims.
-
-Next question:
-
-Which owner-approved platform and real process role will produce the first reviewed sandbox probe package with an unsandboxed control?
-## 2026-07-19 - Benchmark evidence and claim closure preparation
-
-Question:
-
-What transition separates benchmark infrastructure self-tests, browser-run diagnostics, competitor comparisons, and public Chrome-class or extreme-performance claims?
-
-Inputs:
-
-- [Performance Benchmark Readiness Packet](research/performance-benchmark-readiness-packet-2026-07.md);
-- [Chrome-Class Performance Runbook](research/chrome-class-performance-runbook-2026-07.md);
-- [Benchmark Engine Baseline Harness Readiness Map](research/benchmark-engine-baseline-harness-readiness-map-2026-07.md);
-- [Benchmark Statistics Analysis Contract](research/benchmark-statistics-analysis-contract-2026-07.md);
-- benchmark manifests, browser-pin capture contracts, competitor inventories, runner self-tests, and the specified `TASK-000005` manifest.
-
-Method:
-
-Separated L0 contract/self-test evidence, L1 local browser-run diagnostics, L2 equal-workload competitor diagnostics, and L3 owner-reviewed public-claim candidates. Defined identity/control capture, runner and browser-run transitions, raw artifact and failure-denominator requirements, competitor pinning, statistical treatment, claim wording, expiry, rerun triggers, and rejection rules for silent reduction or unequal security/lifecycle settings.
-
-Decision:
-
-Keep `PB-013` partial and `TASK-000005` proposed-only. The new route improves evidence and claim traceability only; it does not run a browser, approve hardware, produce a competitor result, accept statistics, promote benchmark readiness, or support faster, lower-memory, lower-energy, Chrome-class, compatibility, production, or daily-driver claims.
-
-Next question:
-
-Which owner-approved fixed host and no-real-profile browser-run configuration will produce the first reviewed L1 diagnostic package?
-## 2026-07-19 - Native UI and accessibility closure preparation
-
-Question:
-
-What evidence order can connect toolkit selection, page-surface composition, component fixtures, input/IME, and assistive technology without expanding toolkit authority?
-
-Inputs:
-
-- [Toolkit-Neutral UI Adapter Contract Inventory](research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md);
-- [Native UI Framework Bake-Off Inventory](research/native-ui-framework-bakeoff-inventory-2026-07.md);
-- [Native UI Component Fixture Inventory](research/native-ui-component-fixture-inventory-2026-07.md);
-- [Page Surface Composition Inventory](research/page-surface-composition-inventory-2026-07.md);
-- [Window Input Accessibility Spike Inventory](research/window-input-accessibility-spike-inventory-2026-07.md);
-- UI-runtime/accessibility machine registries, readiness-review templates, and specified `TASK-000006` manifest.
-
-Method:
-
-Connected toolkit-neutral contracts, equivalent adapter runs, authority-separation tests, page-surface identity and fault evidence, component fixtures, reference-platform workflows, manual assistive-technology review, performance/recovery traces, and cross-lane owner review. Added rejection rules for toolkit-owned authority, substituted renderers, semantic models treated as platform accessibility proof, stale surface identity, and one-toolkit or one-platform leadership claims.
-
-Decision:
-
-Keep `PB-003`, `PB-004`, `PB-005`, `PB-014`, and `PB-015` partial and `TASK-000006` proposed-only. The new route improves execution traceability only; it does not select a toolkit, accept an ADR, satisfy `UI-GATE-7`/`UI-GATE-10`, promote accessibility or trusted-chrome readiness, or support release-path UI, performance, Chrome-class, production, or implementation claims.
-
-Next question:
-
-Which owner-approved toolkit-neutral adapter slice and reference platform will produce the first reviewed native UI/accessibility evidence package?
-# 2026-07-19 - Profile/session execution and data-safety closure preparation
-
-Question:
-
-What evidence must replace the checked profile/session planning templates before `PB-016` or `TASK-000007` can be treated as executable or data-safety evidence?
-
-Inputs:
-
-- [Profile Session Format Inventory](research/profile-session-format-inventory-2026-07.md);
-- [Profile and Session Data-Lifecycle Decision Preparation](research/profile-session-data-lifecycle-decision-prep-2026-07.md);
-- [profile-session-format-inventory.json](storage/machine/profile-session-format-inventory.json);
-- checked no-claim schema-package and readiness-review templates;
-- `TASK-000007` and the `PB-016` continuation/readiness records.
-
-Method:
-
-Added a no-claim closure route that sequences synthetic-fixture schema execution, forward/resume/rollback/downgrade migration, disk-full/power-loss/partial-write/corruption/crash fault injection, privacy and origin/private-session isolation, recovery and protected-work accounting, and named owner/independent review. Added rejection rules for real profiles, secrets, success-only evidence, silent downgrade/deletion, missing denominators, and template-only readiness.
-
-Decision:
-
-Keep `PB-016` partial and `TASK-000007` specified/proposed-only. The new report improves the handoff from planning templates to an evidence packet but does not approve profile implementation, real-profile migration, sync, credential storage, private-session readiness, protected-work readiness, data-loss safety, user-data handling, a production profile format, or release-path behavior.
-
-Impact:
-
-The profile/session lane now has one explicit execution and review sequence tied to the state-class decisions, machine ledger, crosswalk, continuation pack, and documentation audit. The next acceptable artifact is a retained synthetic-fixture execution packet with redacted logs, hashes, fault coverage, migration transitions, recovery accounting, cleanup evidence, and named review.
-
-Next question:
-
-Which synthetic profile/session schema package and fault boundary should be implemented first under a separately reviewed immutable task manifest?
-# 2026-07-19 - Profile/session closure route synchronization
-
-Question:
-
-Did the profile/session execution and data-safety closure route reach every canonical human-facing handoff that describes `PB-016` and `TASK-000007`?
-
-Method:
-
-Audited the task queue, pre-build checklist, build-readiness start guide, documentation-readiness evidence matrix, storage book, product-experience book, research index, continuation pack, operating board, machine crosswalk, build-information ledger, and documentation-readiness audit. Added the closure-preparation report to stale template-only routes and made the required evidence sequence consistent: synthetic fixtures, executable schema harness, migration/fault/recovery accounting, privacy isolation, and named owner review.
-
-Decision:
-
-The route is now synchronized without changing `PB-016` from `partial` or `TASK-000007` from proposed/specified-only. No profile implementation, real-profile migration, sync, credential storage, data-loss safety, user-data handling readiness, production profile format, or release-path claim was made.
-
-Validation:
-
-Focused profile/session, audit, Blueprint-link, and diff checks passed. The full PowerShell aggregate check passed with 387 Markdown files and 5,179 relative links; only existing CRLF normalization warnings were emitted.
-
-Next question:
-
-Which owner-reviewed dependency lane should produce the first real evidence packet after a reviewed immutable task manifest is approved?
-# 2026-07-19 - Closure-preparation route index synchronization
-
-Question:
-
-Do the dated closure-preparation reports have one coherent stop/resume route across the root docs entrypoint, operating board, task queue, evidence matrix, continuation pack, research index, crosswalk, and machine ledgers?
-
-Method:
-
-Compared all seven active closure-preparation reports for `PB-002`, `PB-008`/`PB-009`, `PB-011`, `PB-012`, `PB-013`, native UI/accessibility, and `PB-016` against their canonical references. Added a shared route index to the operating board, proposed task queue, evidence matrix, and root documentation entrypoint, and repaired missing lane-specific references in the continuation pack and stop/resume prose.
-
-Decision:
-
-Keep every lane no-claim and below owner-reviewed readiness. The route index is documentation organization and evidence sequencing only; it does not approve a task, source, toolkit, transport, sandbox policy, benchmark claim, profile format, production path, or broad build.
-
-Impact:
-
-Maintainers can now start from one cross-lane closure route and reach the matching report before shaping a reviewed immutable task manifest. The canonical percentage remains unchanged because route completeness does not equal owner-reviewed evidence or decision closure.
-
-Next question:
-
-Which first closure packet will receive the required named owner and independent review record without weakening the no-claim boundaries?
-# 2026-07-19 - Operational closure-preparation contracts
-
-Question:
-
-Can the package/update, incident-response, backup-ownership, and `PB-020` closure lanes use the same evidence-order and review discipline as the engineering lanes?
-
-Method:
-
-Added no-claim execution/review preparation reports for `PB-017`/`TASK-000009`, `PB-018`/`TASK-000010`, and `PB-019`/`PB-020`/`TASK-000008`. Each report defines synthetic or fake-key fixtures, ordered evidence, fault and failure accounting, privacy/access controls, rejection rules, named owner and independent review, and explicit unsupported authority boundaries. Synchronized the reports through the research index, root docs index, route crosswalk, build-information ledger, documentation audit, repository map, task queue, operating board, evidence matrix, and continuation pack.
-
-Decision:
-
-Keep `PB-017` and `PB-018` partial, `PB-019` blocked, and `PB-020` unresolved. The reports improve documentation completeness and stop/resume continuity but do not approve an updater, signing hierarchy, incident authority, disclosure, qualified backups, two-person control, release path, production authority, or broad build.
-
-Impact:
-
-All ten active closure routes now have a common no-claim handoff shape before a task can become a reviewed immutable execution manifest. The documentation percentage remains a gate measure: route completeness does not equal owner-reviewed evidence or readiness closure.
-
-Next question:
-
-Which operational evidence packet can be reviewed first without using production keys, live incident data, placeholder owners, or unbounded authority?
-# 2026-07-19 - Operational closure routes added to primary entrypoints
-
-Question:
-
-Can a maintainer starting from `Start Here`, the progress snapshot, or the owner-decision board reach the same package/update, incident-response, and backup-ownership closure packet as the machine registries and research index?
-
-Method:
-
-Audited the root README, `docs/start-here.md`, the progress snapshot, and the owner-decision closure board after adding the three operational closure-preparation reports. Added each report to the primary human handoff surfaces and preserved the existing no-claim status and owner-decision boundaries.
-
-Decision:
-
-The operational lanes are now discoverable from the primary entrypoints, but `PB-017`/`PB-018` remain partial, `PB-019` remains blocked, and `PB-020` remains unresolved. Entry-point completeness does not establish execution evidence, authority, or full-build readiness.
-
-Impact:
-
-A stopping or continuing maintainer can follow the same route from root orientation through the owner board, task queue, closure report, evidence matrix, machine crosswalk, and validation commands without relying on chat history.
-
-Next question:
-
-Which owner-approved evidence packet should be admitted into the closure board first, with all names, hashes, review records, and exception expiry fields populated?
-# 2026-07-19 - Progress and readiness-claim consistency audit
-
-Question:
-
-Do the repository's documented percentages, gate distributions, and broad-build statements still match the authoritative documentation-readiness and build-information registries after the closure-route expansion?
-
-Method:
-
-Searched the root README, documentation index and policy, start page, progress snapshot, owner-decision board, research index, repository map, Blueprint research program, implementation audit, capability traceability map, and current readiness reports for percentage, broad-build, all-information-ready, and documentation-completion claims. No contradictory percentage or authorization claim was found. Added the three operational closure routes to the completion-audit blocker table so the prose audit points directly to the same package/update, incident-response, and backup-ownership evidence contracts as the machine records.
-
-Decision:
-
-Retain **90% contained-M0 documentation organization** and **0% full-build closure**. The percentages remain machine-audited gate measures, not document-count estimates. No readiness or owner decision was promoted.
-
-Next question:
-
-Which owner-reviewed decision record can change a machine-audited criterion without weakening the broad-build claim boundary?
-
-# 2026-07-19 - PB-020 closure and owner-decision preparation
-
-Question:
-
-Does the checked closure-review template have a usable final handoff without being mistaken for an approval record?
-
-Method:
-
-Reviewed the closure schema and no-claim template, implementation kickoff inventory, dependency graph, owner-decision board, documentation audit, and current continuation surfaces. Added a human-readable closure-preparation route that defines evidence collection order, decision-record fields, immutable task-authority checks, named owner and independent review, exception handling, rejection rules, and the promotion boundary. Linked it from all relevant discovery, tracking, and repository-index documents.
-
-Decision:
-
-Keep `PB-020` partial and preserve **90% contained-M0 documentation organization** and **0% full-build closure**. The new route improves stop/resume continuity and does not authorize tasks, close gates, or establish all-information-ready-for-building.
-
-Next question:
-
-Which named owner-reviewed gate record, with retained evidence and independent review, is ready to replace a no-claim template?
-
-# 2026-07-19 - PB-020 closure handoff entrypoint synchronization
-
-Question:
-
-Do the one-screen and first-entry documents point to the same final closure-preparation route as the indexes and machine audit?
-
-Method:
-
-Added the PB-020 closure and owner-decision preparation report to the progress snapshot, Start Here, root README, and machine documentation-audit evidence references. Re-ran the documentation-readiness validator and relative-link validation.
-
-Decision:
-
-The closure route is now reachable from every primary stop/resume entrypoint. The audit remains 9 of 10 criteria ready for contained M0 and 0 of 10 ready for the full goal; no owner decision or readiness state changed.
-
-Next question:
-
-Which unresolved lane can produce the next real, independently reviewed evidence packet without expanding authority or weakening claim boundaries?
-
-# 2026-07-19 - ADR-0009 closure-route synchronization
-
-Question:
-
-Can a maintainer reach the source-strategy evidence-order handoff from every primary `PB-002` continuation surface?
-
-Method:
-
-Compared the ADR-0009 closure-preparation report, source packet, evidence matrix, decision draft, evidence registry, operating board, continuation pack, and owner-decision board. Added the closure-preparation route to the ordered `PB-002` continuation step, both source-strategy readiness tables, and the owner-decision action row.
-
-Decision:
-
-The source-strategy documentation route is now coherent and still explicitly no-claim. `PB-002` remains blocked because the evidence registry is partial/blocked and no owner-reviewed decision exists.
-
-Next question:
-
-Which `ADR9-EV-*` item can be converted from preparation to independently reproduced evidence under an approved, immutable task manifest?
-
-# 2026-07-19 - Fresh-host closure-route synchronization
-
-Question:
-
-Can a maintainer reach the same pinned-toolchain and fresh-host evidence-order contract from the ordered operating path, progress snapshot, and owner-decision board?
-
-Method:
-
-Compared the fresh-host reproduction inventory, run-record and readiness-review templates, closure-preparation report, task queue, operating board, progress snapshot, and owner-decision board. Added the closure route to the ordered `PB-008`/`PB-009` step, the progress dashboard, and the owner-decision action row.
-
-Decision:
-
-The lane is now coherently routed without changing its status. `PB-008` and `PB-009` remain partial, `TASK-000002` remains proposed-only, and no fresh-host, reproducibility, release-confidence, or broad-build claim is supported.
-
-Next question:
-
-Which evidence lane can be executed only after a reviewed immutable task manifest is available?
-
-# 2026-07-19 - Cross-lane closure index and IPC/sandbox route synchronization
-
-Question:
-
-Does the documentation readiness matrix and owner board expose both the final PB-020 reconciliation route and the security-lane evidence order?
-
-Method:
-
-Compared the operating-board route index, task-queue route index, documentation-readiness evidence matrix, owner-decision board, IPC closure report, sandbox closure report, and primary stop/resume pages. Added the final PB-020 route to the cross-lane indexes and linked the IPC and sandbox closure reports from their owner-decision actions.
-
-Decision:
-
-The closure indexes now cover all ten evidence lanes plus final PB-020 reconciliation. IPC and sandbox remain partial; templates and validators do not establish transport, containment, renderer-security, site-isolation, or production claims.
-
-Next question:
-
-Which security-lane evidence packet can be admitted only after task authority, source identity, and independent review are present?
-
-# 2026-07-19 - Benchmark and extreme-performance route synchronization
-
-Question:
-
-Can the Chrome-competitor performance objective be followed from the progress dashboard and task/owner decisions to one claim-gated evidence contract?
-
-Method:
-
-Compared the Chrome-class performance lane map, benchmark evidence and claim closure preparation, statistics-analysis contract, benchmark readiness and claim-bundle templates, task queue, progress snapshot, and owner-decision board. Added the closure route to the `PB-013` owner action, `TASK-000005` handoff, and performance research dashboard.
-
-Decision:
-
-The performance route is now coherent and remains explicitly no-claim. `PB-013` is still documented without a browser runner, `TASK-000005` remains proposed-only, and no speed, memory, energy, competitor, Chrome-class, or daily-driver claim is supported.
-
-Next question:
-
-What reviewed L1 browser-run evidence packet must exist before any competitor comparison is even considered?
-
-# 2026-07-19 - Native UI and accessibility route synchronization
-
-Question:
-
-Can a maintainer reach the native-shell, page-surface, IME, and assistive-technology evidence order from the task, owner, and progress records?
-
-Method:
-
-Compared the native UI/accessibility closure report, native readiness-review template, component/page-surface/window-input inventories, `TASK-000006`, the progress snapshot, and the owner-decision board. Added the closure route to the native owner action, task handoff, and native research dashboard.
-
-Decision:
-
-The native-shell route is now coherent and remains no-claim. `PB-003`, `PB-004`, `PB-005`, `PB-014`, and `PB-015` remain partial; `TASK-000006` remains proposed-only; no toolkit, trusted-chrome, page-surface, accessibility, screen-reader, or release-path UI claim is supported.
-
-Next question:
-
-Which native workflow evidence can be reviewed without selecting a release toolkit or granting toolkit-owned authority?
-
-# 2026-07-19 - Profile and session data-safety route synchronization
-
-Question:
-
-Can a maintainer reach the profile/session migration and data-loss evidence order from the task, owner, and progress records before real user data is involved?
-
-Method:
-
-Compared the profile/session format inventory, lifecycle decision preparation, execution/data-safety closure report, schema-package and readiness-review templates, `TASK-000007`, the progress snapshot, and owner-decision board. Added the closure route to the `PB-016` owner action and profile/session research dashboard.
-
-Decision:
-
-The profile/session route is now coherent and remains no-claim. `PB-016` remains partial, `TASK-000007` remains proposed-only, and no real-profile migration, sync, credential, private-session, protected-work, data-loss, or production-format claim is supported.
-
-Next question:
-
-Which synthetic-fixture migration packet can demonstrate fault and recovery behavior without accessing real user data?
-
-# 2026-07-19 - Package/update release-safety route synchronization
-
-Question:
-
-Can a maintainer reach the package identity, fake-key, rollback, migration, and release-safety evidence order from the owner and progress records?
-
-Method:
-
-Compared the package/update lab inventory, trust decision preparation, execution/release-safety closure report, package and readiness-review templates, `TASK-000009`, the progress snapshot, and owner-decision board. Added the closure route to the `PB-017` owner action and package/update research dashboard.
-
-Decision:
-
-The package/update route is now coherent and remains no-claim. `PB-017` remains partial, `TASK-000009` remains proposed-only, and no package format, updater, signing, stable-channel, rollback-safety, supported-security, release, or production claim is supported.
-
-Next question:
-
-Which fake-key local lab packet can demonstrate metadata and staged-install failure handling without approaching production release authority?
-
-# 2026-07-19 - Owner-decision board scope synchronization
-
-Question:
-
-Does the human owner-decision closure board preserve the same canonical gate scopes as the machine synchronization matrix?
-
-Method:
-
-Compared the owner-decision closure board, synchronization matrix, closure-review template, pre-build readiness, and both owner-decision validators. The check found that the board combined `PB-019` backup ownership and `PB-020` build-readiness closure even though the machine matrix treats them as separate scopes.
-
-Decision:
-
-Split the board into distinct `PB-019` and `PB-020` rows and added a validator check requiring exactly 11 board decision-lane scopes to match the machine matrix. Backup ownership and build-readiness closure remain unresolved and no-claim.
-
-Next question:
-
-Which owner-reviewed evidence packet can close one of the separate scopes without conflating backup coverage with readiness promotion?
-
-# 2026-07-19 - Research packet ownership metadata audit
-
-Question:
-
-Can a maintainer identify the status and responsible role for every durable research packet without inferring ownership from a linked gate?
-
-Method:
-
-Scanned all 103 indexed durable research Markdown files for explicit `Status` and `Owner` metadata, then compared the missing entries with each packet's gate, scope, and existing governance language.
-
-Decision:
-
-Added role-based owner metadata to the nine previously incomplete packets and the final closure-record example found during validation. Strengthened `validate_research_index.py` so future durable research files cannot enter the index without both fields. This improves handoff metadata only and does not promote any gate or research claim.
-
-Next question:
-
-Which remaining research packets require a dated evidence-refresh trigger beyond their owner and status metadata?
-
-# 2026-07-19 - JavaScript JIT requirement routing audit
-
-Question:
-
-Can accepted baseline-JIT and hardened no-JIT requirements be followed from the requirements registry into design, work-package, milestone, dependency, and evidence planning without implying implementation?
-
-Method:
-
-Compared `REQ-JS-004` and `REQ-JS-005` across the requirements registry, professional traceability, Blueprint 06, the JavaScript engineering book, M6 implementation plan, work-package playbooks, backlog, execution graph, task sequence, and Chrome-class traceability map. The audit found that the M6 prose existed but no canonical work package or design references routed the two requirements.
-
-Decision:
-
-Added planned `WP-019` for baseline JIT and hardened JavaScript execution, synchronized the backlog, dependency graph, roadmap, M6 sequence, playbook, and traceability records, and preserved explicit no-claim status. `WP-019` remains non-executable until its interpreter/GC, W^X, differential, no-JIT, security, and owner-review gates are satisfied.
-
-Next question:
-
-Which accepted requirement family next lacks a dedicated work-package or verification route after the JavaScript runtime correction?
-
-# 2026-07-19 - Accepted requirement to work-package coverage audit
-
-Question:
-
-Does every accepted requirement have a canonical work-package owner and design route before implementation planning is considered complete?
-
-Method:
-
-Compared all 46 accepted requirements with the work-package backlog, execution graph, implementation plan, professional traceability, and Chrome-class capability map. The audit found six unmapped requirements: web-content accessibility bridging, WebAssembly, CORS/CSP policy, supported-version and emergency-patch capacity, ephemeral private sessions, and history/bookmarks/downloads/settings surfaces.
-
-Decision:
-
-Attached five requirements to their existing domain packages, added design references, and created planned `WP-020` for everyday product surfaces and browser workflows. Synchronized the roadmap, implementation plan, dependency graph, task sequence, traceability records, and capability map. All 46 requirements now have work-package coverage; no implementation, acceptance, compatibility, security, accessibility, product, or performance claim was promoted.
-
-Next question:
-
-Which accepted requirements still lack non-empty verification or evidence plans after their ownership routes are present?
-
-# 2026-07-19 - Work-package playbook completeness control
-
-Question:
-
-Can a maintainer rely on every canonical work package having an executable documentation shape before task manifests are considered?
-
-Method:
-
-Audited all 20 backlog packages against `16-work-package-playbooks.md` for a package section, acceptance criteria, negative tests, handoff, and unsupported-scope statement. Separately checked that the union of package requirement mappings covers all 46 accepted requirements without unknown IDs.
-
-Decision:
-
-The current playbooks satisfy those conditions. Strengthened `validate_implementation_plan.py` to enforce them on every future change. This validates documentation structure and requirement routing only; it does not approve a package, task, implementation, or readiness gate.
-
-Next question:
-
-Which evidence class still has no package-specific collection route beyond generic acceptance prose?
-
-# 2026-07-19 - Professional requirement design-route audit
-
-Question:
-
-Can every accepted requirement be traced from the stable registry to canonical design sources before implementation begins?
-
-Method:
-
-Compared all 46 requirements in `professional-traceability.json` with the owning Blueprint and detailed engineering books. Thirty-six requirements had empty design arrays despite existing canonical design material.
-
-Decision:
-
-Added existing canonical design sources for all 46 requirements. Implementation, source adoption, tests, reviews, and evidence remain empty unless separately supported. Strengthened `validate_blueprint.py` so future changes cannot omit design routes or point at missing files.
-
-Next question:
-
-Which requirement-specific verification or evidence route should be formalized first after design routing is complete?
-
-# 2026-07-19 - Requirement verification matrix audit
-
-Question:
-
-Does every accepted requirement have a concrete verification and evidence-collection route before implementation work is approved?
-
-Method:
-
-Compared all 46 accepted requirements, 20 work packages, the implementation evidence catalog, professional traceability registry, detailed engineering books, and existing no-claim readiness lanes. Forty-four requirements had no explicit planned test or evidence route; the two existing reference-test records were not production evidence.
-
-Decision:
-
-Added the no-claim Requirement Verification Matrix with 11 domain lanes. Each lane records requirement coverage, work-package ownership, existing source documents, evidence classes, test layers, negative and failure cases, required artifacts, and a next-proof condition. Added validator enforcement for exact 46-requirement coverage, valid work packages/evidence classes, and existing source paths. This creates a verification plan without populating actual tests, reviews, or evidence in professional traceability.
-
-Next question:
-
-Which owner-approved evidence lane should be selected first after the unresolved source-strategy, fresh-host, IPC, sandbox, native-shell, and ownership gates are closed?
-
-# 2026-07-19 - Requirement verification navigation sync
-
-Question:
-
-Can a maintainer reach the planned verification layer from both the requirements handbook and the documentation-readiness evidence matrix without relying on chat history?
-
-Method:
-
-Reconciled the new requirement verification matrix, professional traceability registry, requirements registry, work-package backlog, implementation evidence catalog, project-buildout handbook, documentation-readiness matrix, documentation index, and repository navigation.
-
-Decision:
-
-Added explicit inbound routes from the requirements/evidence handbook, documentation-readiness matrix, and stop/resume documentation index. The synchronization clarifies that planned verification is distinct from actual source, tests, reviews, and evidence and does not change the 90% contained-M0 or 0% full-build measurements.
-
-Next question:
-
-Which planned verification lane should receive the first owner-approved task manifest after the remaining source-strategy and readiness gates are resolved?
-
-# 2026-07-19 - Semantic maturity-language audit
-
-Question:
-
-Do canonical entry points distinguish the validation-backed M0 foundation from browser implementation, supported capability, production readiness, and Chrome-class claims?
-
-Method:
-
-Scanned the root README, documentation index, project-buildout handbook, Blueprint chapters, readiness records, research packets, and validator policy markers for maturity terms such as implemented, verified, supported, complete, production-ready, compatible, faster, and Chrome-class. Compared each positive statement with its surrounding scope and claim boundary.
-
-Decision:
-
-Reworded the root README heading from `Implemented foundation` to `Contained M0 foundation currently present and validation-backed` and added the requirement verification matrix to the root canonical-status route. No unsupported product, security, compatibility, performance, accessibility, release, or production claim was found or promoted.
-
-Next question:
-
-Which remaining human-facing status statement should be reviewed after the next evidence lane changes its maturity state?
-
-# 2026-07-19 - Servo upstream freshness refresh
-
-Question:
-
-Has upstream Servo moved since the dated `ADR-0009` provenance and maintenance evidence, and does that change any Turing source-strategy conclusion?
-
-Method:
-
-Read the official `servo/servo` GitHub repository, `main` branch, latest-release API, and crates.io package metadata on 2026-07-19. Compared the refreshed observations with the 2026-07-17 provenance, security/maintenance, and ADR-0009 packet records. No upstream checkout, source archive, build, dependency extraction, or artifact was copied into Turing.
-
-Decision:
-
-Recorded that upstream `main` now points to `736ad1bda08c1af419aadc903e82938f8610a65d` and that the repository was pushed/updated on 2026-07-19. The latest release remains immutable `v0.3.0` and the latest crates.io package remains `servo 0.4.0`. The prior build comparison is explicitly historical; no build, compatibility, security, performance, license, maintenance, or source-baseline conclusion transfers to the newer `main` commit, and `PB-002` remains blocked.
-
-Next question:
-
-Will an owner select the historical build baseline, refresh and rebuild upstream `main`, select the release/archive/package surface, or reject Servo as a release-code source?
-
-# 2026-07-19 - Current-host toolchain wrapper diagnostic
-
-Question:
-
-Does the documented Windows doctor entry point execute against the pinned contained-M0 toolchain without changing the fresh-host claim boundary?
-
-Method:
-
-Ran `tools/doctor.ps1 --ci` from the current checkout with `CARGO_TARGET_DIR` set to `%TEMP%\turing-current-host-doctor`. The command reported Rust/Cargo `1.97.1`, rustfmt and Clippy `1.97.1`, Python `3.12.10`, Git `2.52.0.windows.1`, and `doctor: ready for contained M0 development`.
-
-Decision:
-
-The Windows doctor wrapper is executable in this checkout and uses an external target directory as documented. This is same-host diagnostic evidence only: no independent host was provisioned, no fresh-host run record or retained log bundle was created, and `PB-008`, `PB-009`, `PB-020`, and `TASK-000002` remain unchanged. The result does not support a clean-host, reproducibility, release-confidence, production, broad-implementation, or Chrome-class claim.
-
-Next question:
-
-When will the owner provide the named independent reviewer and fresh reference host or explicitly scoped clean VM required to execute `TASK-000002`?
-
-# 2026-07-19 - Memory representation and tab lifecycle research handoff
-
-Question:
-
-Can the deferred memory/object-representation and tab-lifecycle questions be made executable as a source-backed experiment route without turning compactness or lifecycle vocabulary into a performance claim?
-
-Method:
-
-Checked the Rust type-layout and allocation documentation and Chromium's public tab-discard/lifecycle documentation and source on 2026-07-19. Reconciled those observations with `RQ-01`, `RQ-03`, `RQ-35`, `REQ-PERF-002`, `REQ-PERF-003`, the performance engineering book, the benchmark closure route, resource attribution, security identity rules, and the research-question coverage registry.
-
-Decision:
-
-Added a deferred no-claim research packet defining representation families, legal corpus and 5/15/30/100-tab workloads, memory categories, lifecycle/recovery/accessibility measures, safety and authority constraints, required artifacts, statistical treatment, and rejection rules. The packet explicitly rejects relying on unspecified default Rust layout, a single memory number, silent tab discard, hidden failures, or reduced security/accessibility/recovery workloads. No representation, allocator, process model, lifecycle policy, benchmark result, performance claim, or readiness gate changed.
-
-Next question:
-
-After source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark authority prerequisites are resolved, which owner-approved experiment manifest and synthetic fixture package will execute this lane?
-
-# 2026-07-19 - Process topology and isolation-adjusted memory research handoff
-
-Question:
-
-Can the process-topology question be made executable without confusing lower process count or lower memory with security-equivalent performance?
-
-Method:
-
-Checked the official Chromium process-model/site-isolation, process-model, and RenderingNG documentation plus Firefox process-model, process-role, and accessibility architecture documentation on 2026-07-19. Reconciled those observations with `RQ-02`, `RQ-20`, `RQ-36`, `PB-011`, `PB-012`, `PB-013`, the IPC and sandbox closure routes, the benchmark 30-tab contract, and the existing memory/lifecycle research packet.
-
-Decision:
-
-Added an active no-claim process-topology research packet defining site-instance identity, candidate sharing models, helper roles, security-equivalence constraints, 8/16/32 GiB and 5/15/30/100-tab workloads, process/resource/IPC/accessibility/recovery measures, required artifacts, and rejection rules. It explicitly prevents site-isolation relaxation, omitted helper processes, hidden failures, or lower process count from becoming an optimization claim. No topology, IPC, sandbox, benchmark, security, performance, or readiness decision changed.
-
-Next question:
-
-After task authority, real transport, sandbox-policy, and benchmark prerequisites are resolved, which owner-approved topology manifest and synthetic process/lifecycle fixture package will execute this route?
-
-# 2026-07-19 - Completion-audit research-lane synchronization
-
-Question:
-
-Does the central documentation-readiness completion audit include the newly added performance and process-topology research packets, rather than leaving them discoverable only through the general research index?
-
-Method:
-
-Compared the research index, completion-audit machine source list, completion-audit validator requirements, research-lane evidence references, and the human completion-audit narrative after adding the memory/lifecycle and process-topology packets.
-
-Decision:
-
-Added both packets to the checked completion-audit source set and `DOC-READY-RESEARCH_LANES` evidence references, added them to the validator's required source records, and updated the human audit to name them as active performance/security research inputs. The audit remains `9/10` ready for contained M0 and `0%` full-build closure; this synchronization does not answer a research question, approve a task, or promote a gate.
-
-Next question:
-
-Which remaining active research route should receive the next source-backed packet without duplicating an existing closure preparation or bypassing task authority?
-
-# 2026-07-19 - Nova native build-entry criteria
-
-Question:
-
-Can the supplied Nova visual/layout source become an unambiguous future native-build input without allowing React, JSX, page content, or visual previews to own trusted browser behavior?
-
-Method:
-
-Compared the Nova source manifest and surface-contract map with the UI runtime book, token authoring workflow, component-fixture inventory, page-surface contract, native UI closure preparation, trusted UI rules, and current `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020` boundaries.
-
-Decision:
-
-Added a no-claim Nova Native Build Entry Criteria packet defining source identity, visual-versus-behavioral authority, semantic token and surface extraction, typed state/command mapping, native fixture requirements, page-surface identity, build-entry gates, review artifacts, and rejection rules. Linked it from the UI runtime book, research indexes, progress snapshot, repository map, and chronology. Nova remains the primary visual/layout reference, React remains design-lab-only, and no toolkit, native adapter, UI gate, page-surface, accessibility, performance, or implementation decision changed.
-
-Next question:
-
-When the native UI predecessors and task authority are accepted, which owner-approved extraction manifest and toolkit-neutral fixture package will be used to start the Nova handoff?
-# 2026-07-19 - Research packet continuity contract
-
-Question:
-
-Can every durable research packet preserve enough local context for a new maintainer or agent to resume it without relying on chat history or a narrow index row?
-
-Method:
-
-Audited all 127 durable Markdown packets after the existing research-index validator confirmed indexing, status, and owner metadata. The audit used flexible vocabulary rather than requiring identical headings: question or scope, evidence or method, disposition or next step, and an explicit no-claim or unsupported boundary.
-
-Decision:
-
-Strengthened `tools/validate_research_index.py` to enforce those four continuity fields for every durable packet, added the missing market-research question to `browser-market-gap-2026-07.md`, and documented the contract in the research index and documentation-readiness evidence matrix. This improves resumability and catches structurally incomplete packets without promoting any research result, readiness gate, implementation task, performance claim, or product claim.
-
-Next question:
-
-Which owner-controlled evidence lane should replace its no-claim preparation records with retained executable evidence after task authority and independent review are available?
-# 2026-07-20
-
-Compared the research-readiness crosswalk with the proposed build-readiness task queue, requirements, and risks. Added explicit lane-level requirement and risk bindings and validator checks that they mirror the task queue, then synchronized the crosswalk schema, research index, coverage audit, evidence matrix, and repository map. This closes task-to-requirement/risk traceability only; it does not approve tasks, answer research questions, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
-
-Compared the active research packets validated by `validate_research_index.py` with the central documentation-readiness audit source list. Added the five missing active packet paths to the machine audit, and added a validator assertion that every active research packet is named there. The human audit now names all `7/7` active packets. This closes source-list continuity only; no research question, owner decision, readiness gate, task, implementation, or performance claim changed.
-
-# 2026-07-20 - Nova native extraction worksheet
-
-Question:
-
-Can the supplied Nova visual/layout source enter a future native task through a resumable worksheet that separates visual identity from Rust authority, page-surface identity, accessibility evidence, and review promotion?
-
-Method:
-
-Compared the Nova source manifest and surface-contract map with the native UI closure preparation, component-fixture inventory, page-surface composition, accessibility source manifest, `TASK-000006`, and native UI readiness-review template. Added a required extraction worksheet for source identity, surface/state coverage, Rust state/commands, trust identity, native fixtures, page-surface/accessibility, and review/promotion. Added validator coverage for the worksheet and `design_input_only` boundary.
-
-Decision:
-
-Nova remains the primary visual/layout reference, React/JSX remains design-lab-only, no toolkit or native adapter is selected, and no UI gate or native implementation claim changed. The worksheet improves handoff completeness only.
-
-Next question:
-
-When will an approved `TASK-000006` manifest and independent reviewer authorize the first toolkit-neutral Nova fixture slice?
-
-# 2026-07-20 - Benchmark closure worksheet
-
-Question:
-
-Can the `PB-013` benchmark route make the exact evidence, equivalence, denominator, review, and claim-expiry inputs explicit before any L0/L1/L2/L3 promotion?
-
-Method:
-
-Compared the benchmark evidence-level contract, benchmark claim-bundle template, statistics-analysis plan, readiness-review template, browser-pin/corpus/runner/artifact registries, and PB-013 task/crosswalk records. Added a required closure worksheet covering evidence level, measurement identity, workload/security equivalence, raw artifacts, denominator/analysis, review/claim scope, and promotion/rollback. Added validator coverage for the worksheet and its no-runner boundary.
-
-Decision:
-
-The worksheet improves benchmark handoff completeness only. `PB-013` remains `documented_no_runner`, `TASK-000005` remains proposed-only, and no browser, competitor, speed, memory, energy, or Chrome-class claim changed.
-
-Next question:
-
-When will an owner-approved `TASK-000005` manifest and independent reviewer authorize the first retained L1 browser-run package?
-
-# 2026-07-20 - ADR-0009 owner decision worksheet
-
-Question:
-
-Can the source-strategy closure route make the exact owner inputs and synchronized record changes explicit for every option without selecting an option by implication?
-
-Method:
-
-Compared the ADR-0009 option matrix, decision-review template, evidence registry, evidence traceability matrix, PB-002 readiness record, and owner-decision closure board. Added a required pre-review worksheet covering option disposition, charter effect, source boundary, all 18 evidence statuses, authority/review, authorization scope, operations/rollback, and synchronized document/registry changes. Added validator coverage for those fields and the unresolved-template boundary.
-
-Decision:
-
-The worksheet improves decision completeness and resumability only. All five option rows remain unresolved, no option is selected, `PB-002` remains blocked, and no source import, component approval, release-code authorization, compatibility, security, performance, or Chrome-class claim changed.
-
-Next question:
-
-When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?
-
-# 2026-07-20 - Sandbox containment closure worksheet
-
-Question:
-
-Can each future sandbox probe package distinguish requested policy from effective OS enforcement while preserving expected-deny, compromised-client, lifecycle, host-safety, cleanup, platform, and review evidence?
-
-Method:
-
-Compared the sandbox probe inventory, WP-003 contract, platform-source manifest, expected-deny package template, readiness-review template, `TASK-000004`, and sandbox crosswalk lane. Added a required package worksheet for role/package identity, requested versus effective policy, allowed controls, expected-deny operations, compromised-client/lifecycle cases, host safety/cleanup, and platform/review scope. Added validator coverage for the worksheet.
-
-Decision:
-
-The worksheet improves containment evidence handoff completeness only. No packaged probe was executed; `PB-012` remains partial, `TASK-000004` remains proposed-only, and no sandbox, renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claim changed.
-
-Next question:
-
-When will an approved `TASK-000004` package and independent security/platform review produce the first retained expected-deny result?
-
-# 2026-07-20 - IPC authority closure worksheet
-
-Question:
-
-Can the IPC route preserve the distinction between the contained M0 policy reference, wire-format decision, and authenticated platform transport while making negative, lifecycle, resource, and review evidence resumable?
-
-Method:
-
-Compared the IPC capability inventory, `TASK-000011` review handoff and evidence bundles, control-envelope template, wire-source manifest, transport closure preparation, `TASK-000003`, readiness-review template, and IPC crosswalk lane. Added a required worksheet for scope/maturity, schema/wire authority, peer/channel identity, negative/lifecycle coverage, resource/handle bounds, platform evidence, and review/promotion. Added validator coverage for the worksheet.
-
-Decision:
-
-The worksheet improves IPC evidence handoff completeness only. `TASK-000011` remains review-pending, `PB-011` remains partial, no wire encoding or transport is approved, and no production IPC, renderer-security, agent-security, process-isolation, site-isolation, or Chrome-class claim changed.
-
-Next question:
-
-When will an independent reviewer create an accepted evidence bundle for the exact `TASK-000011` commit so the wire/transport scope can be reviewed separately?
-
-# 2026-07-20 - Fresh-host closure worksheet
-
-Question:
-
-Can the pinned-toolchain and fresh-host route preserve host class, source identity, command denominator, cache behavior, acquisition/replay mode, failures, cleanup, and promotion boundaries in one resumable handoff?
-
-Method:
-
-Compared the fresh-host reproduction inventory and registry with the toolchain-source manifest, run-record schema/template, readiness-review template, build-information ledger, `TASK-000002`, and fresh-host crosswalk lane. Added a required closure worksheet for host identity, source checkout, toolchain/commands, cache/artifact roots, acquisition/replay, failure/cleanup denominator, and review/promotion. Added validator coverage for the worksheet.
-
-Decision:
-
-The worksheet improves reproducibility handoff completeness only. No independent fresh-host run was executed; `PB-008`/`PB-009` remain partial, `TASK-000002` remains proposed-only, and no release-confidence, production, implementation, or Chrome-class claim changed.
-
-Next question:
-
-When will an approved `TASK-000002` manifest and independent host or owner-approved clean VM produce the first retained run record?
-
-# 2026-07-20 - Profile/session closure worksheet
-
-Question:
-
-Can the profile/session lane preserve data-class identity, schema authority, isolation, fault recovery, migration, privacy, loss accounting, and named review in one resumable handoff without implying profile implementation or data-safety approval?
-
-Method:
-
-Compared the profile/session format inventory, source manifest, schema-package template, readiness-review template, `TASK-000007`, PB-016 crosswalk lane, and data-safety closure route. Added a required worksheet for scope/data classes, schema authority, profile/Space/session isolation, fault and recovery coverage, migration/rollback identity, privacy and credential boundaries, loss/restoration accounting, and review/promotion. Added validator coverage for the worksheet and its no-claim boundary.
-
-Decision:
-
-The worksheet improves profile/session evidence handoff completeness only. `PB-016` remains partial, `TASK-000007` remains specified/proposed-only, and no profile implementation, real-profile migration, credential, sync, private-session, protected-work, data-loss, release, or Chrome-class claim changed.
-
-Next question:
-
-When will an approved synthetic-fixture packet with fault-injected migration and recovery evidence receive named storage, privacy-data, security, quality, product, release-operations, and independent review?
-
-# 2026-07-20 - PB-020 closure worksheet
-
-Question:
-
-Can the final build-readiness packet reconcile every gate, task, evidence denominator, exception, claim boundary, and synchronized registry update without turning a template or green validator into broad-build authorization?
-
-Method:
-
-Compared the PB-020 closure preparation, no-claim closure-review template and schema, owner-decision board, documentation-readiness audit, implementation kickoff review, dependency graph, task queue, and lane-specific closure preparations. Added a required cross-lane worksheet for review identity and digests, gate reconciliation, task authority, evidence/failure accounting, decisions and exceptions, claim scope, synchronized updates, and final promotion status. Added validator coverage for the worksheet and its no-claim boundary.
-
-Decision:
-
-The worksheet improves final owner-decision handoff completeness only. `PB-020` remains unresolved, the documentation audit remains `ready_for_contained_m0_only_full_goal_partial`, and no all-information-ready-for-building, broad M1, release, production, Chrome-class, performance, compatibility, security, or accessibility claim changed.
-
-Next question:
-
-When will the owner provide the immutable review snapshot, named independent reviewer, and accepted decision record for each remaining prerequisite gate?
-
-# 2026-07-20 - PB-006 deferred-platform reconciliation
-
-Question:
-
-Does the final `PB-020` closure handoff preserve the deliberately separate `PB-006` platform decision without letting its exclusion from the active owner board look like a completed platform selection?
-
-Method:
-
-Compared the reference-platform scorecard and machine record, the `PB-006` pre-build readiness row, build-information ledger, owner-decision board, PB-020 closure worksheet, closure-review template, and validator. Added an explicit deferred/not-selected `PB-006` disposition, revisit trigger, and support-boundary requirement to the final worksheet and validator.
-
-Decision:
-
-`PB-006` remains not selected and outside the 11 active owner-decision rows until M1 product-support scope, native-shell decisions, and platform budget are accepted. The reconciliation prevents omission from being mistaken for closure; it does not select Windows, macOS, or Linux or change any support, compatibility, accessibility, performance, security, release, or production claim.
-
-Next question:
-
-When will the owner define the M1 reference-platform scope and authorize the platform evidence task needed to replace the scorecard with an executed decision packet?
-
-# 2026-07-20 - Storage engine and recovery policy research
-
-Question:
-
-Which storage-engine families and process models should be compared for browser-owned state before Turing selects a backend or makes durability, migration, data-loss, privacy, or performance claims?
-
-Method:
-
-Compared the storage Blueprint and engineering book, profile/session format inventory, data-safety closure route, `RQ-14`/`RQ-27` crosswalk lane, `TASK-000007` boundary, and official SQLite, LMDB, and RocksDB transaction/recovery documentation. Added a no-claim research route covering SQLite journal/WAL, memory-mapped copy-on-write, and append/log or store-specific candidates, with per-state-class decision fields, fault/recovery evidence, privacy boundaries, comparable measurements, rejection rules, and the next synthetic-fixture proof.
-
-Decision:
-
-The research route makes the storage backend decision and evidence contract explicit only. `PB-016` remains partial, no backend or durability policy is selected, no dependency is approved, and no data-loss, privacy, migration, performance, production, or Chrome-class claim changed.
-
-Next question:
-
-When will an owner-approved `TASK-000007` extension define the first synthetic state classes, candidate configurations, fault points, and retained artifact schema?
