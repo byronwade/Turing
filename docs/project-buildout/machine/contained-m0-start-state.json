@@ -2,7 +2,7 @@
   "schema_version": 1,
   "state_id": "PB020.CONTAINED_M0_START_STATE.NO_CLAIM.2026_07",
   "status": "no_claim_contained_m0_start_state",
-  "updated": "2026-07-18",
+  "updated": "2026-07-20",
   "claim_status": "Contained M0 start-state inventory only; no proposed task approval, no TASK-000011 acceptance, no readiness promotion, no broad M1 implementation claim, no developer preview claim, no beta claim, no stable claim, no production claim, no Chrome-class claim, no performance claim, no compatibility claim, no security claim, no accessibility claim, no release readiness claim, no daily-driver claim, and no all-information-ready-for-building claim.",
   "source_records": [
     "README.md",
