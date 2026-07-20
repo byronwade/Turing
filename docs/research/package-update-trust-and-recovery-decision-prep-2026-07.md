@@ -14,6 +14,8 @@ What trust and recovery properties must the Turing package/update design preserv
 
 No package format, update framework, signing model, key hierarchy, channel, or recovery policy is selected by this report. It converts external standards into decision criteria and keeps the implementation boundary explicit.
 
+The checked no-claim [package/update source manifest](../release-operations/machine/package-update-source-manifest.json) records the official trust, provenance, signing, installation, recovery, and profile-transition observations that inform this report. It does not select a package format, updater, signing model, or release policy.
+
 The current repository remains at `PB-017: partial`. The checked update-lab inventory and no-claim package template are planning evidence only. They do not prove an executable package manifest, metadata parser, signature verification, staged installation, rollback, migration, privacy, release, or supported-security behavior.
 
 ## Source-backed observations

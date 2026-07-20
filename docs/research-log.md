@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Package/update provenance route completion
+
+Question:
+
+Do the package/update trust, release-operation, and lab records expose the source manifest that governs their official observations?
+
+Method:
+
+Compared the `RELEASE.UPDATE.SOURCES.2026_07` source-document list with its six missing inbound references. Added direct no-claim manifest links to the decision-preparation, lab-inventory, update, reproducible-build, and signing contracts, and added an explicit `source_manifest` field to the machine lab registry and schema. This closes provenance navigation only; it does not create an updater, signing authority, rollback or migration evidence, release readiness, or supported-security claim.
+
 ## 2026-07-19 - Web-platform provenance route completion
 
 Question:

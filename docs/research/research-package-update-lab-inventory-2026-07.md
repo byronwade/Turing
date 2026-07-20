@@ -15,6 +15,8 @@ Yes, for planning only. The new [`research-package-update-lab.json`](../release-
 
 This is not a package implementation, updater implementation, signing system, release channel, or migration safety claim.
 
+The checked no-claim [package/update source manifest](../release-operations/machine/package-update-source-manifest.json) records the official update-trust and recovery observations that shape this inventory. It does not establish an executable lab, signing decision, rollback result, migration result, or release readiness.
+
 ## Inputs
 
 - [Release Operations book](../release-operations/README.md)

@@ -3,6 +3,7 @@
   "lab_id": "REL.UPDATE.NOCLAIM_RESEARCH_PACKAGE.2026_07",
   "status": "no_claim_lab_inventory",
   "updated": "2026-07-18",
+  "source_manifest": "docs/release-operations/machine/package-update-source-manifest.json",
   "claim_status": "No-claim planning inventory only; no production signing keys, no offline root keys, no stable channel, no real updater, no public binary distribution, no real user profile migration, no rollback safety claim, no migration safety claim, no release readiness claim, no supported security claim, and no production updater claim.",
   "package_identity_fields": [
     {

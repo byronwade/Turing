@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/13-build-release-operation
 
 This chapter defines the research contract for **signing keys and package attestation**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [package/update source manifest](machine/package-update-source-manifest.json) records the official signing, transparency, provenance, and supply-chain observations relevant to this contract. It does not establish a key hierarchy, signing authority, package attestation, or release approval.
+
 ## Scope
 
 The study covers:
