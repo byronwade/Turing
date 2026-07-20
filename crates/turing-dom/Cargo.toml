@@ -1,0 +1,17 @@
+[package]
+name = "turing-dom"
+description = "Turing-owned DOM mutation epochs and event dispatch for WP-007 and REQ-ENG-002"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-html = { path = "../turing-html" }
+
+[lints]
+workspace = true

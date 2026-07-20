@@ -18,6 +18,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-dom"
+version = "0.1.0"
+dependencies = [
+ "turing-html",
+]
+
+[[package]]
 name = "turing-html"
 version = "0.1.0"
 

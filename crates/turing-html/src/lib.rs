@@ -34,7 +34,7 @@
 
 pub mod tree;
 
-pub use tree::{Document, Node, NodeData, NodeId, TreeBuilder, TreeError};
+pub use tree::{Document, MutationError, Node, NodeData, NodeId, TreeBuilder, TreeError};
 
 use core::fmt;
 
