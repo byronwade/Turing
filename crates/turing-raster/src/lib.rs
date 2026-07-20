@@ -16,21 +16,24 @@
 //! than to be quick: no tiling, no batching, no incremental damage. When the
 //! two disagree, this one is the definition of right.
 //!
-//! # Why text is refused
+//! # How text is drawn
 //!
-//! `DisplayItem::Text` returns [`RasterError::GlyphRasterizationUnsupported`].
-//! Painting text needs glyph outlines from a font, and `WP-009` carries an
-//! unresolved `text-font-foundation-review` decision gate — no font foundation
-//! has been chosen. Drawing blocks or boxes where glyphs belong would produce
-//! output that looks like a rendered page, invites comparison against a real
-//! renderer, and is not text. Refusing keeps the gap visible until the gate is
-//! decided.
+//! `DisplayItem::Text` paints with the embedded 8x8 public-domain bitmap font
+//! in [`mod@font`], per the owner decision recorded in
+//! `docs/research/text-font-foundation-decision-2026-07.md`. A text item is a
+//! single line run — layout breaks lines between inline children, never inside
+//! one — so painting is a per-character blit: the advance is recovered from the
+//! run's rect (layout sized it as `chars x advance`), and each glyph is centred
+//! vertically in the run's line box. Characters outside printable ASCII draw a
+//! hollow replacement box rather than nothing, so missing coverage stays
+//! visible.
 //!
-//! Layout already handles text this way: [`turing_layout::TextMetrics`] is an
-//! explicit injected measurement rather than a hidden assumption. This is the
-//! same principle at the paint layer, and it lands on refusal rather than
-//! injection because there is no measured quantity to inject — a glyph shape is
-//! not a number a caller can supply.
+//! This glyph set is the reference painter's text foundation only. Shaping,
+//! hinting, subpixel positioning, Unicode coverage, and the product font stack
+//! remain undecided, and [`turing_layout::TextMetrics`] remains an injected
+//! measurement — the default 8-per-advance metric and this font agree by
+//! construction, and a caller who injects different metrics gets glyphs spaced
+//! to their metrics, not resized.
 //!
 //! # Deliberate limits
 //!
@@ -42,6 +45,8 @@
 
 #![forbid(unsafe_code)]
 
+mod font;
+
 use core::fmt;
 use turing_css::Color;
 use turing_layout::{DisplayItem, DisplayList, Rect};
@@ -49,8 +54,6 @@ use turing_layout::{DisplayItem, DisplayList, Rect};
 /// A construct this rasterizer does not draw.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RasterError {
-    /// Text was present in the display list.
-    GlyphRasterizationUnsupported { text: String },
     /// The requested canvas is larger than this rasterizer will allocate.
     CanvasTooLarge { width: usize, height: usize },
 }
@@ -58,12 +61,6 @@ pub enum RasterError {
 impl fmt::Display for RasterError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::GlyphRasterizationUnsupported { text } => write!(
-                formatter,
-                "cannot rasterize the text {text:?}: no font foundation has been \
-                 selected, and drawing shapes where glyphs belong would look like \
-                 a rendered page without being one"
-            ),
             Self::CanvasTooLarge { width, height } => write!(
                 formatter,
                 "a {width}x{height} canvas exceeds the reference rasterizer's limit; \
@@ -158,6 +155,52 @@ impl Canvas {
             }
         }
     }
+
+    /// Draws a single-line text run into `rect` with `color`.
+    ///
+    /// Layout sized the run's rect as `character count x advance`, so the
+    /// advance is recovered by dividing rather than assumed, and glyphs follow
+    /// whatever metric the caller injected into layout. The 8x8 glyph is
+    /// centred vertically in the run's line box and clipped to the canvas like
+    /// every other draw.
+    fn draw_text(&mut self, rect: Rect, text: &str, color: Color) {
+        let count = text.chars().count();
+        if count == 0 {
+            return;
+        }
+        #[allow(clippy::cast_precision_loss)]
+        let advance = rect.width / count as f32;
+        let glyph_size = font::GLYPH_SIZE as f32;
+        let top = round_to_pixel(rect.y + (rect.height - glyph_size) / 2.0);
+
+        for (index, character) in text.chars().enumerate() {
+            #[allow(clippy::cast_precision_loss)]
+            let left = round_to_pixel(rect.x + index as f32 * advance);
+            self.blit_glyph(font::glyph(character), left, top, color);
+        }
+    }
+
+    /// Blits one glyph bitmap with its top-left corner at `(left, top)`.
+    fn blit_glyph(&mut self, rows: &[u8; 8], left: i64, top: i64, color: Color) {
+        for (row, bits) in rows.iter().enumerate() {
+            let y = top + as_i64(row);
+            if y < 0 || y >= as_i64(self.height) {
+                continue;
+            }
+            for column in 0..font::GLYPH_SIZE {
+                // Bit 0 is the leftmost column; see the encoding note in `font`.
+                if bits & (1 << column) == 0 {
+                    continue;
+                }
+                let x = left + as_i64(column);
+                if x < 0 || x >= as_i64(self.width) {
+                    continue;
+                }
+                let index = (y as usize) * self.width + (x as usize);
+                self.pixels[index] = color;
+            }
+        }
+    }
 }
 
 fn round_to_pixel(value: f32) -> i64 {
@@ -180,8 +223,7 @@ fn as_i64(value: usize) -> i64 {
 ///
 /// # Errors
 ///
-/// Returns [`RasterError`] for text, which needs a font foundation that has not
-/// been selected, and for a canvas beyond [`MAX_PIXELS`].
+/// Returns [`RasterError`] for a canvas beyond [`MAX_PIXELS`].
 pub fn rasterize(
     list: &DisplayList,
     width: usize,
@@ -192,9 +234,7 @@ pub fn rasterize(
     for item in &list.items {
         match item {
             DisplayItem::SolidColor { rect, color } => canvas.fill(*rect, *color),
-            DisplayItem::Text { text, .. } => {
-                return Err(RasterError::GlyphRasterizationUnsupported { text: text.clone() });
-            }
+            DisplayItem::Text { rect, text, color } => canvas.draw_text(*rect, text, *color),
         }
     }
     Ok(canvas)
