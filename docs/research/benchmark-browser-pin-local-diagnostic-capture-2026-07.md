@@ -5,6 +5,8 @@ Owner: performance measurement, benchmark operations, release operations, privac
 Capture date: 2026-07-18
 Confidence: medium for Chrome and Edge browser-reported version observations on the current Windows host; low for benchmark readiness until owner review, channel proof, effective settings, and equal-workload benchmark artifacts exist
 
+Freshness boundary: this diagnostic capture is a dated snapshot from 2026-07-18. “Current host” and “current release-catalog candidate” refer to the identities recorded during that capture and its linked 2026-07-19 catalog; they must be refreshed together before benchmark-ready owner review or comparison use.
+
 ## Question
 
 Can the no-claim browser-pin runner capture Chrome and Edge browser-reported versions from isolated temporary profiles without reading or mutating real user profiles?

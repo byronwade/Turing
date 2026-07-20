@@ -5,6 +5,8 @@ Owner: performance measurement, benchmark operations, release operations, and qu
 Capture date: 2026-07-17 20:33:44 -04:00
 Confidence: medium for executable metadata and hashes on the current Windows host; low for benchmark readiness until owner-reviewed browser pins, profiles, settings, channel proof, and runner artifacts exist
 
+Freshness boundary: this inventory is a capture-time snapshot from 2026-07-17. “Current host” means the Windows host and executable state observed during that capture; it is not a current vendor-release or benchmark-ready pin. Re-run the inventory and browser-reported diagnostic capture before any owner-reviewed comparison uses these files.
+
 ## Question
 
 Which competitor browser executables are present on the current Windows high-end host, and what still prevents them from becoming benchmark-ready local pins?

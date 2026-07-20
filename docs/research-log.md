@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Benchmark competitor capture freshness boundaries
+
+Question:
+
+Can local competitor executable and browser-pin diagnostics remain clearly separated from current vendor catalogs and future benchmark-ready pins?
+
+Method:
+
+Compared the 2026-07-17 local-install inventory and 2026-07-18 Chrome/Edge diagnostic capture with the 2026-07-19 release-catalog manifest. The reports already separated catalog, local executable, and diagnostic evidence, but “current host” wording did not explicitly state the capture-time boundary.
+
+Decision:
+
+Added freshness boundaries to both local reports. They now require rerunning local inventory and browser-reported diagnostics, together with the release catalog, before owner-reviewed benchmark comparison use.
+
+Impact:
+
+This improves `PB-013` handoff clarity without creating browser pins, benchmark results, competitor comparisons, or performance claims. `PB-013` remains `documented_no_runner`, and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which future benchmark artifact classes need the same capture identity and expiry fields before the browser launch runner exists?
+
 ## 2026-07-19 - Source equivalence and build replay freshness alignment
 
 Question:
