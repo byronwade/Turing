@@ -134,10 +134,13 @@ dependencies = [
 name = "turing-webidl"
 version = "0.1.0"
 dependencies = [
+ "turing-css",
  "turing-dom",
  "turing-gc",
  "turing-html",
+ "turing-input",
  "turing-js",
+ "turing-layout",
 ]
 
 [[package]]

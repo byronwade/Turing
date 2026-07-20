@@ -1,5 +1,39 @@
 # Research Log
 
+## 2026-07-20 - Script mutating the page, and a test that was weaker than its name
+
+Question:
+
+The binding surface was read-only, deferred with a stated reason: a mutating operation advances the document epoch, which invalidates any layout a router holds, and that interaction deserved its own treatment. This is that treatment.
+
+Method:
+
+`setAttribute` and `removeAttribute` are bound, and `DomHost` takes the document mutably. `DomHost::read_only` builds the narrower surface by revoking from the default rather than by a second registration list, because two lists drift and the one that drifts is the restrictive one.
+
+Invalidation is not implemented here, and that is the point. It falls out of `turing-dom` advancing the epoch and `turing-input` checking it. An embedder cannot bind a mutation that forgets to invalidate, because the binding does not carry the responsibility — the tests span four crates precisely because each behaves correctly alone and the property only exists where they meet.
+
+The control found the test, not the code:
+
+Nine tests passed. Two injections followed.
+
+Removing the epoch bump from `set_attribute` failed exactly the test that says a script mutation invalidates prior layout. Good.
+
+Moving the bump to *before* the mutation is attempted — so a refused mutation would still invalidate — **passed**. The test named `a_refused_mutation_does_not_invalidate_layout` did not catch it.
+
+The reason is that the test's refusal happens at the binding's own element lookup, before the DOM is reached at all. It was testing "a bad id is refused", which is worth testing, under a name that claimed something broader. Every id that resolves through these bindings resolves to an element, so the DOM's own ordering is not reachable from this surface at all — the test could not have covered it however it was written.
+
+Two changes followed. The test was renamed to what it proves, with the gap recorded in it. And the real ordering test was written in `turing-dom`, next to the code that has to get it right, using a text node: it has a valid handle and cannot carry attributes, so refusal happens inside the mutation rather than at handle resolution. Re-running the same injection against that test fails it.
+
+Worth stating plainly because it is a different failure from the previous ones: this was not a green suite over a corpus that could not express the failure, it was a test whose name asserted more than its body checked. A reader auditing test names would have concluded the property was covered. The instrument that caught it was the same one — inject the defect, see which tests notice — and it caught something the four earlier uses had not.
+
+The first injection attempt was also wrong and worth noting: moving the bump above `resolve` broke handle resolution as well, so it failed unrelated tests and would have been easy to read as confirmation. An injection has to change exactly one thing or it proves nothing about which test guards what.
+
+A refused mutation must not advance the epoch, and now has a test where it is reachable. If it did, a script probing for elements that do not exist would invalidate every cached layout while changing nothing — a denial of service made of typos.
+
+Eleven tests. The workspace is at 346.
+
+What this does not do: only attributes. No node creation, insertion, or removal from script, all of which change tree shape rather than an attribute and would need the same scrutiny applied to structure. Nothing models principals, so `read_only` is a surface a caller can construct rather than a policy anything enforces. Layout invalidation is total: any mutation invalidates all cached geometry, with no notion of which nodes were affected, which is what the blueprint's invalidation model eventually requires and this does not begin.
+
 ## 2026-07-20 - DOM operations bound, and the registry's rationale made real
 
 Question:
