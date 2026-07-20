@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Package/update source manifest provenance control
+
+Question:
+
+Does the package/update source manifest enforce the same one-entry-per-document provenance rule as the compatibility, sandbox, and profile/session lanes?
+
+Method:
+
+Compared the package/update manifest, schema, validator, eleven-source identity set, eight evidence axes, and release-safety closure route. The source list was unique but duplicate document paths were not rejected by the schema or validator.
+
+Decision:
+
+Added `uniqueItems` to the package/update `source_documents` schema and made `validate_package_update_sources.py` reject duplicate paths.
+
+Impact:
+
+This synchronizes release-safety provenance controls without selecting a package format, updater, signing hierarchy, channel, rollback policy, or release authority. `PB-017` remains partial and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which fake-key, local-only package/update lab record will first satisfy the installation, rollback, migration, privacy, cleanup, and independent-review evidence sequence?
+
 ## 2026-07-19 - Profile/session source manifest provenance control
 
 Question:
