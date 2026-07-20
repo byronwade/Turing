@@ -5,6 +5,8 @@ Owner: performance, benchmark operations, release operations, quality, documenta
 Related gate: `PB-002`, `PB-013`, `ADR-0009`, `ADR9-EV-014`
 Date: 2026-07-17
 
+Freshness boundary: this report is a capture-time record of the external Servo checkout, debug artifact, and named reference host observed on 2026-07-17. "Current host" and the inspected commit refer only to that capture. No benchmark run exists here. If `ADR-0009` selects a different source commit, build profile, host configuration, or runner, the performance evidence must be rerun and bound to the new identities before owner-reviewed comparison use. Current upstream identity is tracked separately in [Servo upstream refresh and source-strategy delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md) and [Servo upstream source provenance](servo-upstream-source-provenance-2026-07.md).
+
 ## Question
 
 What fixed-host, artifact, and runner-surface evidence exists around the external Servo build, and what remains before `ADR-0009` can use Servo performance or memory data in a source-strategy decision?

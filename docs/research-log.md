@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Servo performance capture freshness boundary
+
+Question:
+
+Can the Servo performance preparation packet be used without confusing its dated host and debug-artifact observations with current upstream or benchmark evidence?
+
+Method:
+
+Reviewed the packet's capture date, external checkout identity, reference-host wording, artifact hash, and explicit no-run statement against the later upstream refresh and source-provenance reports.
+
+Decision:
+
+Added a capture-time freshness boundary and a rerun rule tied to source commit, build profile, host configuration, and runner identity. The packet now links the current upstream identity reports instead of leaving “current host” and inspected commit open to temporal ambiguity.
+
+Impact:
+
+This improves `ADR9-EV-014` and `PB-013` evidence handoff clarity without producing performance, memory, energy, speed, benchmark, or comparison claims. `PB-002` remains blocked and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which owner-reviewed host and runner controls must be accepted before the first decision-grade performance run?
+
 ## 2026-07-19 - Benchmark competitor capture freshness boundaries
 
 Question:
