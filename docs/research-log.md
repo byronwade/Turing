@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Implementation-plan task-authority wording correction
+
+Question:
+
+Does the master implementation sequence distinguish a task-shaped manifest from an executable, owner-reviewed task authority record?
+
+Method:
+
+Changed the implementation-plan sequence from `ready TASK manifest` to `owner-reviewed immutable ready TASK manifest with bounded authority`. This aligns the master plan with the contained-M0 start-state inventory, task approval template, specified task manifests, and production-agent controls. It removes an ambiguity only; no proposed task became executable and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
 ## 2026-07-19 - Owner-decision next-action link control
 
 Question:

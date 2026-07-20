@@ -63,7 +63,7 @@ Every implementation change follows this chain:
 ```text
 accepted requirement or bounded research question
 → accepted design or explicit experiment hypothesis
-→ ready TASK manifest
+→ owner-reviewed immutable ready TASK manifest with bounded authority
 → isolated implementation branch
 → implementation plus negative tests
 → generated evidence bundle
