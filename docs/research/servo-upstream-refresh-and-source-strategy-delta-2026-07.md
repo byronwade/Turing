@@ -3,7 +3,7 @@
 Status: dated upstream observation and `ADR-0009` handoff; no source-strategy decision
 Owner: architecture, engine, JavaScript, security, supply-chain, release operations, quality, and documentation owners
 Related gates: `PB-002`, `ADR-0009`, `ADR9-EV-001`, `ADR9-EV-002`, `ADR9-EV-012`, `ADR9-EV-016`
-Retrieved: 2026-07-19 local / 2026-07-20 UTC API observation
+Retrieved: 2026-07-20 local / 2026-07-20 UTC API refresh
 
 ## Question
 
@@ -53,13 +53,13 @@ The practical source-strategy implication is that an upstream-first option needs
 
 The official `mozjs` repository describes Servo's SpiderMonkey bindings and documents a vendored/upstream SpiderMonkey relationship, generated or imported source workflows, and pre-built archive behavior. Its current README identifies a SpiderMonkey tracking branch/version, but that live value must be captured by commit and release metadata before it can be used in a Turing decision.
 
-### Exact live repository capture - 2026-07-19 local / 2026-07-20 UTC
+### Exact live repository capture - 2026-07-20 local / 2026-07-20 UTC
 
-A read-only GitHub API capture recorded the following identities without changing either repository. Repository activity timestamps were `pushedAt=2026-07-20T01:44:34Z` and `updatedAt=2026-07-20T02:09:56Z`; these timestamps are freshness signals only:
+A read-only GitHub API refresh recorded the following identities without changing either repository. Servo activity now reports `pushedAt=2026-07-20T03:24:57Z` and `updatedAt=2026-07-20T03:53:53Z`; `mozjs` remains at `pushedAt=2026-07-19T19:30:00Z` and `updatedAt=2026-07-19T19:30:03Z`. These timestamps are freshness signals only:
 
 | Repository | Live observation | Interpretation boundary |
 | --- | --- | --- |
-| `servo/servo` | Public, non-archived, default branch `main`; head `736ad1bda08c1af419aadc903e82938f8610a65d`; latest release `v0.3.0` published 2026-06-25 at tag commit `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`; API license metadata `MPL-2.0` | The moving head and release tag are different source identities. Neither is selected for Turing, and neither proves reproducibility, compatibility, security, performance, or release suitability. |
+| `servo/servo` | Public, non-archived, default branch `main`; head `f542a355e5565e380aa0570132d4138dde328bae`; pushed `2026-07-20T03:24:57Z`; updated `2026-07-20T03:53:53Z`; latest release `v0.3.0` published 2026-06-25 at tag commit `fb6c9d511f67a311f5883ec859aa0c5dd88d19c3`; API license metadata `MPL-2.0` | The moving head changed after the prior capture and remains distinct from the release tag. Neither is selected for Turing, and neither proves reproducibility, compatibility, security, performance, or release suitability. |
 | `servo/mozjs` | Public, non-archived, default branch `main`; head `f5cbf8aa6076064fd658a1e9fb16147c2347affb`; repository `pushedAt=2026-07-19T19:30:00Z`, `updatedAt=2026-07-19T19:30:03Z`; latest release `mozjs-sys-v140.12.0-2` published 2026-07-10; API metadata returned null SPDX license and security-policy URL fields | Null API metadata is unresolved metadata, not proof that licensing or security documentation is absent. `mozjs` must be pinned and reviewed independently from Servo, including its release identity and repository activity timestamps. |
 
 The machine [`ADR-0009 source-observation manifest`](../blueprint-v1/machine/adr-0009-source-observation-manifest.json) now retains these observations as no-claim source inputs. The capture is time-bounded: future refreshes must repeat the API queries, retain retrieval timestamps, compare selected refs and hashes, inspect repository license/security files, and record changed release/head relationships before downstream evidence is reused.
@@ -77,7 +77,7 @@ Each outcome changes Web IDL bindings, garbage collection and wrapper lifetime, 
 
 | Evidence item | Fresh observation | Required Turing follow-up | Current maturity |
 |---|---|---|---|
-| `ADR9-EV-001` source identity | Live API capture distinguishes Servo head `736ad1b...` from release tag `v0.3.0` at `fb6c9d...`; `mozjs` has independent head `f5cbf8a...` | Freeze one candidate commit/tag/archive/package for each accepted input, record hashes and retrieval metadata, then apply the accepted equivalence policy | Partial |
+| `ADR9-EV-001` source identity | The 2026-07-20 refresh records Servo head `f542a355...`, changed from the prior `736ad1b...`, distinct from release tag `v0.3.0` at `fb6c9d...`; `mozjs` remains at independent head `f5cbf8a...` | Freeze one candidate commit/tag/archive/package for each accepted input, record hashes and retrieval metadata, then apply the accepted equivalence policy; invalidate downstream evidence tied only to the changed moving head | Partial |
 | `ADR9-EV-002` reference build | Official build instructions span platform toolchains and `mach` bootstrap/build behavior | Reproduce the selected baseline from a clean target on an independent host or approved clean VM, retaining bootstrap, dependency, cache, target, and failure logs | Partial |
 | `ADR9-EV-012` runtime conflict | `mozjs` is a distinct binding and vendored SpiderMonkey surface with independent head identity and unresolved API license/security metadata | Produce option-specific runtime, provenance, security, Web IDL, identity, debugger, and Test262 decisions | Partial |
 | `ADR9-EV-016` maintenance | Active upstream changes span engine, runtime, media, accessibility, tooling, and dependencies | Name update cadence, patch ownership, stale-evidence triggers, security-response split, merge burden, rollback, primary owner, backup owner, and reviewer | Partial |

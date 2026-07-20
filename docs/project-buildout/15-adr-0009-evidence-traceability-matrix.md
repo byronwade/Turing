@@ -2,7 +2,7 @@
 
 Status: operating traceability matrix; no source-strategy decision
 Owner: architecture, engine, security, provenance, release operations, quality, performance, compatibility, embedding, and documentation owners
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 ## Purpose
 

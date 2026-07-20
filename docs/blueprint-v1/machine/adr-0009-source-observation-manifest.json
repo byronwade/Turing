@@ -2,7 +2,7 @@
   "schema_version": 1,
   "manifest_id": "ADR9.SOURCE.OBSERVATIONS.2026_07",
   "status": "no_claim_source_observation_manifest",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "related_gates": ["PB-002", "ADR-0009"],
   "claim_status": "No-claim upstream source observations only; official project documentation is not a selected source baseline, dependency approval, reproducibility proof, legal approval, component approval, or release-code authorization.",
   "observation_axes": [
@@ -29,8 +29,8 @@
       "title": "Servo live repository metadata and refs",
       "publisher": "GitHub API / Servo Project",
       "url": "https://api.github.com/repos/servo/servo",
-      "retrieved": "2026-07-19",
-      "observation": "A read-only capture observed public, non-archived Servo with default branch main, MPL-2.0 API license metadata, head commit 736ad1bda08c1af419aadc903e82938f8610a65d, and latest release v0.3.0 published 2026-06-25 at tag commit fb6c9d511f67a311f5883ec859aa0c5dd88d19c3. The head and latest release are different identities.",
+      "retrieved": "2026-07-20",
+      "observation": "A read-only capture observed public, non-archived Servo with default branch main, MPL-2.0 API license metadata, head commit f542a355e5565e380aa0570132d4138dde328bae, pushedAt 2026-07-20T03:24:57Z, updatedAt 2026-07-20T03:53:53Z, and latest release v0.3.0 published 2026-06-25 at tag commit fb6c9d511f67a311f5883ec859aa0c5dd88d19c3. The head and latest release are different identities, and the head changed since the prior 2026-07-19 capture.",
       "decision_consequence": "The decision must select and pin one source identity, record whether it is a moving head or release/tag object, and rerun equivalence, build, dependency, compatibility, performance, security, and maintenance evidence when the selected identity changes."
     },
     {
