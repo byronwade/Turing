@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Cross-lane readiness-template control
+
+Question:
+
+Do the eleven no-claim ADR, lane-readiness, and PB-020 closure templates preserve the same review-control spine, or can template drift hide missing evidence paths, owner-review fields, or accidentally enabled decision flags?
+
+Method:
+
+Compared the shared fields in the ADR-0009 decision-review template, nine lane readiness-review templates, and PB-020 closure-review template with their schemas and focused validators. The fresh-host template also contained a duplicated `tools/check.ps1` source record, which was removed as part of this invariant.
+
+Decision:
+
+Added `validate_readiness_review_templates.py` to enforce eleven-template discovery, identity/status/date, no-claim status, source-record existence and uniqueness, review scope, owner-review axes, rejection and unsupported-boundary records, validation commands, non-empty evidence axes, and all-false decision flags. Wired it into the locked `xtask check` path and documentation-readiness records.
+
+Impact:
+
+Review templates are now structurally consistent and cannot silently enable a readiness or authority flag. This improves handoff integrity only; it does not create owner review, independent review, accepted evidence, gate closure, task approval, or a change to the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which shared evidence-bundle fields should be machine-checked against the review-template identity and exact source commit before a real owner decision is recorded?
+
 ## 2026-07-19 - Cross-lane source-manifest freshness control
 
 Question:

@@ -37,8 +37,7 @@
     "tools/validate_fresh_host_reproduction.py",
     "tools/validate_fresh_host_run_records.py",
     "tools/validate_fresh_host_readiness_review.py",
-    "tools/validate_blueprint.py",
-    "tools/check.ps1"
+    "tools/validate_blueprint.py"
   ],
   "review_scope": {
     "run_record": null,
