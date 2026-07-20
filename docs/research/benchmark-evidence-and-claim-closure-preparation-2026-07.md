@@ -53,6 +53,22 @@ For every instrumented run, retain an otherwise equivalent no-trace control with
 
 Advancing a level requires retained evidence from the preceding level. A passing self-test is not a browser-run result, a browser-run result is not a competitor comparison, and a comparison is not a public claim.
 
+## Benchmark closure worksheet
+
+The real `PB-013` review must complete one worksheet for each proposed evidence package. The package cannot advance merely because the runner or analysis tool exists; every field below must be bound to retained artifacts and named review scope.
+
+| Required field | What the reviewer must record | Rejection condition |
+|---|---|---|
+| Evidence level and purpose | `L0`, `L1`, `L2`, or `L3`, exact question, metric family, and prohibited claims | A lower level is described as a higher-level result or a self-test is called a browser run |
+| Measurement identity | Source/build commit, executable and browser-reported version, channel, command line, profile, settings, host image, OS/driver/firmware, and artifact root | Mutable `HEAD`, catalog-only version, warm profile, or missing executable identity |
+| Workload and security equivalence | Corpus/suite/network/tab/viewport/DPR/display/refresh/cache/lifecycle/process topology plus sandbox, site isolation, certificates, mitigations, JIT, extensions, and account state | Any unequal workload or security setting is hidden or treated as equivalent |
+| Capture and raw artifacts | Runner/server/trace configuration, raw samples, traces, screenshots or other outputs, resource attribution, event-loss state, cleanup, hashes, retention, and redaction | A summary score exists without raw artifacts, failure capture, hash, or cleanup proof |
+| Denominator and analysis | Sample count, warmup/order, attempted/failed/unsupported/timeout/crash/cancelled/discarded/state-loss rows, statistics plan, uncertainty, effect size, and missing-event policy | Failed or unsupported work is omitted, converted to zero, or excluded without reason |
+| Review and claim scope | Named owner and independent reviewers, exact wording, supported platform/workload/metric, limitations, residual risk, expiry, rerun triggers, and publication diff | A claim is broader than its reviewed evidence or lacks expiry and rerun controls |
+| Promotion and rollback | Whether the package remains diagnostic, is accepted for comparison, or is a public-claim candidate; rollback/removal action and PB-020 reconciliation | Validation or template status is treated as readiness, public claim, or release authority |
+
+Until a real owner-reviewed package replaces the no-claim templates, every worksheet field is unresolved, `PB-013` remains `documented_no_runner`, and no browser, competitor, speed, memory, energy, or Chrome-class claim is supported.
+
 ## Required execution sequence
 
 1. **Freeze the measurement identity.** Record source commit/build ID, browser executable and reported version/channel, platform/architecture, hardware tier, OS/update/driver/firmware state, display/refresh/viewport/DPR, power/thermal/network controls, process/site-isolation and tab-lifecycle settings, profile/cache/extension state, benchmark suite/corpus/network/runner versions, and artifact root.

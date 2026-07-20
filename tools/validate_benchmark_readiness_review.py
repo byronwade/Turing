@@ -43,6 +43,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/research/benchmark-trace-artifact-package-contract-2026-07.md",
     "docs/research/benchmark-browser-launch-runner-contract-2026-07.md",
     "docs/research/benchmark-statistics-analysis-contract-2026-07.md",
+    "docs/research/benchmark-evidence-and-claim-closure-preparation-2026-07.md",
     "docs/benchmark-lab/README.md",
     "docs/performance/README.md",
     "docs/blueprint-v1/09-performance-memory.md",
@@ -264,6 +265,18 @@ REQUIRED_VALIDATION_COMMANDS = [
     "python3 -B tools/validate_benchmark_readiness_review.py",
     "python3 -B tools/validate_blueprint.py",
     ".\\tools\\check.ps1",
+]
+
+BENCHMARK_CLOSURE_WORKSHEET_TERMS = [
+    "benchmark closure worksheet",
+    "evidence level and purpose",
+    "measurement identity",
+    "workload and security equivalence",
+    "capture and raw artifacts",
+    "denominator and analysis",
+    "review and claim scope",
+    "promotion and rollback",
+    "documented_no_runner",
 ]
 
 
@@ -570,6 +583,12 @@ def validate_docs() -> None:
         missing = [phrase for phrase in phrases if phrase not in content]
         if missing:
             fail(f"{doc_path}: missing benchmark readiness-review documentation: {', '.join(missing)}")
+
+    closure_path = DOCS / "research" / "benchmark-evidence-and-claim-closure-preparation-2026-07.md"
+    closure_text = normalize(closure_path.read_text(encoding="utf-8"))
+    for phrase in BENCHMARK_CLOSURE_WORKSHEET_TERMS:
+        if normalize(phrase) not in closure_text:
+            fail(f"{closure_path}: missing benchmark closure worksheet term: {phrase}")
 
 
 def main() -> int:

@@ -10005,6 +10005,24 @@ Compared the research-readiness crosswalk with the proposed build-readiness task
 
 Compared the active research packets validated by `validate_research_index.py` with the central documentation-readiness audit source list. Added the five missing active packet paths to the machine audit, and added a validator assertion that every active research packet is named there. The human audit now names all `7/7` active packets. This closes source-list continuity only; no research question, owner decision, readiness gate, task, implementation, or performance claim changed.
 
+# 2026-07-20 - Benchmark closure worksheet
+
+Question:
+
+Can the `PB-013` benchmark route make the exact evidence, equivalence, denominator, review, and claim-expiry inputs explicit before any L0/L1/L2/L3 promotion?
+
+Method:
+
+Compared the benchmark evidence-level contract, benchmark claim-bundle template, statistics-analysis plan, readiness-review template, browser-pin/corpus/runner/artifact registries, and PB-013 task/crosswalk records. Added a required closure worksheet covering evidence level, measurement identity, workload/security equivalence, raw artifacts, denominator/analysis, review/claim scope, and promotion/rollback. Added validator coverage for the worksheet and its no-runner boundary.
+
+Decision:
+
+The worksheet improves benchmark handoff completeness only. `PB-013` remains `documented_no_runner`, `TASK-000005` remains proposed-only, and no browser, competitor, speed, memory, energy, or Chrome-class claim changed.
+
+Next question:
+
+When will an owner-approved `TASK-000005` manifest and independent reviewer authorize the first retained L1 browser-run package?
+
 # 2026-07-20 - ADR-0009 owner decision worksheet
 
 Question:
