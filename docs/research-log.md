@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 local / 2026-07-20 UTC - Servo upstream freshness refresh
+
+Question:
+
+Did the official Servo repository activity or source identity change after the prior source-strategy freshness capture, and do any changes alter Turing's source-strategy evidence boundary?
+
+Method:
+
+Ran read-only GitHub API queries for `servo/servo` `main`, the latest release, and repository metadata, then compared the response with the source-provenance, security-maintenance, upstream-delta, and ADR-0009 decision-packet records already in the repository.
+
+Decision:
+
+The `main` commit remains `736ad1bda08c1af419aadc903e82938f8610a65d`; the latest release remains immutable `v0.3.0`; and `servo 0.4.0` remains the latest crates.io package. Repository activity timestamps advanced to `2026-07-20T01:44:34Z` (`pushedAt`) and `2026-07-20T02:09:56Z` (`updatedAt`). Updated the canonical source-strategy reports to preserve the new freshness observation. No build, source-equivalence, dependency, license, security, compatibility, performance, or adoption conclusion changed.
+
+Next question:
+
+When `ADR-0009` receives owner authority and a selected baseline, which exact commit/tag/archive should be rebuilt and compared under the accepted equivalence policy?
+
 ## 2026-07-19 - Command-log environment and scope binding
 
 Question:

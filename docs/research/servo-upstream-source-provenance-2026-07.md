@@ -2,7 +2,7 @@
 
 Status: dated upstream source-provenance report for `PB-002` and proposed `ADR-0009`; no source, dependency, crate, release archive, or license approval
 Owner: architecture, provenance, release operations, security, legal-review, engine, and documentation owners
-Audit date: 2026-07-19 metadata refresh; original evidence capture 2026-07-17
+Audit date: 2026-07-19 local / 2026-07-20 UTC metadata refresh; original evidence capture 2026-07-17
 Confidence: medium for observed upstream object IDs, GitHub release metadata, release source-archive digest, and crates.io package checksum; low for source approval, legal approval, full-history provenance, reproducible-release, compatibility, performance, maintenance, and adoption conclusions until owner reviews run
 
 ## Question
@@ -39,16 +39,16 @@ Evidence was collected outside the Turing repository using:
 
 No upstream source or release artifact was copied into this repository.
 
-## 2026-07-19 official metadata refresh
+## 2026-07-19 local / 2026-07-20 UTC official metadata refresh
 
-A read-only refresh of the official GitHub repository, branch, release, and crates.io APIs was performed on 2026-07-19. It changes the freshness boundary for upstream `main` but does not replace the dated build, archive, or package evidence captured on 2026-07-17.
+A read-only refresh of the official GitHub repository, branch, release, and crates.io APIs was performed on 2026-07-19 local time. The GitHub API response was captured with UTC timestamps on 2026-07-20 and changes the freshness boundary for repository activity, but it does not replace the dated build, archive, or package evidence captured on 2026-07-17.
 
 | Field | Refreshed observation |
 |---|---|
 | Repository default branch | `main` |
 | Latest observed `main` commit | `736ad1bda08c1af419aadc903e82938f8610a65d` |
 | Latest observed `main` commit author date | `2026-07-19T19:09:15Z` |
-| Repository pushed/updated timestamps | `2026-07-19T20:13:05Z` / `2026-07-19T20:13:09Z` |
+| Repository pushed/updated timestamps | `2026-07-20T01:44:34Z` / `2026-07-20T02:09:56Z` |
 | Latest published release | `v0.3.0`, published `2026-06-25T15:09:42Z`, target `release/v0.3` |
 | Release immutability | GitHub API reports `immutable: true` |
 | Latest crates.io `servo` version | `0.4.0`, metadata updated `2026-07-16T12:14:01.753698Z` |

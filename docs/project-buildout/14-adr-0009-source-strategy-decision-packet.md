@@ -41,7 +41,7 @@ Metadata gathered on 2026-07-17; official metadata refreshed on 2026-07-19:
 | `servo` default features | `baked-in-resources`, `clipboard`, `js_jit` |
 | Notable optional features | `bluetooth`, `gamepad`, `gstreamer`, `media-gstreamer`, `native-bluetooth`, `vello`, `webgpu`, `webxr`, tracing and JS diagnostic features |
 
-The 2026-07-19 refresh identifies a later upstream `main` commit, `736ad1bda08c1af419aadc903e82938f8610a65d` (author date `2026-07-19T19:09:15Z`), while the latest published release remains immutable `v0.3.0` and crates.io remains `servo 0.4.0`. The 2026-07-17 build and source-comparison rows remain historical evidence; no build or source-equivalence conclusion transfers to the newer `main` commit.
+The 2026-07-19 local / 2026-07-20 UTC refresh identifies a later upstream `main` commit, `736ad1bda08c1af419aadc903e82938f8610a65d` (author date `2026-07-19T19:09:15Z`), and repository activity timestamps of `2026-07-20T01:44:34Z` / `2026-07-20T02:09:56Z`; the latest published release remains immutable `v0.3.0` and crates.io remains `servo 0.4.0`. The 2026-07-17 build and source-comparison rows remain historical evidence; no build or source-equivalence conclusion transfers to the newer `main` commit.
 
 This metadata is insufficient for adoption. It only proves that the public project and crate are active and that version identifiers must be pinned precisely.
 
@@ -401,7 +401,7 @@ Key observations:
 - macOS and Linux-like sandbox profiles use `gaol` and resource/font file-read allowances, but no Turing effective-policy evidence or negative sandbox tests were run;
 - Servo event-loop routing reuses event loops by registered domain except sandboxed-origin contexts, while public/private resource and storage threads and selected origin checks exist as implementation concepts that still need Turing identity-preservation tests;
 - initial script state carries many security-relevant senders, including resource/storage, DevTools, font service, paint, memory/time profilers, optional Bluetooth, WebGL/WebXR, privileged URLs, and user-content handles;
-- the 2026-07-17 upstream metadata snapshot showed `servo/servo` public, not archived, security-policy-enabled, and pushed/updated that day; the 2026-07-19 refresh shows a later `main` commit while the latest GitHub release remains `v0.3.0`;
+- the 2026-07-17 upstream metadata snapshot showed `servo/servo` public, not archived, security-policy-enabled, and pushed/updated that day; the 2026-07-19 local / 2026-07-20 UTC refresh shows the later `main` commit and newer repository activity timestamps while the latest GitHub release remains `v0.3.0`;
 - the external checkout contains `22` workflow files, `25` CODEOWNERS rules, `19` Dependabot groups, release workflows with production builds and artifact attestations, and a crates.io publishing path.
 
 Result: `ADR9-EV-015` and `ADR9-EV-016` move from missing to partial. This is not security approval or a maintenance commitment. Turing still needs owner-reviewed process authority maps, Windows/macOS/Linux sandbox deltas with negative tests, origin/site/profile/storage/DevTools/extension/agent identity-preservation evidence, native/media/GPU/runtime/update risk review, fuzzing and compromised-process evidence for any accepted component boundary, patch ownership, upstream cadence policy, security-response expectations, merge-burden estimate, breakage/rollback plan, and named primary/backup owners before any release-path relationship is accepted.

@@ -3,7 +3,7 @@
 Status: dated upstream observation and `ADR-0009` handoff; no source-strategy decision
 Owner: architecture, engine, JavaScript, security, supply-chain, release operations, quality, and documentation owners
 Related gates: `PB-002`, `ADR-0009`, `ADR9-EV-001`, `ADR9-EV-002`, `ADR9-EV-012`, `ADR9-EV-016`
-Retrieved: 2026-07-19
+Retrieved: 2026-07-19 local / 2026-07-20 UTC API observation
 
 ## Question
 
@@ -53,9 +53,9 @@ The practical source-strategy implication is that an upstream-first option needs
 
 The official `mozjs` repository describes Servo's SpiderMonkey bindings and documents a vendored/upstream SpiderMonkey relationship, generated or imported source workflows, and pre-built archive behavior. Its current README identifies a SpiderMonkey tracking branch/version, but that live value must be captured by commit and release metadata before it can be used in a Turing decision.
 
-### Exact live repository capture - 2026-07-19
+### Exact live repository capture - 2026-07-19 local / 2026-07-20 UTC
 
-A read-only GitHub API capture recorded the following identities without changing either repository:
+A read-only GitHub API capture recorded the following identities without changing either repository. Repository activity timestamps were `pushedAt=2026-07-20T01:44:34Z` and `updatedAt=2026-07-20T02:09:56Z`; these timestamps are freshness signals only:
 
 | Repository | Live observation | Interpretation boundary |
 | --- | --- | --- |
