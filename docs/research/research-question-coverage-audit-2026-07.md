@@ -19,6 +19,8 @@ This is a routing correction, not an answer to any research question. The covera
 
 The [coverage schema](../blueprint-v1/machine/research-question-coverage.schema.json) and [validator](../../tools/validate_research_question_coverage.py) derive the 66-question denominator from `docs/blueprint-v1/22-research-program.md` and require the active set to match `research-readiness-crosswalk.json` exactly. They reject missing, duplicate, or silently omitted questions.
 
+The validator also resolves every `evidence_start` entry in the readiness crosswalk inside the repository. The current crosswalk has 10 lanes and 207 evidence-start entries; all 207 resolve to an existing file or directory. This catches stale route references during documentation changes while preserving no-claim status. It does not verify that the referenced evidence is sufficient, independently reviewed, or accepted for implementation.
+
 ## Claim boundary
 
 This audit does not answer a research question, establish compatibility, security, accessibility, performance, production, or Chrome-class evidence, approve a task, promote a readiness gate, or replace owner review. The 37 active questions and 29 deferred questions all remain research work until their required evidence and decisions exist.

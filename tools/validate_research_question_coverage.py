@@ -85,6 +85,27 @@ def main() -> int:
     if not crosswalk_ids <= program_ids:
         fail("crosswalk contains a research question absent from the program")
 
+    lanes = crosswalk.get("lanes")
+    if not isinstance(lanes, list) or not lanes:
+        fail("crosswalk lanes must be a non-empty array")
+    evidence_entries = 0
+    for index, lane in enumerate(lanes):
+        if not isinstance(lane, dict):
+            fail(f"crosswalk lanes[{index}] must be an object")
+        lane_id = nonempty(lane.get("id"), f"crosswalk lanes[{index}].id")
+        evidence = strings(lane.get("evidence_start"), f"crosswalk {lane_id}.evidence_start", 1)
+        strings(lane.get("next_proof"), f"crosswalk {lane_id}.next_proof", 1)
+        strings(lane.get("claim_boundary"), f"crosswalk {lane_id}.claim_boundary", 1)
+        for entry in evidence:
+            evidence_entries += 1
+            candidate = (ROOT / entry).resolve()
+            try:
+                candidate.relative_to(ROOT)
+            except ValueError:
+                fail(f"crosswalk {lane_id}.evidence_start escapes repository: {entry}")
+            if not candidate.exists():
+                fail(f"crosswalk {lane_id}.evidence_start does not resolve: {entry}")
+
     active = strings(audit.get("active_question_ids"), "active_question_ids", 1)
     active_set = set(active)
     if len(active_set) != len(active) or active_set != crosswalk_ids:
@@ -125,7 +146,11 @@ def main() -> int:
     if active_set & deferred_ids:
         fail("a question cannot be both active and deferred")
 
-    print(f"research-question coverage validation passed: {len(program_ids)} questions, {len(active_set)} active, {len(deferred_ids)} explicitly deferred")
+    print(
+        f"research-question coverage validation passed: {len(program_ids)} questions, "
+        f"{len(active_set)} active, {len(deferred_ids)} explicitly deferred, "
+        f"{evidence_entries} crosswalk evidence paths resolved"
+    )
     return 0
 
 
