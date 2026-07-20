@@ -5,7 +5,7 @@ Turing is an independent, Rust-first browser and web-engine program focused on m
 > **Current status:** M0 research and implementation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, a buildable workspace, and the first generated kernel/IPC policy reference. The active WP-002 execution manifest is `TASK-000011` and remains `review_pending`, not accepted; its [review handoff](docs/research/task-000011-wp002-review-handoff-2026-07.md) is an evidence map, not an approval. Turing is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
 > **Continuity checkpoint:** The first continuation stop is the [Build Readiness Start Guide](docs/project-buildout/21-build-readiness-start-guide.md), then the [Build Continuation Readiness Pack](docs/project-buildout/20-build-continuation-readiness-pack.md) scorecard.
 
-### Build readiness decision (as of 2026-07-19)
+### Build readiness decision (as of 2026-07-20)
 
 - **Can we start broad implementation now?** **No.**
 - **Allowed continuation:** contained M0 continuity work, validators, documentation/research indexing, and no-claim task-handoff maintenance.

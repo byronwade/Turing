@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Root readiness date reconciliation
+
+Updated the root README's build-readiness date to match the canonical 2026-07-20 progress snapshot, continuation pack, and documentation-readiness audit. Historical research retrieval and capture dates remain unchanged. No gate, owner decision, task status, implementation claim, or full-build percentage changed.
+
 ## 2026-07-20 - Research lane to work-package traceability
 
 Bound each active research lane to the requirements, risks, proposed tasks, and evidence-backed work packages already present in the build-readiness queue. Control-only tasks retain an explicit empty work-package list. The task schema, queue digest preconditions, crosswalk schema, and validators now reject task-to-work-package drift. This improves continuation traceability without approving a task, closing a gate, or changing the 90% contained-M0 / 0% full-build status.
