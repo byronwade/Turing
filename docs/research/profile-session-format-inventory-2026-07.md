@@ -14,6 +14,8 @@ Yes, for planning only. The [`profile-session-format-inventory.json`](../storage
 
 This evidence does not implement a profile store, migrate real user data, approve sync, approve credential storage, prove data-loss safety, approve a production profile format, or authorize use of real profile fixtures.
 
+The checked no-claim [profile/session source manifest](../storage/machine/profile-session-source-manifest.json) records the official web-storage, transaction, migration, privacy, and credential-vault observations used by this inventory. It does not approve a profile format, migration policy, credential implementation, or real-profile fixture.
+
 ## Inputs
 
 - [Storage and Recovery book](../storage/README.md)

@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Profile/session provenance route completion
+
+Question:
+
+Do the profile/session data-safety, migration, credential, and machine-format records expose the manifest that governs their official storage observations?
+
+Method:
+
+Compared the `STORAGE.PROFILE_SESSION.SOURCES.2026_07` source-document list with its five missing inbound references. Added direct no-claim manifest links to the closure route, format inventory, migration/recovery book, and credential/clearing book, and added an explicit `source_manifest` field to the machine format inventory and schema. This closes provenance navigation only; it does not establish a profile format, migration safety, credential handling, sync, data-loss safety, or production readiness.
+
 ## 2026-07-19 - Package/update provenance route completion
 
 Question:

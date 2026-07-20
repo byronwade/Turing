@@ -339,6 +339,7 @@ def validate_inventory(path: Path, payload: object) -> None:
         "inventory_id",
         "status",
         "updated",
+        "source_manifest",
         "claim_status",
         "record_types",
         "behavior_matrix",
@@ -354,6 +355,9 @@ def validate_inventory(path: Path, payload: object) -> None:
     if require_string(path, inventory, "status", "inventory") != "no_claim_format_inventory":
         fail(path, "status must remain no_claim_format_inventory")
     require_string(path, inventory, "updated", "inventory")
+    source_manifest = require_string(path, inventory, "source_manifest", "inventory")
+    if not (ROOT / source_manifest).is_file():
+        fail(path, f"inventory.source_manifest does not resolve: {source_manifest}")
     claim_status = require_string(path, inventory, "claim_status", "inventory")
     unsupported = require_string_array(
         path, inventory, "unsupported_boundaries", "inventory"

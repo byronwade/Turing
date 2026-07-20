@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/07-network-storage-media.m
 
 This chapter defines the research contract for **migrations, corruption, disk full, and power loss**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [profile/session source manifest](machine/profile-session-source-manifest.json) records the official storage, durability, migration, quota, and recovery observations relevant to this contract. It does not establish migration safety, data-loss safety, or a production profile format.
+
 ## Scope
 
 The study covers:

@@ -9,6 +9,7 @@
     "inventory_id",
     "status",
     "updated",
+    "source_manifest",
     "claim_status",
     "record_types",
     "behavior_matrix",
@@ -32,6 +33,10 @@
     "updated": {
       "type": "string",
       "format": "date"
+    },
+    "source_manifest": {
+      "type": "string",
+      "minLength": 3
     },
     "claim_status": {
       "type": "string"

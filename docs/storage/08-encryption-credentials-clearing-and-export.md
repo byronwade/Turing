@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/07-network-storage-media.m
 
 This chapter defines the research contract for **encryption boundaries, credentials, clearing, and export**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [profile/session source manifest](machine/profile-session-source-manifest.json) records the official storage, clearing, privacy, export, and platform-vault observations relevant to this contract. It does not establish credential handling, export safety, profile deletion, or production readiness.
+
 ## Scope
 
 The study covers:

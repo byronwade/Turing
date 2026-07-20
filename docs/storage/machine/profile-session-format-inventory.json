@@ -3,6 +3,7 @@
   "inventory_id": "STORAGE.FORMAT.NOCLAIM_PROFILE_SESSION.2026_07",
   "status": "no_claim_format_inventory",
   "updated": "2026-07-18",
+  "source_manifest": "docs/storage/machine/profile-session-source-manifest.json",
   "claim_status": "no-claim planning inventory only; no profile implementation, no real-profile migration, no sync support, no credential storage support, no user-data handling readiness, no data-loss safety claim, no production profile-format claim, and no implementation claim",
   "record_types": [
     {
