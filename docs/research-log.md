@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Cross-cutting independent-verification route clarification
+
+Question:
+
+Does the research index make clear that active `RQ-60` independent-verification work is consumed by multiple readiness lanes rather than creating an untracked eleventh gate?
+
+Method:
+
+Added an explicit cross-cutting route note to the research index. It binds `RQ-60` to IPC, sandbox, benchmark, native/accessibility, incident-response, and ownership evidence while preserving the machine crosswalk's ten readiness lanes and no-claim boundary. This improves continuation routing only; it does not create a gate, accept evidence, or change the 90% contained-M0 / 0% full-build measures.
+
 ## 2026-07-19 - Full-goal percentage wording alignment
 
 Question:

@@ -222,6 +222,8 @@ The market opportunity registry remains research-only, and the production releas
 
 Use these lanes after the [Build Readiness Operating Board](../project-buildout/13-build-readiness-operating-board.md). They organize where to continue, not what is approved.
 
+`RQ-60` is a cross-cutting independent-verification question, not an additional `PB-*` readiness gate. Its packet is consumed by the IPC, sandbox, benchmark, native/accessibility, incident-response, and ownership lanes; the ownership lane carries its crosswalk edge because reviewer separation and evidence disposition are program-wide controls. Do not create a second gate or infer readiness from the independent-verification packet alone.
+
 The deferred `PB-006` reference-platform lane is tracked by the checked no-claim [Reference Platform Support Scorecard](reference-platform-support-scorecard-2026-07.md) and its machine record; it must be read alongside the native-shell lane because platform selection is not separable from toolkit, page-surface, accessibility, sandbox, toolchain, benchmark, packaging, incident, and support evidence.
 
 | Lane | Start from | Next evidence to produce | Must not claim |
