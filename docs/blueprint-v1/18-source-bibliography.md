@@ -319,6 +319,11 @@ Use of any listed project is not automatic approval. It remains subject to the d
 ### Performance, security, and developer evidence
 
 - Perfetto: https://perfetto.dev/
+- Perfetto track events: https://perfetto.dev/docs/instrumentation/track-events
+- Chromium trace-event best practices: https://chromium.googlesource.com/chromium/src/+/main/docs/trace_events.md
+- Chromium tracing architecture: https://chromium.googlesource.com/chromium/src/+/HEAD/base/tracing/README.md
+- rr deterministic debugging: https://rr-project.org/
+- Firefox debugging with rr: https://firefox-source-docs.mozilla.org/contributing/debugging/debugging_firefox_with_rr.html
 - Windows Performance Toolkit and Event Tracing for Windows
 - Apple Instruments and signposts
 - Linux perf and platform power/energy interfaces

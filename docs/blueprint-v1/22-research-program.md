@@ -253,6 +253,8 @@ Compare process isolation, RLBox/Wasm-like compartments, heap cages, pointer tab
 
 Prototype virtual time/random/network/input, state capture, trace causality, divergence detection, redaction, automatic reduction, source maps, and cross-domain policy explanations. Decision output: trace/replay schema, capture boundary, SDKs, and developer workflow targets.
 
+The checked no-claim [Deterministic Replay and Causal Observability Research](../research/deterministic-replay-and-causal-observability-research-2026-07.md) expands the deferred route with replay alternatives, causal identity, privacy and authority boundaries, divergence oracles, overhead controls, and promotion rules. It does not select a replay runtime or trace format, prove deterministic replay, or establish a release diagnostic claim.
+
 ## RQ-40 — Which anti-phishing, trusted-UI, resource-management, recovery, onboarding, and everyday workflows create measurable user leadership?
 
 Study origin comprehension, IDN/lookalikes, reputation privacy, prompts, credentials, agent confirmation, tab/workspace pressure, migration, safe mode, updates, support, keyboard, screen-reader, and recovery tasks. Decision output: trusted UI, reputation approach, resource manager, workflow priorities, and usability gates.

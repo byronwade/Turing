@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-39 replay and observability route expanded
+
+Question:
+
+Does the deferred `RQ-39` record match the Blueprint's deterministic-replay and causal-observability question, and does it give future engineers a safe evidence route rather than misrouting the question to generic conformance/fuzzing work?
+
+Method:
+
+Compared the Blueprint research program, deferred-question registry, quality-assurance book, developer-experience and performance trace requirements, and official `rr`, Firefox, Chromium trace-event, Perfetto, and LibFuzzer documentation retrieved or checked on 2026-07-19.
+
+Result:
+
+Corrected the deferred registry's stale conformance/fuzzing route and added a no-claim `RQ-39` packet covering input/state replay, execution replay, semantic snapshots, causal identity, redaction, retention, authority-negative tests, divergence oracles, overhead controls, and unsupported platform cases. Conformance and fuzzing remain supporting evidence classes rather than the research question's title or owner route.
+
+Impact:
+
+The research index, Blueprint, and machine coverage registry now agree on the `RQ-39` question and future proof. This improves traceability for difficult browser bugs and Chrome-class developer tooling without selecting a replay runtime, trace format, or diagnostic release contract, and without changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+When the relevant engine and IPC work is authorized, can a bounded virtual-time/input replay harness and redacted causal trace prototype be run with a no-trace control and authority-negative tests?
+
 ## 2026-07-19 - Nova source regions reconciled to contracts
 
 Question:
