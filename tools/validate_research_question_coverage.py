@@ -212,6 +212,31 @@ def main() -> int:
     if active_set & deferred_ids:
         fail("a question cannot be both active and deferred")
 
+    route_index = audit.get("deferred_route_index")
+    if not isinstance(route_index, list) or not route_index:
+        fail("deferred_route_index must be a non-empty array")
+    route_ids: set[str] = set()
+    for index, route in enumerate(route_index):
+        if not isinstance(route, dict):
+            fail(f"deferred_route_index[{index}] must be an object")
+        question_id = nonempty(route.get("question_id"), f"deferred_route_index[{index}].question_id")
+        if question_id in route_ids:
+            fail(f"duplicate deferred route index question: {question_id}")
+        route_ids.add(question_id)
+        if route.get("route_status") != "planned_research_route":
+            fail(f"deferred_route_index[{index}] must remain planned_research_route")
+        routes = strings(route.get("research_routes"), f"deferred_route_index[{index}].research_routes", 1)
+        for entry in routes:
+            candidate = (ROOT / entry).resolve()
+            try:
+                candidate.relative_to(ROOT)
+            except ValueError:
+                fail(f"deferred route escapes repository: {entry}")
+            if not candidate.exists():
+                fail(f"deferred route does not resolve: {entry}")
+    if route_ids != deferred_ids:
+        fail("deferred_route_index must exactly cover deferred_questions")
+
     print(
         f"research-question coverage validation passed: {len(program_ids)} questions, "
         f"{len(active_set)} active, {len(deferred_ids)} explicitly deferred, "

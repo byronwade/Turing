@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Deferred research route index enforced
+
+Added a machine-checked route index for all 29 questions intentionally deferred outside the active pre-build crosswalk. Each deferred question now resolves to at least one concrete research packet or detailed engineering book, while retaining planned/deferred status and its no-claim boundary. This closes a traceability gap in future-build planning; it does not answer the questions, promote a gate, or change the `90%` contained-M0 / `0%` full-build measures.
+
 ## 2026-07-20 - Rebound TASK-000011 no-claim capture to current main
 
 Rebound the current non-accepting `TASK-000011` source-identity capture to the pushed `main` commit `eb0473eb711d0f7fa68cf9aea0c5971d026af456` and refreshed the changed review-handoff hash. This keeps the current bundle, handoff, machine start-state, evidence matrix, and repository map on one exact source commit without changing the `review_pending`, `90%` contained-M0, or `0%` full-build status.

@@ -4,7 +4,7 @@
   "title": "Turing Research Question Coverage Audit",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "audit_id", "status", "updated", "claim_status", "program_source", "crosswalk_source", "progress_snapshot_source", "active_question_ids", "deferred_questions", "validation_commands", "unsupported"],
+  "required": ["schema_version", "audit_id", "status", "updated", "claim_status", "program_source", "crosswalk_source", "progress_snapshot_source", "active_question_ids", "deferred_questions", "deferred_route_index", "validation_commands", "unsupported"],
   "properties": {
     "schema_version": { "const": 1 },
     "audit_id": { "type": "string", "pattern": "^RESEARCH\\.QUESTION_COVERAGE\\.[A-Z0-9._-]+$" },
@@ -16,6 +16,7 @@
     "progress_snapshot_source": { "type": "string", "minLength": 3 },
     "active_question_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^RQ-[0-9]{2}$" } },
     "deferred_questions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/deferred" } },
+    "deferred_route_index": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/deferred_route" } },
     "validation_commands": { "type": "array", "minItems": 3, "items": { "type": "string", "minLength": 3 } },
     "unsupported": { "type": "array", "minItems": 8, "items": { "type": "string", "minLength": 10 } }
   },
@@ -31,6 +32,16 @@
         "owner_route": { "type": "string", "minLength": 20 },
         "revisit_trigger": { "type": "string", "minLength": 30 },
         "required_future_evidence": { "type": "array", "minItems": 3, "items": { "type": "string", "minLength": 10 } }
+      }
+    },
+    "deferred_route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_id", "route_status", "research_routes"],
+      "properties": {
+        "question_id": { "type": "string", "pattern": "^RQ-[0-9]{2}$" },
+        "route_status": { "const": "planned_research_route" },
+        "research_routes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 3 } }
       }
     }
   }
