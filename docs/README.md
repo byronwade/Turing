@@ -15,6 +15,7 @@ Documentation changes are part of implementation. Every change must update every
 | [Security policy](security.md) | Current security status and private reporting |
 | [Architecture prototype](prototype.md) | Exact purpose and limits of `prototype/` |
 | [Research log](research-log.md) | Chronological record of material engineering and documentation decisions |
+| [Performance baselines](performance-baselines.md) | Raw per-stage pipeline timings and footprint, for tracking this engine against itself |
 | [Research index](research/README.md) | Dated evidence, implementation-research lane map, build-readiness research crosswalk backed by [`research-readiness-crosswalk.json`](blueprint-v1/machine/research-readiness-crosswalk.json), and experiment queue |
 | [Blueprint v1](blueprint-v1/README.md) | Normative product and architecture baseline |
 | [Pre-build checklist](project-buildout/11-pre-build-readiness-checklist.md) | Current M0 build authorization and remaining blockers |

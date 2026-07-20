@@ -255,6 +255,26 @@
       ],
       "dependencies": [],
       "failure_boundary": "reject-dangling-references-and-unbound-operations"
+    },
+    {
+      "id": "COMP-015",
+      "package": "turing-bench",
+      "path": "crates/turing-bench",
+      "kind": "tool",
+      "owner_scope": "engine",
+      "privilege": "unprivileged",
+      "hostile_input": false,
+      "public_api": "internal-benchmark-harness",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-html",
+        "turing-css",
+        "turing-layout"
+      ],
+      "failure_boundary": "reject-fixtures-the-engine-does-not-implement"
     }
   ]
 }

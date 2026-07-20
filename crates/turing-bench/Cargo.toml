@@ -1,0 +1,19 @@
+[package]
+name = "turing-bench"
+description = "Turing-owned per-stage pipeline benchmark harness recording baselines for PB-013"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-css = { path = "../turing-css" }
+turing-html = { path = "../turing-html" }
+turing-layout = { path = "../turing-layout" }
+
+[lints]
+workspace = true

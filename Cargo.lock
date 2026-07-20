@@ -7,6 +7,15 @@ name = "turing-architecture-prototype"
 version = "0.1.0"
 
 [[package]]
+name = "turing-bench"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-html",
+ "turing-layout",
+]
+
+[[package]]
 name = "turing-build-info"
 version = "0.1.0"
 

@@ -1,5 +1,33 @@
 # Research Log
 
+## 2026-07-20 - Per-stage benchmark harness and first recorded baselines
+
+Question:
+
+`PB-013` forbids performance claims without measurement, and the project's stated goal is speed and a small footprint. Neither could be honestly discussed, because nothing had ever been measured.
+
+Method:
+
+Added `crates/turing-bench`, registered as `COMP-015`. It times each pipeline stage separately — tokenize, tree-build, parse-css, cascade, layout — and prints raw baselines. Results recorded in `docs/performance-baselines.md`.
+
+Decision:
+
+No benchmarking crate. `criterion` is the obvious reach and it is an external dependency, which the workspace does not take. What is borrowed is the methodology, not the code: discard warm-up iterations, run a fixed sample count, report order statistics rather than a mean, and guard each stage's output with `std::hint::black_box` so the optimiser cannot delete work whose result is unused.
+
+Per-stage rather than end-to-end. A single total hides one stage regressing while another improves, and "where does the time go" is the question that makes a baseline actionable.
+
+Order statistics rather than a mean, because a mean is dragged around by one scheduling hiccup. The minimum is the most stable figure across runs; a maximum far above the median points at allocation rather than noise.
+
+Not wired into any validator, and this is deliberate. Wall-clock measurement used as a pass/fail gate produces flaky failures, and a check that fails for reasons unrelated to the change trains people to ignore it. The baselines are a reported artifact.
+
+The fixture is a small hand-written document rather than a captured real page. A real page exercises constructs this engine refuses by design, so the run would be timing error paths rather than the pipeline. A test asserts the fixture stays inside what the engine implements, so this cannot silently stop being true. When the fixture grows, the baselines reset and earlier numbers stop being comparable — recorded in the baselines file so that is not discovered later by someone comparing across the boundary.
+
+Findings, recorded without acting on them: tokenizing is the most expensive single stage, which is expected for the stage that touches every input byte and is where optimisation would pay first. Layout's maximum sits far above its median while every other stage is tight, which is consistent with allocation during box-tree construction — a hypothesis, not a finding, since confirming it needs allocation profiling that does not exist.
+
+Footprint is the half of the mandate that can be measured without ambiguity: zero external dependencies across the workspace, verifiable from `Cargo.lock`, and a 173 KiB `turing-shell` release binary with no size-oriented profile flags applied, so that figure is an upper bound rather than a tuned result.
+
+What this does not license: any comparison against another engine. There is no comparison data, and a Turing number printed beside a Chrome number without matched hardware, matched input, and a controlled method would be fabricated. The harness prints that disclaimer in its own output so a pasted result carries it.
+
 ## 2026-07-20 - Foreign-tree test found width and height were parsed and discarded
 
 Question:
