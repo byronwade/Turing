@@ -8,7 +8,7 @@ Can the `RQ-16`/`RQ-25` engine-landscape hypothesis packet preserve its official
 
 Method:
 
-Added a no-claim browser-engine landscape source manifest, schema, and validator; bound them to the source-strategy crosswalk, build-information ledger, documentation-readiness audit, PB-020 closure template, research index, documentation matrix, repository map, and aggregate `xtask` check. Extended the documentation validator's approved machine-registry directories to include `docs/research/machine/` and refreshed the human crosswalk coverage count from 256 to 259 evidence-start entries. The records improve source identity and freshness tracking only. They do not select an engine, authorize source use, establish comparative performance, or change the 90% contained-M0 / 0% full-build measures.
+Added a no-claim browser-engine landscape source manifest, schema, and validator; bound them to the source-strategy crosswalk, build-information ledger, documentation-readiness audit, PB-020 closure template, research index, documentation matrix, repository map, and aggregate `xtask` check. Extended the documentation validator's approved machine-registry directories to include `docs/research/machine/`, refreshed the human crosswalk coverage count from 256 to 259 evidence-start entries, and linked the manifest from every canonical source document listed by the manifest. The records improve source identity and freshness tracking only. They do not select an engine, authorize source use, establish comparative performance, or change the 90% contained-M0 / 0% full-build measures.
 
 ## 2026-07-19 - Benchmark source-manifest inbound-link audit
 

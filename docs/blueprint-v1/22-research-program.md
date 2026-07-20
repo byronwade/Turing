@@ -108,7 +108,7 @@ The [Servo local compatibility corpus and WPT/Test262 evidence report](../resear
 
 ## RQ-16 — Which competitive engine patterns survive equivalent measurement?
 
-Use the [July 2026 engine landscape study](../research/browser-engine-landscape-2026-07.md) as the hypothesis source, then compare current stable Chromium, WebKit/Safari where available, Firefox/Gecko, and runnable Servo/Ladybird builds on fixed hardware and equivalent local corpora.
+Use the [July 2026 engine landscape study](../research/browser-engine-landscape-2026-07.md) and its checked no-claim [source manifest](../research/machine/browser-engine-landscape-source-manifest.json) as the hypothesis and provenance source, then compare current stable Chromium, WebKit/Safari where available, Firefox/Gecko, and runnable Servo/Ladybird builds on fixed hardware and equivalent local corpora.
 
 Measure startup, input-to-present latency, frame pacing, page stages, JavaScript warm-up, process topology, isolation state, memory categories, energy, recovery, compatibility, accessibility, and unsupported behavior. Distinguish observed architecture from inferred cause. Never attribute a benchmark difference to a design feature without a controlled experiment.
 
