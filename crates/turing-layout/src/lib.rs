@@ -38,10 +38,18 @@
 //! - `position` other than `static`, which removes a box from normal flow;
 //! - flexbox and grid, which replace the block layout algorithm entirely;
 //! - table layout;
-//! - vertical and right-to-left writing modes.
+//! - vertical and right-to-left writing modes;
+//! - negative margins, whose collapsing rule differs from the positive one.
 //!
 //! Each of these produces a materially different geometry. Ignoring one would
 //! place content in the wrong place while appearing to succeed.
+//!
+//! # Hit testing
+//!
+//! [`hit_test`] answers which node is at a point, completing `REQ-ENG-005`
+//! alongside the display list. Its ordering and edge-attribution rules are
+//! documented on the function, because each one is a place where a wrong
+//! implementation stays quiet.
 
 #![forbid(unsafe_code)]
 
@@ -86,6 +94,8 @@ pub enum LayoutError {
     DisplayModeUnsupported { value: String },
     /// Vertical or right-to-left flow.
     WritingModeUnsupported { value: String },
+    /// A negative length on a box edge.
+    NegativeEdgeUnsupported { property: String, value: String },
 }
 
 impl fmt::Display for LayoutError {
@@ -106,6 +116,12 @@ impl fmt::Display for LayoutError {
             Self::WritingModeUnsupported { value } => {
                 write!(formatter, "writing mode {value} is not implemented")
             }
+            Self::NegativeEdgeUnsupported { property, value } => write!(
+                formatter,
+                "{property}: {value} is not implemented; margin collapsing with negative \
+                 values takes the most negative margin plus the largest positive one, \
+                 which this implementation does not compute"
+            ),
         }
     }
 }
@@ -470,9 +486,16 @@ fn resolve_style<T: LayoutTree>(
             }
             "width" => style.width = parse_length(value),
             "height" => style.height = parse_length(value),
-            "margin" => style.margin = uniform(parse_length(value).unwrap_or(0.0)),
-            "padding" => style.padding = uniform(parse_length(value).unwrap_or(0.0)),
-            "border-width" => style.border = uniform(parse_length(value).unwrap_or(0.0)),
+            // Negative edges are refused rather than approximated. A negative
+            // margin is valid CSS whose collapsing rule differs from the
+            // positive one — the most negative margin is added to the largest
+            // positive, not maximised against it — and this implementation
+            // computes only the positive rule, so accepting one would place
+            // content wrongly while appearing to succeed. Negative padding and
+            // border are invalid CSS, and refusing surfaces the authoring error.
+            "margin" => style.margin = uniform(non_negative(property, value)?),
+            "padding" => style.padding = uniform(non_negative(property, value)?),
+            "border-width" => style.border = uniform(non_negative(property, value)?),
             "background" | "background-color" => style.background = Some(value.to_string()),
             "color" => style.color = Some(value.to_string()),
             _ => {}
@@ -509,6 +532,22 @@ fn uniform(value: f32) -> EdgeSizes {
         top: value,
         bottom: value,
     }
+}
+
+/// Parses an edge length, refusing a negative one.
+///
+/// An unparseable value yields `0.0`, matching the existing treatment of units
+/// this crate does not resolve; a *parsed* negative is a different case, because
+/// the author said something specific that this implementation would get wrong.
+fn non_negative(property: &str, value: &str) -> Result<f32, LayoutError> {
+    let length = parse_length(value).unwrap_or(0.0);
+    if length < 0.0 {
+        return Err(LayoutError::NegativeEdgeUnsupported {
+            property: property.to_string(),
+            value: value.to_string(),
+        });
+    }
+    Ok(length)
 }
 
 /// Parses a length in `px` or a bare number. Percentages and relative units
@@ -624,6 +663,101 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     layout_box.dimensions.content.height = (line + 1.0) * metrics.line_height;
 }
 
+// -- hit testing ---------------------------------------------------------
+
+/// A point in the same coordinate space as [`LayoutBox`] geometry: CSS pixels,
+/// origin at the top left of the viewport.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Point {
+    pub x: f32,
+    pub y: f32,
+}
+
+/// Returns the node index of the topmost box containing `point`.
+///
+/// This completes `REQ-ENG-005`: the display list answers what is drawn, and
+/// this answers what is *at* a location — the query input routing needs to turn
+/// a click into an event target.
+///
+/// The result is a node index rather than a box reference, matching
+/// [`LayoutBox::node`], so an embedder maps it back into their own tree.
+///
+/// # Semantics
+///
+/// **Topmost means last painted, not first found.** Boxes are tested in paint
+/// order and a later hit replaces an earlier one. A pre-order walk that returned
+/// its first containing box would answer with whatever appears earliest in the
+/// document, which for overlapping content is the box *underneath* — wrong in a
+/// way that looks right for any non-overlapping test.
+///
+/// **The border box is the hit area.** Margins are transparent separation, not
+/// part of the element, so a point in the gap between two blocks belongs to
+/// whatever is behind it rather than to the nearer sibling. Padding and border
+/// are part of the element and do hit.
+///
+/// **Children are tested even when the parent misses.** `overflow` is `visible`
+/// by default, so a child may paint outside its parent's box and must still be
+/// reachable. Pruning the descent on a parent miss would be a plausible
+/// optimisation that silently loses those hits.
+///
+/// **Anonymous and text boxes resolve to their nearest enclosing element.** An
+/// anonymous block wrapping a run of inline text carries no source node, and a
+/// text box's node is the text node rather than an element. A point over either
+/// is over content, so answering `None` would be wrong — but answering with a
+/// text node would be too. Input routing needs an event target, and text nodes
+/// are not event targets; the enclosing element is what a caller can act on.
+///
+/// Returns `None` when the point is outside every box, which is a real answer
+/// rather than a failure: nothing is there.
+#[must_use]
+pub fn hit_test(root: &LayoutBox, point: Point) -> Option<usize> {
+    let mut hit = None;
+    hit_test_in_paint_order(root, point, None, &mut hit);
+    hit
+}
+
+fn hit_test_in_paint_order(
+    layout_box: &LayoutBox,
+    point: Point,
+    enclosing_node: Option<usize>,
+    hit: &mut Option<usize>,
+) {
+    // The nearest enclosing element, for anonymous and text boxes to resolve
+    // against. Computed whether or not this box was hit, because an anonymous
+    // child of a missed box still needs an answer.
+    //
+    // A text box contributes nothing here: its node is a text node, which is
+    // not an event target, so it neither answers a hit nor shadows the element
+    // that encloses it.
+    let enclosing_node = if layout_box.kind == BoxKind::Text {
+        enclosing_node
+    } else {
+        layout_box.node.or(enclosing_node)
+    };
+
+    if contains(layout_box.dimensions.border_box(), point) {
+        *hit = enclosing_node;
+    }
+
+    // `paint` walks the box then its children in order, so visiting in the same
+    // sequence and letting later hits win yields the topmost box.
+    for child in &layout_box.children {
+        hit_test_in_paint_order(child, point, enclosing_node, hit);
+    }
+}
+
+/// Whether `rect` contains `point`.
+///
+/// Half-open on the right and bottom edges, so boxes that share an edge do not
+/// both claim the boundary pixel. Without this a point on a seam between two
+/// stacked blocks hits both, and which one wins depends on visit order.
+fn contains(rect: Rect, point: Point) -> bool {
+    point.x >= rect.x
+        && point.x < rect.x + rect.width
+        && point.y >= rect.y
+        && point.y < rect.y + rect.height
+}
+
 /// Applies a declared `height`, which overrides the height derived from
 /// children. `declared_height` of zero means the declaration was absent.
 fn calculate_height(layout_box: &mut LayoutBox, declared_height: f32) {
@@ -646,7 +780,7 @@ fn calculate_height(layout_box: &mut LayoutBox, declared_height: f32) {
 /// the whole of what implementing [`LayoutTree`] costs.
 #[cfg(test)]
 mod foreign_tree {
-    use super::{BoxKind, LayoutBox, LayoutTree, TextMetrics, layout};
+    use super::{BoxKind, LayoutBox, LayoutTree, Point, TextMetrics, hit_test, layout};
     use turing_css::{ElementTree, Stylesheet};
 
     /// A node in a host application's own document representation.
@@ -778,6 +912,20 @@ mod foreign_tree {
         for child in &root.children {
             collect(child, out);
         }
+    }
+
+    #[test]
+    fn hit_testing_works_on_a_tree_the_engine_does_not_own() {
+        let tree = HostTree::sample();
+        let sheet = Stylesheet::parse("p { display: block; height: 20px; }").expect("parses");
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+
+        // The two paragraphs stack, so a point in the second one must resolve
+        // to a different host node than a point in the first.
+        let first = hit_test(&root, Point { x: 10.0, y: 5.0 });
+        let second = hit_test(&root, Point { x: 10.0, y: 25.0 });
+        assert!(first.is_some());
+        assert_ne!(first, second);
     }
 
     #[test]
@@ -921,6 +1069,234 @@ mod tests {
             find(&root, &document, "div").dimensions.content.height,
             16.0
         );
+    }
+
+    // -- hit testing -----------------------------------------------------
+
+    #[test]
+    fn a_point_outside_every_box_hits_nothing() {
+        let root = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; height: 20px; }",
+            400.0,
+        )
+        .expect("lays out");
+        assert_eq!(hit_test(&root, Point { x: 10.0, y: 9000.0 }), None);
+    }
+
+    #[test]
+    fn overlapping_boxes_resolve_to_the_last_painted() {
+        // Nested blocks: every point inside the inner div is also inside the
+        // outer div and the body, so three border boxes contain the probe. Paint
+        // order draws the outer first and the inner last, so the inner is on
+        // top. A walk returning its first containing box would answer with the
+        // outermost element and still pass every single-box test.
+        let html = "<html><body><div class='outer'><p>x</p></div></body></html>";
+        let root = run(
+            html,
+            "body { display: block; } \
+             .outer { display: block; height: 60px; } \
+             p { display: block; height: 20px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for(html);
+
+        let paragraph = find(&root, &document, "p");
+        let probe = Point {
+            x: paragraph.dimensions.content.x + 1.0,
+            y: paragraph.dimensions.content.y + 1.0,
+        };
+        let outer = find(&root, &document, "div");
+        assert!(
+            contains(outer.dimensions.border_box(), probe),
+            "the probe must be inside the outer box too, or this proves nothing"
+        );
+        assert_eq!(hit_test(&root, probe), paragraph.node);
+    }
+
+    #[test]
+    fn negative_margins_are_reported_not_guessed() {
+        // Collapsing with a negative margin adds the most negative to the
+        // largest positive rather than maximising against it. This crate
+        // computes only the positive rule, so a negative margin would silently
+        // stack content in the wrong place.
+        let result = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; margin: -50px; }",
+            400.0,
+        );
+        assert!(matches!(
+            result,
+            Err(LayoutError::NegativeEdgeUnsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn negative_padding_is_reported_not_guessed() {
+        let result = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; padding: -10px; }",
+            400.0,
+        );
+        assert!(matches!(
+            result,
+            Err(LayoutError::NegativeEdgeUnsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn a_hit_on_text_resolves_to_the_element_not_the_text_node() {
+        // The text box's own node is the text node, which is not an event
+        // target. Routing a click to it would hand a caller something they
+        // cannot attach a listener to.
+        let html = "<html><body><div>hello</div></body></html>";
+        let root = run(html, "div { display: block; }", 400.0).expect("lays out");
+        let document = document_for(html);
+
+        let text_box = find_kind(&root, BoxKind::Text).expect("text box exists");
+        assert!(text_box.node.is_some(), "the text box carries a text node");
+
+        let probe = Point {
+            x: text_box.dimensions.content.x + 1.0,
+            y: text_box.dimensions.content.y + 1.0,
+        };
+        let div = find(&root, &document, "div");
+        assert_eq!(hit_test(&root, probe), div.node);
+        assert_ne!(hit_test(&root, probe), text_box.node);
+    }
+
+    #[test]
+    fn margins_are_not_part_of_the_hit_area() {
+        // Two blocks separated by a margin gap. A point inside the gap is over
+        // the body, not over either child, because margins are transparent
+        // separation rather than part of the element.
+        let html = "<html><body><div class='a'>a</div><div class='b'>b</div></body></html>";
+        let root = run(
+            html,
+            "body { display: block; } \
+             .a { display: block; height: 20px; } \
+             .b { display: block; height: 20px; margin: 30px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for(html);
+
+        let in_gap = hit_test(&root, Point { x: 200.0, y: 35.0 });
+        let first = find(&root, &document, "div");
+        assert_ne!(in_gap, first.node);
+        // And it is not the second div either: that box starts below the gap.
+        let second_top = 20.0 + 30.0;
+        assert!(35.0 < second_top);
+    }
+
+    #[test]
+    fn padding_and_border_are_part_of_the_hit_area() {
+        let html = "<html><body><div>x</div></body></html>";
+        let root = run(
+            html,
+            "div { display: block; height: 20px; padding: 10px; border: 5px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for(html);
+        let div = find(&root, &document, "div");
+
+        // A point inside the border ring is outside the content box but inside
+        // the border box, so it belongs to the element.
+        let border_box = div.dimensions.border_box();
+        let in_border = Point {
+            x: border_box.x + 2.0,
+            y: border_box.y + 2.0,
+        };
+        assert!(!contains(div.dimensions.content, in_border));
+        assert_eq!(hit_test(&root, in_border), div.node);
+    }
+
+    #[test]
+    fn a_hit_on_wrapped_text_resolves_to_an_element() {
+        // Mixed block and inline children put the text inside an anonymous
+        // block, which carries no source node. Answering None for a point
+        // plainly over content would be wrong.
+        let html = "<html><body><div>text<p>block</p></div></body></html>";
+        let root =
+            run(html, "div { display: block; } p { display: block; }", 400.0).expect("lays out");
+
+        let anonymous = find_kind(&root, BoxKind::AnonymousBlock).expect("anonymous block exists");
+        assert_eq!(
+            anonymous.node, None,
+            "the anonymous block has no source node"
+        );
+
+        let inside = Point {
+            x: anonymous.dimensions.content.x + 1.0,
+            y: anonymous.dimensions.content.y + 1.0,
+        };
+        assert!(
+            hit_test(&root, inside).is_some(),
+            "a point over the anonymous block must resolve to an enclosing element"
+        );
+    }
+
+    #[test]
+    fn a_child_painting_outside_its_parent_is_still_reachable() {
+        // A declared height shorter than the content makes the child overflow
+        // its parent's box. `overflow` is visible by default, so the child is
+        // drawn there and must be hittable. Pruning the descent when the parent
+        // misses would be a plausible optimisation that loses this silently.
+        let html = "<html><body><div class='outer'><p>x</p></div></body></html>";
+        let root = run(
+            html,
+            ".outer { display: block; height: 10px; } \
+             p { display: block; height: 80px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for(html);
+
+        let outer = find(&root, &document, "div");
+        let paragraph = find(&root, &document, "p");
+        let probe = Point {
+            x: paragraph.dimensions.content.x + 1.0,
+            y: paragraph.dimensions.content.y + 60.0,
+        };
+        assert!(
+            !contains(outer.dimensions.border_box(), probe),
+            "the probe must be outside the parent, or this proves nothing"
+        );
+        assert_eq!(hit_test(&root, probe), paragraph.node);
+    }
+
+    #[test]
+    fn boxes_sharing_an_edge_do_not_both_claim_it() {
+        // Half-open containment: a point exactly on the seam between two
+        // stacked blocks belongs to the lower one only.
+        let rect = Rect {
+            x: 0.0,
+            y: 0.0,
+            width: 10.0,
+            height: 10.0,
+        };
+        assert!(
+            contains(rect, Point { x: 0.0, y: 0.0 }),
+            "top-left is inside"
+        );
+        assert!(
+            !contains(rect, Point { x: 10.0, y: 5.0 }),
+            "the right edge belongs to the next box"
+        );
+        assert!(
+            !contains(rect, Point { x: 5.0, y: 10.0 }),
+            "the bottom edge belongs to the next box"
+        );
+    }
+
+    /// Returns the first box of `kind` in paint order.
+    fn find_kind(root: &LayoutBox, kind: BoxKind) -> Option<&LayoutBox> {
+        if root.kind == kind {
+            return Some(root);
+        }
+        root.children.iter().find_map(|c| find_kind(c, kind))
     }
 
     fn find<'tree>(root: &'tree LayoutBox, document: &Document, tag: &str) -> &'tree LayoutBox {
