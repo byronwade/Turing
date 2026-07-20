@@ -113,6 +113,11 @@ pub enum Value {
     String(String),
     /// Index into the compiled function table.
     Function(usize),
+    /// Index into the run's object store.
+    ///
+    /// A handle rather than the object itself, because `o.self = o` is
+    /// expressible and an owned representation would not terminate.
+    Object(usize),
 }
 
 impl Value {
@@ -125,7 +130,9 @@ impl Value {
             // NaN and both zeroes are falsy; this is easy to get wrong.
             Self::Number(value) => *value != 0.0 && !value.is_nan(),
             Self::String(value) => !value.is_empty(),
-            Self::Function(_) => true,
+            // Every object is truthy, including an empty one. This is the case
+            // people expect to behave like an empty string and it does not.
+            Self::Function(_) | Self::Object(_) => true,
         }
     }
 }
@@ -145,6 +152,10 @@ impl fmt::Display for Value {
             }
             Self::String(value) => write!(formatter, "{value}"),
             Self::Function(index) => write!(formatter, "[function {index}]"),
+            // Deliberately not the object's contents. Rendering them would need
+            // cycle detection, and `String(o)` in the language is "[object
+            // Object]" rather than a dump.
+            Self::Object(_) => write!(formatter, "[object Object]"),
         }
     }
 }
@@ -298,17 +309,24 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
             index += 3;
             continue;
         }
+        // `...` before `.`, so spread lexes as one token and can be refused
+        // as itself rather than as three property accesses.
+        if three == "..." {
+            tokens.push(Token::Punct(three.to_string()));
+            index += 3;
+            continue;
+        }
         if matches!(two, "==" | "!=" | "<=" | ">=" | "&&" | "||") {
             tokens.push(Token::Punct(two.to_string()));
             index += 2;
             continue;
         }
-        if b"+-*/%<>=!(){};,".contains(&byte) {
+        if b"+-*/%<>=!(){};,.[]:?".contains(&byte) {
             tokens.push(Token::Punct((byte as char).to_string()));
             index += 1;
             continue;
         }
-        // Property access, arrays, and regular expressions all begin here.
+        // Regular expressions and template literals begin here.
         return Err(JsError::UnexpectedCharacter {
             character: byte as char,
             offset: index,
@@ -349,6 +367,21 @@ enum Expr {
     Call {
         callee: String,
         arguments: Vec<Expr>,
+    },
+    /// `{ a: 1, "b": 2 }`, in source order.
+    ObjectLiteral {
+        entries: Vec<(String, Expr)>,
+    },
+    /// `object.name` or `object[key]`.
+    Member {
+        object: Box<Expr>,
+        key: Box<Expr>,
+    },
+    /// `object.name = value` or `object[key] = value`.
+    SetMember {
+        object: Box<Expr>,
+        key: Box<Expr>,
+        value: Box<Expr>,
     },
 }
 
@@ -631,13 +664,14 @@ impl Parser {
         if self.check_punct("=") {
             self.position += 1;
             let value = Box::new(self.parse_assignment()?);
-            let Expr::Variable(name) = target else {
-                return Err(JsError::UnexpectedToken {
+            return match target {
+                Expr::Variable(name) => Ok(Expr::Assign { name, value }),
+                Expr::Member { object, key } => Ok(Expr::SetMember { object, key, value }),
+                _ => Err(JsError::UnexpectedToken {
                     found: "expression".to_string(),
-                    expected: "a variable on the left of `=`".to_string(),
-                });
+                    expected: "a variable or property on the left of `=`".to_string(),
+                }),
             };
-            return Ok(Expr::Assign { name, value });
         }
         Ok(target)
     }
@@ -771,7 +805,45 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Result<Expr, JsError> {
+        let primary = self.parse_primary_base()?;
+        self.parse_member_suffix(primary)
+    }
+
+    /// Consumes any run of `.name` and `[key]` suffixes.
+    ///
+    /// A loop rather than recursion into `parse_primary`, so `a.b.c` costs one
+    /// level of grammatical nesting rather than three.
+    fn parse_member_suffix(&mut self, mut object: Expr) -> Result<Expr, JsError> {
+        loop {
+            if self.eat_punct(".") {
+                let Token::Ident(name) = self.advance() else {
+                    return Err(JsError::UnexpectedToken {
+                        found: "token".to_string(),
+                        expected: "a property name after `.`".to_string(),
+                    });
+                };
+                object = Expr::Member {
+                    object: Box::new(object),
+                    key: Box::new(Expr::Str(name)),
+                };
+            } else if self.eat_punct("[") {
+                let key = self.parse_expression()?;
+                self.expect_punct("]")?;
+                object = Expr::Member {
+                    object: Box::new(object),
+                    key: Box::new(key),
+                };
+            } else {
+                return Ok(object);
+            }
+        }
+    }
+
+    fn parse_primary_base(&mut self) -> Result<Expr, JsError> {
         self.refuse_unsupported_keyword()?;
+        if self.check_punct("{") {
+            return self.parse_object_literal();
+        }
         match self.advance() {
             Token::Number(text) => Ok(Expr::Number(text.parse::<f64>().unwrap_or(f64::NAN))),
             Token::Str(text) => Ok(Expr::Str(text)),
@@ -815,6 +887,145 @@ impl Parser {
             }),
         }
     }
+
+    /// Parses `{ a: 1, "b": 2 }`.
+    ///
+    /// Keys are identifiers, strings, or numbers, which is what the object
+    /// initialiser grammar allows without computed keys. Computed keys,
+    /// shorthand, methods, and spread are refused rather than partly handled:
+    /// each changes what the initialiser means, not merely how it is written.
+    fn parse_object_literal(&mut self) -> Result<Expr, JsError> {
+        self.expect_punct("{")?;
+        let mut entries = Vec::new();
+        while !self.check_punct("}") {
+            if self.check_punct("[") {
+                return Err(JsError::Unsupported {
+                    feature: "computed property keys".to_string(),
+                });
+            }
+            if self.check_punct("...") {
+                return Err(JsError::Unsupported {
+                    feature: "object spread".to_string(),
+                });
+            }
+            let key = match self.advance() {
+                Token::Ident(name) => name,
+                Token::Str(text) => text,
+                Token::Number(text) => canonical_key(&text),
+                other => {
+                    return Err(JsError::UnexpectedToken {
+                        found: other.describe(),
+                        expected: "a property name".to_string(),
+                    });
+                }
+            };
+            if !self.eat_punct(":") {
+                return Err(JsError::Unsupported {
+                    feature: "shorthand and method properties".to_string(),
+                });
+            }
+            entries.push((key, self.parse_assignment()?));
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct("}")?;
+        Ok(Expr::ObjectLiteral { entries })
+    }
+}
+
+/// Normalises a property key to its string form.
+///
+/// `o[1]` and `o["1"]` are the same property, so numbers become their canonical
+/// string. A number that is not a canonical integer index keeps its ordinary
+/// string form, which is what distinguishes `o["01"]` from `o[1]`.
+fn canonical_key(text: &str) -> String {
+    text.parse::<f64>().map_or_else(
+        |_| text.to_string(),
+        |number| Value::Number(number).to_string(),
+    )
+}
+
+/// Whether a key is a canonical array index.
+///
+/// Enumeration puts these first, in ascending numeric order, ahead of every
+/// string key. "01" and "1.0" are not canonical — they are ordinary string keys
+/// — which is why this round-trips rather than merely parsing.
+///
+/// Test-only, because nothing in the language enumerates yet: there is no
+/// `for...in` and no `Object.keys`. What ships is the *storage* order that
+/// enumeration will read, not enumeration itself, and the distinction is worth
+/// keeping visible rather than implying a feature that is not reachable.
+#[cfg(test)]
+fn array_index(key: &str) -> Option<u32> {
+    key.parse::<u32>()
+        .ok()
+        .filter(|index| index.to_string() == key)
+}
+
+/// One object's properties.
+///
+/// Insertion order is kept because enumeration depends on it, and a map by name
+/// is kept because property lookup would otherwise be a linear scan of every
+/// property on every access.
+#[derive(Clone, Debug, Default, PartialEq)]
+struct ObjectData {
+    entries: Vec<(String, Value)>,
+    index: std::collections::HashMap<String, usize>,
+}
+
+impl ObjectData {
+    fn get(&self, key: &str) -> Option<&Value> {
+        self.index.get(key).map(|&at| &self.entries[at].1)
+    }
+
+    /// Sets a property, returning the bytes of key newly stored.
+    ///
+    /// Assigning to an existing key overwrites in place. Order is a property of
+    /// first insertion, so re-assigning must not move the key to the end — the
+    /// kind of difference that only shows up when something enumerates.
+    fn set(&mut self, key: String, value: Value) -> usize {
+        if let Some(&at) = self.index.get(&key) {
+            self.entries[at].1 = value;
+            return 0;
+        }
+        let charged = key.len();
+        self.index.insert(key.clone(), self.entries.len());
+        self.entries.push((key, value));
+        charged
+    }
+
+    /// Returns keys in the order enumeration will need.
+    ///
+    /// Integer-like keys ascending first, then the remaining keys in insertion
+    /// order. Not the order they were written, and not sorted: a store that
+    /// simply kept insertion order, or one that sorted lexicographically, both
+    /// look right until a test mixes the two kinds of key.
+    ///
+    /// Test-only for now, and deliberately so. Nothing in the language reaches
+    /// it, so this is the accessor for a property of the representation rather
+    /// than an implemented feature. It exists because the ordering constraint
+    /// falls on the *store* — a store that lost insertion order could not be
+    /// fixed later by the enumerator — and pinning it now costs a test, while
+    /// discovering it later costs a rewrite.
+    #[cfg(test)]
+    fn keys(&self) -> Vec<&str> {
+        let mut indexed: Vec<(u32, &str)> = self
+            .entries
+            .iter()
+            .filter_map(|(key, _)| array_index(key).map(|number| (number, key.as_str())))
+            .collect();
+        indexed.sort_unstable_by_key(|&(number, _)| number);
+
+        let mut keys: Vec<&str> = indexed.into_iter().map(|(_, key)| key).collect();
+        keys.extend(
+            self.entries
+                .iter()
+                .filter(|(key, _)| array_index(key).is_none())
+                .map(|(key, _)| key.as_str()),
+        );
+        keys
+    }
 }
 
 // -- bytecode ------------------------------------------------------------
@@ -828,6 +1039,14 @@ pub enum Op {
     LoadLocal(usize),
     /// Store the top of stack into local slot `n`, leaving it on the stack.
     StoreLocal(usize),
+    /// Allocate an empty object and push a handle to it.
+    NewObject,
+    /// Push a copy of the top of stack.
+    Dup,
+    /// Pop key then object; push the property value, or `undefined`.
+    GetProperty,
+    /// Pop value, key, object; set the property and push the value back.
+    SetProperty,
     Add,
     Sub,
     Mul,
@@ -1187,6 +1406,33 @@ impl Compiler {
                 self.expression(right)?;
                 self.patch(jump);
             }
+            Expr::ObjectLiteral { entries } => {
+                self.code.push(Op::NewObject);
+                for (key, value) in entries {
+                    // SetProperty consumes the object, so each entry works on a
+                    // copy and the original stays for the next one. Without the
+                    // duplicate the first property empties the stack and every
+                    // later access reads a property of `undefined`.
+                    self.code.push(Op::Dup);
+                    self.code.push(Op::Const(Value::String(key.clone())));
+                    self.expression(value)?;
+                    self.code.push(Op::SetProperty);
+                    // SetProperty leaves the assigned value; drop it so only the
+                    // object remains.
+                    self.code.push(Op::Pop);
+                }
+            }
+            Expr::Member { object, key } => {
+                self.expression(object)?;
+                self.expression(key)?;
+                self.code.push(Op::GetProperty);
+            }
+            Expr::SetMember { object, key, value } => {
+                self.expression(object)?;
+                self.expression(key)?;
+                self.expression(value)?;
+                self.code.push(Op::SetProperty);
+            }
             Expr::Call { callee, arguments } => {
                 let Some(&(_, index, arity)) =
                     self.signatures.iter().find(|(name, _, _)| name == callee)
@@ -1312,7 +1558,13 @@ impl Vm {
     pub fn run(&self, program: &Program) -> Result<Value, JsError> {
         let mut steps = 0_u64;
         let mut bytes = 0_u64;
-        self.run_function(program, 0, Vec::new(), &mut steps, &mut bytes)
+        // One store for the whole run, so a handle stays meaningful across
+        // calls. Nothing is reclaimed within a run: collection is `WP-011`, and
+        // until it lands object memory is bounded by the byte budget rather
+        // than by reuse. That is a smaller claim than "bounded", and the right
+        // one to make.
+        let mut objects = Vec::new();
+        self.run_function(program, 0, Vec::new(), &mut steps, &mut bytes, &mut objects)
     }
 
     fn run_function(
@@ -1322,6 +1574,7 @@ impl Vm {
         arguments: Vec<Value>,
         steps: &mut u64,
         bytes: &mut u64,
+        objects: &mut Vec<ObjectData>,
     ) -> Result<Value, JsError> {
         let function = &program.functions[index];
         let mut locals = vec![Value::Undefined; function.locals.max(arguments.len())];
@@ -1377,6 +1630,60 @@ impl Vm {
                     };
                     stack.push(result);
                 }
+                Op::Dup => {
+                    let top = stack.last().cloned().unwrap_or(Value::Undefined);
+                    stack.push(top);
+                }
+                Op::NewObject => {
+                    // Charged like any other produced data. Objects were named
+                    // as a future amplification path when the byte budget was
+                    // added; this is that path, so it is charged from the start
+                    // rather than after someone finds the loop that exploits it.
+                    *bytes = bytes.saturating_add(OBJECT_OVERHEAD_BYTES);
+                    if *bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    objects.push(ObjectData::default());
+                    stack.push(Value::Object(objects.len() - 1));
+                }
+                Op::GetProperty => {
+                    let key = pop(&mut stack);
+                    let object = pop(&mut stack);
+                    let Value::Object(handle) = object else {
+                        return Err(JsError::TypeError {
+                            message: format!("cannot access a property of {object}"),
+                        });
+                    };
+                    // A missing property reads `undefined`. This is the one
+                    // lookup in this workspace that is not a typed refusal, and
+                    // it is specified: absence is an ordinary result here, not
+                    // a gap in the implementation.
+                    let value = objects[handle]
+                        .get(&property_key(&key))
+                        .cloned()
+                        .unwrap_or(Value::Undefined);
+                    stack.push(value);
+                }
+                Op::SetProperty => {
+                    let value = pop(&mut stack);
+                    let key = pop(&mut stack);
+                    let object = pop(&mut stack);
+                    let Value::Object(handle) = object else {
+                        return Err(JsError::TypeError {
+                            message: format!("cannot access a property of {object}"),
+                        });
+                    };
+                    let charged = objects[handle].set(property_key(&key), value.clone());
+                    *bytes = bytes.saturating_add(charged as u64);
+                    if *bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    stack.push(value);
+                }
                 Op::Sub => binary_number(&mut stack, |a, b| a - b),
                 Op::Mul => binary_number(&mut stack, |a, b| a * b),
                 Op::Div => binary_number(&mut stack, |a, b| a / b),
@@ -1429,7 +1736,8 @@ impl Vm {
                 Op::Call { index, argc } => {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
-                    let result = self.run_function(program, *index, arguments, steps, bytes)?;
+                    let result =
+                        self.run_function(program, *index, arguments, steps, bytes, objects)?;
                     stack.push(result);
                 }
                 Op::Return => return Ok(pop(&mut stack)),
@@ -1472,13 +1780,31 @@ fn compare(stack: &mut Vec<Value>, decide: fn(i32) -> bool) {
     stack.push(Value::Boolean(decide(ordering)));
 }
 
+/// Bytes charged for creating an object, before any property is added.
+///
+/// A stand-in for the real cost of a map and a vector rather than a measured
+/// figure. Its purpose is that allocating objects in a loop is charged at all,
+/// not that the number is accurate.
+const OBJECT_OVERHEAD_BYTES: u64 = 64;
+
+/// Converts a value used as a property key into its string form.
+///
+/// `o[1]` and `o["1"]` name the same property, so a numeric key becomes its
+/// canonical string. Everything else uses its ordinary string form.
+fn property_key(value: &Value) -> String {
+    value.to_string()
+}
+
 fn to_number(value: &Value) -> f64 {
     match value {
         Value::Number(number) => *number,
         Value::Boolean(true) => 1.0,
         Value::Boolean(false) | Value::Null => 0.0,
         Value::String(text) => text.trim().parse::<f64>().unwrap_or(f64::NAN),
-        Value::Undefined | Value::Function(_) => f64::NAN,
+        // An object would coerce through `valueOf`/`toString`, which needs a
+        // prototype chain this implementation does not model, so it is NaN
+        // rather than a guessed conversion.
+        Value::Undefined | Value::Function(_) | Value::Object(_) => f64::NAN,
     }
 }
 
@@ -1490,6 +1816,10 @@ fn strict_equal(left: &Value, right: &Value) -> bool {
         (Value::Boolean(a), Value::Boolean(b)) => a == b,
         (Value::Null, Value::Null) | (Value::Undefined, Value::Undefined) => true,
         (Value::Function(a), Value::Function(b)) => a == b,
+        // Objects compare by identity, not contents: two objects with the same
+        // properties are different objects. Comparing contents would also not
+        // terminate on a self-referential one.
+        (Value::Object(a), Value::Object(b)) => a == b,
         _ => false,
     }
 }
@@ -1525,13 +1855,24 @@ mod tests {
         evaluate(source).expect("evaluates")
     }
 
+    /// Runs `body` as the whole of `main` and returns what it returns.
+    ///
+    /// Separate from `expr` because a nested `function` declaration is refused,
+    /// so a test needing statements cannot wrap them in another function.
+    fn run_main(body: &str) -> Value {
+        let program = compile(&format!("function main() {{ {body} }} main();")).expect("compiles");
+        Vm::default()
+            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+            .expect("runs")
+    }
+
     /// Evaluates an expression by binding it and returning the binding.
     fn expr(source: &str) -> Value {
         let wrapped = format!("function main() {{ return {source}; }}");
         let program = compile(&format!("{wrapped} main();")).expect("compiles");
         // The top level's last value is discarded, so call directly.
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
             .expect("runs")
     }
 
@@ -1602,7 +1943,7 @@ mod tests {
             compile("function f() { let a = 1; a = a + 4; return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1615,7 +1956,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(20.0)
         );
@@ -1630,7 +1971,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(10.0)
         );
@@ -1643,7 +1984,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1658,7 +1999,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(120.0)
         );
@@ -1670,7 +2011,7 @@ mod tests {
             .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(7.0)
         );
@@ -1681,7 +2022,7 @@ mod tests {
         let program = compile("function f() { let a = 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Undefined
         );
@@ -1694,7 +2035,7 @@ mod tests {
             compile("function f() { let a = 1; { let a = 2; } return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -1728,7 +2069,7 @@ mod tests {
             ..Vm::default()
         };
         let error = vm
-            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
             .expect_err("aborted");
         assert!(matches!(error, JsError::StepLimitExceeded { .. }));
     }
@@ -1765,7 +2106,7 @@ mod tests {
             compile("// leading\nfunction f() { /* inner */ return 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -1778,5 +2119,175 @@ mod tests {
         let code = &program.functions[1].code;
         assert!(code.contains(&Op::Add), "{code:?}");
         assert!(code.contains(&Op::Return), "{code:?}");
+    }
+    // -- objects ---------------------------------------------------------
+
+    #[test]
+    fn reads_and_writes_properties() {
+        assert_eq!(expr("({ a: 1 }).a"), Value::Number(1.0));
+        assert_eq!(expr("({ a: 1, b: 2 }).b"), Value::Number(2.0));
+    }
+
+    #[test]
+    fn a_missing_property_reads_undefined() {
+        // The one lookup here that is not a typed refusal. Absence is an
+        // ordinary specified result rather than a gap in the implementation, so
+        // erring would be wrong even though it matches this workspace's habit.
+        assert_eq!(expr("({ a: 1 }).missing"), Value::Undefined);
+        assert_eq!(expr("({}).anything"), Value::Undefined);
+    }
+
+    #[test]
+    fn bracket_and_dot_access_name_the_same_property() {
+        assert_eq!(expr("({ a: 1 })['a']"), Value::Number(1.0));
+    }
+
+    #[test]
+    fn a_numeric_key_and_its_string_form_are_one_property() {
+        // `o[1]` and `o["1"]` are the same property. Treating the number as a
+        // distinct key gives every integer-keyed object two of everything, and
+        // reads still succeed, so nothing looks wrong.
+        assert_eq!(
+            expr("({ 1: 'first' })['1']"),
+            Value::String("first".to_string())
+        );
+        assert_eq!(
+            expr("({ 1: 'first' })[1]"),
+            Value::String("first".to_string())
+        );
+    }
+
+    #[test]
+    fn assignment_creates_and_updates_properties() {
+        assert_eq!(
+            run_main("let o = {}; o.a = 5; return o.a;"),
+            Value::Number(5.0)
+        );
+        assert_eq!(
+            run_main("let o = { a: 1 }; o.a = 9; return o.a;"),
+            Value::Number(9.0)
+        );
+    }
+
+    #[test]
+    fn an_object_is_a_handle_not_a_copy() {
+        // Two names for one object must see each other's writes. A store that
+        // cloned on assignment would pass every single-name test.
+        assert_eq!(
+            run_main("let a = {}; let b = a; b.x = 3; return a.x;"),
+            Value::Number(3.0)
+        );
+    }
+
+    #[test]
+    fn an_object_can_refer_to_itself() {
+        // The reason objects are handles rather than owned values: an owned
+        // representation would not terminate here.
+        assert_eq!(
+            run_main("let o = {}; o.self = o; return o.self.self.self === o;"),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn enumeration_puts_integer_keys_first_in_numeric_order() {
+        // The order is integer-like keys ascending, then the rest in insertion
+        // order. A store keeping only insertion order, and one sorting keys
+        // lexicographically, both look correct until a test mixes the two kinds
+        // — and lexicographic order would also put "10" before "2".
+        let mut object = ObjectData::default();
+        for key in ["2", "b", "10", "a", "1"] {
+            object.set(key.to_string(), Value::Number(0.0));
+        }
+        assert_eq!(object.keys(), vec!["1", "2", "10", "b", "a"]);
+    }
+
+    #[test]
+    fn a_non_canonical_numeric_key_is_an_ordinary_string_key() {
+        // "01" and "1.0" parse as numbers but are not canonical array indices,
+        // so they enumerate with the string keys rather than being reordered.
+        let mut object = ObjectData::default();
+        for key in ["01", "1", "1.0"] {
+            object.set(key.to_string(), Value::Number(0.0));
+        }
+        assert_eq!(object.keys(), vec!["1", "01", "1.0"]);
+    }
+
+    #[test]
+    fn reassignment_keeps_a_key_in_its_original_position() {
+        // Order belongs to first insertion. Re-assigning through a path that
+        // removes and re-appends would move the key to the end, which only
+        // shows up when something enumerates.
+        let mut object = ObjectData::default();
+        object.set("a".to_string(), Value::Number(1.0));
+        object.set("b".to_string(), Value::Number(2.0));
+        object.set("a".to_string(), Value::Number(3.0));
+
+        assert_eq!(object.keys(), vec!["a", "b"]);
+        assert_eq!(object.get("a"), Some(&Value::Number(3.0)));
+    }
+
+    #[test]
+    fn reassignment_is_not_charged_again() {
+        // Only a new key stores anything. Charging every assignment would let
+        // an ordinary loop exhaust the budget.
+        let mut object = ObjectData::default();
+        assert_eq!(object.set("key".to_string(), Value::Number(1.0)), 3);
+        assert_eq!(object.set("key".to_string(), Value::Number(2.0)), 0);
+    }
+
+    #[test]
+    fn allocating_objects_in_a_loop_is_charged() {
+        // Objects were named as a future amplification path when the byte
+        // budget was added. This is that path, charged from the start rather
+        // than after someone finds the loop that exploits it.
+        let source = "function main() { let i = 0; let o = {}; \
+                      while (i < 100000) { o = {}; i = i + 1; } return o; } main();";
+        assert!(matches!(
+            evaluate(source),
+            Err(JsError::ByteLimitExceeded { .. })
+        ));
+    }
+
+    #[test]
+    fn a_modest_number_of_objects_is_allowed() {
+        // The other side of the bracket: a budget that refused ordinary object
+        // use would pass the test above and be useless.
+        let source = "function main() { let i = 0; let o = {}; \
+                      while (i < 100) { o = {}; i = i + 1; } return o; } main();";
+        assert!(evaluate(source).is_ok());
+    }
+
+    #[test]
+    fn a_property_access_on_a_non_object_is_a_type_error() {
+        assert!(matches!(
+            evaluate("function main() { let n = 1; return n.a; } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn an_object_is_truthy_even_when_empty() {
+        // The case people expect to behave like an empty string, and it does
+        // not.
+        // `&&` yields its right operand when the left is truthy.
+        assert_eq!(expr("({}) && 1"), Value::Number(1.0));
+    }
+
+    #[test]
+    fn unmodelled_object_syntax_is_refused() {
+        // Each of these changes what an initialiser means rather than only how
+        // it is written, so a partial implementation would silently drop
+        // properties the author wrote.
+        for source in [
+            "let o = { ['computed']: 1 };",
+            "let a = 1; let o = { a };",
+            "let o = { m() { return 1; } };",
+        ] {
+            assert!(
+                matches!(compile(source), Err(JsError::Unsupported { .. })),
+                "expected a refusal for {source}"
+            );
+        }
     }
 }
