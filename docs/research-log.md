@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-20 - Nova chrome: the design source became a running surface
+
+Question:
+
+The owner's standing direction names a UI: the Nova design source, captured and integrity-pinned at `docs/ui-runtime/design-lab/turing-nova-design-source.jsx`, 7,727 lines of React defining the browser's visual language. The question was how to make the running application wear it without violating two constraints the repository already fixed: the JSX is a reference artifact whose bytes are CI-pinned and which ships nowhere, and the product toolkit decision (`ADR-0014`, the `WP-004` bake-off) is open, so no toolkit may quietly become load-bearing.
+
+The answer is that the engine is the toolkit. The chrome is rendered by the same display-list and raster contracts that paint pages.
+
+Method:
+
+Extraction first, per the authoring workflow: `design/tokens.json` now holds Nova's tokens — both theme palettes verbatim, radii, typography roles, the 44px bar, 24px tabs, the 32px icon button, the site pill, the palette placeholders. Alpha-composited tokens carry flattened opaque equivalents because the reference painter composites nothing; the rgba sources stay authoritative for a future painter. `crates/turing-chrome/src/tokens.rs` is the JSON's Rust projection, documented as such.
+
+`crates/turing-chrome`, registered as `COMP-023`, is the adapter the UI-runtime architecture prescribes: an immutable `ShellSnapshot` in, a display list and typed `ShellCommand`s out, no page access, no privileged calls, no toolkit types in its API. Painting and hit testing read one shared geometry, for the same reason input routing is epoch-guarded in the engine — a hit region that drifted from its painted rectangle is the chrome's version of stale layout, and it is prevented structurally rather than tested for. `turing-ui-model` gained the three commands the design's surfaces express that the model lacked: `NewTab`, `Reload`, and `OpenCommandField` — Nova's active tab doubles as the address field, so pressing it opens the command palette rather than re-activating.
+
+The presenter composes one display list per frame: page items translated below the bar and by the scroll offset, chrome items over them, palette items last. Paint order is the whole compositing model, and the opaque bar erasing page overflow is not a trick — it is what the display list's ordering contract is for. The window now runs tabs (open, close, activate, per-tab scroll and source), typed navigation through the palette, F5 reload, and `--screenshot` renders the identical composed frame headlessly, which is the visual-regression artifact the design lab asks for.
+
+Fidelity is stated rather than implied: layout metrics, surface roles, and colour roles are token-exact; radii, shadows, blur, alpha, and motion are recorded in the tokens and not rendered, because the reference painter draws flat opaque rectangles and 8x8 glyphs. Icons are single glyphs. This is Nova's composition at reference fidelity, not its finish, and the JSX remains the arbiter of finish.
+
+Five chrome tests pin the surface roles, the command resolution (close beats its tab, the active tab opens the palette, below the bar belongs to the page), the single-tab site pill, and the palette states. The workspace is at 379 tests.
+
+What this does not do: no hover states, no tab groups, pins, or overflow pill, no side-mounted tabs, no compact density, no bookmarks or bottom bar, no theme toggle surface (both themes exist in tokens; the app uses Nova's default light), no text selection in the palette, and no claim that this settles `ADR-0014` — the bake-off owes a comparison of real toolkits against these same fixtures, and this chrome is the fixture source, not a contestant.
+
 ## 2026-07-20 - Scrolling as a paint-time translation
 
 The previous entry named scrolling the first gap a user would feel. The design question was where the offset lives, and the answer that keeps every existing invariant is: nowhere the engine can see it. `Page::render_scrolled` translates the display list at paint time; geometry, hit testing, and the mutation-epoch guard all stay in page coordinates, and the embedder owns the two conversions — window point to page point by adding the offset, and clamping the offset against `Page::content_height`. Scrolling cannot invalidate layout because it never touches it.

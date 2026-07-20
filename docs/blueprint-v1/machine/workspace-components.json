@@ -423,13 +423,39 @@
       ],
       "dependencies": [
         "turing-build-info",
+        "turing-chrome",
+        "turing-css",
         "turing-dom",
         "turing-engine",
         "turing-layout",
+        "turing-raster",
+        "turing-types",
+        "turing-ui-model",
         "winit (external)",
         "softbuffer (external)"
       ],
       "failure_boundary": "report-refusals-and-keep-the-last-good-page"
+    },
+    {
+      "id": "COMP-023",
+      "package": "turing-chrome",
+      "path": "crates/turing-chrome",
+      "kind": "library",
+      "owner_scope": "ui-runtime",
+      "privilege": "presentation-contract",
+      "hostile_input": false,
+      "public_api": "internal-nova-chrome-renderer",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-layout",
+        "turing-types",
+        "turing-ui-model"
+      ],
+      "failure_boundary": "shared-geometry-for-paint-and-hit-testing"
     }
   ]
 }

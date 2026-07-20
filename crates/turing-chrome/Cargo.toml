@@ -1,0 +1,20 @@
+[package]
+name = "turing-chrome"
+description = "Toolkit-neutral Nova chrome renderer: shell state in, display list and typed commands out"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-css = { path = "../turing-css", default-features = false }
+turing-layout = { path = "../turing-layout", default-features = false }
+turing-types = { path = "../turing-types" }
+turing-ui-model = { path = "../turing-ui-model" }
+
+[lints]
+workspace = true

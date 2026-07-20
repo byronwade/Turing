@@ -12,9 +12,14 @@ publish = false
 
 [dependencies]
 turing-build-info = { path = "../../crates/turing-build-info" }
+turing-chrome = { path = "../../crates/turing-chrome" }
+turing-css = { path = "../../crates/turing-css" }
 turing-dom = { path = "../../crates/turing-dom" }
 turing-engine = { path = "../../crates/turing-engine" }
 turing-layout = { path = "../../crates/turing-layout" }
+turing-raster = { path = "../../crates/turing-raster" }
+turing-types = { path = "../../crates/turing-types" }
+turing-ui-model = { path = "../../crates/turing-ui-model" }
 
 # The only external runtime dependencies in the workspace, both scoped to
 # this laboratory presenter and both replaceable without touching the

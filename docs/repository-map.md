@@ -224,7 +224,7 @@ Application binaries live here.
 
 `turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 
-`turing-browser` is the Research-maturity windowed laboratory presenter: it loads a local HTML file (or its built-in home page) through `turing-engine`, presents the reference rasterizer's pixels in a native window, and routes pointer input back through the engine's hit testing. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.
+`turing-browser` is the Research-maturity windowed laboratory presenter: it loads local HTML files through `turing-engine`, presents them under the Nova chrome rendered by `turing-chrome` (tab strip, address pill, command palette), and routes pointer input back through the engine's hit testing. `--screenshot out.bmp [page.html] [extra-tabs]` renders the same composed frame headlessly for visual review. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.
 
 Future application directories require an accepted purpose, owner, maturity label, support boundary, and package/update implications.
 
@@ -249,11 +249,16 @@ Current crates:
 - `turing-webidl`: capability-registered DOM bindings for script;
 - `turing-input`: epoch-guarded pointer routing into DOM dispatch;
 - `turing-a11y`: accessibility tree generation;
+- `turing-chrome`: toolkit-neutral Nova chrome renderer — shell snapshots in, display lists and typed commands out, with paint and hit testing sharing one geometry;
 - `turing-engine`: end-to-end page pipeline composing the stages above — parse, script, cascade, layout, paint, route — with relayout after every mutation;
 - `turing-bench`: pipeline stage benchmarks;
 - `turing-fuzz`: seeded fuzz harness over the parse-to-layout stages.
 
 A toolkit, platform, GPU, network, storage, serializer, or runtime dependency may not enter these crates merely to accelerate a demo.
+
+## `design/`
+
+The shared design-system data prescribed by the UI-runtime authoring workflow. `design/tokens.json` holds the visual tokens extracted from the pinned Nova design source (themes, radii, typography, chrome and tab metrics); `crates/turing-chrome/src/tokens.rs` is its Rust projection, and the two must not drift. The Nova JSX itself stays under `docs/ui-runtime/design-lab/` and is integrity-pinned — tokens are extracted from it, never edited into it.
 
 ## `schemas/`
 

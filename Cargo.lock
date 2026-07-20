@@ -1501,15 +1501,30 @@ version = "0.1.0"
 dependencies = [
  "softbuffer",
  "turing-build-info",
+ "turing-chrome",
+ "turing-css",
  "turing-dom",
  "turing-engine",
  "turing-layout",
+ "turing-raster",
+ "turing-types",
+ "turing-ui-model",
  "winit",
 ]
 
 [[package]]
 name = "turing-build-info"
 version = "0.1.0"
+
+[[package]]
+name = "turing-chrome"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-layout",
+ "turing-types",
+ "turing-ui-model",
+]
 
 [[package]]
 name = "turing-css"
