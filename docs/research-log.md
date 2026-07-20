@@ -10148,3 +10148,21 @@ The worksheet improves final owner-decision handoff completeness only. `PB-020` 
 Next question:
 
 When will the owner provide the immutable review snapshot, named independent reviewer, and accepted decision record for each remaining prerequisite gate?
+
+# 2026-07-20 - PB-006 deferred-platform reconciliation
+
+Question:
+
+Does the final `PB-020` closure handoff preserve the deliberately separate `PB-006` platform decision without letting its exclusion from the active owner board look like a completed platform selection?
+
+Method:
+
+Compared the reference-platform scorecard and machine record, the `PB-006` pre-build readiness row, build-information ledger, owner-decision board, PB-020 closure worksheet, closure-review template, and validator. Added an explicit deferred/not-selected `PB-006` disposition, revisit trigger, and support-boundary requirement to the final worksheet and validator.
+
+Decision:
+
+`PB-006` remains not selected and outside the 11 active owner-decision rows until M1 product-support scope, native-shell decisions, and platform budget are accepted. The reconciliation prevents omission from being mistaken for closure; it does not select Windows, macOS, or Linux or change any support, compatibility, accessibility, performance, security, release, or production claim.
+
+Next question:
+
+When will the owner define the M1 reference-platform scope and authorize the platform evidence task needed to replace the scorecard with an executed decision packet?

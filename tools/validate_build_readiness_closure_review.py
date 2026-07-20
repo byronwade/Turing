@@ -42,12 +42,14 @@ REQUIRED_CLOSURE_WORKSHEET_TERMS = [
     "pb-020 closure worksheet",
     "review identity and snapshot",
     "gate reconciliation",
+    "deferred/not-selected pb-006 reference-platform disposition",
     "task and authority boundary",
     "evidence and failure accounting",
     "decision and exception",
     "claim and authority scope",
     "synchronization result",
     "final promotion decision",
+    "deferred/not-selected pb-006 disposition reconciled",
     "does not replace their evidence",
 ]
 
@@ -120,7 +122,7 @@ def validate_closure_preparation(errors: list[str]) -> None:
     if not CLOSURE_PREPARATION.is_file():
         fail(errors, f"missing PB-020 closure preparation: {CLOSURE_PREPARATION}")
         return
-    content = CLOSURE_PREPARATION.read_text(encoding="utf-8").lower()
+    content = CLOSURE_PREPARATION.read_text(encoding="utf-8").lower().replace("`", "")
     for phrase in REQUIRED_CLOSURE_WORKSHEET_TERMS:
         if phrase not in content:
             fail(errors, f"PB-020 closure preparation is missing worksheet term: {phrase}")

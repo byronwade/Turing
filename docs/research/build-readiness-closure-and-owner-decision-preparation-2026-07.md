@@ -56,13 +56,13 @@ The eventual `PB-020` packet must complete every field below for the full review
 | Closure field | Required handoff value |
 |---|---|
 | Review identity and snapshot | Stable closure-review ID, exact source commit, source-tree status, platform, shell, toolchain, configuration, collection time, and digests for the source tree, registries, task manifests, selected documents, and evidence bundles |
-| Gate reconciliation | One record for each canonical `PB-002`, native UI group, `PB-008`/`PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, and `PB-020` scope with direct evidence, current status, owner, independent reviewer, and unresolved limitations |
+| Gate reconciliation | One record for each canonical `PB-002`, native UI group, `PB-008`/`PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, and `PB-020` scope with direct evidence, current status, owner, independent reviewer, and unresolved limitations; also record the deferred/not-selected `PB-006` reference-platform disposition, revisit trigger, and support-boundary impact |
 | Task and authority boundary | Immutable task manifest, dependency digest, bounded paths/capabilities, rollback owner, expiry, reviewer separation, and explicit statement that no proposed task is executable without approval |
 | Evidence and failure accounting | Raw artifact identifiers, focused-validator output including failures, denominators, excluded cases, stale-artifact disposition, retention, access, destruction, and secret/real-user-data exclusion |
 | Decision and exception | `unresolved`, `evidence_collected`, `held_by_exception`, or `closed`; if held, named exception owner, risk references, expiry, rollback, support-boundary change, and follow-up |
 | Claim and authority scope | Exact supported and prohibited claims, with release, signing, legal, disclosure, incident, production, supported-version, security, performance, compatibility, accessibility, and daily-driver authority kept explicit and separate |
 | Synchronization result | Exact updates to requirements, risks, ADRs, backlog, crosswalks, task records, owner records, review rules, navigation, and readiness registries, plus a semantic consistency review result |
-| Final promotion decision | Named owner and independent reviewer acceptance, all prerequisite gates closed or held by approved exception, all task approvals accounted for, and the resulting full-build status or continued hold |
+| Final promotion decision | Named owner and independent reviewer acceptance, all prerequisite gates closed or held by approved exception, the deferred/not-selected `PB-006` disposition reconciled, all task approvals accounted for, and the resulting full-build status or continued hold |
 
 This worksheet coordinates the individual lane packets; it does not replace their evidence, select a source strategy, approve a task, or authorize broad implementation.
 
