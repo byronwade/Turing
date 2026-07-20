@@ -2,7 +2,7 @@
 
 Status: no-claim owner-decision handoff; not approval or readiness promotion
 Owner: program, architecture, security, quality, performance, accessibility, release operations, legal-community, and product owners
-Updated: 2026-07-19
+Updated: 2026-07-20
 
 ## Purpose
 

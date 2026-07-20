@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Documentation-readiness control-surface re-audit
+
+Reconciled the current machine documentation-readiness audit with the progress snapshot, owner-decision board, implementation-plan entrypoint, and no-claim closure template. Re-ran the aggregate check and focused readiness/source validators; all passed. Synchronized the review dates and recorded the verification boundary. The result remains 90% organized for contained M0 continuation and 0% ready for full-build closure because owner decisions, executable lane evidence, and independent review are still absent.
+
 ## 2026-07-20 - Sandbox containment contract freshness revalidation
 
 Re-ran the platform-source, sandbox-contract, probe-inventory, and sandbox-readiness validators from the repository checkout. All four passed, confirming that the Windows/Linux/macOS evidence matrix, 21-operation catalog, evidence schema, package handoff, and no-claim readiness template remain synchronized. Updated the dated sandbox records to reflect this revalidation. This closes a freshness and internal-consistency check only; `PB-012` remains partial with no packaged probe results, effective platform-policy artifacts, containment claim, or owner review.
