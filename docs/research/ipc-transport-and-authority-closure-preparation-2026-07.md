@@ -2,7 +2,7 @@
 
 Status: no-claim execution and review route for `PB-011`, `TASK-000003`, and `TASK-000011`; no transport, wire codec, or production IPC has been approved
 Owner: architecture, API/protocol, security, quality, performance, and independent review
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Question
 

@@ -3,7 +3,7 @@
 Status: no-claim decision-preparation research for `PB-011`; no encoding selected, no generator approved, and no production IPC claim
 Owner: architecture, API/protocol, security, performance, quality, and documentation-research
 Related gate: `PB-011` Canonical IPC schema and process capability generation
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Question
 

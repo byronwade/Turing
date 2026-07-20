@@ -2,7 +2,7 @@
 
 Status: no-claim sample packet shape for `PB-011`, `TASK-000003`, and `TASK-000011`; no wire encoding, transport, process-isolation, renderer-security, or production IPC claim
 Owner: architecture, API/protocol, security, quality, performance, and independent review
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Purpose
 

@@ -2,7 +2,7 @@
 
 Status: source-backed active research handoff; no process topology, site-isolation relaxation, sandbox policy, memory claim, or performance decision accepted
 Owner: architecture, security, IPC, performance, memory, platform, quality, and release operations
-Research date: 2026-07-19
+Research date: 2026-07-20
 Related questions: `RQ-02`, `RQ-20`, `RQ-36`
 Related gates: `PB-011`, `PB-012`, `PB-013`
 
@@ -14,7 +14,7 @@ This packet turns the process-topology question into a controlled research route
 
 ## Source observations
 
-The following primary sources were checked on 2026-07-19:
+The following primary sources were checked on 2026-07-20:
 
 | Source | Observation | Turing consequence |
 | --- | --- | --- |

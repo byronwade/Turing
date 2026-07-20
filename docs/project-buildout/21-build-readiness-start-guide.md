@@ -2,7 +2,7 @@
 
 Status: one-step continuation handoff for next build session  
 Owner: program architecture and engineering operations  
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 This guide is for people and agents starting or resuming in-session work. It does not authorize broad implementation. It keeps the current evidence graph, gate posture, and research direction aligned.
 

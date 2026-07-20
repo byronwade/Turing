@@ -3,7 +3,7 @@
   "schema_version": 1,
   "review_id": "IPC.READINESS_REVIEW.NOCLAIM_TEMPLATE.2026_07",
   "status": "no_claim_ipc_readiness_template",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "claim_status": "IPC readiness-review template only; no owner review, no security review, no architecture review, no API review, no performance review, no implemented schema generator, no approved generator source, no wire encoding decision, no generated types, no generated validators, no generated fixtures, no connection authentication review, no bounded queues review, no backpressure review, no timeout semantics review, no cancellation semantics review, no stale-epoch receiver proof, no negative-test review, no fuzz or model-test review, no process-capability generation review, no PB-011 readiness promotion, no renderer-security claim, no agent-security claim, no process-isolation readiness claim, no site-isolation claim, no production IPC claim, and no implementation claim.",
   "source_records": [
     "crates/turing-ipc/src/lib.rs",

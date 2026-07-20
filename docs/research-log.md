@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - IPC continuation route freshness reconciliation
+
+Reconciled the IPC wire-decision, transport-authority, packet-example, process-topology, and no-claim readiness records with the current M0 continuation audit date. The message-class policy remains explicit for control, request, response, event, and persisted diagnostic traffic, including identity, epoch, authorization, malformed-input, timeout, cancellation, and retention boundaries. This is documentation freshness and handoff alignment only; no wire encoding, transport, generator, production IPC, process-isolation, or security claim was promoted.
+
 ## 2026-07-20 - ADR-0009 freshness-record alignment
 
 Aligned the ADR-0009 human decision packet, decision draft, closure preparation, machine evidence tracker, and Servo source-observation retrieval date with the already-recorded 2026-07-20 upstream `servo/servo` head observation. Historical source captures remain explicitly historical and the moving head is still not a selected baseline. This corrects freshness metadata only; `PB-002` remains blocked and no source, dependency, component, legal, compatibility, performance, security, or release decision was made.
