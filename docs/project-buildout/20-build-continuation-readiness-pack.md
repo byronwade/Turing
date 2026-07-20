@@ -44,6 +44,18 @@ Before making any scope change, confirm all of these are true:
 
 You cannot start broad M1 expansion, benchmark claims, or implementation tasks outside the allowed contained-M0 scope without approved `TASK-*` manifests and owner-reviewed readiness promotions.
 
+### Exact next-session action
+
+The repository is not waiting on another broad documentation sweep. The next contained-M0 session should run the repository gate and record its result:
+
+```powershell
+.\tools\check.ps1
+```
+
+If that passes, continue only with no-claim maintenance in the currently approved task shape: update the relevant research/index/registry records, run the focused validator for that change, and rerun `.\tools\check.ps1`. If it fails, fix the first reproducible repository or documentation invariant failure and record the correction before taking another scope. Do not create browser-engine, renderer, JavaScript, native-shell, benchmark-claim, updater, or production source work from this pack; those require a reviewed immutable `TASK-*` manifest and owner promotion.
+
+This is why the readiness percentage can remain stable while work is progressing: the 90% value measures closure of the contained-M0 organization/evidence system, not elapsed effort or the amount of text in the repository. The remaining 10% is concentrated in owner-reviewed closure and executable evidence for the blocked/partial gates below. Those gates cannot be honestly marked complete by adding more planning documents.
+
 ## 4) Hard stop gates for broad execution
 
 The following remain the first gates for wide implementation:
