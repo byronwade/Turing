@@ -58,6 +58,24 @@ Impact:
 
 The benchmark closure handoff now consistently requires scheduler, memory, cache, lifecycle, pressure, energy, thermal, recovery, and isolation-adjusted policy coverage before benchmark claim review. No gate, task, implementation status, or claim changed.
 
+## 2026-07-19 - Nova task-handoff synchronization
+
+Question:
+
+Does the specified native UI task carry the Nova visual source's authority boundary and build-entry evidence into its task-scoped file boundary?
+
+Method:
+
+Compared the Nova Native Build Entry Criteria, surface-contract map, design-source manifest and validator, UI runtime book, `TASK-000006` specified manifest, proposed task queue row, native UI readiness template, and `PB-020` documentation/readiness records.
+
+Decision:
+
+Added the Nova entry criteria, surface-contract map, and design-source manifest to the immutable `TASK-000006` allowed paths and mirrored queue record. Added explicit task preconditions and acceptance criteria requiring source identity, extraction traceability, semantic tokens, native fixture mapping, and visual comparison evidence while preserving the rule that Nova is visual/layout input only. Refreshed the specified-manifest source queue digest.
+
+Impact:
+
+The native UI task handoff now carries the same Nova authority boundary as the UI runtime and readiness documents. `TASK-000006` remains specified/proposed and non-executable; no toolkit, native adapter, accessibility, page-surface, UI-gate, implementation, or production decision changed.
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:
