@@ -10112,3 +10112,21 @@ The worksheet improves reproducibility handoff completeness only. No independent
 Next question:
 
 When will an approved `TASK-000002` manifest and independent host or owner-approved clean VM produce the first retained run record?
+
+# 2026-07-20 - Profile/session closure worksheet
+
+Question:
+
+Can the profile/session lane preserve data-class identity, schema authority, isolation, fault recovery, migration, privacy, loss accounting, and named review in one resumable handoff without implying profile implementation or data-safety approval?
+
+Method:
+
+Compared the profile/session format inventory, source manifest, schema-package template, readiness-review template, `TASK-000007`, PB-016 crosswalk lane, and data-safety closure route. Added a required worksheet for scope/data classes, schema authority, profile/Space/session isolation, fault and recovery coverage, migration/rollback identity, privacy and credential boundaries, loss/restoration accounting, and review/promotion. Added validator coverage for the worksheet and its no-claim boundary.
+
+Decision:
+
+The worksheet improves profile/session evidence handoff completeness only. `PB-016` remains partial, `TASK-000007` remains specified/proposed-only, and no profile implementation, real-profile migration, credential, sync, private-session, protected-work, data-loss, release, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved synthetic-fixture packet with fault-injected migration and recovery evidence receive named storage, privacy-data, security, quality, product, release-operations, and independent review?

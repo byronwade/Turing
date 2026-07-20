@@ -171,6 +171,24 @@ REQUIRED_REJECTION_TERMS = [
     "claim boundary",
 ]
 
+CLOSURE_WORKSHEET = (
+    DOCS / "research" / "profile-session-execution-and-data-safety-closure-preparation-2026-07.md"
+)
+
+REQUIRED_CLOSURE_TERMS = [
+    "profile/session closure worksheet",
+    "scope and data-class identity",
+    "schema and format authority",
+    "profile/session/space isolation",
+    "fault and recovery matrix",
+    "migration and rollback identity",
+    "privacy and credential boundary",
+    "loss and restoration accounting",
+    "review and promotion record",
+    "resumability control",
+    "does not turn the no-claim templates into executable schemas",
+]
+
 REQUIRED_VALIDATION_COMMANDS = [
     "python3 -B tools/validate_profile_session_readiness_review.py",
     "python3 -B tools/validate_blueprint.py",
@@ -326,6 +344,15 @@ def validate_review(path: Path) -> None:
             fail(f"{path}: validation_commands missing {command}")
 
 
+def validate_closure_worksheet() -> None:
+    if not CLOSURE_WORKSHEET.is_file():
+        fail(f"missing profile/session closure worksheet: {CLOSURE_WORKSHEET}")
+    content = normalize(CLOSURE_WORKSHEET.read_text(encoding="utf-8"))
+    for phrase in REQUIRED_CLOSURE_TERMS:
+        if normalize(phrase) not in content:
+            fail(f"profile/session closure worksheet missing term: {phrase}")
+
+
 def validate_readiness_registry() -> None:
     payload = load_json(MACHINE / "pre-build-readiness.json")
     if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
@@ -443,6 +470,7 @@ def validate_crosswalk() -> None:
 def main() -> int:
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_REVIEW
     validate_review(path)
+    validate_closure_worksheet()
     validate_readiness_registry()
     validate_task_queue()
     validate_crosswalk()

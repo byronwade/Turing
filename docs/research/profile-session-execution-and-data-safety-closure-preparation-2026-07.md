@@ -28,6 +28,23 @@ Credential state is a separate trust boundary. Microsoft's [Credential Manager](
 
 ## Evidence matrix
 
+## Profile/session closure worksheet
+
+Every future execution packet must complete this worksheet before review. Empty, copied, or title-only values remain a no-claim result.
+
+| Closure field | Required handoff value |
+|---|---|
+| Scope and data-class identity | Exact packet, commit, platform, synthetic fixture set, profile/Space/session/snapshot/migration state classes, and explicit exclusions for real user data, credentials, sync, and production roots |
+| Schema and format authority | Versioned record contracts, reader/writer window, identity and epoch fields, integrity marker, owner, authority boundary, and incompatible/downgrade behavior |
+| Profile/session/Space isolation | Profile, Space, session, origin, private-session, protected-work, credential, and diagnostic boundaries with cross-reference rejection and deletion scope |
+| Fault and recovery matrix | Journal/checkpoint fault points for disk-full, power-loss, partial-write, corruption, crash, lock, quota, and unavailable-vault cases, including denominator, prior-readable state, recovery result, and cleanup result |
+| Migration and rollback identity | Synthetic source and target versions, step IDs, resume token, temporary snapshot, commit/rollback decision, downgrade rejection, quarantine result, and idempotent restart evidence |
+| Privacy and credential boundary | Redaction and retention checks, credential-vault identity and unavailable behavior, private-session exclusion, export/diagnostic scope, and proof that secrets never enter ordinary records |
+| Loss and restoration accounting | Per-state-class lost/restored/quarantined/excluded result for reloadable state, protected work, credentials, private-session state, snapshots, caches, and origin storage |
+| Review and promotion record | Named storage, privacy-data, security, product, quality, release-operations, and independent reviewers; retained artifact references, exceptions, expiry, and exact claim scope |
+
+The worksheet is a resumability control only. It does not turn the no-claim templates into executable schemas or authorize real-profile execution.
+
 | Axis | Required retained evidence | Reject when |
 |---|---|---|
 | Identity and version | Versioned schemas, profile/Space/session/document epochs, writer and reader bounds | IDs are substituted across boundaries or downgrade is silently accepted |
