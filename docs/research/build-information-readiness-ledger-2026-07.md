@@ -2,7 +2,7 @@
 
 Status: checked no-claim gap ledger; contained M0 only
 Owner: documentation-research, program, architecture, security, performance, release operations, quality, UI runtime, storage, and product
-Last reviewed: 2026-07-19
+Last reviewed: 2026-07-20
 
 ## Question
 

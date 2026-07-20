@@ -2,7 +2,7 @@
 
 Status: documentation-readiness control; no readiness promotion
 Owner: documentation-research, program, architecture, quality, security, performance, and release operations
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 ## Purpose
 

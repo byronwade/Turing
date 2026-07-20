@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "status": "no_claim_research_control",
   "source": "docs/research/README.md#build-readiness-research-crosswalk",
   "claim_status": "Research-to-readiness crosswalk only; no readiness gate, no task approval, no source-strategy decision, no benchmark eligibility, and no compatibility, security, performance, memory, energy, Chrome-class, production, beta, stable, or daily-driver claim is approved by this registry.",
