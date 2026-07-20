@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Accessibility source-manifest inbound-link audit
+
+Question:
+
+Do the canonical accessibility and UI-runtime documents listed by the checked accessibility source manifest expose that manifest to a future maintainer?
+
+Method:
+
+Compared the `UI.ACCESSIBILITY.SOURCES.2026_07` source-document list with the five documents that lacked an inbound manifest reference. Added direct no-claim links to the manifest in the window/input inventory, accessibility bridge and testing chapters, the UI-runtime platform contract, and the Nova design-lab index. This closes navigation traceability only; it does not create accessibility workflow, screen-reader, IME, page-tree, native UI, or release-gate evidence.
+
 ## 2026-07-19 - Browser-engine landscape provenance control
 
 Question:

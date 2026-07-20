@@ -10,6 +10,8 @@ Captured: 2026-07-19
 
 The machine [`design-source-manifest.json`](../machine/design-source-manifest.json) binds this artifact's path, SHA-256, byte length, line count, capture date, authority boundary, and surface inventory. [`validate_design_source.py`](../../../tools/validate_design_source.py) runs in the aggregate repository check.
 
+The checked no-claim [accessibility source manifest](../../accessibility/machine/accessibility-source-manifest.json) is also a governing source-identity input for the accessibility and platform behavior represented by the design handoff. It does not make the React artifact a release UI or establish native accessibility evidence.
+
 The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementation handoff for translating the visual source into covered, newly represented, and still-unproven toolkit-neutral component contracts.
 
 The captured source content is preserved from the supplied attachment with repository LF line-ending normalization. The manifest records the committed bytes exactly. SHA-256:

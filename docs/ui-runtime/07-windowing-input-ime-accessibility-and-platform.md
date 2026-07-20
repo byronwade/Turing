@@ -7,6 +7,8 @@ Owner: UI runtime, platform, text/input, and accessibility
 
 Select one M1 reference desktop platform before implementing three full adapters. The architecture remains portable, but the first platform must prove window lifecycle, menus, text input, IME, clipboard, drag/drop, accessibility, page-surface composition, packaging, sandbox interaction, and crash recovery end to end.
 
+The checked no-claim [accessibility source manifest](../accessibility/machine/accessibility-source-manifest.json) records the official platform and assistive-technology source identities relevant to this contract. It does not prove an adapter, screen-reader workflow, IME behavior, or native UI readiness.
+
 ## Required platform contracts
 
 - window identity, ownership, visibility, occlusion, scale, display, full-screen, and close negotiation;

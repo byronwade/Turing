@@ -16,6 +16,7 @@ This evidence moves `PB-015` from `not_started` to `partial` because the project
 
 ## Inputs
 
+- The checked no-claim [accessibility source manifest](../accessibility/machine/accessibility-source-manifest.json) preserves the official platform and assistive-technology source identities used by this inventory; it does not provide workflow execution or accessibility readiness evidence.
 - [Blueprint 11 product UI and DevTools](../blueprint-v1/11-product-ui-devtools.md)
 - [Testing and compatibility](../blueprint-v1/12-testing-compatibility.md)
 - [Research program](../blueprint-v1/22-research-program.md)

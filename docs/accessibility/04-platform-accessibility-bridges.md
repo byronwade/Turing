@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/11-product-ui-devtools.md)
 
 This chapter defines the research contract for **platform accessibility bridges**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [accessibility source manifest](machine/accessibility-source-manifest.json) is the source-identity record for the platform and assistive-technology observations used here. It does not establish native accessibility behavior, screen-reader coverage, or release readiness.
+
 ## Scope
 
 The study covers:

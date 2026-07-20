@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/11-product-ui-devtools.md)
 
 This chapter defines the research contract for **testing, assistive-technology matrices, and release gates**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [accessibility source manifest](machine/accessibility-source-manifest.json) records the official platform and assistive-technology sources that inform this testing contract. It does not replace executable workflows, manual transcripts, or release-gate evidence.
+
 ## Scope
 
 The study covers:
