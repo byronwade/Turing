@@ -3,7 +3,9 @@
 Status: no-claim `PB-012` platform-evidence research; no sandbox policy, platform adapter, or security gate is approved
 Owner: security, platform, architecture, quality, release, and documentation-research
 Related gate: `PB-012` Reference sandbox probe harness
-Research date: 2026-07-19
+Research date: 2026-07-20
+
+Freshness note: on 2026-07-20 the checked platform-source manifest and all four sandbox validators were re-run from the repository checkout. This revalidates document identity and no-claim contract alignment only; it is not effective-policy capture or containment evidence.
 
 ## Question
 

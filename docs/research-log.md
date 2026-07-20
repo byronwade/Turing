@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Sandbox containment contract freshness revalidation
+
+Re-ran the platform-source, sandbox-contract, probe-inventory, and sandbox-readiness validators from the repository checkout. All four passed, confirming that the Windows/Linux/macOS evidence matrix, 21-operation catalog, evidence schema, package handoff, and no-claim readiness template remain synchronized. Updated the dated sandbox records to reflect this revalidation. This closes a freshness and internal-consistency check only; `PB-012` remains partial with no packaged probe results, effective platform-policy artifacts, containment claim, or owner review.
+
 ## 2026-07-20 - ADR-0009 upstream head freshness refresh
 
 Re-ran read-only official GitHub API observations for `servo/servo` and `servo/mozjs`. Servo's moving `main` head changed to `f542a355e5565e380aa0570132d4138dde328bae`, while `mozjs` remained at `f5cbf8aa6076064fd658a1e9fb16147c2347affb`; updated timestamps and release identities were preserved in the source manifest and upstream delta packet. Marked the changed moving head as a freshness delta that invalidates downstream evidence tied only to that ref. This is no-claim source freshness work; it does not select a baseline, approve Servo, or change PB-002.

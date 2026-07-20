@@ -3,7 +3,7 @@
 Status: checked no-claim probe inventory, package template, and readiness-review template
 Owner: security, platform, architecture, quality, and documentation-research
 Related gate: `PB-012` Reference sandbox probe harness
-Updated: 2026-07-18
+Updated: 2026-07-20
 
 ## Question
 

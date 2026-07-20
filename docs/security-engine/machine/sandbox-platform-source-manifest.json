@@ -2,7 +2,7 @@
   "schema_version": 1,
   "manifest_id": "SEC.SANDBOX.PLATFORM_SOURCES.2026_07",
   "status": "no_claim_source_manifest",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "related_gate": "PB-012",
   "claim_status": "No-claim platform-source manifest only; platform documentation is not Turing sandbox evidence, effective-policy capture, containment proof, security-gate approval, production-safety evidence, or implementation evidence.",
   "evidence_axes": [
