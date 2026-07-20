@@ -20,6 +20,8 @@ The product target is sustained user-perceived responsiveness with low and expla
 
 Performance is architectural. Data representation, process topology, site isolation, IPC, queues, parser behavior, style invalidation, layout fragments, paint retention, GPU work, JIT tiering, GC, storage, browser chrome, extensions, and agents all participate.
 
+The canonical [Blueprint 09 extreme-performance definition](../blueprint-v1/09-performance-memory.md#1a-extreme-performance-definition) treats extreme performance as a sustained, multi-dimensional target rather than a single score: startup and input-to-present tails, frame pacing, memory/resource attribution, energy/thermal behavior, 30-tab pressure, and recovery must be evaluated with security, compatibility, accessibility, and failure visibility preserved.
+
 The checked no-claim benchmark readiness-review template is a future owner-review shape only. It does not provide owner-reviewed benchmark readiness, benchmark-ready browser pins, benchmark results, public performance claims, Chrome-class claims, speed, memory, energy, production, daily-driver, or implementation evidence.
 
 ## Chrome-class and extreme-performance boundary

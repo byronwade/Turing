@@ -6,6 +6,8 @@ Last updated: 2026-07-19
 
 This document is the compact map for the project’s “competitor-to-Chrome + extreme-performance” objective while no public performance claim is yet allowed. It exists so any continuation session can see exactly what is proven, what is planned, and what evidence is still missing before `PB-013` can progress toward readiness promotion.
 
+The term **extreme performance** has the canonical meaning in [Blueprint 09](../blueprint-v1/09-performance-memory.md#1a-extreme-performance-definition): sustained, multi-dimensional behavior across latency, frame pacing, memory/resource attribution, energy/thermal cost, 30-tab pressure, and recovery, with security, compatibility, accessibility, and failure denominators preserved.
+
 ## Goal and non-goal
 
 ### Goal

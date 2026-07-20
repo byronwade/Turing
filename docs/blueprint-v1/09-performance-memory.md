@@ -6,6 +6,12 @@ Turing optimizes end-to-end user-perceived latency and sustained resource use, n
 
 Every published number includes build, commit, platform, hardware, memory size, power mode, thermal state, browser configuration, profile state, cache state, network conditions, page corpus, extensions, model state, process count, isolation policy, tab lifecycle, repetitions, and statistical summary.
 
+## 1a. Extreme-performance definition
+
+For this program, **extreme performance** is a planning objective for sustained, multi-dimensional browser behavior: low cold and warm startup latency, strong input-to-present tails, stable frame pacing, controlled memory and resource attribution under the 30-tab contract, bounded energy and thermal cost, and fast recovery, while preserving equivalent security controls, compatibility scope, accessibility behavior, and failure visibility. It is not a single benchmark score, a vendor headline, or an optimization that disables mitigations or silently drops unsupported work.
+
+A future extreme-performance or Chrome-class claim requires current fixed-tier measurements against explicitly pinned competitors and workloads, complete failure and unsupported denominators, uncertainty and effect-size analysis, raw artifacts, security/accessibility/compatibility disclosure, and independent owner review. Until those records exist, the phrase remains a target and no performance leadership claim is authorized.
+
 ## 2. Primary performance dimensions
 
 - cold and warm startup;

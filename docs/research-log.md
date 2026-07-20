@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Extreme-performance definition centralized
+
+Question:
+
+Can the Chrome-competitor and extreme-performance objective be interpreted consistently across the canonical Blueprint, detailed performance book, and benchmark readiness lane?
+
+Method:
+
+Compared the performance dimensions, 30-tab contract, benchmark readiness lane, Chrome-class runbook, claim-expiry rules, and capability traceability map. The documents required the same evidence in practice but did not state one canonical definition for the phrase "extreme performance."
+
+Decision:
+
+Added a canonical Blueprint 09 definition covering latency tails, frame pacing, memory/resource attribution, energy/thermal behavior, 30-tab pressure, recovery, and preserved security, compatibility, accessibility, and failure visibility. Linked the detailed performance book and benchmark lane to that definition.
+
+Impact:
+
+This removes a terminology and status-drift risk without creating a benchmark result, changing `PB-013`, authorizing a claim, or changing the 90% contained-M0 / 0% full-build measures. A single benchmark score remains insufficient by policy.
+
+Next question:
+
+Which fixed-tier workload and competitor evidence package can satisfy the definition after the benchmark runner and owner gates are authorized?
+
 ## 2026-07-19 - Nova visual authority added to the canonical-owner map
 
 Question:
