@@ -12,6 +12,7 @@
       "tasks": ["TASK-000001"],
       "requirements": ["REQ-ENG-007", "REQ-OPS-001"],
       "risks": ["R-003", "R-026", "R-035", "R-038"],
+      "work_packages": [],
       "research_questions": ["RQ-44", "RQ-46", "RQ-47", "RQ-15", "RQ-16", "RQ-25", "RQ-31"],
       "evidence_start": [
         "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
@@ -73,6 +74,7 @@
       "tasks": ["TASK-000002"],
       "requirements": ["REQ-OPS-001"],
       "risks": ["R-026", "R-034", "R-039"],
+      "work_packages": ["WP-001"],
       "research_questions": ["RQ-46", "RQ-47", "RQ-31"],
       "evidence_start": [
         "docs/research/m0-build-foundation-2026-07.md",
@@ -133,6 +135,7 @@
       "tasks": ["TASK-000003"],
       "requirements": ["REQ-SEC-003", "REQ-PERF-004"],
       "risks": ["R-006", "R-018", "R-032"],
+      "work_packages": ["WP-002"],
       "research_questions": ["RQ-02", "RQ-13", "RQ-20", "RQ-22", "RQ-36"],
       "evidence_start": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
@@ -190,6 +193,7 @@
       "tasks": ["TASK-000004"],
       "requirements": ["REQ-SEC-001", "REQ-NET-001"],
       "risks": ["R-004", "R-005", "R-007", "R-026"],
+      "work_packages": ["WP-003"],
       "research_questions": ["RQ-20", "RQ-38", "RQ-31"],
       "evidence_start": [
         "docs/research/sandbox-probe-inventory-2026-07.md",
@@ -239,6 +243,7 @@
       "tasks": ["TASK-000005"],
       "requirements": ["REQ-PERF-001", "REQ-PERF-002", "REQ-PERF-003", "REQ-PERF-004"],
       "risks": ["R-019", "R-020", "R-036", "R-038"],
+      "work_packages": ["WP-005", "WP-018"],
       "research_questions": ["RQ-16", "RQ-23", "RQ-34", "RQ-35", "RQ-37"],
       "evidence_start": [
         "docs/research/performance-benchmark-readiness-packet-2026-07.md",
@@ -307,6 +312,7 @@
       "tasks": ["TASK-000006"],
       "requirements": ["REQ-A11Y-001", "REQ-PROD-001", "REQ-PROD-003"],
       "risks": ["R-027", "R-028", "R-034"],
+      "work_packages": ["WP-004"],
       "research_questions": ["RQ-04", "RQ-05", "RQ-29", "RQ-30", "RQ-40", "RQ-55", "RQ-56", "RQ-57"],
       "evidence_start": [
       "docs/research/native-ui-framework-evaluation-2026-07.md",
@@ -385,6 +391,7 @@
       "tasks": ["TASK-000007"],
       "requirements": ["REQ-PROD-001", "REQ-PROD-002", "REQ-PROD-003", "REQ-STO-001", "REQ-STO-002"],
       "risks": ["R-021", "R-023", "R-040"],
+      "work_packages": ["WP-004", "WP-014", "WP-017"],
       "research_questions": ["RQ-14", "RQ-27", "RQ-49", "RQ-50", "RQ-53", "RQ-54"],
       "evidence_start": [
         "docs/research/profile-session-format-inventory-2026-07.md",
@@ -427,6 +434,7 @@
       "tasks": ["TASK-000009"],
       "requirements": ["REQ-OPS-001", "REQ-SEC-004", "REQ-STO-002"],
       "risks": ["R-023", "R-024", "R-026", "R-038"],
+      "work_packages": ["WP-017"],
       "research_questions": ["RQ-31", "RQ-63", "RQ-64", "RQ-66"],
       "evidence_start": [
         "docs/research/research-package-update-lab-inventory-2026-07.md",
@@ -470,6 +478,7 @@
       "tasks": ["TASK-000010"],
       "requirements": ["REQ-SEC-005", "REQ-OPS-002", "REQ-SEC-004"],
       "risks": ["R-024", "R-025", "R-026", "R-038", "R-039"],
+      "work_packages": ["WP-017"],
       "research_questions": ["RQ-31", "RQ-60", "RQ-66"],
       "evidence_start": [
         "docs/research/incident-patch-rehearsal-inventory-2026-07.md",
@@ -515,6 +524,7 @@
       "tasks": ["TASK-000008"],
       "requirements": ["REQ-OPS-001"],
       "risks": ["R-001", "R-039"],
+      "work_packages": [],
       "research_questions": ["RQ-25", "RQ-31", "RQ-45", "RQ-47", "RQ-48", "RQ-60", "RQ-66"],
       "evidence_start": [
         "docs/research/backup-ownership-gap-inventory-2026-07.md",

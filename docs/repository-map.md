@@ -53,7 +53,9 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   ├── blueprint-v1/
 │   │   └── machine/
 │   │       ├── research-question-coverage.json
-│   │       └── research-question-coverage.schema.json
+│   │       ├── research-question-coverage.schema.json
+│   │       ├── research-readiness-crosswalk.json
+│   │       └── research-readiness-crosswalk.schema.json
 │   ├── research/
 │   ├── platform/
 │   │   └── machine/

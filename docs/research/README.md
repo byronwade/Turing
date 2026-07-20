@@ -15,6 +15,8 @@ Before adding or continuing research:
 
 This directory contains dated research and implementation-evidence artifacts that inform, challenge, or validate the Turing Blueprint. A study is not a substitute for a requirement, risk, ADR, benchmark manifest, or implementation plan. Recommendations remain hypotheses until the decision owner accepts them through the normal process.
 
+The machine [research-readiness crosswalk](../blueprint-v1/machine/research-readiness-crosswalk.json) is the canonical route from active `RQ-*` questions through `PB-*` blockers and proposed `TASK-*` handoffs to requirements, risks, and evidence-backed `WP-*` work packages. Control-only tasks may intentionally have an empty work-package list. The aggregate validators derive these bindings from the task queue and reject drift; this is traceability, not task approval or implementation evidence.
+
 ## Current studies
 
 | Study | Question | Status |

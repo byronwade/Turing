@@ -114,6 +114,7 @@ def main() -> int:
         task_ids = strings(lane.get("tasks"), f"crosswalk {lane_id}.tasks", 1)
         requirements = strings(lane.get("requirements"), f"crosswalk {lane_id}.requirements", 1)
         risks = strings(lane.get("risks"), f"crosswalk {lane_id}.risks", 1)
+        work_packages = strings(lane.get("work_packages"), f"crosswalk {lane_id}.work_packages", 0)
         expected_requirements = {
             requirement
             for task_id in task_ids
@@ -124,10 +125,17 @@ def main() -> int:
             for task_id in task_ids
             for risk in task_by_id.get(task_id, {}).get("risks", [])
         }
+        expected_work_packages = {
+            work_package
+            for task_id in task_ids
+            for work_package in task_by_id.get(task_id, {}).get("work_packages", [])
+        }
         if set(requirements) != expected_requirements:
             fail(f"crosswalk {lane_id}.requirements must mirror its task queue bindings")
         if set(risks) != expected_risks:
             fail(f"crosswalk {lane_id}.risks must mirror its task queue bindings")
+        if set(work_packages) != expected_work_packages:
+            fail(f"crosswalk {lane_id}.work_packages must mirror its task queue bindings")
         evidence = strings(lane.get("evidence_start"), f"crosswalk {lane_id}.evidence_start", 1)
         strings(lane.get("next_proof"), f"crosswalk {lane_id}.next_proof", 1)
         strings(lane.get("claim_boundary"), f"crosswalk {lane_id}.claim_boundary", 1)

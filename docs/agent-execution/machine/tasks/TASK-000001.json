@@ -7,6 +7,7 @@
   "independent_reviewer": "program reviewer (name required before ready)",
   "requirements": ["REQ-ENG-007", "REQ-OPS-001"],
   "risks": ["R-003", "R-026", "R-035", "R-038"],
+  "work_packages": [],
   "adrs": ["ADR-0009"],
   "allowed_paths": [
     "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
@@ -38,7 +39,7 @@
     "PB-002 remains blocked and ADR-0009 remains unresolved",
     "source-strategy owner identifies candidate source baselines or explicitly records that no baseline is selected",
     "no Servo-derived or other browser-engine code enters a release path",
-    "the source queue digest is 6E6B9367CF79BA853EB2F5F91D3A330932515E2B9F1E71F0B69A51A1E94AA7C2",
+    "the source queue digest is 6F6C75429D8DD582EA99149F25C1B6A51522E27044A9B22EAECD80EA2A200CEC",
     "queue status remains proposed; this specified manifest is non-executable",
     "a named owner and named independent reviewer replace the role placeholders before this manifest can become ready"
   ],

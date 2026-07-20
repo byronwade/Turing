@@ -25,6 +25,7 @@ REQUIRED_KEYS = {
     "independent_reviewer",
     "requirements",
     "risks",
+    "work_packages",
     "allowed_paths",
     "prohibited_paths",
     "preconditions",
@@ -40,6 +41,7 @@ REQUIRED_KEYS = {
 IMMUTABLE_QUEUE_FIELDS = (
     "requirements",
     "risks",
+    "work_packages",
     "adrs",
     "allowed_paths",
     "prohibited_paths",

@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Research lane to work-package traceability
+
+Bound each active research lane to the requirements, risks, proposed tasks, and evidence-backed work packages already present in the build-readiness queue. Control-only tasks retain an explicit empty work-package list. The task schema, queue digest preconditions, crosswalk schema, and validators now reject task-to-work-package drift. This improves continuation traceability without approving a task, closing a gate, or changing the 90% contained-M0 / 0% full-build status.
+
 ## 2026-07-20 - Readiness handoff synchronization for research quality
 
 Updated the documentation-readiness audit, progress snapshot, and evidence matrix to name the active-research observation/inference/source-context checks now enforced by the research index validator. The handoff now records `7/7` active packets and preserves the existing `90%` contained-M0 / `0%` full-build measures; no readiness, task, or research conclusion changed.

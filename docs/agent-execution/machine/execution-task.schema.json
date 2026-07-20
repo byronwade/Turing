@@ -13,6 +13,7 @@
     "independent_reviewer",
     "requirements",
     "risks",
+    "work_packages",
     "allowed_paths",
     "prohibited_paths",
     "preconditions",
@@ -71,6 +72,14 @@
       "type": "array",
       "items": {
         "type": "string"
+      }
+    },
+    "work_packages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^WP-[0-9]{3}$"
       }
     },
     "adrs": {

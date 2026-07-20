@@ -43,6 +43,7 @@
           "tasks",
           "requirements",
           "risks",
+          "work_packages",
           "research_questions",
           "evidence_start",
           "next_proof",
@@ -89,6 +90,14 @@
             "items": {
               "type": "string",
               "pattern": "^R-[0-9]{3}$"
+            }
+          },
+          "work_packages": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^WP-[0-9]{3}$"
             }
           },
           "research_questions": {

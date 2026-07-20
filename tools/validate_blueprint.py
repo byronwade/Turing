@@ -1217,6 +1217,7 @@ def check_build_readiness_task_queue() -> None:
         "independent_reviewer",
         "requirements",
         "risks",
+        "work_packages",
         "allowed_paths",
         "prohibited_paths",
         "preconditions",
@@ -2051,6 +2052,7 @@ def check_research_readiness_crosswalk() -> None:
         "tasks",
         "requirements",
         "risks",
+        "work_packages",
         "research_questions",
         "evidence_start",
         "next_proof",
@@ -2091,6 +2093,12 @@ def check_research_readiness_crosswalk() -> None:
                 fail(f"{lane_id}: {field} must be a non-empty array")
             if not all(isinstance(value, str) and value for value in values):
                 fail(f"{lane_id}: {field} entries must be non-empty strings")
+        work_packages = lane.get("work_packages")
+        if not isinstance(work_packages, list) or not all(
+            isinstance(value, str) and re.fullmatch(r"WP-[0-9]{3}", value)
+            for value in work_packages
+        ):
+            fail(f"{lane_id}: work_packages must be an array of WP-* IDs")
         for field in ("readiness_items", "tasks", "research_questions"):
             if lane[field] != expected[lane_id][field]:
                 fail(
@@ -2112,10 +2120,17 @@ def check_research_readiness_crosswalk() -> None:
             for task_id in lane["tasks"]
             for risk in task_by_id.get(task_id, {}).get("risks", [])
         }
+        expected_work_packages = {
+            work_package
+            for task_id in lane["tasks"]
+            for work_package in task_by_id.get(task_id, {}).get("work_packages", [])
+        }
         if set(lane["requirements"]) != expected_requirements:
             fail(f"{lane_id}: requirements must mirror its task queue bindings")
         if set(lane["risks"]) != expected_risks:
             fail(f"{lane_id}: risks must mirror its task queue bindings")
+        if set(lane["work_packages"]) != expected_work_packages:
+            fail(f"{lane_id}: work_packages must mirror its task queue bindings")
         unknown_readiness = set(lane["readiness_items"]) - readiness_ids
         if unknown_readiness:
             fail(
