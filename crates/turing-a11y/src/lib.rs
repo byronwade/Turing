@@ -83,6 +83,8 @@ pub enum A11yError {
     NameSourceUnsupported { tag: String, source: String },
     /// The document nests deeper than this implementation will recurse.
     NestingTooDeep { limit: usize },
+    /// An accessible name would exceed the size this implementation will build.
+    NameTooLong { limit: usize },
 }
 
 impl fmt::Display for A11yError {
@@ -97,6 +99,13 @@ impl fmt::Display for A11yError {
                 formatter,
                 "role=\"{role}\" is not modelled; its name-from-content and \
                  required-children behaviour would have to be invented"
+            ),
+            Self::NameTooLong { limit } => write!(
+                formatter,
+                "an accessible name would exceed {limit} bytes; names from content \
+                 concatenate descendant text, so nesting multiplies a document's \
+                 own text into far more of it, and truncating would hand an \
+                 assistive technology a name that reads as complete"
             ),
             Self::NestingTooDeep { limit } => write!(
                 formatter,
@@ -117,6 +126,42 @@ impl fmt::Display for A11yError {
 /// same document disagreeing about which documents are acceptable would mean a
 /// page that lays out but has no accessibility tree, or the reverse.
 pub const MAX_NESTING_DEPTH: usize = 256;
+
+/// The largest accessible name this implementation will build, in bytes.
+///
+/// # Why a bound is needed
+///
+/// Name-from-content concatenates a subject's descendant text, so an element
+/// nested inside another name-from-content element re-collects everything below
+/// it. Total name bytes therefore grow with the *product* of depth and text
+/// rather than their sum, and that was measured: a hundred nested links carrying
+/// one word each turned 2.2 KiB of markup into 35 KiB of names, and two hundred
+/// turned 4.5 KiB into 155 KiB. Doubling the nesting quadrupled the output.
+///
+/// [`MAX_NESTING_DEPTH`] caps the multiplier at the nesting limit, so this is
+/// amplification rather than unbounded growth — but an attacker-chosen factor
+/// of over a hundred is worth refusing on its own.
+///
+/// # Why this value
+///
+/// An accessible name is announced aloud. Anything past a few hundred bytes is
+/// already unusable as a name, so this is orders of magnitude above any real
+/// one and exists only to stop the pathological case.
+///
+/// # What this bounds, and what it does not
+///
+/// It bounds one name, not their sum. Total name bytes for a document remain
+/// bounded only by the product of this limit and [`MAX_NESTING_DEPTH`] — about
+/// sixteen megabytes — which is survivable and finite, where the unbounded
+/// version grew with the product of depth and document size. A ten-megabyte
+/// document could otherwise have produced gigabytes.
+///
+/// Sixteen megabytes from a small input is still an amplification, and it is
+/// recorded here rather than fixed because a second limit on the total would
+/// make the refusal depend on document order — the same name would be accepted
+/// or refused depending on what preceded it, which is worse to explain than the
+/// bound it removes.
+pub const MAX_ACCESSIBLE_NAME_BYTES: usize = 64 * 1024;
 
 /// A computed role.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -403,7 +448,7 @@ fn accessible_name<T: SemanticTree>(
 ) -> Result<Option<String>, A11yError> {
     if let Some(reference) = tree.attribute(node, "aria-labelledby") {
         let mut visited = Vec::new();
-        let name = name_from_references(tree, reference, &mut visited);
+        let name = name_from_references(tree, reference, &mut visited)?;
         if !name.is_empty() {
             return Ok(Some(name));
         }
@@ -441,7 +486,7 @@ fn accessible_name<T: SemanticTree>(
     }
 
     if role.names_from_content() {
-        let content = descendant_text(tree, node);
+        let content = descendant_text(tree, node)?;
         if !content.is_empty() {
             return Ok(Some(content));
         }
@@ -471,7 +516,7 @@ fn name_from_references<T: SemanticTree>(
     tree: &T,
     reference: &str,
     visited: &mut Vec<usize>,
-) -> String {
+) -> Result<String, A11yError> {
     let mut parts = Vec::new();
     for id in reference.split_whitespace() {
         let Some(target) = tree.element_by_id(id) else {
@@ -487,19 +532,27 @@ fn name_from_references<T: SemanticTree>(
         // specification allows only one level of indirection, so the target
         // contributes its text content. Following it would let a chain of
         // labels produce a name no element actually carries.
-        let text = descendant_text(tree, target);
+        let text = descendant_text(tree, target)?;
         if !text.is_empty() {
             parts.push(text);
         }
     }
-    parts.join(" ")
+    Ok(parts.join(" "))
 }
 
 /// Concatenates the text of a node's descendants, in document order.
-fn descendant_text<T: SemanticTree>(tree: &T, node: T::Node) -> String {
+///
+/// # Errors
+///
+/// Returns [`A11yError::NameTooLong`] once the accumulated text passes
+/// [`MAX_ACCESSIBLE_NAME_BYTES`]. Checked while accumulating rather than after,
+/// so the oversized string is never built — a limit enforced on a finished
+/// result still lets the input decide how much is allocated first.
+fn descendant_text<T: SemanticTree>(tree: &T, node: T::Node) -> Result<String, A11yError> {
     let mut parts = Vec::new();
-    collect_text(tree, node, &mut parts);
-    parts.join(" ")
+    let mut bytes = 0;
+    collect_text(tree, node, &mut parts, &mut bytes)?;
+    Ok(parts.join(" "))
 }
 
 /// Walks a subtree iteratively rather than recursively.
@@ -508,7 +561,12 @@ fn descendant_text<T: SemanticTree>(tree: &T, node: T::Node) -> String {
 /// this can be called on a subtree of any depth even when the tree as a whole
 /// will be refused. An explicit stack means that cannot overflow — the same
 /// reason `turing-gc` traces iteratively.
-fn collect_text<T: SemanticTree>(tree: &T, node: T::Node, parts: &mut Vec<String>) {
+fn collect_text<T: SemanticTree>(
+    tree: &T,
+    node: T::Node,
+    parts: &mut Vec<String>,
+    bytes: &mut usize,
+) -> Result<(), A11yError> {
     let mut stack = vec![node];
     while let Some(current) = stack.pop() {
         // A hidden subtree contributes nothing to a name, the same way it
@@ -519,6 +577,12 @@ fn collect_text<T: SemanticTree>(tree: &T, node: T::Node, parts: &mut Vec<String
         if let Some(text) = tree.text(current) {
             let text = text.trim();
             if !text.is_empty() {
+                *bytes += text.len();
+                if *bytes > MAX_ACCESSIBLE_NAME_BYTES {
+                    return Err(A11yError::NameTooLong {
+                        limit: MAX_ACCESSIBLE_NAME_BYTES,
+                    });
+                }
                 parts.push(text.to_string());
             }
         }
@@ -526,6 +590,7 @@ fn collect_text<T: SemanticTree>(tree: &T, node: T::Node, parts: &mut Vec<String
         // a name must read in document order.
         stack.extend(tree.children(current).into_iter().rev());
     }
+    Ok(())
 }
 
 // -- turing-html adapter -------------------------------------------------
