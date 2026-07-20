@@ -37,6 +37,24 @@ These surfaces are now represented in the component-fixture inventory as no-clai
 | split view, reader, capture, find-in-page, link hints, tab search | `UI-COMPONENT-VIEW-TOOLS` | `PB-005`, `PB-015`, `PB-016` | No page-surface or input-routing proof |
 | Nova streaming assistant, watched pages, schedules, and agent activity log | `UI-COMPONENT-AGENT-ACTIVITY` | `PB-011`, `PB-012`, `PB-016`, `PB-018`, `PB-019` | No agent authority or automation readiness |
 
+## Source-region reconciliation
+
+The high-level contracts above are intentionally fewer than the visual source's React function count. The following source regions were reviewed against the committed Nova source and assigned to their owning contract. This prevents a source-level view from becoming an undocumented product surface while preserving one toolkit-neutral behavioral owner for related views.
+
+| Nova source region | Owning contract | Reconciliation note |
+| --- | --- | --- |
+| `NewTab`, `SitePage`, `ErrorPage` | `UI-COMPONENT-NEW-TAB-PAGE-SHELL` and `UI-COMPONENT-RECOVERY` | New-tab, web content, loading/error, retry, and resource-recovery states remain page-surface and native-state contracts; the JSX is visual input only. |
+| `VTabs`, `HistoryPage`, `DownloadsPage`, `ExtensionsPage` | `UI-COMPONENT-TABS` and `UI-COMPONENT-LIBRARY` | Tab lifecycle and library workflows retain separate identity, storage, update, keyboard, and accessibility obligations. |
+| `SettingsPage`, `A11ySec`, `ThemeStudio`, `MigrationPage` | `UI-COMPONENT-SETTINGS` and `UI-COMPONENT-RECOVERY` | Preferences, accessibility controls, design tokens, and import/migration states require profile scope, rollback, and platform evidence; visual controls do not define policy. |
+| `SecurityPop`, `ShieldPop`, `SiteControls`, `VaultPop`, `PasswordsSec` | `UI-COMPONENT-SHIELD` and `UI-COMPONENT-VAULT` | Trust, permission, credential, and autofill surfaces remain browser-policy and storage authorities, not React callbacks. |
+| `FindBar`, `HintLayer`, `TabSearch`, `CapturePop`, `FocusPanel`, `SidePanel` | `UI-COMPONENT-VIEW-TOOLS` | Find, link hints, tab search, capture, focus, reader, and side-panel behaviors require page-generation, input-routing, permission, and accessibility contracts. |
+| `ResourcesPage`, `TaskManager`, `LiveVitals` | `UI-COMPONENT-RESOURCE-MANAGER` | Resource views display attributed observations only; they cannot become a source of memory, process, or dangerous-action authority. |
+| `AgentPage`, `AgentsPage`, `ApprovalPop`, `AskNova`, `SchedulesSec`, `AgentLogSec`, `AgentPermsSec`, `WatchesSec`, `ConnectionsSec` | `UI-COMPONENT-AGENT-CONFIRMATION` and `UI-COMPONENT-AGENT-ACTIVITY` | Planning, provider conversation, approvals, schedules, watches, connections, and audit history require the existing grant, confirmation, revocation, redaction, and resource-boundary contracts. |
+| `CanvasPage`, `InspectorDock`, `CausalList`, `ShortcutsOverlay`, `CommandPalette` | `UI-COMPONENT-DEVTOOLS`, `UI-COMPONENT-COMMAND-FIELD`, and `UI-COMPONENT-SETTINGS` | Developer inspection, causal traces, command discovery, and shortcuts require generated protocol/state contracts and accessible command routing rather than design-lab authority. |
+| `ShareSheet`, `SpaceInspector`, `TimeMachinePage` | `UI-COMPONENT-SPACES` and `UI-COMPONENT-RECOVERY` | Workspace sharing, inspection, snapshots, restore, and fork operations require profile identity, export redaction, generation checks, and data-loss controls. |
+
+This reconciliation is a source-coverage audit, not a claim that these views are implemented natively. The committed source hash remains the integrity authority for the visual reference; the component-fixture inventory, Rust state/command model, page-surface contract, accessibility records, security policy, and accepted ADRs remain authoritative for behavior and release decisions.
+
 ## Required follow-up
 
 1. Bind each component to the Nova source region and shared token registry before screenshot or visual-diff review.

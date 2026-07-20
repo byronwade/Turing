@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Nova source regions reconciled to contracts
+
+Question:
+
+Does the Nova source-to-contract handoff account for its concrete view regions, including migration, time machine, assistant, inspector, capture, recovery, and resource surfaces, rather than only the 16 high-level component groups?
+
+Method:
+
+Inspected the committed Nova source manifest and source regions, compared the function-level surfaces with the Nova Surface-to-Contract Map and the checked component-fixture inventory, and assigned each additional region to an existing toolkit-neutral contract. No source bytes, manifest hash, toolkit choice, or runtime behavior were changed.
+
+Result:
+
+The source regions reconcile to the existing contracts for page shell/recovery, tabs/library, settings/migration, Shield/vault, view tools, resources, agent confirmation/activity, DevTools/command field, and Spaces/recovery. The map now records the grouping explicitly so a future native extraction cannot silently omit a visual workflow or treat a React callback as browser authority.
+
+Impact:
+
+Nova remains the primary visual/layout reference, while Rust state, typed commands, page-surface, accessibility, security, profile, agent, and accepted ADR contracts remain authoritative. This improves design handoff completeness without selecting a native toolkit, promoting `PB-003`/`PB-005`/`PB-014`/`PB-015`, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Can the authorized native fixture work reproduce these reconciled source regions through toolkit-neutral state, command, accessibility, page-surface, fault, and performance evidence?
+
 ## 2026-07-19 - Servo source-strategy freshness revalidated
 
 Question:
