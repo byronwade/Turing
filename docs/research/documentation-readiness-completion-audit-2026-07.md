@@ -42,7 +42,7 @@ The secure-development and provenance lane now also has a no-claim [Secure Devel
 
 ## Current verification snapshot
 
-On 2026-07-20, the documentation-readiness audit, aggregate Windows check, focused source-manifest validators, Nova design-source validator, IPC schema validation, readiness-template validators, and Rust test suites were re-run from the repository checkout. They passed and confirm internal record consistency only. The result does not replace owner-reviewed decisions, executable lane evidence, independent review, or the full-build closure record.
+On 2026-07-20, the documentation-readiness audit, aggregate Windows check, focused source-manifest validators, active-research observation/inference/source-context checks, Nova design-source validator, IPC schema validation, readiness-template validators, and Rust test suites were re-run from the repository checkout. They passed and confirm internal record consistency only. The result does not replace owner-reviewed decisions, executable lane evidence, independent review, or the full-build closure record.
 
 The human-capacity lane now also has a no-claim [Human Release, Legal, and Incident Capacity Research](human-release-legal-and-incident-capacity-research-2026-07.md) packet for `RQ-66`. It connects staffing, backups, separation of duties, legal scope, signing, support, on-call, incident rehearsal, and cross-lane closure without naming owners or granting authority.
 
@@ -65,6 +65,7 @@ The focused validator checks that:
 - contained M0 start-state evidence keeps proposed tasks owner-approval-required and `TASK-000011` review-pending until reviewed evidence changes those states;
 - build-information readiness evidence keeps the missing broad-build information visible across source-strategy, pinned toolchain, fresh-host, IPC, sandbox, benchmark, native-shell, reference-platform, profile/session, package/update, incident-response, backup-ownership, task-authority, and Chrome-class product lanes;
 - evidence references exist;
+- active research packets visibly separate source observations, candidate inferences or recommendations, unresolved next work, and dated stable source context through `validate_research_index.py`;
 - unsupported-boundary text preserves no-claim language;
 - the documentation-readiness evidence matrix names every current focused `tools/validate_*.py` command before direct Cargo and diff checks;
 - the closure-review schema, no-claim template, owner-decision board, closure-record examples, and future real-packet validator preserve the distinction between documented handoff and owner-approved closure;
