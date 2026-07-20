@@ -9426,3 +9426,20 @@ Added a no-claim Nova Native Build Entry Criteria packet defining source identit
 Next question:
 
 When the native UI predecessors and task authority are accepted, which owner-approved extraction manifest and toolkit-neutral fixture package will be used to start the Nova handoff?
+# 2026-07-19 - Research packet continuity contract
+
+Question:
+
+Can every durable research packet preserve enough local context for a new maintainer or agent to resume it without relying on chat history or a narrow index row?
+
+Method:
+
+Audited all 127 durable Markdown packets after the existing research-index validator confirmed indexing, status, and owner metadata. The audit used flexible vocabulary rather than requiring identical headings: question or scope, evidence or method, disposition or next step, and an explicit no-claim or unsupported boundary.
+
+Decision:
+
+Strengthened `tools/validate_research_index.py` to enforce those four continuity fields for every durable packet, added the missing market-research question to `browser-market-gap-2026-07.md`, and documented the contract in the research index and documentation-readiness evidence matrix. This improves resumability and catches structurally incomplete packets without promoting any research result, readiness gate, implementation task, performance claim, or product claim.
+
+Next question:
+
+Which owner-controlled evidence lane should replace its no-claim preparation records with retained executable evidence after task authority and independent review are available?

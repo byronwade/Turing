@@ -6,6 +6,10 @@ Research date: 2026-07-16
 Canonical evidence path: `docs/research/browser-market-gap-2026-07.md`  
 Canonical design book: `docs/market-strategy/README.md`
 
+## Question
+
+Which durable user and developer needs remain underserved by current browsers, and which differentiated product direction is worth carrying into Turing requirements without turning market research into an implementation or support claim?
+
 ## Executive conclusion
 
 The strongest defensible opportunity is not “another browser with more features.” The market already contains browsers with excellent isolated features:

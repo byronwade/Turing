@@ -11,6 +11,28 @@ ROOT = Path(__file__).resolve().parents[1]
 RESEARCH = ROOT / "docs" / "research"
 INDEX = RESEARCH / "README.md"
 MARKDOWN_LINK = re.compile(r"\]\(([^)#]+\.md)(?:#[^)]*)?\)")
+CONTINUITY_PATTERNS = {
+    "question/scope": re.compile(
+        r"(^#{1,3} .*?(question|scope|purpose|finding|problem|objective|decision|what )|"
+        r"\b(question|scope|purpose|finding|objective|decision)\s*:)",
+        re.IGNORECASE | re.MULTILINE,
+    ),
+    "evidence/method": re.compile(
+        r"\b(evidence|method|source|retrieval|observation|baseline|manifest|validation|"
+        r"primary sources|current evidence|source-backed)\b",
+        re.IGNORECASE,
+    ),
+    "disposition/next step": re.compile(
+        r"\b(conclusion|disposition|next (action|proof|step)|unresolved|remaining|blocked|"
+        r"revisit|limitation|follow-up|handoff|current status|missing|unsupported|does not)\b",
+        re.IGNORECASE,
+    ),
+    "claim boundary": re.compile(
+        r"\b(no-claim|does not|not a |not yet|remains|unsupported|blocked|unproven|"
+        r"not an implementation)\b",
+        re.IGNORECASE,
+    ),
+}
 
 
 def fail(message: str) -> None:
@@ -60,10 +82,25 @@ def main() -> int:
     if missing_metadata:
         fail("durable research files missing required metadata: " + "; ".join(missing_metadata))
 
+    missing_continuity = []
+    for path in sorted(durable_files):
+        text = path.read_text(encoding="utf-8")
+        missing_fields = [
+            field for field, pattern in CONTINUITY_PATTERNS.items() if not pattern.search(text)
+        ]
+        if missing_fields:
+            missing_continuity.append(f"{path.name} ({', '.join(missing_fields)})")
+    if missing_continuity:
+        fail(
+            "durable research files missing continuity fields: "
+            + "; ".join(missing_continuity)
+        )
+
     print(
         "research-index validation passed: "
         f"{len(durable_files)} durable research files, "
-        f"{len(indexed_paths)} indexed local Markdown links"
+        f"{len(indexed_paths)} indexed local Markdown links, "
+        f"{len(CONTINUITY_PATTERNS)} continuity fields per packet"
     )
     return 0
 
