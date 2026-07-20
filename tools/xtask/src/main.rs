@@ -177,6 +177,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_source_manifest_metadata.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_implementation_plan.py"],
     )?;
     command(

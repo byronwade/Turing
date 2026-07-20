@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Cross-lane source-manifest freshness control
+
+Question:
+
+Do the eleven lane source-observation manifests share machine-enforced freshness and identity rules, or can a valid focused validator still accept stale, duplicate, or missing provenance metadata?
+
+Method:
+
+Inspected the accessibility, ADR-0009, benchmark, fresh-host, IPC, ownership, package/update, incident-response, sandbox, profile/session, and web-platform manifests and their focused validators. The lane validators checked their own schemas and source-document links, but no aggregate invariant covered ISO dates, retrieval/update ordering, duplicate source IDs, consequence fields, or all source-document targets.
+
+Decision:
+
+Added `validate_source_manifest_metadata.py` and wired it into the locked `xtask check` path and documentation-readiness validation commands. The design-source manifest remains outside this rule because it is a single-artifact visual hash contract rather than a source-observation list.
+
+Impact:
+
+Source-observation provenance now has a shared freshness and identity guard across all eleven manifests. This improves documentation continuity only; it does not select a source strategy, approve a dependency, close a readiness gate, establish platform evidence, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which shared closure-record fields should receive the next cross-lane invariant without replacing owner-controlled review?
+
 ## 2026-07-19 - TASK-000011 evidence-baseline recapture control
 
 Question:

@@ -82,6 +82,8 @@ The documentation-readiness validator requires all ten lane-specific routes in b
 
 The same validator requires the canonical implementation-plan README in both source lists and checks that its pre-build readiness handoff names the audit, build-information ledger, Owner Decision Closure Board, and final closure route. This keeps milestone playbooks behind the same stop/resume boundary as the readiness records.
 
+The cross-lane [`validate_source_manifest_metadata.py`](../../tools/validate_source_manifest_metadata.py) check applies one shared invariant to the eleven source-observation manifests: ISO retrieval/update dates, no future-dated observations relative to the manifest update, unique source IDs, non-empty consequence fields, unique repository-relative source-document paths, and existing source-document targets. Focused lane validators remain responsible for lane-specific source IDs, evidence axes, and no-claim boundaries.
+
 It also requires the ten owner-review templates, from ADR-0009 through backup ownership, in both source lists and checks that each template names its lane-specific closure-preparation route. A template that remains structurally valid while losing its canonical evidence-order handoff is therefore rejected by the central audit.
 
 Before starting or continuing a contained task, verify:
@@ -175,6 +177,7 @@ python3 -B tools/validate_ownership_control_sources.py
 python3 -B tools/validate_profile_session_sources.py
 python3 -B tools/validate_reference_platform_scorecard.py
 python3 -B tools/validate_web_platform_sources.py
+python3 -B tools/validate_source_manifest_metadata.py
 python3 -B tools/validate_task_approval_templates.py
 python3 -B tools/validate_specified_task_manifests.py
 python3 -B tools/validate_owner_decision_closure_board.py

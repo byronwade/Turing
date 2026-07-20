@@ -125,6 +125,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_owner_decision_synchronization.py
     ├── validate_research_question_coverage.py
     ├── validate_web_platform_sources.py
+    ├── validate_source_manifest_metadata.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
     ├── validate_fresh_host_readiness_review.py
@@ -350,6 +351,7 @@ Repository-owned tools live here.
 - `validate_incident_response_sources.py`: dependency-free validation for the checked no-claim PB-018 incident-response source manifest, official NIST/FIRST/CISA source IDs and URLs, nine incident-response evidence axes, source-document links, and unsupported authority/readiness boundaries; it does not provide incident execution, disclosure authority, emergency patch capacity, or readiness evidence;
 - `validate_ownership_control_sources.py`: dependency-free validation for the checked no-claim PB-019/PB-020 ownership/control source manifest, official NIST/GitHub source IDs and URLs, eight governance evidence axes, source-document links, and unsupported backup/two-person-authority boundaries; it does not name qualified backups, capture effective repository settings, establish two-person control, or close either gate;
 - `validate_profile_session_sources.py`: dependency-free validation for the checked no-claim PB-016 profile/session source manifest, official WHATWG/W3C source IDs and URLs, nine storage/data-safety evidence axes, source-document links, and unsupported format/migration/durability boundaries; it does not define a profile format, prove migration or durability, or provide data-loss readiness evidence;
+- `validate_source_manifest_metadata.py`: cross-lane validation for the eleven checked source-observation manifests; it enforces shared ISO freshness, source-ID uniqueness, non-empty consequence fields, and unique existing repository-relative source-document paths without creating implementation or readiness evidence;
 - `validate_servo_local_compatibility_corpus.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim local compatibility corpus manifest, generated fixture paths, SHA-256 hashes, byte counts, LF line endings, local-only origins and URLs, required case categories, artifact expectations, failure denominators, and unsupported compatibility/adoption claims;
 - `validate_servo_local_compatibility_https_harness.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim HTTPS host-alias harness plan, corpus origin coverage, SNI/SAN expectations, isolated trust-store policy, host-to-loopback alias controls, cleanup evidence requirements, browser-run record fields, and unsupported compatibility/adoption claims;
 - `serve_servo_local_compatibility_corpus.py`: dependency-free HTTP/1.1 loopback route self-test for the checked `ADR9-EV-013` generated fixtures, Host-header origin mapping, fixture response hashes, shutdown behavior, and no-claim browser/WPT/Test262/HTTPS boundaries;
