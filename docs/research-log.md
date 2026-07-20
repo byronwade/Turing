@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Current-host toolchain diagnostic refresh
+
+Question:
+
+Does the documented Windows doctor path still resolve the exact pinned M0 toolchain, and can that observation be kept distinct from independent fresh-host evidence?
+
+Method:
+
+Ran `tools/doctor.ps1 --ci` in the current checkout with an external `CARGO_TARGET_DIR`, then compared the reported identities with `rust-toolchain.toml`, the M0 build foundation, and the fresh-host closure route.
+
+Decision:
+
+The current host reports `rustc 1.97.1 (8bab26f4f 2026-07-14)`, Cargo `1.97.1`, rustfmt `1.9.0-stable`, Clippy `0.1.97`, Python `3.12.10`, and Git `2.52.0.windows.1`; the doctor path completes with `ready for contained M0 development`. Synchronized the fresh-host closure packet with the exact tool identities. This remains same-host diagnostic evidence only: no fresh-host, clean-VM equivalence, independent review, PB-008/PB-009 promotion, or broad-build claim follows.
+
+Next question:
+
+When a reviewed `TASK-000002` manifest exists, which independent host or owner-approved clean-VM run will retain the complete command denominator and environment evidence?
+
 ## 2026-07-19 local / 2026-07-20 UTC - Servo upstream freshness refresh
 
 Question:
