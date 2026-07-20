@@ -32,6 +32,10 @@
 
 #![forbid(unsafe_code)]
 
+pub mod tree;
+
+pub use tree::{Document, Node, NodeData, NodeId, TreeBuilder, TreeError};
+
 use core::fmt;
 
 /// A parse condition the tokenizer detected but could still recover from.

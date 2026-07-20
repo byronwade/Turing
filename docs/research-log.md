@@ -1,5 +1,31 @@
 # Research Log
 
+## 2026-07-20 - HTML tree construction implemented
+
+Question:
+
+The tokenizer produces a token stream. `WP-006` also covers tree construction, which turns that stream into a document. What can be built honestly?
+
+Method:
+
+Implemented the insertion-mode algorithm from the WHATWG specification in `crates/turing-html/src/tree.rs`, deriving from no existing engine.
+
+Decision:
+
+Nodes live in a flat arena and reference each other by index. A browser DOM is mutated constantly and traversed both up and down, so an arena avoids the reference-counting and interior-mutability costs a pointer tree would need in Rust. This also matches the DOM-arena direction `WP-007` already records, so the tokenizer's output lands in the representation the next work package expects.
+
+Nine insertion modes are implemented: initial, before-html, before-head, in-head, after-head, in-body, text, after-body, and after-after-body. That covers ordinary markup including implied `html`, `head`, and `body` elements, void elements, implied end tags, block elements closing an open paragraph, and list items closing their siblings.
+
+Four constructs return `TreeError` rather than a guess: table insertion modes with foster parenting, the adoption agency algorithm for mis-nested formatting such as `<b><i></b></i>`, foreign content for SVG and MathML, and `template`. The distinction that matters is that each of these changes the *shape* of the tree rather than omitting a detail. A plausible-looking wrong tree is worse than a refusal, because layout and script would then silently disagree with every other engine while appearing to work.
+
+Twenty tree tests bring the crate to 43. They pin the cases where a wrong implementation is easy and quiet: `<br>` must not become a parent of following text, `<p>a<div>` must produce siblings rather than nesting, script contents must stay text rather than becoming elements, adjacent text runs must merge into one node, and every non-root node's parent must list it as a child.
+
+What this does not do: no CSS, no layout, no paint, no script execution, nothing rendered. It produces a tree.
+
+Next question:
+
+`WP-008` is CSS parsing, selectors, and the cascade. That is the next stage, and it is independent of the tree work just landed.
+
 ## 2026-07-20 - ADR-0009 Option A selected; HTML tokenizer implemented
 
 Question:
