@@ -37,7 +37,7 @@ use turing_dom::{Dispatch, Dom, DomError, Event};
 use turing_html::tree::{Document, NodeData, NodeId, TreeBuilder, TreeError};
 use turing_html::{Tokenizer, TokenizerError};
 use turing_input::{HitRouter, InputError};
-use turing_js::{JsError, Vm, compile};
+use turing_js::{JsError, Program, Vm, compile};
 use turing_layout::{
     DisplayList, LayoutBox, LayoutError, Point, TextMetrics, build_display_list, layout,
 };
@@ -102,6 +102,9 @@ pub struct Page {
     router: HitRouter,
     viewport_width: f32,
     metrics: TextMetrics,
+    /// Compiled scripts, retained so listener functions registered through
+    /// `addEventListener` stay callable after load.
+    programs: Vec<Program>,
 }
 
 impl Page {
@@ -126,10 +129,12 @@ impl Page {
         let scripts = collect_scripts(&document);
 
         let mut dom = Dom::new(document);
+        let mut programs = Vec::new();
         for source in &scripts {
             let program = compile(source)?;
             let mut host = DomHost::new(&mut dom);
             Vm::default().run_with_host(&program, &mut host)?;
+            programs.push(program);
         }
 
         let metrics = TextMetrics::default();
@@ -142,6 +147,7 @@ impl Page {
             router,
             viewport_width,
             metrics,
+            programs,
         })
     }
 
@@ -249,14 +255,22 @@ impl Page {
         Ok(self.router.target_at(&self.dom, point)?)
     }
 
-    /// Dispatches `event` to the element at `point`, then re-lays out if the
-    /// dispatch mutated the document.
+    /// Dispatches `event` to the element at `point`, runs any script
+    /// listeners the dispatch reports, then re-lays out if anything mutated
+    /// the document.
+    ///
+    /// The DOM owns propagation: `addEventListener` registered each listener
+    /// under its function's name, dispatch reports invocations in capture,
+    /// target, and bubble order, and this method executes the named functions
+    /// in exactly that order against the live document.
     ///
     /// Returns the dispatch record, or `None` when nothing was hit.
     ///
     /// # Errors
     ///
-    /// Propagates dispatch and layout refusals unchanged.
+    /// Propagates dispatch, script, and layout refusals unchanged. A listener
+    /// naming a function no script defined is a script error, not a silent
+    /// no-op — the page registered something it does not have.
     pub fn dispatch_at(
         &mut self,
         point: Point,
@@ -264,17 +278,44 @@ impl Page {
     ) -> Result<Option<Dispatch>, EngineError> {
         let before = self.dom.epoch();
         let dispatch = self.router.dispatch_at(&self.dom, point, event)?;
+        if let Some(record) = &dispatch {
+            for invocation in &record.invocations {
+                self.call_listener(&invocation.listener)?;
+            }
+        }
         if self.dom.epoch() != before {
             self.relayout()?;
         }
         Ok(dispatch)
     }
 
+    /// Calls the named listener function from whichever retained script
+    /// defines it.
+    fn call_listener(&mut self, name: &str) -> Result<(), EngineError> {
+        let index = self.programs.iter().position(|program| {
+            program
+                .functions
+                .iter()
+                .skip(1)
+                .any(|function| function.name == name)
+        });
+        let Some(index) = index else {
+            return Err(EngineError::Script(JsError::HostOperationFailed {
+                name: "addEventListener".to_owned(),
+                message: format!("no retained script defines the listener function {name:?}"),
+            }));
+        };
+        let mut host = DomHost::new(&mut self.dom);
+        Vm::default().call(&self.programs[index], name, Vec::new(), &mut host)?;
+        Ok(())
+    }
+
     /// Runs `source` against the live document, then re-lays out if it
     /// mutated anything.
     ///
-    /// This is the lab's stand-in for event-driven script: the embedder
-    /// decides when script runs, the page keeps itself coherent afterwards.
+    /// The embedder decides when script runs; the page keeps itself coherent
+    /// afterwards. The compiled program is retained, so functions it defines
+    /// are callable by listeners registered here or earlier.
     ///
     /// # Errors
     ///
@@ -284,6 +325,7 @@ impl Page {
         let before = self.dom.epoch();
         let mut host = DomHost::new(&mut self.dom);
         let value = Vm::default().run_with_host(&program, &mut host)?;
+        self.programs.push(program);
         if self.dom.epoch() != before {
             self.relayout()?;
         }

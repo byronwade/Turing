@@ -1,5 +1,21 @@
 # Research Log
 
+## 2026-07-20 - Click listeners: the DOM owns propagation, the engine owns execution
+
+Question:
+
+Scripts could mutate the document at load and on the embedder's demand, but a click could not run script — listeners were declarative effects, a stand-in from before the interpreter existed. The design question was where the script-listener seam belongs.
+
+The answer keeps each crate's authority intact. `addEventListener(id, kind, functionName)` is a bound operation like any other: it validates the element and registers the listener in the DOM's own dispatch machinery under the function's *name*, with no declarative effects. The DOM still computes capture, target, and bubble order and reports invocations; it never learns what a function is. The engine, which retains every compiled program, maps each reported invocation name to the first program defining that function and calls it against the live document. Propagation stays the DOM's business, execution stays the interpreter's, and the invocation record — which already existed — is the entire interface between them.
+
+Consequences that fall out rather than being added: listener mutations re-lay out through the same epoch comparison every other mutating path uses; a listener registered by `Page::run_script` after load works identically, because programs are retained wherever they enter; and `addEventListener` joins the mutating set that `DomHost::read_only` revokes, because changing what future dispatches do is a document-behaviour mutation even though no tree node changes.
+
+One refusal was chosen deliberately: a listener naming a function no retained script defines is a script error at dispatch time, not a silent no-op. The page registered something it does not have, and the silent version of that is a button that does nothing with nobody told.
+
+Three pipeline tests pin the loop — red box, click, listener flips the class, next paint is lime; the missing-function refusal; and the run_script-then-listen path. The home page gained a card that flips colour when clicked, which makes the loop demonstrable by hand. The workspace is at 382 tests.
+
+What this does not do: no event object reaches script (no target, no coordinates, no preventDefault from JS — listener functions take no arguments), no capture-phase registration from script (the binding passes bubble-phase), no removeEventListener, and no listener-inside-listener re-dispatch guard beyond the interpreter's own step budget.
+
 ## 2026-07-20 - Nova chrome: the design source became a running surface
 
 Question:
