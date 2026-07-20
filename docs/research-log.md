@@ -1,5 +1,41 @@
 # Research Log
 
+## 2026-07-20 - Accessibility tree implemented, completing WP-009
+
+Question:
+
+`REQ-ENG-006` — an accessibility tree generated from engine semantics — was the last unstarted piece of `WP-009` at the M2 gate. The blueprint names the eventual target (role, name, description, value, state, relationships, actions, bounds, text ranges, live regions, table semantics, hidden/inert policy) but pins no initial scope, so ARIA, HTML-AAM, and the Accessible Name and Description Computation are the source of truth.
+
+Method:
+
+Added `crates/turing-a11y`, registered as `COMP-016`, generic over a `SemanticTree` trait.
+
+Decision:
+
+`SemanticTree` is a new trait rather than a reuse of `LayoutTree`, and the crate does not depend on `turing-layout`. An element's role and name do not change because it moved, so deriving accessibility from layout would make it a rendering artifact — the blueprint's own wording is that accessibility is derived during semantic updates, not scraped from pixels. The trait adds `element_by_id`, which is the concrete reason it cannot be the layout trait: `aria-labelledby` resolves references against the whole document, and no amount of local walking expresses that.
+
+Role is resolved before name, and the ordering is load-bearing. Whether an element takes its name from descendant text is a property of its *role* — a button does, a text box does not — so computing the name first would have to guess. Concatenating descendant text for every element is the classic quiet defect in this area: it reads plausibly in a test and gives a text box the name of whatever happens to sit inside it.
+
+Scope is bounded by typed refusal rather than by generic fallback. An unmapped element and an unmodelled explicit `role` token both error. ARIA does specify falling back to the implicit role for an *invalid* token, but this implementation cannot distinguish an invalid token from a valid one it has not modelled without carrying the full role taxonomy, and silently treating `role="tablist"` as a `<div>` produces a tree that reads as correct. A wrong role is not cosmetic: it changes how an assistive technology announces, navigates, and offers actions, and it does so invisibly to anyone not using one.
+
+The `<label for>` association is the one refusal worth spelling out. An `<input>` with no ARIA name is refused rather than reported as unnamed, because detecting the *absence* of a label needs a document-wide scan this crate does not do. An unnamed control and a control whose name was not found are very different findings, and collapsing them would hide a real defect behind a missing feature.
+
+Three subtleties pinned because omitting each still yields a plausible tree:
+
+`aria-hidden="true"` removes the element and its whole subtree; `role="presentation"` strips only the element's own semantics and keeps its children exposed. These fail in opposite directions — one over-exposes, the other hides real content — and conflating them is standard.
+
+`<header>` and `<footer>` are landmarks only when scoped to the body. Nested in a sectioning element they belong to that section, and exposing a per-article header as the page banner would put a landmark on every entry in a feed.
+
+An `<a>` without `href` is not a link. Announcing it as one offers an action that does not exist.
+
+`aria-labelledby` cycles were handled from the first line rather than patched afterwards. The visited set is threaded through the resolution, because a cycle — direct, or through a target containing the origin — otherwise recurses until the stack is exhausted, which is a denial of service reachable from ordinary page content. This is the same reasoning that made `turing-gc` trace iteratively and `turing-html` reject hierarchy cycles, arrived at independently for the third time, which suggests it is a property of the problem rather than of any one component. Two tests cover it, and they fail by crashing rather than by asserting.
+
+Name precedence is tested with every lower rung present simultaneously, so a wrong order fails rather than coincidentally passing. A test supplying one source at a time proves nothing about precedence.
+
+Thirty tests, one of them building the tree from a `HostTree` the engine does not own and running in the zero-dependency configuration. The workspace is at 235.
+
+What this does not do: `WP-009` is now complete except for the reference raster named in its title, which needs glyph rendering that `TextMetrics` currently stands in for. `REQ-A11Y-002`, the bridge to platform accessibility APIs, is a separate M5 requirement and untouched. States and properties beyond name, descriptions, live regions, and table semantics are all unimplemented and refused rather than approximated.
+
 ## 2026-07-20 - Hit testing completes REQ-ENG-005, and found negative margins were mispositioned
 
 Question:

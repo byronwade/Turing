@@ -3,6 +3,14 @@
 version = 4
 
 [[package]]
+name = "turing-a11y"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-html",
+]
+
+[[package]]
 name = "turing-architecture-prototype"
 version = "0.1.0"
 

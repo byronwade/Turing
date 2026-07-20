@@ -2,6 +2,7 @@
 resolver = "3"
 members = [
   "apps/turing-shell",
+  "crates/turing-a11y",
   "crates/turing-bench",
   "crates/turing-build-info",
   "crates/turing-css",
@@ -19,6 +20,7 @@ members = [
 ]
 default-members = [
   "apps/turing-shell",
+  "crates/turing-a11y",
   "crates/turing-bench",
   "crates/turing-build-info",
   "crates/turing-css",

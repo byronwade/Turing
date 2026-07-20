@@ -275,6 +275,25 @@
         "turing-layout"
       ],
       "failure_boundary": "reject-fixtures-the-engine-does-not-implement"
+    },
+    {
+      "id": "COMP-016",
+      "package": "turing-a11y",
+      "path": "crates/turing-a11y",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-accessibility-tree",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-html"
+      ],
+      "failure_boundary": "reject-unmapped-elements-roles-and-name-sources"
     }
   ]
 }
