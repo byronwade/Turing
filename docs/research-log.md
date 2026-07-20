@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active task to backlog binding
+
+Extended the active-task readiness validator to confirm that `TASK-000011`'s exact `WP-002` binding resolves to the canonical `backlog.json` work-package record. This prevents a valid-looking task manifest from pointing at a removed or renamed work package. No task acceptance, owner decision, gate promotion, or readiness percentage changed.
+
 ## 2026-07-20 - Active task schema enforcement
 
 Extended the build-information validator to check `TASK-000011` against the execution-task schema for required and unknown fields, schema version, task identity, review-pending status, and exact `WP-002` binding. This makes the active task's machine shape auditable rather than relying on a single field check. No task acceptance, owner decision, gate promotion, or readiness percentage changed.

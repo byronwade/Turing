@@ -16,6 +16,7 @@ DOCS = ROOT / "docs"
 MACHINE = DOCS / "blueprint-v1" / "machine"
 PROJECT_MACHINE = DOCS / "project-buildout" / "machine"
 DEFAULT_LEDGER = PROJECT_MACHINE / "build-information-readiness-ledger.json"
+BACKLOG_PATH = MACHINE / "backlog.json"
 
 LEDGER_ID = re.compile(r"^PB020\.BUILD_INFORMATION_READINESS_LEDGER\.[A-Z0-9._-]+$")
 PROPOSED_TASKS = {f"TASK-{number:06d}" for number in range(1, 11)}
@@ -369,6 +370,13 @@ def check_companion_records(path: Path) -> None:
         fail("TASK-000011 must remain review_pending")
     if task_000011.get("work_packages") != ["WP-002"]:
         fail("TASK-000011 must bind exactly to WP-002")
+    backlog = load_json(BACKLOG_PATH)
+    work_packages = backlog.get("items") if isinstance(backlog, dict) else None
+    if not isinstance(work_packages, list) or not any(
+        isinstance(item, dict) and item.get("id") == "WP-002"
+        for item in work_packages
+    ):
+        fail("TASK-000011 binds to WP-002, but WP-002 is missing from the canonical backlog")
 
     report = DOCS / "research" / "build-information-readiness-ledger-2026-07.md"
     report_text = report.read_text(encoding="utf-8")
