@@ -135,6 +135,10 @@ pub enum ShellCommand {
     /// tab when the chrome knows it (the Nova design opens it from the active
     /// tab, which doubles as the address field).
     OpenCommandField { tab: Option<TabId> },
+    /// Traverse one entry back in one tab's session history.
+    Back { tab: TabId },
+    /// Traverse one entry forward in one tab's session history.
+    Forward { tab: TabId },
 }
 
 #[cfg(test)]

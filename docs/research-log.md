@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-20 - Session history as a cursor over sources
+
+Per-tab back and forward. A tab's history is a list of sources and a cursor; navigation truncates the forward entries and appends (which is what session history does everywhere), traversal moves the cursor and re-reads the entry, and reload re-reads without moving. Traversal re-reads from the source rather than caching page state — for a file-backed lab that is the honest behaviour, and it means a page whose file changed shows the change on back, which is stated rather than hidden.
+
+The chrome learns capability, not history: `ChromeModel` carries `can_go_back`/`can_go_forward`, the buttons paint `.ib` or `.ib.off` from those flags, and `command_at` refuses to emit `Back`/`Forward` when the flag is off — the same shared-geometry contract as every other press. `turing-ui-model` gains the two traversal commands. Traversal past either end in the presenter is a no-op with a comment saying the chrome should not have offered it, which is defence in depth around the flag, not a second policy.
+
+One chrome test pins that the buttons answer only when traversal is possible. The workspace is at 383 tests.
+
+Not done: no history UI beyond the two buttons (Nova's press-hold trail is motion-dependent), no per-entry scroll restoration, and no cap on history length — a lab session's file navigations do not approach a bound worth choosing yet.
+
 ## 2026-07-20 - Click listeners: the DOM owns propagation, the engine owns execution
 
 Question:

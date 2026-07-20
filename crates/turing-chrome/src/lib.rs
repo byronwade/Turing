@@ -46,6 +46,10 @@ pub struct ChromeModel<'a> {
     pub snapshot: &'a ShellSnapshot,
     /// Window width in CSS pixels.
     pub width: f32,
+    /// Whether the active tab can traverse back in its history.
+    pub can_go_back: bool,
+    /// Whether the active tab can traverse forward in its history.
+    pub can_go_forward: bool,
 }
 
 /// The chrome bar's height in CSS pixels (cozy density).
@@ -316,10 +320,20 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> DisplayList {
         theme.line,
     );
 
-    // Navigation cluster. History does not exist yet, so back and forward
-    // paint in the disabled `.ib.off` role rather than pretending.
-    glyph_in(&mut list, geometry.back, '<', theme.text3);
-    glyph_in(&mut list, geometry.forward, '>', theme.text3);
+    // Navigation cluster: `.ib` when traversal is possible, `.ib.off` when
+    // the history has no entry in that direction.
+    let back_color = if model.can_go_back {
+        theme.text2
+    } else {
+        theme.text3
+    };
+    let forward_color = if model.can_go_forward {
+        theme.text2
+    } else {
+        theme.text3
+    };
+    glyph_in(&mut list, geometry.back, '<', back_color);
+    glyph_in(&mut list, geometry.forward, '>', forward_color);
     glyph_in(&mut list, geometry.reload, 'R', theme.text2);
 
     if let Some(pill) = geometry.site_pill {
@@ -455,6 +469,14 @@ pub fn command_at(model: &ChromeModel<'_>, point: Point) -> Option<ShellCommand>
         let tab = model.snapshot.active_tab?;
         return Some(ShellCommand::Reload { tab });
     }
+    if contains(geometry.back, point) && model.can_go_back {
+        let tab = model.snapshot.active_tab?;
+        return Some(ShellCommand::Back { tab });
+    }
+    if contains(geometry.forward, point) && model.can_go_forward {
+        let tab = model.snapshot.active_tab?;
+        return Some(ShellCommand::Forward { tab });
+    }
     if let Some(pill) = geometry.site_pill
         && contains(pill, point)
     {
@@ -585,6 +607,8 @@ mod tests {
         let model = ChromeModel {
             snapshot: &snapshot,
             width: 800.0,
+            can_go_back: false,
+            can_go_forward: false,
         };
         let list = render(&model, &LIGHT);
         assert!(matches!(
@@ -613,6 +637,8 @@ mod tests {
         let model = ChromeModel {
             snapshot: &snapshot,
             width: 800.0,
+            can_go_back: false,
+            can_go_forward: false,
         };
         let geometry = geometry(&model);
 
@@ -660,6 +686,8 @@ mod tests {
         let model = ChromeModel {
             snapshot: &snapshot,
             width: 800.0,
+            can_go_back: false,
+            can_go_forward: false,
         };
         let geometry = geometry(&model);
         assert!(geometry.tabs.is_empty());
@@ -672,6 +700,37 @@ mod tests {
             command_at(&model, center(pill)),
             Some(ShellCommand::OpenCommandField {
                 tab: Some(TabId::new(1).expect("nonzero"))
+            })
+        );
+    }
+
+    #[test]
+    fn history_buttons_answer_only_when_traversal_is_possible() {
+        let snapshot = snapshot(2, 1);
+        let inert = ChromeModel {
+            snapshot: &snapshot,
+            width: 800.0,
+            can_go_back: false,
+            can_go_forward: false,
+        };
+        let able = ChromeModel {
+            snapshot: &snapshot,
+            width: 800.0,
+            can_go_back: true,
+            can_go_forward: true,
+        };
+        let geometry = geometry(&inert);
+        assert_eq!(command_at(&inert, center(geometry.back)), None);
+        assert_eq!(
+            command_at(&able, center(geometry.back)),
+            Some(ShellCommand::Back {
+                tab: TabId::new(1).expect("nonzero")
+            })
+        );
+        assert_eq!(
+            command_at(&able, center(geometry.forward)),
+            Some(ShellCommand::Forward {
+                tab: TabId::new(1).expect("nonzero")
             })
         );
     }
