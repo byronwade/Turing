@@ -226,6 +226,10 @@
         "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md",
         "docs/project-buildout/15-adr-0009-evidence-traceability-matrix.md",
         "docs/project-buildout/16-adr-0009-decision-draft.md",
+        "docs/research/technology-and-dependency-decision-research-2026-07.md",
+        "docs/blueprint-v1/machine/technology-dependency-source-manifest.json",
+        "docs/blueprint-v1/machine/technology-dependency-source-manifest.schema.json",
+        "tools/validate_technology_dependency_sources.py",
         "docs/blueprint-v1/machine/adr-0009-evidence.json",
         "docs/blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json",
         "docs/research/servo-source-strategy-inventory-2026-07.md",
@@ -267,6 +271,9 @@
       "current_evidence": [
         "docs/research/fresh-host-reproduction-inventory-2026-07.md",
         "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+        "docs/research/technology-and-dependency-decision-research-2026-07.md",
+        "docs/blueprint-v1/machine/technology-dependency-source-manifest.json",
+        "tools/validate_technology_dependency_sources.py",
         "docs/project-buildout/machine/fresh-host-reproduction.json",
         "docs/project-buildout/machine/fresh-host-runs/no-claim-run-record-template.json",
         "docs/project-buildout/machine/fresh-host-readiness-reviews/no-claim-fresh-host-readiness-template.json"

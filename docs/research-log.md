@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Build-information ledger dependency-route synchronization
+
+Question:
+
+Does the canonical build-information ledger expose the technology/dependency evidence route wherever `PB-002` and `PB-008`/`PB-009` owners will use it?
+
+Method:
+
+Compared the machine ledger's source-strategy and fresh-host `current_evidence` arrays with the active research crosswalk and the operating board. Added the dependency research packet, source manifest, schema, and validator to the relevant machine and human handoffs.
+
+Decision:
+
+The readiness ledger now exposes the same dependency evidence route as the crosswalk, research index, and operating board. Gate status remains unchanged: `PB-002` is blocked, `PB-008`/`PB-009` remain partial, and the project remains 90% organized for contained M0 and 0% closed for the full build.
+
+Next question:
+
+Which owner-reviewed candidate foundation record and independent clean-host evidence will replace these no-claim route entries before broad implementation?
+
 ## 2026-07-19 - Research crosswalk count refresh
 
 Question:
