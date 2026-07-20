@@ -202,6 +202,18 @@ REQUIRED_VALIDATION_COMMANDS = [
     ".\\tools\\check.ps1",
 ]
 
+SANDBOX_WORKSHEET_TERMS = [
+    "sandbox closure worksheet",
+    "role and package identity",
+    "requested versus effective policy",
+    "allowed controls",
+    "expected-deny operations",
+    "compromised client and lifecycle",
+    "host safety and cleanup",
+    "platform and review scope",
+    "not_executed",
+]
+
 
 def fail(message: str) -> None:
     raise SystemExit(f"error: {message}")
@@ -495,6 +507,12 @@ def validate_docs() -> None:
         missing = [phrase for phrase in phrases if phrase not in content]
         if missing:
             fail(f"{doc_path}: missing sandbox readiness-review documentation: {', '.join(missing)}")
+
+    closure_path = DOCS / "research" / "sandbox-probe-execution-and-containment-closure-preparation-2026-07.md"
+    closure_text = normalize(closure_path.read_text(encoding="utf-8"))
+    for phrase in SANDBOX_WORKSHEET_TERMS:
+        if normalize(phrase) not in closure_text:
+            fail(f"{closure_path}: missing sandbox worksheet term: {phrase}")
 
 
 def main() -> int:

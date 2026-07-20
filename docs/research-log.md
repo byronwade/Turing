@@ -10059,6 +10059,24 @@ Next question:
 
 When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?
 
+# 2026-07-20 - Sandbox containment closure worksheet
+
+Question:
+
+Can each future sandbox probe package distinguish requested policy from effective OS enforcement while preserving expected-deny, compromised-client, lifecycle, host-safety, cleanup, platform, and review evidence?
+
+Method:
+
+Compared the sandbox probe inventory, WP-003 contract, platform-source manifest, expected-deny package template, readiness-review template, `TASK-000004`, and sandbox crosswalk lane. Added a required package worksheet for role/package identity, requested versus effective policy, allowed controls, expected-deny operations, compromised-client/lifecycle cases, host safety/cleanup, and platform/review scope. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves containment evidence handoff completeness only. No packaged probe was executed; `PB-012` remains partial, `TASK-000004` remains proposed-only, and no sandbox, renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved `TASK-000004` package and independent security/platform review produce the first retained expected-deny result?
+
 # 2026-07-20 - IPC authority closure worksheet
 
 Question:

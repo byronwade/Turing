@@ -33,6 +33,22 @@ These observations are method and interpretation constraints, not sandbox result
 
 The probe must evaluate the same process role, executable, launch path, inherited handles/descriptors, broker configuration, mitigation policy, resource limits, and profile used by the claimed configuration. A standalone helper with different authority is diagnostic only.
 
+## Sandbox closure worksheet
+
+The real `PB-012` review must complete one worksheet for each packaged probe role and platform. The worksheet keeps requested policy, effective policy, controls, expected denials, hostile-client behavior, and cleanup separate so a configuration file or one successful refusal cannot be mistaken for containment.
+
+| Required field | Probe package must retain | Rejection condition |
+|---|---|---|
+| Role and package identity | Role, executable/build/source hash, launch path, arguments, parent/broker, inherited handles, profile, platform, and policy revision | A helper or demo process is substituted for the evaluated role |
+| Requested versus effective policy | Requested capabilities/entitlements/mitigations/namespaces/limits and OS-observed token, descriptor, entitlement, namespace, job/cgroup, device, network, and broker state | A policy name or requested setting is treated as effective enforcement |
+| Allowed controls | Host-safe assigned input/output, loopback or fake resources, clock/resource controls, and unsandboxed/allowed control results | The harness cannot distinguish unavailable behavior from expected denial |
+| Expected-deny operations | File, socket, process, registry/preferences, device, shared memory, credentials, debug, profile, IPC, dynamic code, and secret-environment attempts with expected/actual result and policy layer | Application preflight refusal, missing primitive, or unsupported operation counts as a pass |
+| Compromised client and lifecycle | Forged identity/epoch/handle/path/size/order/retry, broker disconnect, crash, restart, timeout, cancellation, exhaustion, and stale-state results | Cooperative success-only client or hidden failure/unsupported/degraded state |
+| Host safety and cleanup | Fake credentials/profiles/stores, bounded temporary roots, loopback fixtures, process/socket/handle cleanup, redacted logs, failure denominator, and artifact hashes | Real secrets or profiles are touched, or cleanup/host mutation is unexplained |
+| Platform and review scope | Windows/Linux/macOS result or explicit unsupported/waiver record, named owner/security/platform/quality/release reviewers, exact claims, expiry, rollback, and synchronized PB/task changes | One platform result is generalized, or a template/validator promotes containment or a security gate |
+
+Until a real packaged result and owner-reviewed readiness review replace the no-claim templates, every worksheet row is `not_executed`, `PB-012` remains partial, and no sandbox, renderer-security, site-isolation, hostile-browsing, production-safety, or Chrome-class claim is supported.
+
 ## Required evidence order
 
 1. **Freeze role and authority scope.** Bind each probe package to one declared role (`renderer`, `network`, `storage`, `GPU`, `decoder/media utility`, `extension host`, `DevTools`, `agent host`, or `updater`), process identity, capability set, parent/broker, executable hash, launch arguments, environment, profile, and platform policy. Page content, extension input, agent output, and model observations cannot alter this scope.
