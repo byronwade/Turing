@@ -640,3 +640,88 @@ fn name_growth_stays_within_the_documented_bound() {
         "produced {produced} bytes of names, above the documented ceiling {ceiling}"
     );
 }
+
+// -- script execution budgets --------------------------------------------
+
+#[test]
+fn repeated_doubling_is_refused_rather_than_allocated() {
+    // The step limit bounds how many operations run, not how much each one
+    // allocates. `s = s + s` doubles its result every iteration, so twenty-seven
+    // iterations — a rounding error against a million-step budget — produced two
+    // gigabytes from a hundred-byte script, in seven seconds.
+    let source = "let s = 'aaaaaaaaaaaaaaaa'; let i = 0; \
+                  while (i < 27) { s = s + s; i = i + 1; } s";
+    assert!(matches!(
+        turing_js::evaluate(source),
+        Err(turing_js::JsError::ByteLimitExceeded { .. })
+    ));
+}
+
+#[test]
+fn the_byte_budget_is_reached_long_before_the_step_budget() {
+    // The two budgets bound different things, and this is the case that shows
+    // it: a script well inside the step limit must still be stopped. If this
+    // ever reports StepLimitExceeded instead, the byte budget has stopped
+    // doing the work it was added for.
+    let source = "let s = 'aaaaaaaaaaaaaaaa'; let i = 0; \
+                  while (i < 40) { s = s + s; i = i + 1; } s";
+    match turing_js::evaluate(source) {
+        Err(turing_js::JsError::ByteLimitExceeded { .. }) => {}
+        other => panic!("expected the byte budget to stop this, got {other:?}"),
+    }
+}
+
+#[test]
+fn the_budget_brackets_where_it_should() {
+    // The pair that proves the counting is real rather than incidental. Each
+    // iteration concatenates two thirty-byte strings, so it charges sixty
+    // bytes: sixteen thousand iterations stay under the million-byte budget and
+    // seventeen thousand pass it.
+    //
+    // Asserted on acceptance and refusal rather than on a returned value,
+    // because `evaluate` discards the top level's completion value by design —
+    // an external caller cannot observe a script's result at all.
+    let loop_of = |iterations: u32| {
+        format!(
+            "function main() {{ let t = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';              let s = ''; let i = 0;              while (i < {iterations}) {{ s = t + t; i = i + 1; }} return s; }} main();"
+        )
+    };
+
+    assert!(
+        turing_js::evaluate(&loop_of(16_000)).is_ok(),
+        "960,000 bytes is inside the budget"
+    );
+    assert!(
+        matches!(
+            turing_js::evaluate(&loop_of(17_000)),
+            Err(turing_js::JsError::ByteLimitExceeded { .. })
+        ),
+        "1,020,000 bytes is outside it"
+    );
+}
+
+#[test]
+fn ordinary_string_building_is_unaffected() {
+    // A budget that refused real scripts would be a regression dressed as a
+    // fix. Building half a kilobyte a piece at a time is ordinary work.
+    let source = "function main() { let s = ''; let i = 0;                   while (i < 100) { s = s + 'chunk'; i = i + 1; } return s; } main();";
+    assert!(turing_js::evaluate(source).is_ok());
+}
+
+#[test]
+fn assigning_a_literal_repeatedly_is_not_charged() {
+    // Only concatenation amplifies. Copying a literal leaves one live value
+    // however many times it happens, so charging it would refuse ordinary loops
+    // for no safety gain — the step limit already bounds the churn.
+    //
+    // Sized so the point is provable: fifty thousand copies of a thirty-byte
+    // literal would be 1.5 MB against a 1 MB budget if copies were charged, and
+    // the loop stays well inside the step limit so that budget is not what
+    // decides the outcome.
+    //
+    // Recorded because two earlier versions of this test were wrong — one
+    // assumed literal assignment was charged, the other ran long enough to hit
+    // the step limit and blame the wrong budget.
+    let source = "function main() { let t = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';                   let s = ''; let i = 0;                   while (i < 50000) { s = t; i = i + 1; } return s; } main();";
+    assert!(turing_js::evaluate(source).is_ok());
+}

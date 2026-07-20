@@ -1,5 +1,47 @@
 # Research Log
 
+## 2026-07-20 - A step limit is not a memory limit
+
+Question:
+
+Script execution was the last hostile-input surface with no growth measurement. It has a step limit of a million instructions, which had been treated — including in the crate's own documentation — as the containment story for running untrusted script.
+
+Finding:
+
+The step limit bounds how many operations run. It says nothing about how much any one of them allocates, and `s = s + s` doubles its result every iteration.
+
+Twenty-seven iterations of that loop allocated **two gigabytes** from a hundred-byte script, in seven seconds, using a few hundred steps of a million-step budget. The growth was exponential in loop count: 64 MiB at twenty-two iterations, 512 MiB at twenty-five, 2 GiB at twenty-seven. Nothing stopped it short of the machine.
+
+This is the most directly exploitable defect found in this codebase. It needs no unusual construct, no deep nesting, and no large input — three lines of ordinary JavaScript.
+
+The probe nearly missed it. The script returned `undefined`, so the first measurement showed a nine-byte result and looked harmless; only the exponential *time* alongside a constant-looking result showed the allocation was happening at all. A measurement that had recorded output size and stopped there would have reported the surface clean.
+
+Decision:
+
+A byte budget beside the step budget. `Vm::byte_limit` counts bytes produced by concatenation, cumulatively, and refuses past a million.
+
+Counted cumulatively and never credited back when a value is dropped. Deliberately conservative: tracking live bytes needs accounting on every drop, and over-counting can only refuse a script that would have been allowed, never allow one that should have been refused. It is a budget for work done, like the step limit beside it, rather than a measure of resident memory — and the documentation now says that rather than implying the step limit covers memory.
+
+Only concatenation is charged. Copying a literal leaves one live value however many times it happens, so charging it would refuse ordinary loops for no safety gain.
+
+After: the two-gigabyte script is refused in 1.9 ms.
+
+Three test premises were wrong before the tests were right:
+
+The first assumed `evaluate` returns a trailing expression's value. It does not — the top level's completion value is discarded by design, and results come back through `return` from a called function. An external caller cannot observe a script's result at all, which is worth knowing and was not written down anywhere.
+
+The second assumed repeated literal assignment was charged against the budget. It is not, correctly, and the test was asserting a behaviour the implementation had deliberately not adopted.
+
+The third replaced it with a loop long enough to hit the *step* limit instead, which would have passed while blaming the wrong budget. It is now sized so fifty thousand copies would exceed the byte budget if copies were charged, while staying well inside the step budget, so only the intended budget can decide the outcome.
+
+All three were caught by running them. The pattern from previous entries holds and extends: it is not only checks-on-checks that need verifying, it is the assumptions a test encodes about the thing it tests.
+
+The budget is bracketed rather than asserted one-sided: sixteen thousand iterations must be accepted and seventeen thousand refused. A one-sided assertion passes just as well against a budget that refuses everything.
+
+Five tests. The workspace is at 288.
+
+What this does not do: only string concatenation is charged, because it is the only operation here that can produce more data than it consumed. If the interpreter grows arrays, objects, or a `repeat`-style builtin, each is a new amplification path and each will need charging — the budget is a mechanism, not a completed audit. `turing-gc` still has no growth measurement, and it is the obvious remaining one. The gates are unchanged: `WP-015` blocked on `IF-003`, `IF-001` `partial`, both `WP-009` decision gates open.
+
 ## 2026-07-20 - Accessible names amplified a document into far more of itself
 
 Question:

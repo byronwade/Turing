@@ -59,6 +59,8 @@ pub enum JsError {
     TypeError { message: String },
     /// Execution exceeded the instruction budget.
     StepLimitExceeded { limit: u64 },
+    /// Execution produced more string data than the byte budget allows.
+    ByteLimitExceeded { limit: u64 },
 }
 
 impl fmt::Display for JsError {
@@ -86,6 +88,12 @@ impl fmt::Display for JsError {
                 write!(formatter, "assignment to constant {name}")
             }
             Self::TypeError { message } => write!(formatter, "TypeError: {message}"),
+            Self::ByteLimitExceeded { limit } => write!(
+                formatter,
+                "execution produced more than {limit} bytes of string data; a step \
+                 limit bounds how many operations run, not how much each one \
+                 allocates, and repeated concatenation doubles its result every step"
+            ),
             Self::StepLimitExceeded { limit } => {
                 write!(formatter, "execution exceeded {limit} instructions")
             }
@@ -1262,12 +1270,34 @@ pub struct Vm {
     /// A browser must not let a page wedge the process, so the budget is a
     /// parameter of the machine rather than an afterthought.
     pub step_limit: u64,
+    /// Total bytes of string data execution may produce.
+    ///
+    /// # Why a step limit is not enough
+    ///
+    /// A step limit bounds how many operations run. It says nothing about how
+    /// much any one of them allocates, and `s = s + s` doubles its result every
+    /// iteration — so twenty-seven steps of it produced two gigabytes from a
+    /// hundred-byte script, using a tiny fraction of the step budget. Bounding
+    /// steps and calling memory bounded is the mistake this exists to correct.
+    ///
+    /// # What it counts
+    ///
+    /// Bytes produced by concatenation, cumulatively, never credited back when
+    /// a value is dropped. Deliberately conservative: tracking live bytes would
+    /// need accounting on every drop, and over-counting can only refuse a script
+    /// that would otherwise have been allowed, never allow one that should have
+    /// been refused. It is a budget for work done, like the step limit beside
+    /// it, rather than a measure of resident memory.
+    pub byte_limit: u64,
 }
 
 impl Default for Vm {
     fn default() -> Self {
         Self {
             step_limit: 1_000_000,
+            // Generous for any real script — a megabyte of string building —
+            // and far below the point where allocation becomes the attack.
+            byte_limit: 1_000_000,
         }
     }
 }
@@ -1277,11 +1307,12 @@ impl Vm {
     ///
     /// # Errors
     ///
-    /// Returns [`JsError`] on a runtime type error or when the instruction
-    /// budget is exhausted.
+    /// Returns [`JsError`] on a runtime type error, when the instruction budget
+    /// is exhausted, or when the byte budget is exhausted.
     pub fn run(&self, program: &Program) -> Result<Value, JsError> {
         let mut steps = 0_u64;
-        self.run_function(program, 0, Vec::new(), &mut steps)
+        let mut bytes = 0_u64;
+        self.run_function(program, 0, Vec::new(), &mut steps, &mut bytes)
     }
 
     fn run_function(
@@ -1290,6 +1321,7 @@ impl Vm {
         index: usize,
         arguments: Vec<Value>,
         steps: &mut u64,
+        bytes: &mut u64,
     ) -> Result<Value, JsError> {
         let function = &program.functions[index];
         let mut locals = vec![Value::Undefined; function.locals.max(arguments.len())];
@@ -1328,7 +1360,18 @@ impl Vm {
                     // the one arithmetic operator that is not purely numeric.
                     let result = match (&left, &right) {
                         (Value::String(_), _) | (_, Value::String(_)) => {
-                            Value::String(format!("{left}{right}"))
+                            let joined = format!("{left}{right}");
+                            // Charged after building, because the operands are
+                            // already resident and the result is at most their
+                            // sum — there is no oversized intermediate to avoid,
+                            // and the budget is what stops the next doubling.
+                            *bytes = bytes.saturating_add(joined.len() as u64);
+                            if *bytes > self.byte_limit {
+                                return Err(JsError::ByteLimitExceeded {
+                                    limit: self.byte_limit,
+                                });
+                            }
+                            Value::String(joined)
                         }
                         _ => Value::Number(to_number(&left) + to_number(&right)),
                     };
@@ -1386,7 +1429,7 @@ impl Vm {
                 Op::Call { index, argc } => {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
-                    let result = self.run_function(program, *index, arguments, steps)?;
+                    let result = self.run_function(program, *index, arguments, steps, bytes)?;
                     stack.push(result);
                 }
                 Op::Return => return Ok(pop(&mut stack)),
@@ -1488,7 +1531,7 @@ mod tests {
         let program = compile(&format!("{wrapped} main();")).expect("compiles");
         // The top level's last value is discarded, so call directly.
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut 0)
+            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
             .expect("runs")
     }
 
@@ -1559,7 +1602,7 @@ mod tests {
             compile("function f() { let a = 1; a = a + 4; return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1572,7 +1615,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(20.0)
         );
@@ -1587,7 +1630,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(10.0)
         );
@@ -1600,7 +1643,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0)
+                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1615,7 +1658,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0)
+                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(120.0)
         );
@@ -1627,7 +1670,7 @@ mod tests {
             .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(7.0)
         );
@@ -1638,7 +1681,7 @@ mod tests {
         let program = compile("function f() { let a = 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Undefined
         );
@@ -1651,7 +1694,7 @@ mod tests {
             compile("function f() { let a = 1; { let a = 2; } return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -1680,9 +1723,12 @@ mod tests {
     fn an_infinite_loop_hits_the_step_limit() {
         // A browser must not let a page wedge the process.
         let program = compile("function f() { while (true) { } } f();").expect("compiles");
-        let vm = Vm { step_limit: 10_000 };
+        let vm = Vm {
+            step_limit: 10_000,
+            ..Vm::default()
+        };
         let error = vm
-            .run_function(&program, 1, Vec::new(), &mut 0)
+            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
             .expect_err("aborted");
         assert!(matches!(error, JsError::StepLimitExceeded { .. }));
     }
@@ -1719,7 +1765,7 @@ mod tests {
             compile("// leading\nfunction f() { /* inner */ return 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0)
+                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0)
                 .expect("runs"),
             Value::Number(1.0)
         );
