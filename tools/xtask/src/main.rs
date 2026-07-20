@@ -116,6 +116,16 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_registry_cross_references.py"],
+    )?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_human_decision_provenance.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_chrome_class_traceability.py"],
     )?;
     command(&root, "python3", ["-B", "tools/validate_design_source.py"])?;

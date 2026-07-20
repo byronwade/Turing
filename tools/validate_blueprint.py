@@ -6435,7 +6435,11 @@ def check_research_log_chronology() -> None:
     path = DOCS / "research-log.md"
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
-    heading_re = re.compile(r"^## (\d{4}-\d{2}-\d{2}) — .+")
+    # Entries use either an em dash or a plain hyphen after the date. An
+    # earlier revision matched only the em dash, which silently excluded 258 of
+    # 414 entries from the newest-first check and let a five-entry block sit
+    # below the oldest entry undetected.
+    heading_re = re.compile(r"^## (\d{4}-\d{2}-\d{2}) [—-] .+")
     dated_headings = [
         (line_number, match.group(1), line)
         for line_number, line in enumerate(lines, start=1)
