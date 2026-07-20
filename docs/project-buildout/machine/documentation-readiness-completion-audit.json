@@ -139,6 +139,7 @@
     "docs/agent-execution/machine/tasks/TASK-000010.json",
     "docs/agent-execution/TASK-000001-owner-review.md",
     "docs/research/README.md",
+    "tools/validate_research_index.py",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/blueprint-v1/20-definition-of-done.md",
     "tools/validate_blueprint.py",
@@ -326,7 +327,7 @@
       "id": "DOC-READY-VALIDATION",
       "status": "ready_for_contained_m0",
       "current_evidence": [
-        "Focused validators and aggregate check commands enforce required files, links, machine registry consistency, research lanes, documentation-readiness matrix coverage, specified task-manifest synchronization, owner-decision board coverage, and current M0 build checks. The documentation-readiness evidence matrix direct-command list names every current focused tools/validate_*.py command before diff and Cargo checks."
+        "Focused validators and aggregate check commands enforce required files, links, machine registry consistency, research lanes, active-packet observation/inference/next-work/source-context quality, documentation-readiness matrix coverage, specified task-manifest synchronization, owner-decision board coverage, and current M0 build checks. The documentation-readiness evidence matrix direct-command list names every current focused tools/validate_*.py command before diff and Cargo checks."
       ],
       "missing_for_full_goal": [
         "Validation does not prove broad implementation readiness, browser behavior, fixed-hardware benchmark results, sandbox effectiveness, compatibility, accessibility, update safety, incident-response capacity, or production support."
@@ -335,6 +336,7 @@
       "claim_boundary": "No broad build, Chrome-class, security, performance, compatibility, accessibility, production, beta, stable, or release-readiness claim from passing repository validation.",
       "evidence_refs": [
         "tools/validate_blueprint.py",
+        "tools/validate_research_index.py",
         "tools/validate_specified_task_manifests.py",
         "tools/validate_owner_decision_closure_board.py",
         "tools/check.ps1",
