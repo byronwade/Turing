@@ -1,5 +1,37 @@
 # Research Log
 
+## 2026-07-20 - Exact tracing garbage collector and binding registry implemented
+
+Question:
+
+`WP-010` produced an interpreter with no heap. `WP-011` asks for the collector and the binding layer that would connect it to the DOM.
+
+Method:
+
+Implemented `crates/turing-gc` as a mark-and-sweep heap with exact tracing, plus the registry that enumerates the script-reachable surface.
+
+Decision:
+
+Exact rather than conservative. A conservative collector scans memory it does not understand and treats any bit pattern resembling a pointer as one. That is easier to retrofit onto an existing runtime, but it retains garbage unpredictably and, in a browser, gives a page a way to influence what stays alive by arranging its data. Every object here declares its outgoing references through a `Trace` implementation, so reachability is computed from structure rather than guessed from memory.
+
+Handles carry a generation, and this is the decision most worth recording. A slot freed by collection is reused. A bare index would then silently address a different object, which is exactly the use-after-free class this engine exists to avoid, reintroduced one level up where `forbid(unsafe_code)` cannot see it. Each slot has a generation counter, `GcRef` records the generation it was taken at, and a reference to a collected object is refused. That is the same discipline `turing-dom` applies with document epochs, arrived at independently for the same reason, which suggests it is the right shape for this engine generally.
+
+Tracing is iterative over an explicit worklist rather than recursive. A hostile page can nest objects arbitrarily, and a recursive tracer would exhaust the native stack on a graph the page chose. The test builds a 50,000-deep chain to pin that.
+
+Cycle collection is the property that separates this from reference counting, and it has two tests: an unrooted cycle is fully reclaimed, and a rooted one fully survives.
+
+Three features return typed errors. Incremental and generational collection need write barriers this heap does not have, and pause behaviour is user-visible, so claiming to be incremental while stopping the world would misreport it. Weak references and finalizers have specified, observable timing that would otherwise be invented. Cross-heap references cannot be traced from inside one heap and would be either wrongly collected or wrongly retained.
+
+The binding layer is a registry rather than direct calls, because the security model requires the reachable surface to be enumerable. `REQ-AI-001` treats agents as separately identified principals, and a capability that cannot be listed cannot be granted or revoked. An unbound operation is refused rather than treated as a no-op.
+
+Twenty tests, bringing the workspace to 186.
+
+What this does not do: the heap is not wired to `turing-js`, which still uses Rust-side values, and no DOM operation is actually bound. Connecting them needs object support in the interpreter, which `WP-010` deliberately refused.
+
+Next question:
+
+Objects and property access in `turing-js`, which is the missing piece between the interpreter, this heap, and the DOM.
+
 ## 2026-07-20 - JavaScript lexer, parser, bytecode compiler, and VM implemented
 
 Question:

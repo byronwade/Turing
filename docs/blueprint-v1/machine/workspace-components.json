@@ -239,6 +239,22 @@
       ],
       "dependencies": [],
       "failure_boundary": "refuse-unsupported-syntax-and-bound-execution-steps"
+    },
+    {
+      "id": "COMP-014",
+      "package": "turing-gc",
+      "path": "crates/turing-gc",
+      "kind": "library",
+      "owner_scope": "javascript",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-heap-and-binding-registry",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [],
+      "failure_boundary": "reject-dangling-references-and-unbound-operations"
     }
   ]
 }
