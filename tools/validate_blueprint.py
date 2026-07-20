@@ -2049,6 +2049,8 @@ def check_research_readiness_crosswalk() -> None:
         "title",
         "readiness_items",
         "tasks",
+        "requirements",
+        "risks",
         "research_questions",
         "evidence_start",
         "next_proof",
@@ -2077,6 +2079,8 @@ def check_research_readiness_crosswalk() -> None:
         for field in (
             "readiness_items",
             "tasks",
+            "requirements",
+            "risks",
             "research_questions",
             "evidence_start",
             "next_proof",
@@ -2093,6 +2097,25 @@ def check_research_readiness_crosswalk() -> None:
                     f"{lane_id}: {field} must match the approved crosswalk mapping; "
                     f"found {lane[field]}"
                 )
+        task_by_id = {
+            item.get("id"): item
+            for item in task_queue.get("tasks", [])
+            if isinstance(item, dict)
+        }
+        expected_requirements = {
+            requirement
+            for task_id in lane["tasks"]
+            for requirement in task_by_id.get(task_id, {}).get("requirements", [])
+        }
+        expected_risks = {
+            risk
+            for task_id in lane["tasks"]
+            for risk in task_by_id.get(task_id, {}).get("risks", [])
+        }
+        if set(lane["requirements"]) != expected_requirements:
+            fail(f"{lane_id}: requirements must mirror its task queue bindings")
+        if set(lane["risks"]) != expected_risks:
+            fail(f"{lane_id}: risks must mirror its task queue bindings")
         unknown_readiness = set(lane["readiness_items"]) - readiness_ids
         if unknown_readiness:
             fail(

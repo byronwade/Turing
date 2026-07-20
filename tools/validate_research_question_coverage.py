@@ -13,6 +13,7 @@ AUDIT = ROOT / "docs/blueprint-v1/machine/research-question-coverage.json"
 SCHEMA = ROOT / "docs/blueprint-v1/machine/research-question-coverage.schema.json"
 PROGRAM = ROOT / "docs/blueprint-v1/22-research-program.md"
 CROSSWALK = ROOT / "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+TASK_QUEUE = ROOT / "docs/blueprint-v1/machine/build-readiness-task-queue.json"
 HUMAN_AUDIT = ROOT / "docs/research/research-question-coverage-audit-2026-07.md"
 PROGRESS_SNAPSHOT = ROOT / "docs/project-buildout/22-build-readiness-progress-snapshot.md"
 
@@ -89,6 +90,8 @@ def main() -> int:
         fail(f"research program must contain 66 numbered questions, found {len(program_ids)}")
     crosswalk_ids: set[str] = set()
     research_evidence_by_question: dict[str, set[str]] = {}
+    task_queue = json.loads(TASK_QUEUE.read_text(encoding="utf-8"))
+    task_by_id = {task.get("id"): task for task in task_queue.get("tasks", [])}
     for lane in crosswalk.get("lanes", []):
         questions = lane.get("research_questions", [])
         evidence = lane.get("evidence_start", [])
@@ -108,6 +111,23 @@ def main() -> int:
         if not isinstance(lane, dict):
             fail(f"crosswalk lanes[{index}] must be an object")
         lane_id = nonempty(lane.get("id"), f"crosswalk lanes[{index}].id")
+        task_ids = strings(lane.get("tasks"), f"crosswalk {lane_id}.tasks", 1)
+        requirements = strings(lane.get("requirements"), f"crosswalk {lane_id}.requirements", 1)
+        risks = strings(lane.get("risks"), f"crosswalk {lane_id}.risks", 1)
+        expected_requirements = {
+            requirement
+            for task_id in task_ids
+            for requirement in task_by_id.get(task_id, {}).get("requirements", [])
+        }
+        expected_risks = {
+            risk
+            for task_id in task_ids
+            for risk in task_by_id.get(task_id, {}).get("risks", [])
+        }
+        if set(requirements) != expected_requirements:
+            fail(f"crosswalk {lane_id}.requirements must mirror its task queue bindings")
+        if set(risks) != expected_risks:
+            fail(f"crosswalk {lane_id}.risks must mirror its task queue bindings")
         evidence = strings(lane.get("evidence_start"), f"crosswalk {lane_id}.evidence_start", 1)
         strings(lane.get("next_proof"), f"crosswalk {lane_id}.next_proof", 1)
         strings(lane.get("claim_boundary"), f"crosswalk {lane_id}.claim_boundary", 1)

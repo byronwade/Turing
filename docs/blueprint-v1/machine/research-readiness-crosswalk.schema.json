@@ -41,6 +41,8 @@
           "title",
           "readiness_items",
           "tasks",
+          "requirements",
+          "risks",
           "research_questions",
           "evidence_start",
           "next_proof",
@@ -69,6 +71,24 @@
             "items": {
               "type": "string",
               "pattern": "^TASK-[0-9]{6}$"
+            }
+          },
+          "requirements": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^REQ-[A-Z0-9-]+$"
+            }
+          },
+          "risks": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^R-[0-9]{3}$"
             }
           },
           "research_questions": {
