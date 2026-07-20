@@ -12,6 +12,7 @@
     "environment",
     "artifacts",
     "failures",
+    "limitations",
     "review"
   ],
   "properties": {
@@ -43,7 +44,18 @@
           "path",
           "sha256",
           "result"
-        ]
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["source_file", "github_actions_run", "command_log"]
+          },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "result": { "type": "string", "minLength": 1 },
+          "command": { "type": "string", "minLength": 1 },
+          "exit_code": { "type": "integer" }
+        }
       }
     },
     "failures": {
@@ -54,6 +66,7 @@
     },
     "limitations": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "string"
       }

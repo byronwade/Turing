@@ -86,6 +86,8 @@ The cross-lane [`validate_source_manifest_metadata.py`](../../tools/validate_sou
 
 The cross-lane [`validate_readiness_review_templates.py`](../../tools/validate_readiness_review_templates.py) check applies the shared control spine to the eleven no-claim review templates: identity, status, date, claim boundary, source-record paths, review scope, owner-review axes, rejection rules, unsupported boundaries, validation commands, non-empty evidence axes, and all-false no-claim decision flags. Focused validators remain responsible for lane-specific evidence and prohibited-claim wording.
 
+The evidence-bundle contract also requires hashed `command_log` artifacts for any real accepted, rejected, or needs-changes review decision. The historical `TASK-000011` no-claim capture is explicitly limited because its local logs were not retained; it cannot be reused as current acceptance evidence.
+
 It also requires the ten owner-review templates, from ADR-0009 through backup ownership, in both source lists and checks that each template names its lane-specific closure-preparation route. A template that remains structurally valid while losing its canonical evidence-order handoff is therefore rejected by the central audit.
 
 Before starting or continuing a contained task, verify:

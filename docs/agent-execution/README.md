@@ -45,6 +45,8 @@ The checked no-claim [backup-ownership readiness-review template](../project-bui
 
 - [`TASK-000011`](machine/tasks/TASK-000011.json) implements the M0 reference portion of `WP-002`: restart-safe process identity, generated capabilities and routes, bounded envelopes and queues, sequence validation, and kernel authorization. Its [review handoff](../research/task-000011-wp002-review-handoff-2026-07.md) maps candidate evidence and remaining evidence-bundle gaps. The checked no-claim [TASK-000011 evidence capture](machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json), validated by [`validate_evidence_bundles.py`](../../tools/validate_evidence_bundles.py), binds candidate artifacts to the green source commit but records `needs_independent_review`. The task status is `review_pending`; the implementation agent cannot approve or merge it.
 
+Evidence bundles with an `accepted`, `rejected`, or `needs_changes` decision must include hashed `command_log` artifacts. The historical `TASK-000011` no-claim capture is exempt only through its explicit retained-log limitation and remains non-accepting.
+
 The proposed build-readiness queue reserves `TASK-000001` through `TASK-000010`. Each now has a specified, non-executable manifest that mirrors the proposed queue row, including its immutable `readiness_items` `PB-*` gate mapping, and binds it to the queue digest. The queue rows and manifests remain proposed/specification-only and are not execution approval.
 
 All specified manifests remain below `reviewed` and `ready`; named owner/reviewer identities, approval, an agent run manifest, and an evidence bundle are still required before any execution. `TASK-000001` additionally has the dedicated owner-review handoff linked above.

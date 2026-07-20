@@ -40,6 +40,8 @@ REQUIRED_NO_CLAIM_LIMITATIONS = [
     "No production IPC claim.",
     "No Chrome-class claim.",
 ]
+NO_RETAINED_LOGS_LIMITATION = "Raw local command logs were not retained in this no-claim capture."
+DECISIONS_REQUIRING_COMMAND_LOGS = {"accepted", "rejected", "needs_changes"}
 
 
 def fail(path: Path | str, message: str) -> None:
@@ -115,6 +117,11 @@ def validate_artifact(path: Path, commit: str, artifact: Any) -> None:
     elif artifact_type == "github_actions_run":
         if not artifact_path.startswith("https://github.com/byronwade/Turing/actions/runs/"):
             fail(path, "github_actions_run artifact must use the repository Actions run URL")
+    elif artifact_type == "command_log":
+        require_string(path, artifact, "command")
+        exit_code = artifact.get("exit_code")
+        if not isinstance(exit_code, int) or isinstance(exit_code, bool):
+            fail(path, "command_log exit_code must be an integer")
     else:
         fail(path, f"unsupported artifact type {artifact_type!r}")
 
@@ -151,8 +158,16 @@ def validate_bundle(path: Path) -> None:
     artifacts = require_array(path, data, "artifacts")
     if not artifacts:
         fail(path, "artifacts must not be empty")
+    artifact_keys: set[tuple[str, str]] = set()
+    command_log_count = 0
     for artifact in artifacts:
         validate_artifact(path, source_commit, artifact)
+        artifact_key = (artifact["type"], artifact["path"])
+        if artifact_key in artifact_keys:
+            fail(path, f"duplicate artifact: {artifact_key[0]} {artifact_key[1]}")
+        artifact_keys.add(artifact_key)
+        if artifact["type"] == "command_log":
+            command_log_count += 1
 
     failures = require_array(path, data, "failures")
     for failure in failures:
@@ -188,6 +203,10 @@ def validate_bundle(path: Path) -> None:
         ]
         if missing:
             fail(path, "no-claim limitations are missing: " + ", ".join(missing))
+    if decision in DECISIONS_REQUIRING_COMMAND_LOGS and command_log_count == 0:
+        fail(path, "review decision requires at least one hashed command_log artifact")
+    if command_log_count == 0 and NO_RETAINED_LOGS_LIMITATION not in limitations:
+        fail(path, "bundles without command logs must state the retained-log limitation")
 
 
 def validate_docs() -> None:

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Evidence-bundle command-artifact control
+
+Question:
+
+Does the evidence-bundle schema enforce the review handoff requirement that real decisions retain hashed command artifacts or logs tied to the exact source commit?
+
+Method:
+
+Compared `evidence-bundle.schema.json`, `validate_evidence_bundles.py`, the checked TASK-000011 no-claim capture, and its review handoff. The existing validator verified source-file hashes and reviewer separation but allowed future accepted, rejected, or needs-changes bundles to contain no command artifact, even though the handoff required command-output evidence.
+
+Decision:
+
+Added the `command_log` artifact type with a command and integer exit code, made limitations required in the schema, rejected duplicate artifacts, and required at least one command log for real review decisions. The historical no-claim capture remains valid only through its explicit retained-log limitation.
+
+Impact:
+
+Future evidence cannot be accepted from source-file presence or external CI links alone; command output must be retained and hashed. This strengthens review traceability without accepting TASK-000011, changing its status, promoting PB-011, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which command-log fields should bind tool version, environment identity, and artifact retention path for the first independent review bundle?
+
 ## 2026-07-19 - Cross-lane readiness-template control
 
 Question:

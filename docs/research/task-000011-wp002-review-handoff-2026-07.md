@@ -133,13 +133,15 @@ Acceptance requires a machine-readable evidence bundle that follows [`docs/agent
 - `task_id` to `TASK-000011`;
 - `source_commit` to the exact 40-hex commit reviewed;
 - environment details for OS, shell, Rust, Cargo, Git, and relevant path/tool settings;
-- command artifacts for generation, validation, formatting, linting, tests, shell self-test, and prototype checks;
+- hashed `command_log` artifacts for generation, validation, formatting, linting, tests, shell self-test, and prototype checks;
 - artifact hashes or retained logs for each reviewed command;
 - any failure, retry, waiver, or skipped command;
 - a reviewer identity distinct from the implementation owner;
 - an explicit `accept`, `reject`, or `needs_changes` decision.
 
 The checked no-claim [`TASK-000011.no-claim.2026-07-18.json`](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json) record is a non-accepting evidence capture validated by [`validate_evidence_bundles.py`](../../tools/validate_evidence_bundles.py). It binds candidate source files and successful GitHub validation runs to source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`, but its reviewer is not independent and its decision is `needs_independent_review`.
+
+The evidence-bundle validator permits this historical no-claim record to omit `command_log` artifacts only because its limitations explicitly state that raw local command logs were not retained. Any future `accepted`, `rejected`, or `needs_changes` bundle must include at least one hashed `command_log` artifact, and the review packet must list the complete command set or explicit skipped/failure records.
 
 No accepted evidence-bundle instance is present in this repository at the time of this packet.
 
