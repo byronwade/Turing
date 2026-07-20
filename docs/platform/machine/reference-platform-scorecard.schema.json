@@ -15,7 +15,7 @@
     "evidence_dimensions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
     "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
     "candidates": { "type": "array", "minItems": 3, "items": { "$ref": "#/$defs/candidate" } },
-    "source_documents": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "source_documents": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
     "unsupported": { "type": "array", "minItems": 1, "items": { "type": "string" } }
   },
   "$defs": {

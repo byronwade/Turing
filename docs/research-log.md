@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Reference-platform scorecard provenance control
+
+Question:
+
+Does the deferred PB-006 reference-platform scorecard enforce the same unique-document provenance rule as the source-strategy and lane-specific source manifests?
+
+Method:
+
+Compared the Windows, macOS, and Linux candidate scorecard, its eleven source records and evidence dimensions, schema, validator, and dependent native/toolchain/sandbox/benchmark/release routes. Its `source_documents` list was unique but duplicate paths were not rejected.
+
+Decision:
+
+Added `uniqueItems` to the reference-platform scorecard schema and made `validate_reference_platform_scorecard.py` reject duplicate paths.
+
+Impact:
+
+This completes provenance controls for the platform-selection record without selecting a platform, authorizing native UI work, or creating support, accessibility, security, performance, packaging, release, or implementation evidence. `PB-006` remains `not_selected` and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which reference-platform candidate should receive the first owner-approved clean-host and native workflow evidence package when M1 scope is authorized?
+
 ## 2026-07-19 - ADR-0009 source-observation provenance control
 
 Question:
