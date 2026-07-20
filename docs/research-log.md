@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Benchmark source-manifest inbound-link audit
+
+Question:
+
+Do every canonical benchmark source document listed by the checked source manifest expose that manifest to a future reader?
+
+Method:
+
+Compared the `BENCHMARK.SOURCES.2026_07` source-document list with the benchmark readiness packet and Blueprint 09. Added direct links to the checked no-claim source manifest in both documents. The source manifest, validator, evidence axes, and no-claim status are unchanged; this closes navigation traceability only and does not create benchmark, competitor, statistical, performance, or Chrome-class evidence.
+
 ## 2026-07-19 - GitHub handoff baseline existence control
 
 Question:

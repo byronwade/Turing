@@ -21,6 +21,7 @@ Internal inputs:
 - [Fixed-Hardware Benchmark Laboratory](../benchmark-lab/README.md)
 - [Browser Performance Engineering](../performance/README.md)
 - [Benchmark manifest schema](../blueprint-v1/machine/benchmark-manifest.schema.json)
+- [Checked no-claim benchmark source manifest](../blueprint-v1/machine/benchmark-source-manifest.json)
 - [Benchmark corpus schema](../blueprint-v1/machine/benchmark-corpus.schema.json)
 - [No-claim smoke corpus manifest](../blueprint-v1/machine/benchmark-corpora/no-claim-smoke.corpus.json)
 - [Benchmark Corpus Expansion - July 2026](benchmark-corpus-expansion-2026-07.md)
