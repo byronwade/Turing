@@ -30,6 +30,7 @@ REQUIRED_SOURCE_RECORDS = {
     "crates/turing-kernel/src/lib.rs",
     "crates/turing-types/src/lib.rs",
     "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+    "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
     "docs/research/pre-build-readiness-gap-audit-2026-07.md",
     "docs/api-design/02-async-streaming-and-cancellation.md",
     "docs/api-design/03-schemas-errors-versioning-and-compatibility.md",
@@ -205,6 +206,18 @@ REQUIRED_VALIDATION_COMMANDS = [
     "python3 -B tools/validate_ipc_readiness_review.py",
     "python3 -B tools/validate_blueprint.py",
     ".\\tools\\check.ps1",
+]
+
+IPC_WORKSHEET_TERMS = [
+    "ipc closure worksheet",
+    "scope and maturity",
+    "schema and wire authority",
+    "peer and channel identity",
+    "negative and lifecycle coverage",
+    "resource and handle bounds",
+    "platform evidence",
+    "review and promotion",
+    "not_executed",
 ]
 
 
@@ -481,6 +494,14 @@ def validate_crosswalk() -> None:
             fail(f"IPC lane must mention {phrase}")
 
 
+def validate_ipc_handoff() -> None:
+    path = DOCS / "research" / "ipc-transport-and-authority-closure-preparation-2026-07.md"
+    content = normalize(path.read_text(encoding="utf-8"))
+    for phrase in IPC_WORKSHEET_TERMS:
+        if normalize(phrase) not in content:
+            fail(f"{path}: missing IPC worksheet term: {phrase}")
+
+
 def validate_docs() -> None:
     docs_to_check = {
         ROOT / "README.md": ["IPC readiness-review template", "owner-reviewed IPC readiness"],
@@ -507,6 +528,7 @@ def main() -> int:
     validate_readiness_registry()
     validate_task_queue()
     validate_crosswalk()
+    validate_ipc_handoff()
     validate_docs()
     print(f"IPC readiness review validation passed: {path}")
     return 0

@@ -30,6 +30,22 @@ The following worksheet keeps the platform-specific mechanism separate from the 
 
 Every future row must use the same control envelope and policy oracle. The packet must retain source/build identity, transport object and namespace, endpoint policy, peer identity output, principal/epoch mapping, channel registration, allowed and rejected operations, malformed/oversized/stale/replay/unauthorized cases, timeout and cancellation timing, crash/reconnect behavior, resource and handle cleanup, and unsupported combinations. A platform-specific transport adapter is not allowed to introduce a second authority model.
 
+## IPC closure worksheet
+
+The real `PB-011` review must complete one worksheet for each M0 review, wire decision, or platform transport package. The worksheet keeps the portable authority contract separate from platform mechanism details and prevents a passing in-process test from being mistaken for authenticated production IPC.
+
+| Required field | Review package must retain | Rejection condition |
+|---|---|---|
+| Scope and maturity | `TASK-000011` M0 reference, wire decision, or `TASK-000003` transport package; exact source commit, schema family, and evidence level | M0 policy evidence is treated as transport or production IPC, or scopes are mixed |
+| Schema and wire authority | Canonical schema source, generator/codec identity, generated-output hashes, encoding/version policy, bounded decode, unknown-value behavior, and drift result | Generated output is hand-edited, wire choice is implied, or decoder trusts unvalidated lengths/offsets |
+| Peer and channel identity | Platform endpoint/namespace, OS peer evidence, broker process/role/epoch, channel registration, route, capability, profile/site/document scope, and replay policy | A token, ACL, credential, entitlement, or live connection is accepted without Turing principal/epoch binding |
+| Negative and lifecycle coverage | Malformed, truncated, oversized, nested, duplicate, reordered, stale, unauthorized, wrong-principal/epoch, timeout, cancellation, disconnect, reconnect, retry, replay, and exhaustion cases | Success-only or in-process tests omit hostile or terminal paths |
+| Resource and handle bounds | Queue bytes/items, allocation/copy, deadline, backpressure, handle/shared-memory lease, cleanup, and abandoned-work ownership | Failure, cancellation, or reconnect retains authority/resources or bypasses bounds |
+| Platform evidence | Windows/Linux/macOS mechanism, configuration, limitations, exact commands/logs, unsupported platform cases, and security-policy controls | An unexecuted adapter or application stub is called supported |
+| Review and promotion | Owner/independent/security/architecture/API/performance reviewers, failure denominator, waivers/expiry, exact allowed scope, rollback, and synchronized PB/task/ADR changes | Template, validator, or placeholder reviewer promotes PB-011 or security claims |
+
+Until a real evidence bundle and owner-reviewed readiness review replace the no-claim templates, every worksheet row is `not_executed`, `PB-011` remains partial, and no production IPC, renderer-security, agent-security, process-isolation, site-isolation, or Chrome-class claim is supported.
+
 ### Portable authentication ordering
 
 Every platform experiment must demonstrate the same ordered sequence:

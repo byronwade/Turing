@@ -10059,6 +10059,24 @@ Next question:
 
 When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?
 
+# 2026-07-20 - IPC authority closure worksheet
+
+Question:
+
+Can the IPC route preserve the distinction between the contained M0 policy reference, wire-format decision, and authenticated platform transport while making negative, lifecycle, resource, and review evidence resumable?
+
+Method:
+
+Compared the IPC capability inventory, `TASK-000011` review handoff and evidence bundles, control-envelope template, wire-source manifest, transport closure preparation, `TASK-000003`, readiness-review template, and IPC crosswalk lane. Added a required worksheet for scope/maturity, schema/wire authority, peer/channel identity, negative/lifecycle coverage, resource/handle bounds, platform evidence, and review/promotion. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves IPC evidence handoff completeness only. `TASK-000011` remains review-pending, `PB-011` remains partial, no wire encoding or transport is approved, and no production IPC, renderer-security, agent-security, process-isolation, site-isolation, or Chrome-class claim changed.
+
+Next question:
+
+When will an independent reviewer create an accepted evidence bundle for the exact `TASK-000011` commit so the wire/transport scope can be reviewed separately?
+
 # 2026-07-20 - Fresh-host closure worksheet
 
 Question:
