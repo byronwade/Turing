@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-20",
   "status": "wp002_control_plane_reference",
   "reference_target": "x86_64-unknown-linux-gnu",
   "rules": {
@@ -22,7 +22,9 @@
       "hostile_input": false,
       "public_api": "internal-stable-identities",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
       "dependencies": [],
       "failure_boundary": "in-process-value-validation"
     },
@@ -36,7 +38,9 @@
       "hostile_input": false,
       "public_api": "internal",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
       "dependencies": [],
       "failure_boundary": "compile-time-metadata"
     },
@@ -50,8 +54,12 @@
       "hostile_input": true,
       "public_api": "internal-generated-control-plane",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
-      "dependencies": ["turing-types"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-types"
+      ],
       "failure_boundary": "reject-invalid-envelope-sequence-or-queue"
     },
     {
@@ -64,8 +72,13 @@
       "hostile_input": true,
       "public_api": "internal-policy-oracle",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
-      "dependencies": ["turing-ipc", "turing-types"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-ipc",
+        "turing-types"
+      ],
       "failure_boundary": "browser-kernel-process"
     },
     {
@@ -78,8 +91,12 @@
       "hostile_input": false,
       "public_api": "internal-toolkit-neutral",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
-      "dependencies": ["turing-types"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-types"
+      ],
       "failure_boundary": "ui-process-reconstruction"
     },
     {
@@ -92,8 +109,16 @@
       "hostile_input": false,
       "public_api": "none",
       "unsafe_policy": "forbid",
-      "platforms": ["x86_64-unknown-linux-gnu"],
-      "dependencies": ["turing-build-info", "turing-ipc", "turing-kernel", "turing-types", "turing-ui-model"],
+      "platforms": [
+        "x86_64-unknown-linux-gnu"
+      ],
+      "dependencies": [
+        "turing-build-info",
+        "turing-ipc",
+        "turing-kernel",
+        "turing-types",
+        "turing-ui-model"
+      ],
       "failure_boundary": "future-ui-process"
     },
     {
@@ -106,7 +131,9 @@
       "hostile_input": false,
       "public_api": "repository-command",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
       "dependencies": [],
       "failure_boundary": "developer-command"
     },
@@ -120,9 +147,27 @@
       "hostile_input": false,
       "public_api": "none",
       "unsafe_policy": "forbid",
-      "platforms": ["all-rust-hosts"],
+      "platforms": [
+        "all-rust-hosts"
+      ],
       "dependencies": [],
       "failure_boundary": "standalone-research-executable"
+    },
+    {
+      "id": "COMP-009",
+      "package": "turing-html",
+      "path": "crates/turing-html",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "neutral",
+      "hostile_input": true,
+      "public_api": "internal-html-token-stream",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [],
+      "failure_boundary": "collect-parse-errors-and-reject-unmodeled-constructs"
     }
   ]
 }

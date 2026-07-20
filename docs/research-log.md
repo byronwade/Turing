@@ -1,5 +1,31 @@
 # Research Log
 
+## 2026-07-20 - ADR-0009 Option A selected; HTML tokenizer implemented
+
+Question:
+
+The owner directed that browser construction begin. What could actually be built, and what had to be decided first?
+
+Method:
+
+`ADR-0009` decides whether the engine is written by Turing or adopts Servo components. Writing an HTML tokenizer before that decision risks discarding it, so the choice was put to the owner with the documented trade-offs rather than assumed.
+
+Decision:
+
+The owner selected **Option A**: clean Turing implementation, Servo as research input only. The charter and `ADR-0004` are preserved, no Servo source enters the supported runtime, and no legal, SBOM, advisory, or native-package surface is added. The choice is reversible toward a narrower component boundary later if a future ADR accepts one.
+
+On that basis, `crates/turing-html` implements the tokenization stage of `WP-006` / `REQ-ENG-001`: a single-pass, backtracking-free state machine over the WHATWG tokenizer, written from the specification and deriving from no existing engine. It covers data, tag open, tag name, attributes in all three quoting forms, self-closing tags, comments, DOCTYPE, and the raw-text, RCDATA, and script-data content models, plus numeric and named character references.
+
+Two design choices are worth recording because they are evidence rules expressed in code. Constructs the implementation does not model, CDATA sections and the DOCTYPE public and system identifier branches, return `TokenizerError` instead of a best guess; a wrong system identifier changes quirks mode and therefore layout, so silence there would let a gap read as conformance. And entering `script`, `style`, `title`, or `textarea` switches the content model inside the tokenizer, so `<b>` inside a script is character data rather than a start tag, which is the classic source of injection bugs when it is handled wrongly.
+
+Twenty-three tests cover the states above, including multibyte text, duplicate-attribute recovery, unterminated tags, stray `<`, and the two unsupported-construct paths. The full workspace suite is 64 tests. `cargo fmt`, `clippy -D warnings`, and the aggregate check pass, and the crate is registered as `COMP-009` in the workspace-components registry, which the build-foundation validator required before it would accept the new member.
+
+What this does not do: it builds no DOM, applies no insertion modes, executes no script, and renders nothing. `PB-002` remains blocked, because `validate_blueprint.py` holds it there while `ADR9-EV-*` evidence is unresolved and the repository still requires an independent architecture and provenance reviewer that does not exist. Option A does dissolve much of that evidence burden, since items concerning source identity, SBOM, and component boundaries all presuppose importing Servo, but dissolving it is an owner-review act, not an editing act.
+
+Next question:
+
+Tree construction is the next stage of `WP-006`: insertion modes, the open-element stack, and implied end tags, turning this token stream into a DOM.
+
 ## 2026-07-20 - Subset-blindness audit of validator patterns
 
 Question:

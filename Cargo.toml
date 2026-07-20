@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "apps/turing-shell",
   "crates/turing-build-info",
+  "crates/turing-html",
   "crates/turing-ipc",
   "crates/turing-kernel",
   "crates/turing-types",
@@ -13,6 +14,7 @@ members = [
 default-members = [
   "apps/turing-shell",
   "crates/turing-build-info",
+  "crates/turing-html",
   "crates/turing-ipc",
   "crates/turing-kernel",
   "crates/turing-types",
