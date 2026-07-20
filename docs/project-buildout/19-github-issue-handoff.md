@@ -20,7 +20,7 @@ gh pr list --state all --limit 100 --json number,title,state,mergedAt,headRefNam
 git rev-parse HEAD
 ```
 
-Baseline commit at observation: `7a1c75f6f912f71cc9ec3f5cd79fb00f1e1dbc1e`.
+Baseline commit at observation: `632e8f7f0d3b9f1a5737a1205a1babc4bb031ca0`.
 
 The checked machine snapshot is [`github-issue-handoff.json`](machine/github-issue-handoff.json), validated by [`tools/validate_github_issue_handoff.py`](../../tools/validate_github_issue_handoff.py).
 

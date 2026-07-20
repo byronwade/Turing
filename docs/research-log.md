@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - GitHub handoff source identity refresh
+
+Question:
+
+Does the GitHub issue handoff still identify the repository revision used for its live issue/PR snapshot?
+
+Method:
+
+Re-ran the documented `gh issue list`, `gh pr list`, and `git rev-parse HEAD` commands. The canonical backlog and stale-PR cleanup boundary remain unchanged, while the repository baseline moved from the old recorded commit to `632e8f7f0d3b9f1a5737a1205a1babc4bb031ca0`. Synchronized the human handoff and machine snapshot. This repairs source identity only; GitHub coordination records remain non-authoritative for task approval and readiness.
+
 ## 2026-07-19 - Cross-cutting independent-verification route clarification
 
 Question:
