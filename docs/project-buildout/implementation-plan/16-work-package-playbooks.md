@@ -132,7 +132,7 @@ Every WP has:
 
 ## WP-009 — Block/text layout, display list, and CPU reference raster
 
-**Milestone:** M2. **Dependencies:** WP-008. **Requirements:** `REQ-ENG-004`, `REQ-ENG-005`, `REQ-ENG-006`.
+**Milestone:** M2. **Dependencies:** WP-008. **Requirements:** `REQ-ENG-004`, `REQ-ENG-005`, `REQ-ENG-006`, `REQ-A11Y-002`.
 
 **Deliver:** fragments; sizing; block/inline/replaced layout; Unicode/bidi/shaping adapter; scroll/hit-test/selection; stacking; display list; CPU raster; GPU handoff; AX bounds; traces; differential/pixel tests.
 
@@ -174,7 +174,7 @@ Every WP has:
 
 ## WP-019 — Baseline JIT and hardened JavaScript execution
 
-**Milestone:** M6. **Dependencies:** WP-010, WP-011. **Requirements:** `REQ-JS-004`, `REQ-JS-005`.
+**Milestone:** M6. **Dependencies:** WP-010, WP-011. **Requirements:** `REQ-JS-004`, `REQ-JS-005`, `REQ-JS-006`.
 
 **Deliver:** versioned Turing-owned IR and verifier; baseline bytecode compiler; W^X code allocation and platform mitigation integration; precise stack maps; inline-cache invalidation; interpreter-equivalent deoptimization; bounded code cache; complete no-JIT execution mode; emergency disable path; compiler, metadata, and code-memory diagnostics.
 
@@ -216,7 +216,7 @@ Every WP has:
 
 ## WP-013 — Scoped HTTP/TLS, cache, cookies, and hermetic server
 
-**Milestone:** M4. **Dependencies:** WP-002, WP-012. **Requirements:** `REQ-NET-001`, `REQ-NET-002`, `REQ-NET-003`.
+**Milestone:** M4. **Dependencies:** WP-002, WP-012. **Requirements:** `REQ-NET-001`, `REQ-NET-002`, `REQ-NET-003`, `REQ-NET-004`.
 
 **Deliver:** request context; DNS/proxy interfaces; socket-owning network service; TLS/cert adapter; HTTP/1.1; Fetch/CORS/security subset; cookies; partitioned cache; downloads; hermetic servers; diagnostics.
 
@@ -230,7 +230,7 @@ Every WP has:
 
 ## WP-014 — Storage broker, quota, migrations, and service-worker foundation
 
-**Milestone:** M4. **Dependencies:** WP-002, WP-013. **Requirements:** `REQ-STO-001`, `REQ-STO-002`, `REQ-STO-003`.
+**Milestone:** M4. **Dependencies:** WP-002, WP-013. **Requirements:** `REQ-STO-001`, `REQ-STO-002`, `REQ-STO-003`, `REQ-PROD-002`.
 
 **Deliver:** storage keys; local/session storage; IndexedDB subset; Cache Storage; quotas; eviction; origin-private handles; service-worker lifecycle; clear/export/repair; private-session behavior; transactional migrations.
 
@@ -272,7 +272,7 @@ Every WP has:
 
 ## WP-017 — Signed update, rollback, and profile migration laboratory
 
-**Milestone:** M5. **Dependencies:** WP-001, WP-002, WP-014. **Requirements:** `REQ-SEC-004`, `REQ-SEC-005`, `REQ-OPS-001`.
+**Milestone:** M5. **Dependencies:** WP-001, WP-002, WP-014. **Requirements:** `REQ-SEC-004`, `REQ-SEC-005`, `REQ-OPS-001`, `REQ-OPS-002`.
 
 **Deliver:** artifact identity; reproducible package; SBOM/provenance; TUF-style or accepted update metadata; channel delegation; signing separation; staged rollout; rollback; minimum version; profile migration/downgrade; disaster recovery.
 

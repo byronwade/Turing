@@ -68,7 +68,7 @@ These sources support comparative research and falsifiable hypotheses. They do n
 - Chromium LayoutNG — https://developer.chrome.com/docs/chromium/layoutng
 - Chromium process model and site isolation — https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md
 - Chromium tab discarding and reloading — https://chromium.googlesource.com/playground/chromium-org-site/%2B/refs/heads/main/chromium-os/chromiumos-design-docs/tab-discarding-and-reloading.md
-- Chromium tab lifecycle source — https://chromium.googlesource.com/chromium/src/%2B/720dadbc215c229ce100bc408edb3aee03b0697e8/chrome/browser/resource_coordinator/tab_lifecycle_unit.h
+- Chromium tab lifecycle source — https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/resource_coordinator/tab_lifecycle_unit.h
 - Chromium sandbox — https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md
 - Chrome DevTools Protocol — https://chromedevtools.github.io/devtools-protocol/
 - V8 Sparkplug baseline compiler — https://v8.dev/blog/sparkplug
@@ -81,7 +81,7 @@ These sources support comparative research and falsifiable hypotheses. They do n
 - WebKit2 multiprocess architecture — https://docs.webkit.org/Deep%20Dive/Architecture/WebKit2.html
 - WebKit site isolation — https://docs.webkit.org/Deep%20Dive/SiteIsolation.html
 - JavaScriptCore overview — https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html
-- WebKit WPT integration — https://docs.webkit.org/Testing/WebPlatformTests.html
+- WebKit WPT integration — https://docs.webkit.org/Infrastructure/WPTTests.html
 - WebKit licensing — https://webkit.org/licensing-webkit/
 
 ### Gecko and SpiderMonkey
@@ -200,7 +200,7 @@ Product references support dated UX, privacy, workflow, distribution, and govern
 - Windows application security — https://learn.microsoft.com/en-us/windows/security/
 - Microsoft C++ (MSVC) Build Tools installation and servicing — https://learn.microsoft.com/en-us/cpp/overview/acquire-msvc?view=msvc-160
 - AppContainer isolation — https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation
-- Process mitigation policies — https://learn.microsoft.com/en-us/windows/win32/procthread/process-mitigation-policy
+- Process mitigation policies — https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessmitigationpolicy
 - UI Automation — https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview
 - Code signing — https://learn.microsoft.com/en-us/windows-hardware/drivers/dashboard/code-signing-reqs
 

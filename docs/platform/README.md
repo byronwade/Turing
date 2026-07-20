@@ -43,7 +43,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 - https://wayland.freedesktop.org/
 - https://flatpak.github.io/xdg-desktop-portal/
 - https://developer.apple.com/accessibility/
-- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/
+- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/accessibility-overview
 
 ## Related program material
 

@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://extensionworkshop.com/documentation/publish/signing-and-distribution-overview/ — Mozilla signing and distribution: extensions must be signed by Mozilla before installation in release builds.
+- https://developer.chrome.com/docs/extensions/how-to/distribute/host-on-linux — Chrome developer-hosted distribution: CRX packaging and the update manifest that drives self-hosted update delivery.
+- https://developer.chrome.com/docs/webstore/review-process — Chrome Web Store review: policy review, latency, and the signals that escalate scrutiny.
+- https://developer.chrome.com/docs/extensions/how-to/devtools/extend-devtools — The DevTools extension surface: the DevTools page and the `devtools.*` namespaces an extension may reach.
+- https://w3c.github.io/webdriver-bidi/ — WebDriver BiDi editor's draft, the standards-track automation surface relevant to agent and tool interaction.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 

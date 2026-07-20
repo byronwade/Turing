@@ -102,11 +102,18 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://spectreattack.com/spectre.pdf
-- https://www.usenix.org/conference/usenixsecurity20/presentation/narayan
-- https://llvm.org/docs/ControlFlowIntegrity.html
+Retrieved and individually verified 2026-07-20:
+
+- https://www.ndss-symposium.org/ndss2010/protecting-browsers-extension-vulnerabilities/ — Barth, Felt, Saxena, Boodman, "Protecting Browsers from Extension Vulnerabilities", NDSS 2010. The peer-reviewed basis for the extension security model this chapter's isolated-worlds scope depends on: least privilege, privilege separation, and isolated worlds.
+- https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Native messaging, Chrome Extensions documentation. The native-messaging trust boundary named in this chapter's scope: host manifest schema, `allowed_origins`, and the stdio message framing that crosses out of the browser sandbox.
+- https://www.w3.org/TR/webdriver2/ — WebDriver Level 2, W3C. The normative wire protocol for out-of-process browser control, and the standardized counterpart to this chapter's remote-debugging and headless scope.
+- https://www.w3.org/TR/webdriver-bidi/ — WebDriver BiDi, W3C. The standardized bidirectional automation protocol and interoperable successor to the Chrome DevTools Protocol; defines sandboxed script execution and sandbox realms, making it the citable primary source for CDP-class exposure.
+- https://doi.org/10.1145/3605764.3623985 — Greshake et al., "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection", ACM AISec 2023. The seminal peer-reviewed treatment of indirect prompt injection against agents that browse or use tools.
+- https://doi.org/10.6028/NIST.AI.100-2e2025 — NIST AI 100-2e2025, "Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations". Standards-body taxonomy covering direct and indirect prompt injection and the limits of current mitigations.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a Spectre, RLBox, and LLVM CFI list that was replicated verbatim across several chapters of this book and did not bear on developer-tooling, extension, automation, or agent attack surfaces.
 
 ## Change discipline
 

@@ -109,7 +109,7 @@ Reject the result as an architecture or performance decision when it:
 
 ## Current status and next proof
 
-`RQ-01`, `RQ-03`, and `RQ-35` remain deferred research questions. `REQ-PERF-002` and `REQ-PERF-003` remain accepted requirements whose implementation, tests, reviews, and evidence are not populated by this packet. `PB-013` remains partial and `TASK-000005` remains proposed-only. The next controlled proof is a reviewed experiment manifest and synthetic fixture package after source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark task-authority prerequisites are resolved.
+`RQ-01` and `RQ-03` remain deferred research questions. `RQ-35` is not deferred: [`research-question-coverage.json`](../blueprint-v1/machine/research-question-coverage.json) lists it in `active_question_ids`, and [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json) binds it to the benchmark and extreme-performance lab lane alongside `RQ-16`, `RQ-23`, `RQ-34`, and `RQ-37`. `REQ-PERF-002` and `REQ-PERF-003` remain accepted requirements whose implementation, tests, reviews, and evidence are not populated by this packet. `PB-013` remains `documented_no_runner` and `TASK-000005` remains proposed-only. The next controlled proof is a reviewed experiment manifest and synthetic fixture package after source-strategy, toolchain/fresh-host, IPC, sandbox, and benchmark task-authority prerequisites are resolved.
 
 This packet improves the research handoff and measurement contract only. It does not select a representation, allocator, lifecycle policy, process model, toolkit, engine source, or browser implementation; it does not change the 90% contained-M0 documentation organization or 0% full-build closure measures.
 

@@ -67,7 +67,7 @@ The prototype must remain honest about its scope. A passing executable is archit
 
 ## Next implementation steps
 
-1. Expand the accepted `turing-types`, `turing-ipc`, and `turing-kernel` boundaries through bounded, independently reviewed tasks.
+1. Expand the `turing-types`, `turing-ipc`, and `turing-kernel` boundaries through bounded, independently reviewed tasks. These boundaries are not accepted: [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json) is `review_pending`, and `IF-001` in [`implementation-interface-freezes.json`](blueprint-v1/machine/implementation-interface-freezes.json) is `partial`, still requiring accepted `WP-002` tasks, a wire codec, a transport binding, a negative harness, and security review.
 2. Generate protocol types from bounded schemas after the wire-format decision.
 3. Add platform sandbox probe child processes.
 4. Add a deterministic 30-tab pressure simulator and benchmark-manifest output.

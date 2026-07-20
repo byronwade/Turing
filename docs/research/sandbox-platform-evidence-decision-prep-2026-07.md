@@ -15,7 +15,7 @@ What platform-specific facts must be captured before Turing can compare sandbox 
 
 - Microsoft [AppContainer isolation](https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation).
 - Microsoft [Create Process In Sandbox APIs](https://learn.microsoft.com/en-us/windows/win32/secauthz/createprocessinsandbox).
-- Microsoft [process mitigation policy](https://learn.microsoft.com/en-us/windows/win32/procthread/process-mitigation-policy).
+- Microsoft [process mitigation policy](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessmitigationpolicy).
 - Linux kernel [Seccomp BPF](https://www.kernel.org/doc/html/latest/userspace-api/seccomp_filter.html).
 - Linux kernel [Landlock](https://www.kernel.org/doc/html/latest/userspace-api/landlock.html).
 - Linux kernel [user namespaces and resource control](https://docs.kernel.org/admin-guide/namespaces/resource-control.html).

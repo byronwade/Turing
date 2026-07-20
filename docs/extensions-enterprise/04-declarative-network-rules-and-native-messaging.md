@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest — `chrome.declarativeNetRequest`: rule syntax, static and dynamic rulesets, and rule limits, allowing request modification without granting content access.
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/declarativeNetRequest — MDN declarativeNetRequest, for cross-engine divergence in the same rule model.
+- https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging: host manifest schema, `allowed_origins`, and the stdio framing that crosses out of the sandbox.
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging — MDN native messaging: the portable protocol core and `allowed_extensions`.
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests — Native manifests: installation provenance, including the Windows registry hive split that determines per-user versus per-machine visibility.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 

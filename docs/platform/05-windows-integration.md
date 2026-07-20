@@ -107,7 +107,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 - https://wayland.freedesktop.org/
 - https://flatpak.github.io/xdg-desktop-portal/
 - https://developer.apple.com/accessibility/
-- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/
+- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/accessibility-overview
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
 

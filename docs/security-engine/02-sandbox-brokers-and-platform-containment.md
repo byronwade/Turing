@@ -84,7 +84,7 @@ The no-claim [Sandbox Probe Result Packet Examples](../research/sandbox-probe-re
 
 - Chromium sandbox design — https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md
 - Windows AppContainer isolation — https://learn.microsoft.com/en-us/windows/win32/secauthz/appcontainer-isolation
-- Windows process mitigation policy — https://learn.microsoft.com/en-us/windows/win32/procthread/process-mitigation-policy
+- Windows process mitigation policy — https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessmitigationpolicy
 - Apple Platform Security — https://support.apple.com/guide/security/welcome/web
 - Apple Hardened Runtime — https://developer.apple.com/documentation/security/hardened-runtime
 - Linux seccomp filters — https://www.kernel.org/doc/html/latest/userspace-api/seccomp_filter.html

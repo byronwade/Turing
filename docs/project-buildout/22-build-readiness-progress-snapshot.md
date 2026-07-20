@@ -24,8 +24,23 @@ This is the single-screen starting state for this documentation-heavy pass.
 - The remaining criterion is `DOC-READY-OWNER_DECISIONS` (`blocked_for_full_goal`).
 - Research-route coverage is mechanically checked: all `37/37` active research questions have at least one `docs/research/` route, and all `261/261` crosswalk evidence paths resolve to existing repository files or directories.
 - Deferred research routing is also mechanically checked: all `29/29` deferred questions have at least one planned research route that resolves to a current repository document; this is routing coverage, not answered research.
-- Active research quality is also checked: all `7/7` active packets pass observation/inference/next-work/source-context checks.
+- Active research quality is also checked: all `8/8` active packets pass observation/inference/next-work/source-context checks.
 - The measurement source is [`documentation-readiness-completion-audit.json`](machine/documentation-readiness-completion-audit.json); recompute it whenever criterion status changes.
+
+## 1a-i) Uncommitted working-tree state as of 2026-07-20
+
+If `git status` shows a large uncommitted change set, it is this pass. Read this before assuming the tree is dirty by accident. Every change below is recorded as a dated entry in [`research-log.md`](../research-log.md), newest first.
+
+- **Coherence corrections.** Charter section 4 requirement IDs, component-fixture counts, active-packet count, `PB-013` status in two rows, the `TASK-000001` queue digest, storage evidence axes, the work-package graph, five playbook requirement lines, tab-lifecycle states, `RQ-42` routing, `RQ-35` classification, and two positive status overclaims in `prototype.md` and `web-platform/README.md`.
+- **Source depth.** Security-engine chapters 10 through 12 and all seven extensions-enterprise chapters now carry topic-specific primary sources, each individually fetched and verified, replacing lists copied from other chapters.
+- **Dead links.** Eight repaired, including one cited in eighteen files. A repo-wide run reports 0 dead.
+- **Two new validators**, both in `xtask check`: `validate_registry_cross_references.py` and `validate_human_decision_provenance.py`. One opt-in tool outside the check path: `check_external_links.py`, which needs network access.
+- **Three decision briefings**, none of which decides anything: [ADR-0009](../research/adr-0009-owner-decision-briefing-2026-07.md), [independent review capacity](../research/independent-review-capacity-decision-briefing-2026-07.md), and [extensibility principal ownership](../research/extensibility-principal-ownership-briefing-2026-07.md).
+- **One record downgraded.** The solo-owner residual-risk acceptance is `agent_drafted_pending_owner_countersignature` with `accepted_by` null. It claims nothing on the owner's behalf and must not be cited as an owner decision.
+
+An independent review of this change set found fourteen defects in it, and a follow-up found three more that a truncated summary had hidden. All are corrected and logged. That defect rate is the reason a human pass over the diff is recommended before it is committed.
+
+None of this moved the readiness percentage, and none of it was expected to.
 
 ## 1b) Readiness lane dashboard
 
@@ -64,6 +79,10 @@ Primary pre-build gates not yet accepted:
 - `PB-020` acceptance and closure review (implementation kickoff handoff remains no-claim)
 
 These are the headline pre-build gates, not the complete full-goal blocker list. The [owner-decision closure board](23-owner-decision-closure-board.md) tracks every canonical gate, and the [closure-record examples](../research/owner-decision-closure-record-examples-2026-07.md) and [closure-review validator](../../tools/validate_build_readiness_closure_review.py) define the future evidence handoff without granting authority.
+
+A proposed, not-yet-ratified review-capacity finding also applies. All eleven closure scopes in [`owner-decision-synchronization.json`](machine/owner-decision-synchronization.json) require a named independent reviewer and reject self-approval, while every build-critical scope currently resolves to one person. On the transcribed records, the distinct-reviewer requirement for owner-reviewed closure cannot presently be satisfied for any gate. Whether the remedy is `PB-019` backup qualification or a separately defined independent-reviewer role is an open owner decision, not an established dependency; the dependency graph carries this as fifteen `proposed_independent_review_dependency` edges pending ratification. See the [dependency graph inventory](../research/build-readiness-dependency-graph-inventory-2026-07.md#proposed-review-capacity-finding-not-owner-ratified).
+
+This does not change the next step. Evidence work on `PB-002` via `TASK-000001` and on `PB-008`/`PB-009` via `TASK-000002` remains the stated lowest-risk starting point; the finding constrains gate closure, not evidence production. The [Solo-Owner Residual-Risk Acceptance](../research/solo-owner-residual-risk-acceptance-2026-07.md) records the owner's time-bounded acceptance of the single-owner exposure but does not resolve the review-capacity question.
 
 ## 4) Deep research lanes currently open
 

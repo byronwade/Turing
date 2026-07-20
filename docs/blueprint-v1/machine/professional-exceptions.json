@@ -1,5 +1,105 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-16",
-  "exceptions": []
+  "updated": "2026-07-20",
+  "exceptions": [
+    {
+      "exception_id": "OWN.EXCEPTION.SOLO_OWNER_RESIDUAL_RISK.2026_07",
+      "status": "agent_drafted_pending_owner_countersignature",
+      "gate": "PB-019",
+      "gate_status_effect": "none",
+      "gate_status_after": "blocked",
+      "owner_scope": "program",
+      "accepted_by": null,
+      "drafted_by": "agent session, from an owner instruction given in chat on 2026-07-20",
+      "attributed_owner_pending_countersignature": "@byronwade",
+      "provenance_caveat": "An agent wrote this record. The owner selected 'document as accepted solo-owner risk' in a chat session, which is an instruction to draft, not the owner-review process this repository defines. A chat selection is not a named owner approval, carries no independent reviewer, and synchronizes no registry. Until the owner countersigns through the documented process, `accepted_by` stays null and this record is a draft. Do not cite it as an owner decision.",
+      "countersignature_requirements": [
+        "owner confirms the acceptance in a durable repository record rather than a chat session",
+        "record names the owner and the date of countersignature",
+        "record is reconciled with the owner-decision closure board"
+      ],
+      "decision_date": null,
+      "expires": "2026-10-16",
+      "self_renewing": false,
+      "claim_status": "Agent-drafted single-owner residual-risk record pending owner countersignature; no owner acceptance, no backup ownership, no owner coverage, no two-person control, no release authority claim, no release promotion claim, no stable signing authority claim, no update trust claim, no supported-version changes claim, no security-disclosure authority claim, no irreversible migration approval claim, no legal approval claim, no incident closure authority claim, no production authority claim, no broad readiness claim, and no implementation claim.",
+      "human_record": "docs/research/solo-owner-residual-risk-acceptance-2026-07.md",
+      "source_records": [
+        "docs/research/solo-owner-residual-risk-acceptance-2026-07.md",
+        "docs/research/backup-ownership-gap-inventory-2026-07.md",
+        "docs/project-buildout/machine/backup-ownership-gap.json",
+        "docs/blueprint-v1/machine/professional-owners.json",
+        "docs/blueprint-v1/machine/pre-build-readiness.json",
+        "docs/project-buildout/machine/contained-m0-start-state.json",
+        "docs/project-buildout/23-owner-decision-closure-board.md",
+        ".github/CODEOWNERS"
+      ],
+      "why_gate_remains_blocked": "validate_blueprint.py enforces PB-019 blocked while backup ownership is only checked gap evidence and while any professional owner backup is null. The PB-019 evidence_required list names single-owner residual risk as a reason to remain blocked. Owner acceptance of a risk is not remediation of that risk.",
+      "covered_scopes": [
+        "program",
+        "architecture",
+        "security",
+        "release-operations",
+        "human-release-authority",
+        "incident-response",
+        "legal-community",
+        "support",
+        "quality",
+        "supply-chain",
+        "documentation-research",
+        "product",
+        "platform",
+        "engine",
+        "javascript",
+        "networking",
+        "storage",
+        "performance",
+        "accessibility",
+        "ui-runtime",
+        "agent-operations",
+        "privacy-data"
+      ],
+      "accepted_exposure": [
+        "no second reviewer for any build-critical scope",
+        "no independent review of the primary owner's own changes",
+        "simultaneous halt of every scope on owner unavailability",
+        "no succession path",
+        "no recusal path for conflict, legal conflict, or security embargo",
+        "no reviewed second holder of access, signing material, or disclosure channels",
+        "unrecovered single point of failure on account or credential loss"
+      ],
+      "compensating_controls": [
+        "work stays inside the contained-M0 boundary",
+        "no release, signing, publishing, or distribution path is exercised",
+        "no production or user-facing data is handled",
+        "tools/validate_*.py checks act as a mechanical reviewer for structural consistency only, never for judgement or authority",
+        "owner-only decisions remain queued on the owner-decision closure board"
+      ],
+      "revisit_triggers": [
+        "any move toward developer preview, beta, stable, or public distribution",
+        "any request to exercise signing, update-trust, or supported-version changes",
+        "receipt of a security report requiring coordinated disclosure",
+        "any irreversible profile or data migration proposal",
+        "acceptance of ADR-0009 or any decision opening broad M1 implementation",
+        "extended owner unavailability",
+        "addition of any second contributor with write access"
+      ],
+      "expiry_behavior": "On expiry the owner must name qualified backups, renew with a fresh dated record, or narrow the scope of work. An expired acceptance is not self-renewing; treat solo operation as unaccepted and stop contained-M0 continuation until refreshed.",
+      "prohibited_uses": [
+        "citing this record as backup ownership or owner coverage",
+        "citing this record as two-person control",
+        "citing this record as release authority, release promotion, or stable signing authority",
+        "citing this record as update-trust or supported-version authority",
+        "citing this record as security-disclosure or incident-closure authority",
+        "citing this record as irreversible migration approval or legal approval",
+        "citing this record as production authority, broad readiness, or implementation approval",
+        "citing this record to promote PB-019 out of blocked status"
+      ],
+      "next_proof": "A named qualified backup owner for at least one build-critical scope carrying role level, subsystem competence, representative path coverage, recent review record, availability, succession, recusal, inactivity, removal, and emergency-replacement evidence, reconciled against CODEOWNERS and the professional review rules.",
+      "validation_commands": [
+        "python3 -B tools/validate_backup_ownership_gap.py",
+        "python3 -B tools/validate_blueprint.py",
+        "python3 -B tools/validate_research_index.py"
+      ]
+    }
+  ]
 }

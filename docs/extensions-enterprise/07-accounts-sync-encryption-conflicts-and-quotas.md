@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://www.w3.org/TR/WebCryptoAPI/ — Web Cryptography API. `deriveKey`, `deriveBits`, `wrapKey`, `unwrapKey`, `importKey`, and `exportKey`, the operations an encrypted-envelope and key-recovery design depends on in-browser.
+- https://www.rfc-editor.org/rfc/rfc7516 — RFC 7516, JSON Web Encryption. The encrypted-envelope format named in this chapter's scope.
+- https://www.rfc-editor.org/rfc/rfc5869 — RFC 5869, HKDF. The extract-then-expand key derivation this chapter's key-recovery path relies on.
+- https://doi.org/10.1007/978-3-642-24550-3_29 — Shapiro, Preguica, Baquero, Zawirski, SSS 2011. Conflict-free replicated data types, the primary source for conflict resolution over replicated state.
+- https://developer.chrome.com/docs/extensions/reference/api/storage — `chrome.storage`, documenting concrete server-side sync quota constants and write-rate limits.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 

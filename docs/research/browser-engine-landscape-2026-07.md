@@ -441,7 +441,7 @@ Before a new architecture decision is accepted:
 - WebKit2 multiprocess architecture — https://docs.webkit.org/Deep%20Dive/Architecture/WebKit2.html
 - WebKit site isolation — https://docs.webkit.org/Deep%20Dive/SiteIsolation.html
 - JavaScriptCore overview — https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html
-- WebKit WPT integration — https://docs.webkit.org/Testing/WebPlatformTests.html
+- WebKit WPT integration — https://docs.webkit.org/Infrastructure/WPTTests.html
 - WebKit licensing — https://webkit.org/licensing-webkit/
 
 ### Gecko and SpiderMonkey
