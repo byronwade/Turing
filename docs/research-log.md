@@ -1,5 +1,35 @@
 # Research Log
 
+## 2026-07-20 - JavaScript lexer, parser, bytecode compiler, and VM implemented
+
+Question:
+
+`WP-007` left listener effects declared rather than executed. `WP-010` asks for the language that would execute them. How much of ECMAScript can be built honestly in one pass?
+
+Method:
+
+Implemented `crates/turing-js` from the ECMAScript specification, deriving from no existing engine: a lexer, a recursive-descent parser with precedence climbing, a bytecode compiler, and a stack virtual machine.
+
+Decision:
+
+Bytecode rather than a tree walker. A tree-walking interpreter is simpler and would have run the same programs, but the shape of the eventual engine matters more than the shortest path to running code. A flat instruction stream separates parsing cost from execution cost, gives the baseline JIT in `WP-019` a stable surface to consume, and turns scope resolution into a compile-time slot assignment rather than a runtime hash lookup. Choosing it now avoids a rewrite that would otherwise be forced later.
+
+Implemented: numbers, strings, booleans, `null`, `undefined`, `var`/`let`/`const`, arithmetic, comparison, both equality families, logical operators with short-circuit evaluation, `if`/`else`, `while`, lexically scoped blocks, function declarations, calls, recursion, and `return`. Functions are hoisted, so a call may precede its declaration and mutual recursion resolves.
+
+Two runtime details are worth recording because a plausible implementation gets them wrong and stays quiet about it. Comparisons involving NaN are always false, including `NaN <= NaN`, which a naive three-way ordering returns true for. And the logical operators evaluate to an *operand*, not a boolean: `0 || 5` is `5`, not `true`. Both have tests.
+
+The VM carries a step limit as a field rather than an afterthought. A browser must not let a page wedge the process, so an infinite loop aborts with `StepLimitExceeded`. That is a containment property, not a debugging aid.
+
+Everything else is refused at compile time: objects and property access, arrays, closures, `class`, `try`/`catch`, `async`/`await`, generators, `for`, `switch`, `new`, `typeof`, modules, and regular expressions. The reasoning is sharper here than anywhere else in the engine. A partially implemented language does not fail visibly; it computes a wrong value and carries on. Refusing at compile time keeps every program that *does* run trustworthy, which is the only basis on which a later conformance claim could be made.
+
+Twenty-three tests, bringing the workspace to 166.
+
+What this does not do: no objects, no closures, no standard library, no DOM bindings, no event-loop integration. The listener effects in `turing-dom` are still declarative; wiring this interpreter to them needs a binding layer that does not exist.
+
+Next question:
+
+`WP-011` is the exact tracing GC and Web IDL bindings, which is what would connect this interpreter to the DOM.
+
 ## 2026-07-20 - DOM mutation epochs and event dispatch implemented
 
 Question:

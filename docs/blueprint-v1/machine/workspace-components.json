@@ -223,6 +223,22 @@
         "turing-html"
       ],
       "failure_boundary": "reject-stale-handles-and-unmodeled-dom-features"
+    },
+    {
+      "id": "COMP-013",
+      "package": "turing-js",
+      "path": "crates/turing-js",
+      "kind": "library",
+      "owner_scope": "javascript",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-bytecode-and-interpreter",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [],
+      "failure_boundary": "refuse-unsupported-syntax-and-bound-execution-steps"
     }
   ]
 }

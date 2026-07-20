@@ -36,6 +36,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-js"
+version = "0.1.0"
+
+[[package]]
 name = "turing-kernel"
 version = "0.1.0"
 dependencies = [
