@@ -9,6 +9,7 @@
     "exercise_id",
     "status",
     "updated",
+    "source_manifest",
     "claim_status",
     "private_intake_steps",
     "emergency_patch_steps",
@@ -31,6 +32,10 @@
     "updated": {
       "type": "string",
       "format": "date"
+    },
+    "source_manifest": {
+      "type": "string",
+      "minLength": 3
     },
     "claim_status": {
       "type": "string",

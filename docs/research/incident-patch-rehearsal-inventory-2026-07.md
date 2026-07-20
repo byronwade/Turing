@@ -15,6 +15,8 @@ Yes, for planning only. The new [`incident-patch-rehearsal.json`](../security-en
 
 This is not an incident-response program, executed rehearsal record, patch-capacity proof, supported-security statement, release authority grant, disclosure authorization, signing authorization, or production-safety claim.
 
+The checked no-claim [incident-response source manifest](../security-engine/machine/incident-response-source-manifest.json) records the official lifecycle, patch, disclosure, authority, privacy, and timing observations that inform this inventory. It does not establish an executed rehearsal, response capacity, disclosure authority, or release readiness.
+
 ## Inputs
 
 - [Security policy](../security.md)

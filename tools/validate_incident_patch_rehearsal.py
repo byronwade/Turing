@@ -263,6 +263,11 @@ def validate_inventory(path: Path) -> None:
         fail(f"{path}: invalid exercise_id {exercise_id!r}")
     if data.get("status") != "no_claim_rehearsal_inventory":
         fail(f"{path}: status must be no_claim_rehearsal_inventory")
+    source_manifest = text(data.get("source_manifest"))
+    if not source_manifest:
+        fail(f"{path}: source_manifest must be a non-empty string")
+    if not (ROOT / source_manifest).is_file():
+        fail(f"{path}: source_manifest does not resolve: {source_manifest}")
 
     claim_status = text(data.get("claim_status")).lower()
     boundaries = [text(item).lower() for item in require_list(data, "unsupported_boundaries")]

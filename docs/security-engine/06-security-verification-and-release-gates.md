@@ -8,6 +8,8 @@ Purpose: Define continuous adversarial testing, evidence bundles, severity, waiv
 
 This document operationalizes SEC-GATE-1 through SEC-GATE-8 in [Blueprint 08](../blueprint-v1/08-security-and-sandbox.md) and the release evidence model in [Blueprint 12](../blueprint-v1/12-testing-compatibility.md).
 
+The checked no-claim [incident-response source manifest](machine/incident-response-source-manifest.json) records the official incident lifecycle, patch, authority, disclosure, and review observations relevant to these gates. It does not establish security-gate passage, incident readiness, or release approval.
+
 ## Verification layers
 
 Security evidence includes unit and property tests, schema validation, compromised-process integration tests, sandbox probes, web-security conformance, fuzzing, sanitizers, model checking, fault injection, static analysis, dependency review, binary hardening inspection, red-team exercises, and independent audits. No single layer is treated as proof.

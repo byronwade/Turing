@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Incident-response provenance route completion
+
+Question:
+
+Do the incident-response, emergency-patch, security-gate, supported-lifecycle, and machine-rehearsal records expose the manifest that governs their official observations?
+
+Method:
+
+Compared the `SECURITY.INCIDENT.SOURCES.2026_07` source-document list with its six missing inbound references. Added direct no-claim manifest links to the five canonical prose routes, and added an explicit `source_manifest` field to the machine rehearsal inventory, schema, and validator. This closes provenance navigation only; it does not establish incident readiness, emergency patch capacity, disclosure or signing authority, supported-security coverage, or release approval.
+
 ## 2026-07-19 - Profile/session provenance route completion
 
 Question:

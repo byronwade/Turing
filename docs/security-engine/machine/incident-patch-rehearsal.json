@@ -3,6 +3,7 @@
   "exercise_id": "SEC.INCIDENT.NOCLAIM_PATCH_REHEARSAL.2026_07",
   "status": "no_claim_rehearsal_inventory",
   "updated": "2026-07-18",
+  "source_manifest": "docs/security-engine/machine/incident-response-source-manifest.json",
   "claim_status": "No-claim planning inventory only; no production-safe browsing claim, no supported security versions claim, no incident-response readiness claim, no emergency patch capacity claim, no disclosure authority claim, no stable promotion authority claim, no signing authority claim, no incident closure authority claim, and no implementation claim.",
   "private_intake_steps": [
     {
