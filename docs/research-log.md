@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Text shaping, fonts, and input research
+
+Question:
+
+Which text stack balances Unicode correctness, shaping quality, font fallback, raster and platform consistency, accessibility, IME behavior, memory, and performance across supported platforms?
+
+Method:
+
+Checked Unicode UAX #9 and UAX #14, W3C CSS Text Module Level 3, the HarfBuzz manual and shaping API documentation, and ICU documentation on 2026-07-19. Reconciled the observations with `RQ-06`, the text/font, web-engine, accessibility, native-platform, input, security, and performance books, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet separating Unicode data, bidi, line breaking, shaping, font selection/fallback, metrics, rasterization, IME, and accessibility boundaries. It defines multilingual corpus fields, cluster/caret and semantic oracles, font and platform provenance, input workflows, resource measurements, and rejection rules for Latin-only testing or treating a shaping library as a complete text stack. No text stack, font policy, raster policy, IME, accessibility, compatibility, performance, or readiness decision changed.
+
+Next question:
+
+Which owner-approved Unicode/font/IME corpus and version manifest should become the first shaping, line-break, fallback, accessibility, and platform-input review target when this lane enters the active pre-build crosswalk?
+
 ## 2026-07-19 - JavaScript runtime tiering and collector research
 
 Question:

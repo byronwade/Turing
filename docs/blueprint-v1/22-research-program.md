@@ -38,6 +38,8 @@ Decision output: backend abstraction boundary with replacement and security stra
 
 Compare platform-native shaping/rasterization, HarfBuzz/FreeType, and hybrid adapters across scripts, variable/color fonts, bidi, vertical text, IME, selection geometry, accessibility, screenshots, memory, and startup.
 
+The [Text Shaping, Fonts, and Input Research](../research/text-shaping-fonts-and-input-research-2026-07.md) defines the deferred source-backed comparison, corpus, oracle, and measurement route.
+
 Decision output: shaping/raster/fallback architecture per platform.
 
 ## RQ-07 — Register or stack bytecode for the interpreter?
