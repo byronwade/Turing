@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - ADR-0009 freshness-record alignment
+
+Aligned the ADR-0009 human decision packet, decision draft, closure preparation, machine evidence tracker, and Servo source-observation retrieval date with the already-recorded 2026-07-20 upstream `servo/servo` head observation. Historical source captures remain explicitly historical and the moving head is still not a selected baseline. This corrects freshness metadata only; `PB-002` remains blocked and no source, dependency, component, legal, compatibility, performance, security, or release decision was made.
+
 ## 2026-07-20 - Operational closure crosswalk
 
 Added a cross-lane crosswalk to the PB-020 closure preparation route connecting package/update identity, profile/session compatibility, incident rollback and disclosure, privacy/retention, failure denominators, and backup/two-person authority. It explicitly prevents evidence from one route being substituted for another and keeps all four routes no-claim until execution and independent owner review exist. This improves operational handoff coherence without granting signing, release, migration, disclosure, incident, production, or implementation authority.

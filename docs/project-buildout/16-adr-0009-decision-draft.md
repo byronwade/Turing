@@ -3,7 +3,7 @@
 Status: decision-support draft; not accepted
 Owner: architecture and program ownership
 Evidence gates: `ADR9-EV-017` partial; `ADR9-EV-018` blocked
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 This draft records the public-claim, requirement, risk, support-language, and registry updates that each `ADR-0009` source-strategy outcome would require. The checked no-claim [`ADR-0009 decision-review template`](../blueprint-v1/machine/adr-0009-decision-reviews/no-claim-decision-review-template.json) defines the future owner-review shape. Neither this draft nor that template is an accepted ADR, and neither approves a Servo relationship, Servo-derived release code, source import, support commitment, compatibility claim, security claim, memory claim, speed claim, or charter change.
 

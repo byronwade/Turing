@@ -3,8 +3,8 @@
 Status: no-claim decision-closure preparation
 Owner: architecture, engine, security, provenance, release operations, embedding, legal-community, and documentation owners
 Related gate: `PB-002` and `ADR-0009`
-Updated: 2026-07-19
-Research date: 2026-07-19
+Updated: 2026-07-20
+Research date: 2026-07-20
 Scope: decision synthesis only; no source import, component approval, or release-code authorization
 
 ## Purpose

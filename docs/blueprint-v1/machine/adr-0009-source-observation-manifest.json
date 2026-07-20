@@ -20,7 +20,7 @@
       "title": "Servo source repository",
       "publisher": "Servo Project",
       "url": "https://github.com/servo/servo",
-      "retrieved": "2026-07-19",
+      "retrieved": "2026-07-20",
       "observation": "The public repository exposes Cargo.lock, rust-toolchain.toml, mach bootstrap/build tooling, platform-specific prerequisites, and multiple source/build control files.",
       "decision_consequence": "A candidate baseline must identify the exact revision and toolchain inputs; a repository URL or moving branch is insufficient source identity."
     },

@@ -2,7 +2,7 @@
 
 Status: evidence packet template and current metadata snapshot; no source-strategy decision
 Owner: architecture, engine, security, provenance, release operations, embedding, and documentation owners
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 ## Purpose
 
