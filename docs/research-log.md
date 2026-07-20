@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - GitHub handoff baseline existence control
+
+Question:
+
+Can the offline GitHub handoff validator reject a correctly shaped but deleted or unavailable baseline commit?
+
+Method:
+
+Updated `validate_github_issue_handoff.py` to resolve `snapshot.baseline_commit` through `git cat-file` as a commit object, and documented the stronger invariant in the repository map. The handoff remains an offline coordination snapshot; this only verifies that its recorded source identity exists locally and does not contact GitHub, approve tasks, or promote readiness.
+
 ## 2026-07-19 - TASK-000011 review-baseline wording alignment
 
 Question:

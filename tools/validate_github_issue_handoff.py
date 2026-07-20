@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -81,6 +82,18 @@ def check_snapshot() -> dict[str, object]:
     baseline = require_string(snapshot.get("baseline_commit"), "snapshot.baseline_commit")
     if not re.fullmatch(r"[0-9a-f]{40}", baseline):
         fail("snapshot baseline_commit must be a full Git SHA")
+    try:
+        result = subprocess.run(
+            ["git", "cat-file", "-e", f"{baseline}^{{commit}}"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as error:
+        fail(f"cannot verify snapshot baseline_commit in Git: {error}")
+    if result.returncode != 0:
+        fail(f"snapshot baseline_commit is not present as a Git commit: {baseline}")
 
     commands = require_string_list(snapshot.get("commands"), "snapshot.commands")
     for required in ("gh issue list", "gh pr list", "git rev-parse HEAD"):
