@@ -14,6 +14,26 @@ SCHEMA = ROOT / "docs/blueprint-v1/machine/research-question-coverage.schema.jso
 PROGRAM = ROOT / "docs/blueprint-v1/22-research-program.md"
 CROSSWALK = ROOT / "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
 
+# These rows previously passed identifier-only validation while pointing to
+# unrelated research domains. Keep a small, explicit guard until the registry
+# has a versioned title field shared with the Blueprint.
+DEFERRED_ROUTE_TERMS: dict[str, tuple[str, ...]] = {
+    "RQ-24": ("agent", "provider", "tool"),
+    "RQ-26": ("network", "fetch"),
+    "RQ-28": ("media", "codec", "pdf"),
+    "RQ-32": ("extension", "sync"),
+    "RQ-41": ("dependency", "foundation"),
+    "RQ-42": ("plug-in", "wasm"),
+    "RQ-43": ("embedding", "abi"),
+    "RQ-51": ("resource", "tab"),
+    "RQ-52": ("agent", "confirmation"),
+    "RQ-58": ("readiness", "gate"),
+    "RQ-59": ("agent", "authority"),
+    "RQ-61": ("stable", "platform"),
+    "RQ-62": ("slo", "error"),
+    "RQ-65": ("service", "offline"),
+}
+
 
 def fail(message: str) -> None:
     print(f"research-question coverage validation failed: {message}", file=sys.stderr)
@@ -85,6 +105,21 @@ def main() -> int:
         for key in ("reason", "owner_route", "revisit_trigger"):
             nonempty(record.get(key), f"deferred_questions[{index}].{key}")
         strings(record.get("required_future_evidence"), f"deferred_questions[{index}].required_future_evidence", 3)
+        route_text = " ".join(
+            [
+                record["owner_route"],
+                record["revisit_trigger"],
+                *record["required_future_evidence"],
+            ]
+        ).lower()
+        missing_terms = [
+            term for term in DEFERRED_ROUTE_TERMS.get(question_id, ()) if term not in route_text
+        ]
+        if missing_terms:
+            fail(
+                f"deferred_questions[{index}] {question_id} route is missing semantic terms: "
+                + ", ".join(missing_terms)
+            )
     if deferred_ids != program_ids - active_set:
         fail("deferred_questions must exactly cover every program question outside the active crosswalk")
     if active_set & deferred_ids:

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Deferred research-question routes semantically aligned
+
+Question:
+
+Does every deferred machine `RQ-*` row route to the same question described by the canonical Blueprint, rather than merely passing identifier and shape validation?
+
+Method:
+
+Compared all 29 deferred records in `research-question-coverage.json` with the exact `RQ-*` titles and decision outputs in Blueprint 22, then reviewed owner routes, revisit triggers, and required future evidence for domain fit.
+
+Result:
+
+Found shifted or unrelated routes for `RQ-24`, `RQ-26`, `RQ-28`, `RQ-32`, `RQ-41`, `RQ-42`, `RQ-43`, `RQ-51`, `RQ-52`, `RQ-58`, `RQ-59`, `RQ-61`, `RQ-62`, and `RQ-65`. Corrected the machine registry to match the canonical agent, networking, media, extensions, dependency, Plug-in, embedding, resource, agent-mode, readiness-control, agent-authority, stable-scope, SLO, and service/offline questions. Added a semantic-alignment control to the human coverage audit.
+
+Impact:
+
+Maintainers now receive the correct owner route and evidence shape when following any deferred question. The correction improves tracking integrity without answering a question, changing active/deferred counts, promoting a gate, approving a task, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Can the same title-to-route semantic check become a validator invariant so future question renumbering or registry edits fail before handoff?
+
 ## 2026-07-19 - RQ-39 replay and observability route expanded
 
 Question:

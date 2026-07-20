@@ -9,6 +9,12 @@ The numbered research program contains 66 questions. The active readiness crossw
 
 This distinction is intentional. Active crosswalk membership means a question is relevant to a current readiness lane; it does not mean the question is answered or that its gate is ready. Deferred status means the question remains in the canonical research program and must be mapped before it becomes a milestone, implementation task, requirement, or support claim.
 
+## Semantic alignment control
+
+The machine registry is not allowed to treat a structurally valid `RQ-*` identifier as sufficient routing evidence. Each deferred row must be checked against the exact question title in [Blueprint 22](../blueprint-v1/22-research-program.md), and its owner route, revisit trigger, and required future evidence must address that question rather than a neighboring research domain. This control caught shifted routes for `RQ-24`, `RQ-26`, `RQ-28`, `RQ-32`, `RQ-41`, `RQ-42`, `RQ-43`, `RQ-51`, `RQ-52`, `RQ-58`, `RQ-59`, `RQ-61`, `RQ-62`, and `RQ-65`; those rows are now aligned to their canonical titles. `RQ-39` was separately aligned to deterministic replay and causal observability.
+
+This is a routing correction, not an answer to any research question. The coverage validator now carries a narrow semantic-term guard for the corrected rows so a future unrelated route fails validation instead of passing on identifier shape alone. Deferred status, evidence requirements, owner review, and all readiness and claim boundaries remain unchanged.
+
 ## Control
 
 The [coverage schema](../blueprint-v1/machine/research-question-coverage.schema.json) and [validator](../../tools/validate_research_question_coverage.py) derive the 66-question denominator from `docs/blueprint-v1/22-research-program.md` and require the active set to match `research-readiness-crosswalk.json` exactly. They reject missing, duplicate, or silently omitted questions.
