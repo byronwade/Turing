@@ -143,6 +143,31 @@ fn resizing_reflows_text_onto_more_lines() {
 }
 
 #[test]
+fn scrolling_translates_paint_without_touching_geometry() {
+    let page = Page::load(PAGE, 320.0).expect("loads");
+    let scrolled = page.render_scrolled(320, 64, 8.0).expect("renders");
+    let unscrolled = page.render(320, 64).expect("renders");
+
+    // The banner pixel that sat at y = 8 is at y = 0 after scrolling 8.
+    assert_eq!(
+        scrolled.pixel(300, 0),
+        unscrolled.pixel(300, 8),
+        "paint shifted up"
+    );
+    // Geometry is untouched: the same page point still hits the banner.
+    let target = page
+        .target_at(Point { x: 4.0, y: 8.0 })
+        .expect("routes")
+        .expect("hits");
+    assert_eq!(
+        page.dom().document().attribute_of(target, "id"),
+        Some("banner")
+    );
+    // The content height is the page's, not the window's.
+    assert!(page.content_height() >= 16.0);
+}
+
+#[test]
 fn an_unsupported_stylesheet_notation_refuses_the_load() {
     // The colour is validated where style is resolved, so the refusal
     // arrives from the layout stage wearing the CSS value error.

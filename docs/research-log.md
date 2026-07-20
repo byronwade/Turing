@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-20 - Scrolling as a paint-time translation
+
+The previous entry named scrolling the first gap a user would feel. The design question was where the offset lives, and the answer that keeps every existing invariant is: nowhere the engine can see it. `Page::render_scrolled` translates the display list at paint time; geometry, hit testing, and the mutation-epoch guard all stay in page coordinates, and the embedder owns the two conversions — window point to page point by adding the offset, and clamping the offset against `Page::content_height`. Scrolling cannot invalidate layout because it never touches it.
+
+The presenter handles the wheel (a line is three text lines, the common platform default), clamps on resize and reload, and offsets click points. One pipeline test pins the translation: the pixel that sat at `y = 8` sits at `y = 0` after scrolling 8, while the same page point still hits the same element. The workspace is at 375 tests.
+
+Not done: horizontal scrolling (nothing lays out wider than the viewport except unbreakable single words), scrollbars (there is no visual indicator of position), and smooth or inertial scrolling.
+
 ## 2026-07-20 - A window, word wrap, and the workspace's first external dependencies
 
 Question:

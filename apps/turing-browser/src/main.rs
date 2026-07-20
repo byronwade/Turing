@@ -37,7 +37,7 @@ use turing_engine::Page;
 use turing_layout::Point;
 use winit::application::ApplicationHandler;
 use winit::dpi::{LogicalSize, PhysicalPosition};
-use winit::event::{ElementState, MouseButton, WindowEvent};
+use winit::event::{ElementState, MouseButton, MouseScrollDelta, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{Key, NamedKey};
 use winit::window::{Window, WindowAttributes, WindowId};
@@ -52,6 +52,8 @@ struct Browser {
     window: Option<Rc<Window>>,
     surface: Option<softbuffer::Surface<Rc<Window>, Rc<Window>>>,
     cursor: PhysicalPosition<f64>,
+    /// How far the viewport has scrolled down the page, in CSS pixels.
+    scroll_y: f32,
 }
 
 enum PageSource {
@@ -84,7 +86,27 @@ impl Browser {
             window: None,
             surface: None,
             cursor: PhysicalPosition::new(0.0, 0.0),
+            scroll_y: 0.0,
         })
+    }
+
+    /// Clamps the scroll offset to the page's laid-out height, so the
+    /// viewport can never scroll past the end or above the top.
+    fn clamp_scroll(&mut self) {
+        let viewport = match &self.window {
+            #[allow(clippy::cast_precision_loss)]
+            Some(window) => window.inner_size().height as f32,
+            #[allow(clippy::cast_possible_truncation)]
+            None => INITIAL_HEIGHT as f32,
+        };
+        let max = (self.page.content_height() - viewport).max(0.0);
+        self.scroll_y = self.scroll_y.clamp(0.0, max);
+    }
+
+    fn scroll_by(&mut self, delta: f32) {
+        self.scroll_y -= delta;
+        self.clamp_scroll();
+        self.request_redraw();
     }
 
     fn reload(&mut self) {
@@ -96,6 +118,7 @@ impl Browser {
         {
             Ok(page) => {
                 self.page = page;
+                self.scroll_y = 0.0;
                 self.sync_title();
                 self.request_redraw();
             }
@@ -156,7 +179,11 @@ impl Browser {
             return;
         }
 
-        let canvas = match self.page.render(size.width as usize, size.height as usize) {
+        let canvas = match self.page.render_scrolled(
+            size.width as usize,
+            size.height as usize,
+            self.scroll_y,
+        ) {
             Ok(canvas) => canvas,
             Err(error) => {
                 eprintln!("turing-browser: render refused: {error}");
@@ -179,10 +206,12 @@ impl Browser {
     }
 
     fn click(&mut self) {
+        // Window points map to page points by adding the scroll offset;
+        // geometry stays in page coordinates throughout the engine.
         #[allow(clippy::cast_possible_truncation)]
         let point = Point {
             x: self.cursor.x as f32,
-            y: self.cursor.y as f32,
+            y: self.cursor.y as f32 + self.scroll_y,
         };
         match self.page.target_at(point) {
             Ok(Some(node)) => {
@@ -264,7 +293,18 @@ impl ApplicationHandler for Browser {
                 if let Err(error) = self.page.resize(width) {
                     eprintln!("turing-browser: relayout refused: {error}");
                 }
+                self.clamp_scroll();
                 self.request_redraw();
+            }
+            WindowEvent::MouseWheel { delta, .. } => {
+                let pixels = match delta {
+                    // One wheel line scrolls three text lines, which is the
+                    // common platform default.
+                    MouseScrollDelta::LineDelta(_, lines) => lines * 48.0,
+                    #[allow(clippy::cast_possible_truncation)]
+                    MouseScrollDelta::PixelDelta(position) => position.y as f32,
+                };
+                self.scroll_by(pixels);
             }
             WindowEvent::CursorMoved { position, .. } => self.cursor = position,
             WindowEvent::MouseInput {
