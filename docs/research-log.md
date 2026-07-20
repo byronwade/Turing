@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-20 - Repository-wide source-manifest provenance audit
+
+Audited all thirteen checked source-manifest families and every declared `source_documents` entry. All twelve manifests with document lists resolve to existing files and are referenced by each owning document, including the repository-root `.github/CODEOWNERS` control file. Extended `tools/validate_source_manifest_coverage.py` to enforce this repository-wide identity link invariant so future audits cannot omit non-`docs/` paths. This closes provenance organization only; it does not create implementation evidence or promote M0 or full-build readiness.
+
+## 2026-07-20 - Documentation-readiness manifest count correction
+
+Compared the documentation-readiness evidence matrix with the current metadata validator, source-manifest coverage validator, and repository map. Corrected the matrix's stale eleven-manifest description to thirteen so the primary human evidence contract matches the machine-checked coverage. This is a synchronization correction only; no evidence, gate, task authority, or readiness percentage changed.
+
 ## 2026-07-20 - Ownership/control provenance route completion
 
 Question:
@@ -9867,7 +9875,3 @@ Strengthened `tools/validate_research_index.py` to enforce those four continuity
 Next question:
 
 Which owner-controlled evidence lane should replace its no-claim preparation records with retained executable evidence after task authority and independent review are available?
-
-## 2026-07-20 - Repository-wide source-manifest provenance audit
-
-Audited all thirteen checked source-manifest families and every declared `source_documents` entry. All twelve manifests with document lists resolve to existing files and are referenced by each owning document, including the repository-root `.github/CODEOWNERS` control file. Extended `tools/validate_source_manifest_coverage.py` to enforce this repository-wide identity link invariant so future audits cannot omit non-`docs/` paths. This closes provenance organization only; it does not create implementation evidence or promote M0 or full-build readiness.
