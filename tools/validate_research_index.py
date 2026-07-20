@@ -118,10 +118,18 @@ def main() -> int:
         missing_quality = [name for name, present in quality_checks.items() if not present]
         if missing_quality:
             active_quality_gaps.append(f"{path.name} ({', '.join(missing_quality)})")
+        if not re.search(r"(?m)^(Research|Packet|Map|Audit) date:\s*\d{4}-\d{2}-\d{2}", text):
+            active_quality_gaps.append(f"{path.name} (dated-source-context)")
+        if not re.search(
+            r"https?://|\b(version|revision|commit|stable locator)\b|\[.*source records?\]",
+            text,
+            re.IGNORECASE,
+        ):
+            active_quality_gaps.append(f"{path.name} (stable-source-locator)")
     if active_quality_gaps:
         fail(
             "active research files must separate observations, candidate inferences or "
-            "recommendations, and unresolved next work: "
+            "recommendations, unresolved next work, and dated stable source context: "
             + "; ".join(active_quality_gaps)
         )
 
@@ -130,7 +138,7 @@ def main() -> int:
         f"{len(durable_files)} durable research files, "
         f"{len(indexed_paths)} indexed local Markdown links, "
         f"{len(CONTINUITY_PATTERNS)} continuity fields per packet, "
-        "active-packet observation/inference/next-work checks"
+        "active-packet observation/inference/next-work/source-context checks"
     )
     return 0
 

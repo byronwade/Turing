@@ -2,6 +2,7 @@
 
 Status: active `RQ-60` research packet; no verification, security, accessibility, performance, or release claim
 Owner: quality, security, architecture, accessibility, performance, release operations, agent operations, and independent reviewers
+Research date: 2026-07-20
 Question: Which combinations of separate agents, human review, conformance suites, fuzzing, formal/model tests, fixed-hardware measurement, and accessibility evaluation provide sufficiently independent evidence?
 
 This packet consolidates the [Independent Verification and Adversarial Review](../agent-execution/08-independent-verification-and-adversarial-review.md) baseline with the agent task model and the quality, security, accessibility, benchmark, incident, and release routes. It does not certify any current implementation or treat the current M0 prototype as browser evidence.

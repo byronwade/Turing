@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active research source-context control
+
+Added research-date metadata to the active independent-verification packet and extended the active-packet validator to require dated source context plus a stable URL, version/revision, commit, or linked source-record locator. All active packets now carry the minimum reproducibility context required by the documentation policy; no research conclusion, gate, task, or implementation claim changed.
+
 ## 2026-07-20 - Active research quality boundary
 
 Strengthened the research-index control so active packets must visibly separate source observations, candidate inferences or recommendations, and unresolved next work. Added the missing source-observations section to the active independent-verification packet and synchronized the research index and documentation policy. This improves deep-research continuity and does not answer a research question, accept a decision, promote a gate, or add an implementation claim.
