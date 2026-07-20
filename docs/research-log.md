@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Lane source-manifest crosswalk reconciliation
+
+Question:
+
+Do the machine research crosswalk and build-information ledger expose the same lane-specific source manifests, schemas, and validators that the documentation matrix already tracks?
+
+Method:
+
+Compared every source-manifest family against its fresh-host, IPC, sandbox, native/accessibility, profile, package/update, incident, ownership, benchmark, technology, web-platform, and Nova lanes. Added the missing lane entries to the machine crosswalk and readiness ledger and recorded the no-claim boundary in the human ledger. This is traceability and research-control work only; no architecture, platform, dependency, performance, security, or readiness decision changed.
+
 ## 2026-07-19 - Reference platform route synchronization
 
 Question:
