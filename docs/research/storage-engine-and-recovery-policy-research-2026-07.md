@@ -83,4 +83,3 @@ Prepare an owner-approved `TASK-000007` extension that names the first synthetic
 - No SQLite, LMDB, RocksDB, or custom log dependency is approved for Turing release code.
 - No durability, corruption resistance, migration safety, data-loss safety, privacy, credential, sync, profile-format, performance, or Chrome-class claim follows from this packet.
 - The packet does not authorize real-profile access, production data, broad implementation, or release behavior.
-
