@@ -36,8 +36,8 @@ fn every_listed_operation_is_callable() {
     // One half of the property the registry exists for. An operation that
     // appears in an audit but cannot actually be called makes the listing
     // describe something other than the real surface.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     let listed: Vec<(String, usize)> = host
         .bindings()
         .operations()
@@ -60,8 +60,8 @@ fn every_listed_operation_is_callable() {
 fn an_unlisted_operation_is_not_callable() {
     // The other half. `undefined` or a silent no-op would be the tempting
     // outcomes and would both let a typo pass as a call that did nothing.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert!(matches!(
         run(&mut host, "return removeEverything('outer');"),
         Err(JsError::UnboundOperation { .. })
@@ -73,8 +73,8 @@ fn a_revoked_operation_is_refused_on_the_next_call() {
     // The blueprint justifies the registry by grant and revoke, not listing
     // alone. Because invocation resolves through the same table, this needs no
     // second enforcement point that could disagree with the first.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert_eq!(
         run(&mut host, "return tagName('outer');").expect("runs"),
         Value::String("div".to_string())
@@ -98,8 +98,8 @@ fn a_revoked_operation_is_refused_on_the_next_call() {
 
 #[test]
 fn revoking_something_absent_reports_that_it_was_absent() {
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert!(!host.revoke("neverRegistered"));
 }
 
@@ -107,8 +107,8 @@ fn revoking_something_absent_reports_that_it_was_absent() {
 fn calling_with_the_wrong_argument_count_is_refused() {
     // The registry records arity. Without a check at the call site that record
     // is decorative, and a host indexes past the end of the argument list.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert!(matches!(
         run(&mut host, "return getAttribute('outer');"),
         Err(JsError::OperationArity {
@@ -144,8 +144,8 @@ fn an_operation_exposed_by_two_interfaces_is_refused() {
 
 #[test]
 fn script_reads_the_document_through_bound_operations() {
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
 
     assert_eq!(
         run(&mut host, "return tagName('outer');").expect("runs"),
@@ -169,8 +169,8 @@ fn script_reads_the_document_through_bound_operations() {
 fn a_missing_attribute_is_null_rather_than_undefined() {
     // The DOM specifies null. `undefined` is the natural guess here and is a
     // different value that script can distinguish.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert_eq!(
         run(&mut host, "return getAttribute('outer', 'nope');").expect("runs"),
         Value::Null
@@ -179,8 +179,8 @@ fn a_missing_attribute_is_null_rather_than_undefined() {
 
 #[test]
 fn text_content_reads_descendants_in_document_order() {
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     assert_eq!(
         run(&mut host, "return textContent('outer');").expect("runs"),
         Value::String("text deep".to_string())
@@ -191,8 +191,8 @@ fn text_content_reads_descendants_in_document_order() {
 fn an_operation_on_a_missing_element_fails_with_a_reason() {
     // Not `undefined`, and not an empty string: the script asked about
     // something that is not there, and that is worth saying.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     let result = run(&mut host, "return tagName('missing');");
     match result {
         Err(JsError::HostOperationFailed { message, .. }) => {
@@ -209,8 +209,8 @@ fn a_script_function_wins_a_name_collision() {
     // A program's own declaration must not be shadowed by whatever the embedder
     // happens to expose, or adding a binding could silently change the meaning
     // of an existing script.
-    let dom = dom();
-    let mut host = DomHost::new(&dom);
+    let mut dom = dom();
+    let mut host = DomHost::new(&mut dom);
     let program = compile(
         "function tagName(id) { return 'shadowed'; } \
          function main() { return tagName('outer'); }",

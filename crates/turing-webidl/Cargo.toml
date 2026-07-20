@@ -16,5 +16,10 @@ turing-gc = { path = "../turing-gc" }
 turing-html = { path = "../turing-html" }
 turing-js = { path = "../turing-js" }
 
+[dev-dependencies]
+turing-css = { path = "../turing-css" }
+turing-input = { path = "../turing-input" }
+turing-layout = { path = "../turing-layout" }
+
 [lints]
 workspace = true

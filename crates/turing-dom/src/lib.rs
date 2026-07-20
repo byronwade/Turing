@@ -815,4 +815,42 @@ mod tests {
             .expect_err("stale dispatch refused");
         assert!(matches!(error, DomError::StaleHandle { .. }));
     }
+    #[test]
+    fn a_refused_mutation_does_not_advance_the_epoch() {
+        // The epoch is what tells every consumer of this document that cached
+        // work is stale. Advancing it for a mutation that did not happen would
+        // let a script full of invalid calls invalidate every cached layout
+        // while changing nothing.
+        //
+        // A text node is the reachable case: it has a valid handle and cannot
+        // carry attributes, so the refusal happens inside the mutation rather
+        // than at handle resolution. Reaching that path is the whole point — an
+        // equivalent test written against a missing element stops earlier and
+        // proves nothing about the ordering here.
+        let mut dom = dom("<html><body><p>x</p></body></html>");
+        let text = dom.create_text("loose");
+        let settled = dom.epoch();
+
+        assert!(dom.set_attribute(text, "class", "x").is_err());
+        assert_eq!(dom.epoch(), settled, "a refused set must not advance it");
+
+        assert!(dom.remove_attribute(text, "class").is_err());
+        assert_eq!(dom.epoch(), settled, "a refused removal must not either");
+    }
+
+    #[test]
+    fn a_successful_mutation_does_advance_the_epoch() {
+        // The other side. An epoch that never moved would pass the test above
+        // and tell every consumer that nothing ever changes.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom
+            .document()
+            .element_by_id("a")
+            .expect("the element exists");
+        let handle = dom.handle(node);
+        let before = dom.epoch();
+
+        dom.set_attribute(handle, "class", "x").expect("sets");
+        assert!(dom.epoch() > before);
+    }
 }

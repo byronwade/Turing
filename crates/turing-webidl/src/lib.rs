@@ -30,10 +30,22 @@
 //! nodes first-class script values is its own work with its own hazards,
 //! including the staleness one `turing-input` already had to solve.
 //!
-//! Read-only for the same reason in the other direction: a mutating operation
-//! advances the document epoch, which invalidates any layout a router is
-//! holding, and that interaction deserves its own treatment rather than
-//! arriving as a side effect of binding a getter.
+//! # Mutation and invalidation
+//!
+//! Attribute mutation is bound, and it is the reason the epoch exists. A
+//! mutating operation advances the document's epoch, which invalidates any
+//! layout computed before it — a `turing_input::HitRouter` built earlier will
+//! refuse to route rather than deliver an event against geometry that no longer
+//! describes the document.
+//!
+//! That invalidation is not implemented here. It falls out of `turing-dom`
+//! advancing the epoch and `turing-input` checking it, which is the point: an
+//! embedder cannot bind a mutation that forgets to invalidate, because the
+//! binding does not carry the responsibility.
+//!
+//! A refused mutation does not advance the epoch. That is load-bearing rather
+//! than incidental: if it did, a script probing for elements that do not exist
+//! would invalidate every cached layout in the process.
 
 #![forbid(unsafe_code)]
 
@@ -45,23 +57,52 @@ use turing_js::{Host, Value};
 /// The interface these operations are registered under.
 const INTERFACE: &str = "Document";
 
+/// Operations that can change the document.
+///
+/// Named in one place so [`DomHost::read_only`] cannot fall behind the set
+/// [`DomHost::new`] registers: adding a mutator without adding it here would
+/// silently widen the read-only surface, which is the direction that matters.
+const MUTATING_OPERATIONS: &[&str] = &["setAttribute", "removeAttribute"];
+
 /// A [`Host`] exposing read-only document operations to script.
 #[derive(Debug)]
 pub struct DomHost<'dom> {
-    dom: &'dom Dom,
+    dom: &'dom mut Dom,
     bindings: Bindings,
 }
 
 impl<'dom> DomHost<'dom> {
-    /// Binds the default operation set over `dom`.
+    /// Binds the default operation set over `dom`, reads and writes both.
     #[must_use]
-    pub fn new(dom: &'dom Dom) -> Self {
+    pub fn new(dom: &'dom mut Dom) -> Self {
         let mut bindings = Bindings::new();
         bindings.register(INTERFACE, "getAttribute", 2);
         bindings.register(INTERFACE, "tagName", 1);
         bindings.register(INTERFACE, "hasElement", 1);
         bindings.register(INTERFACE, "textContent", 1);
+        bindings.register(INTERFACE, "setAttribute", 3);
+        bindings.register(INTERFACE, "removeAttribute", 2);
         Self { dom, bindings }
+    }
+
+    /// Binds only the operations that cannot change the document.
+    ///
+    /// The narrower surface a caller would hand an untrusted principal. Built by
+    /// revoking from the default rather than by a second registration list,
+    /// because two lists drift and the one that drifts is the restrictive one.
+    #[must_use]
+    pub fn read_only(dom: &'dom mut Dom) -> Self {
+        let mut host = Self::new(dom);
+        for name in MUTATING_OPERATIONS {
+            host.revoke(name);
+        }
+        host
+    }
+
+    /// Returns the document, so a caller can observe what script did.
+    #[must_use]
+    pub fn dom(&self) -> &Dom {
+        self.dom
     }
 
     /// Removes an operation, returning whether one was removed.
@@ -124,6 +165,27 @@ impl Host for DomHost<'_> {
             "textContent" => {
                 let node = self.element(&first)?;
                 Ok(Value::String(text_of(self.dom, node)))
+            }
+            "setAttribute" => {
+                let node = self.element(&first)?;
+                let handle = self.dom.handle(node);
+                let name = arguments[1].to_string();
+                let value = arguments[2].to_string();
+                self.dom
+                    .set_attribute(handle, &name, &value)
+                    .map_err(|error| error.to_string())?;
+                // Nothing useful to return, and `undefined` is what the DOM
+                // gives back from a setter.
+                Ok(Value::Undefined)
+            }
+            "removeAttribute" => {
+                let node = self.element(&first)?;
+                let handle = self.dom.handle(node);
+                let name = arguments[1].to_string();
+                self.dom
+                    .remove_attribute(handle, &name)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
             }
             other => Err(format!("{other} is registered but not implemented here")),
         }
