@@ -357,6 +357,27 @@
         "turing-layout"
       ],
       "failure_boundary": "reject-dispatch-against-stale-layout"
+    },
+    {
+      "id": "COMP-020",
+      "package": "turing-webidl",
+      "path": "crates/turing-webidl",
+      "kind": "library",
+      "owner_scope": "javascript",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-script-capability-host",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-dom",
+        "turing-gc",
+        "turing-html",
+        "turing-js"
+      ],
+      "failure_boundary": "reject-unbound-and-revoked-operations"
     }
   ]
 }

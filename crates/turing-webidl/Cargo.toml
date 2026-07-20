@@ -1,0 +1,20 @@
+[package]
+name = "turing-webidl"
+description = "Turing-owned binding of DOM operations into the script capability registry for WP-011 and REQ-JS-003"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-dom = { path = "../turing-dom" }
+turing-gc = { path = "../turing-gc" }
+turing-html = { path = "../turing-html" }
+turing-js = { path = "../turing-js" }
+
+[lints]
+workspace = true

@@ -17,6 +17,7 @@ members = [
   "crates/turing-kernel",
   "crates/turing-raster",
   "crates/turing-types",
+  "crates/turing-webidl",
   "crates/turing-ui-model",
   "prototype",
   "tools/xtask",
@@ -38,6 +39,7 @@ default-members = [
   "crates/turing-kernel",
   "crates/turing-raster",
   "crates/turing-types",
+  "crates/turing-webidl",
   "crates/turing-ui-model",
   "tools/xtask",
 ]
