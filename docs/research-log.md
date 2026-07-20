@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Bounded API and protocol contract research
+
+Question:
+
+Which API and protocol conventions minimize misuse, authority leakage, resource exhaustion, and long-term compatibility cost while supporting bounded encodings, streaming, cancellation, diagnostics, and generated clients?
+
+Method:
+
+Checked JSON Schema 2020-12, RFC 9457 Problem Details, the W3C WebDriver BiDi working draft, and Protocol Buffers schema/encoding documentation on 2026-07-19. Reconciled the observations with `RQ-13`, `RQ-22`, `RQ-36`, `PB-011`, `PB-020`, the IPC capability boundary, IPC wire-encoding preparation, API/developer-experience books, security controls, and the research-readiness crosswalk.
+
+Decision:
+
+Added an active no-claim packet separating schema, identity, authority, resource, lifecycle, transport, semantics, compatibility, generated-client, and evidence layers. It defines candidate-domain boundaries, negative/failure/recovery cases, compatibility and provenance requirements, and rejection rules. Added the packet to the IPC crosswalk evidence start. No encoding, transport, schema, public protocol, IPC, security, performance, or production decision changed.
+
+Next question:
+
+Which owner-approved domain should receive the first generated schema and real-transport negative-test trial, and which resource, authority, or compatibility failure must reject the candidate?
+
 ## 2026-07-19 - Project controls and review system research
 
 Question:

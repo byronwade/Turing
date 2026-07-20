@@ -116,6 +116,7 @@
       "research_questions": ["RQ-02", "RQ-13", "RQ-20", "RQ-22", "RQ-36"],
       "evidence_start": [
         "docs/research/ipc-capability-boundary-inventory-2026-07.md",
+        "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
         "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
         "docs/research/wp-002-kernel-ipc-2026-07.md",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",

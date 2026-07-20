@@ -88,6 +88,8 @@ Compare generated bounded binary formats and compact structured formats for IPC,
 
 Decision output: one or more domain-specific encodings with consistent identity/limit conventions.
 
+The [Bounded API and Protocol Contract Research](../research/bounded-api-and-protocol-contract-research-2026-07.md) consolidates the active source-backed comparison for schema, identity, authority, resource, lifecycle, transport, error, compatibility, generated-client, and evidence layers across IPC, DevTools, automation, agents, and traces. It does not select an encoding or approve production IPC.
+
 The [IPC Capability Boundary Inventory - July 2026](../research/ipc-capability-boundary-inventory-2026-07.md), [WP-002 kernel identity and IPC reference](../research/wp-002-kernel-ipc-2026-07.md), [TASK-000011 WP-002 Review Handoff](../research/task-000011-wp002-review-handoff-2026-07.md), and checked no-claim [TASK-000011 evidence capture](../agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json) are current `PB-011` planning, review-handoff, and non-accepting evidence-capture records for this question. They record current M0 bounded-envelope, oversized-message, typed-identity, role-capability, process-capability, generated-reference, source-commit artifact-binding, checked IPC schema-source template, and checked IPC readiness-review template evidence while keeping `TASK-000011` acceptance, accepted independent evidence-bundle completion, wire encoding, connection authentication, owner-reviewed IPC readiness, timeout/cancellation behavior, stale-epoch receiver proof on a real transport, malformed/reordered/wrong-principal transport tests, fuzz/model tests, renderer security, agent security, process isolation, site isolation, production IPC, and implementation outside the proof.
 
 ## RQ-14 — Storage engine and process model
@@ -167,6 +169,8 @@ Prototype schema-generated internal/public APIs with typed identity, capability 
 Measure malformed-input safety, allocation and latency, generated-code quality, developer comprehension, cross-version compatibility, and deprecation cost.
 
 Decision output: common API conventions, schema language/encoding, error taxonomy, versioning model, SDK targets, and prohibited generic interfaces.
+
+Use the [Bounded API and Protocol Contract Research](../research/bounded-api-and-protocol-contract-research-2026-07.md) as the active source-backed contract route; it does not select a schema, encoding, transport, public protocol, or generated-client policy.
 
 ## RQ-23 — Which scheduling, memory, cache, and energy policies dominate sustained browser performance?
 
@@ -252,6 +256,7 @@ Compare compact handles, field splitting, arrays, arenas, slabs, general allocat
 Measure message sizes, copies, mappings, validation, cache coherency, priorities, batching delay, queue pressure, cancellation, crash cleanup, and semantic attribution. Decision output: domain encodings, shared-buffer contracts, queue budgets, and overload policy.
 
 Use the [IPC Capability Boundary Inventory - July 2026](../research/ipc-capability-boundary-inventory-2026-07.md) as the current boundary inventory before measuring or implementing IPC performance choices. The inventory is not a performance, wire-format, schema-generator, or production IPC claim.
+Use the [Bounded API and Protocol Contract Research](../research/bounded-api-and-protocol-contract-research-2026-07.md) for the shared schema, identity, authority, resource, lifecycle, transport, and compatibility evidence contract before comparing encodings or transport choices.
 
 ## RQ-37 — Which PGO, LTO, binary-layout, process-launch, and preinitialization techniques improve startup without harming reproducibility or memory?
 
