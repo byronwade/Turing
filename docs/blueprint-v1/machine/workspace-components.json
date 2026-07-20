@@ -205,6 +205,24 @@
         "turing-css"
       ],
       "failure_boundary": "reject-unmodeled-formatting-models"
+    },
+    {
+      "id": "COMP-012",
+      "package": "turing-dom",
+      "path": "crates/turing-dom",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-dom-mutation-and-events",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-html"
+      ],
+      "failure_boundary": "reject-stale-handles-and-unmodeled-dom-features"
     }
   ]
 }

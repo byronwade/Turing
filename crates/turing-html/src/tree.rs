@@ -136,6 +136,157 @@ impl Document {
         }
     }
 
+    /// Creates a detached element node and returns its handle.
+    ///
+    /// The node has no parent until it is inserted. Structural mutation lives
+    /// here because this type owns the arena; liveness and event semantics are
+    /// layered on top by `turing-dom`.
+    pub fn create_element(&mut self, name: &str, attributes: Vec<Attribute>) -> NodeId {
+        self.push(NodeData::Element {
+            name: name.to_ascii_lowercase(),
+            attributes,
+        })
+    }
+
+    /// Creates a detached text node and returns its handle.
+    pub fn create_text(&mut self, text: &str) -> NodeId {
+        self.push(NodeData::Text(text.to_string()))
+    }
+
+    fn push(&mut self, data: NodeData) -> NodeId {
+        let id = NodeId(self.nodes.len());
+        self.nodes.push(Node {
+            data,
+            parent: None,
+            children: Vec::new(),
+        });
+        id
+    }
+
+    /// Appends `child` to `parent`, detaching it from any previous parent.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MutationError::HierarchyRequest`] if the move would make a
+    /// node its own ancestor, which would produce a cycle the arena cannot
+    /// represent and traversal could not terminate on.
+    pub fn append_child(&mut self, parent: NodeId, child: NodeId) -> Result<(), MutationError> {
+        self.check_hierarchy(parent, child)?;
+        self.detach(child);
+        self.nodes[child.0].parent = Some(parent);
+        self.nodes[parent.0].children.push(child);
+        Ok(())
+    }
+
+    /// Inserts `child` into `parent` before `reference`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MutationError::HierarchyRequest`] on a cycle, or
+    /// [`MutationError::NotAChild`] if `reference` is not a child of `parent`.
+    pub fn insert_before(
+        &mut self,
+        parent: NodeId,
+        child: NodeId,
+        reference: NodeId,
+    ) -> Result<(), MutationError> {
+        self.check_hierarchy(parent, child)?;
+        self.detach(child);
+        let index = self.nodes[parent.0]
+            .children
+            .iter()
+            .position(|&id| id == reference)
+            .ok_or(MutationError::NotAChild)?;
+        self.nodes[child.0].parent = Some(parent);
+        self.nodes[parent.0].children.insert(index, child);
+        Ok(())
+    }
+
+    /// Removes `child` from its parent, leaving it detached.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MutationError::NotAChild`] if the node has no parent.
+    pub fn remove_child(&mut self, child: NodeId) -> Result<(), MutationError> {
+        if self.nodes[child.0].parent.is_none() {
+            return Err(MutationError::NotAChild);
+        }
+        self.detach(child);
+        Ok(())
+    }
+
+    /// Sets an attribute, replacing any existing value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MutationError::NotAnElement`] if the node is not an element.
+    pub fn set_attribute(
+        &mut self,
+        element: NodeId,
+        name: &str,
+        value: &str,
+    ) -> Result<(), MutationError> {
+        let name = name.to_ascii_lowercase();
+        let NodeData::Element { attributes, .. } = &mut self.nodes[element.0].data else {
+            return Err(MutationError::NotAnElement);
+        };
+        match attributes.iter_mut().find(|a| a.name == name) {
+            Some(existing) => existing.value = value.to_string(),
+            None => attributes.push(Attribute {
+                name,
+                value: value.to_string(),
+            }),
+        }
+        Ok(())
+    }
+
+    /// Removes an attribute if present.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MutationError::NotAnElement`] if the node is not an element.
+    pub fn remove_attribute(&mut self, element: NodeId, name: &str) -> Result<(), MutationError> {
+        let name = name.to_ascii_lowercase();
+        let NodeData::Element { attributes, .. } = &mut self.nodes[element.0].data else {
+            return Err(MutationError::NotAnElement);
+        };
+        attributes.retain(|a| a.name != name);
+        Ok(())
+    }
+
+    /// Returns the ancestor chain from `node` to the root, nearest first.
+    #[must_use]
+    pub fn ancestors(&self, node: NodeId) -> Vec<NodeId> {
+        let mut chain = Vec::new();
+        let mut cursor = self.node(node).parent;
+        while let Some(id) = cursor {
+            chain.push(id);
+            cursor = self.node(id).parent;
+        }
+        chain
+    }
+
+    fn detach(&mut self, child: NodeId) {
+        if let Some(parent) = self.nodes[child.0].parent.take() {
+            self.nodes[parent.0].children.retain(|&id| id != child);
+        }
+    }
+
+    /// Rejects a move that would make `child` its own ancestor.
+    fn check_hierarchy(&self, parent: NodeId, child: NodeId) -> Result<(), MutationError> {
+        if parent == child {
+            return Err(MutationError::HierarchyRequest);
+        }
+        let mut cursor = Some(parent);
+        while let Some(id) = cursor {
+            if id == child {
+                return Err(MutationError::HierarchyRequest);
+            }
+            cursor = self.nodes[id.0].parent;
+        }
+        Ok(())
+    }
+
     /// Serializes the tree as indented text.
     ///
     /// This exists for tests and diagnostics. It is not an HTML serializer and
@@ -223,6 +374,30 @@ impl fmt::Display for TreeError {
             Self::TemplateUnsupported => {
                 write!(formatter, "<template> is not implemented")
             }
+        }
+    }
+}
+
+/// A structural mutation that the arena refuses.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MutationError {
+    /// The move would make a node its own ancestor, producing a cycle.
+    HierarchyRequest,
+    /// The reference node is not a child of the given parent.
+    NotAChild,
+    /// The operation requires an element node.
+    NotAnElement,
+}
+
+impl fmt::Display for MutationError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::HierarchyRequest => write!(
+                formatter,
+                "refused: the move would make a node its own ancestor"
+            ),
+            Self::NotAChild => write!(formatter, "the node is not a child of that parent"),
+            Self::NotAnElement => write!(formatter, "the operation requires an element node"),
         }
     }
 }

@@ -1,5 +1,39 @@
 # Research Log
 
+## 2026-07-20 - DOM mutation epochs and event dispatch implemented
+
+Question:
+
+The pipeline so far renders once. `WP-007` asks what makes the tree live: mutation, and events that respond to input.
+
+Method:
+
+Split the work across two crates along an ownership line. `turing-html` gained structural mutation, because it owns the arena. `turing-dom` was added for *liveness*: epochs, stale-handle rejection, and dispatch.
+
+Decision:
+
+Every structural mutation advances an epoch, and a handle records the epoch it was taken at. Acting through a handle taken before a mutation returns `DomError::StaleHandle` rather than silently addressing whatever now occupies that arena slot.
+
+That is not defensive programming for its own sake, and it is the reason this crate exists separately. The architecture prototype already carries a document epoch through IPC and agent authorization, and `REQ-AI-003` requires that every agent action validate origin, profile, grant, and document epoch. An agent that reads the page, pauses, and then clicks must not act on a node index that has since changed meaning. Stale-handle rejection is where that requirement stops being prose and becomes executable.
+
+One design decision deserves recording because the opposite choice is tempting and wrong. Registering a listener does *not* advance the epoch. Listener registration is not a structural change, and bumping the epoch there would invalidate the very handle the caller just used to attach the listener, making ordinary event wiring impossible. The test `registering_a_listener_does_not_invalidate_handles` pins that.
+
+Dispatch computes the propagation path once, before any listener runs, so a mutation during dispatch cannot reshape the path mid-flight. Capture runs root-first, then the target, then bubble in reverse, with `stopPropagation` halting after the current node and `stopImmediatePropagation` skipping the remaining listeners on that same node. `preventDefault` is recorded only when the event is cancelable.
+
+Listeners declare their propagation effects rather than running script, because `WP-010` has not landed. That is enough to exercise and pin the dispatch algorithm without pretending an interpreter exists.
+
+Three features return typed errors: shadow trees, which retarget events and change the propagation path; custom elements, whose reactions run author code at defined points during mutation; and `MutationObserver`, whose delivery is ordered against a microtask queue this crate has no scheduler for. Each changes observable ordering, so an approximation would surface as intermittent listener bugs rather than an obvious failure.
+
+Cycle rejection is also enforced: a move that would make a node its own ancestor is refused, because traversal could not terminate on the result.
+
+Twenty tests, bringing the workspace to 143.
+
+What this does not do: no script execution, no scheduler, no microtasks, no input plumbing from a real window.
+
+Next question:
+
+`WP-010` is the JavaScript parser and bytecode interpreter, which is what turns declared listener effects into actual author code.
+
 ## 2026-07-20 - Layout and display list implemented
 
 Question:
