@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "bundle_id": "EVID-20260720-TASK-000011-NOCLAIM",
+  "task_id": "TASK-000011",
+  "source_commit": "f009632a6120deabc22c465c489e62b035d6afe6",
+  "environment": {
+    "captured_at": "2026-07-20",
+    "host_os": "Windows",
+    "shell": "PowerShell",
+    "python": "Python 3.12.10",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "git": "git version 2.52.0.windows.1",
+    "origin": "https://github.com/byronwade/Turing.git",
+    "working_tree_status": "clean main tracking origin/main before this evidence-bundle commit",
+    "validation_scope": "Current no-claim source-identity capture for the contained M0 TASK-000011 review handoff; not an acceptance review."
+  },
+  "artifacts": [
+    {"type": "source_file", "path": "schemas/ipc/control-plane.json", "sha256": "36bb004447f2817db743768a629ab243154fc392cd8f68afb6a4ed128cc5dad7", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "tools/generate_ipc.py", "sha256": "68f1c7f36ab22d4bda482fd83bd5d68ee304155444db192406dda7472983ddf4", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-ipc/src/generated.rs", "sha256": "8b192d4478204971fd0a3c2de2da5fa1728b2451d051250a49e44431524c8bed", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "docs/blueprint-v1/machine/process-capabilities.json", "sha256": "c1bbced696b890f780ccca1d82caba3389990b8046dfea5bea3ef351e65fffa3", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "security/generated-code.json", "sha256": "759dbe28d195a103f3f4cbe40e8a7b4cb9ebd10946272b42c7e161179cbe1109", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-types/src/lib.rs", "sha256": "8c44a04ba5dbb3028277c5840a7aee714c368935de3928b39b76bfa9c22a6b6b", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-ipc/src/envelope.rs", "sha256": "d217d256330b8682d6784264058bc2ccb1776724ec7dade55ba3101633cd4a9f", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-ipc/src/queue.rs", "sha256": "0a68196ad953b3b6c14959e82f6ab13536aefbce2abca78e6d84d06e0a3ee74e", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-ipc/src/sequence.rs", "sha256": "ded60c775d55d93a9325476bf018ef5a4f460f764bdeb01da0c82553fe4dfb55", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "crates/turing-kernel/src/lib.rs", "sha256": "7a44fd4c72d5a612c8663bd6610dfbb85bd8a26f18d9cbaf77a2bf25cbf89474", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "apps/turing-shell/src/main.rs", "sha256": "4e14c6d206ef24467e6063fbaae7d061e2e7a22a5edc95bfc083781bb48c51ba", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "tools/validate_build_foundation.py", "sha256": "912e60714f14e3575ea87a06253d5346a648d44118e6f75276b7274d38467907", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "docs/research/wp-002-kernel-ipc-2026-07.md", "sha256": "3bae09a0de4fed5c74520ff218e4820b200d0e26d45d269986849e8c1cf77342", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "docs/research/task-000011-wp002-review-handoff-2026-07.md", "sha256": "b1ad108319d356264936f7e9d6702a405ebf72cec259a7d227f839b3c4169414", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "docs/agent-execution/machine/tasks/TASK-000011.json", "sha256": "097e07bc5309c5ca4f11c9494c256ab17d0d47b3fd8d08369de7a4909079f8aa", "result": "present_at_source_commit"}
+  ],
+  "failures": [],
+  "limitations": [
+    "No TASK-000011 acceptance.",
+    "No independent reviewer decision.",
+    "No accepted evidence-bundle instance.",
+    "No PB-011 readiness promotion.",
+    "No owner-reviewed IPC readiness.",
+    "No production IPC claim.",
+    "No Chrome-class claim.",
+    "No broad M1 implementation claim.",
+    "Raw local command logs were not retained in this no-claim capture.",
+    "This bundle captures source identities and environment only; it does not replace fresh independent command output or review."
+  ],
+  "review": {
+    "reviewer": "agent:gpt-5.6-pro-validation-capture",
+    "independent": false,
+    "decision": "needs_independent_review",
+    "notes": "Current no-claim source-identity handoff for independent reviewer routing; intentionally not an acceptance review."
+  }
+}

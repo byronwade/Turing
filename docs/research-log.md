@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Current TASK-000011 no-claim evidence capture
+
+Captured current source-file identities and Windows toolchain context for `TASK-000011` at commit `f009632a6120deabc22c465c489e62b035d6afe6` in a new non-accepting `needs_independent_review` bundle. The bundle is discoverable from the agent index, review handoff, evidence matrix, and repository map. It does not retain raw command logs, accept the task, promote `PB-011`, or change the `90%` contained-M0 / `0%` full-build measures.
+
 ## 2026-07-20 - WP-002 requirement reverse-links enforced
 
 Extended the active-task readiness validator to require `REQ-SEC-003` and `REQ-PERF-004` to retain the WP-002 evidence report in professional traceability and to share a `WP-002` verification lane in the requirement-verification matrix. The active task, backlog, evidence, requirements, and planned verification route are now checked bidirectionally. No verification result, acceptance, owner decision, gate promotion, or readiness percentage changed.
