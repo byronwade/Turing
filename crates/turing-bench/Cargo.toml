@@ -14,6 +14,7 @@ publish = false
 turing-css = { path = "../turing-css" }
 turing-html = { path = "../turing-html" }
 turing-layout = { path = "../turing-layout" }
+turing-paint = { path = "../turing-paint" }
 turing-raster = { path = "../turing-raster" }
 
 [lints]

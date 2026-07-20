@@ -116,6 +116,7 @@ The current shell is a command-line laboratory only. It does not create native w
 | `turing-dom` | Live document, mutation epochs, events | Buildable engine stage |
 | `turing-layout` | Block and word-wrapped inline layout, display list, hit testing | Buildable engine stage |
 | `turing-raster` | CPU reference rasterizer with embedded 8x8 reference glyphs | Buildable engine stage |
+| `turing-paint` | Compositing painter: alpha, radii, anti-aliasing, reference-parity tested | Buildable engine stage |
 | `turing-js` | JavaScript compiler and bounded interpreter | Buildable engine stage; deliberately partial syntax |
 | `turing-gc` | Exact tracing collector | Buildable engine stage |
 | `turing-webidl` | Capability-registered DOM bindings for script | Buildable engine stage |

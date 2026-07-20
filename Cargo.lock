@@ -1493,6 +1493,7 @@ dependencies = [
  "turing-css",
  "turing-html",
  "turing-layout",
+ "turing-paint",
  "turing-raster",
 ]
 
@@ -1507,6 +1508,7 @@ dependencies = [
  "turing-dom",
  "turing-engine",
  "turing-layout",
+ "turing-paint",
  "turing-raster",
  "turing-types",
  "turing-ui-model",
@@ -1523,6 +1525,7 @@ version = "0.1.0"
 dependencies = [
  "turing-css",
  "turing-layout",
+ "turing-paint",
  "turing-types",
  "turing-ui-model",
 ]
@@ -1612,6 +1615,15 @@ version = "0.1.0"
 dependencies = [
  "turing-css",
  "turing-html",
+]
+
+[[package]]
+name = "turing-paint"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-layout",
+ "turing-raster",
 ]
 
 [[package]]

@@ -47,6 +47,15 @@
 
 mod font;
 
+/// The reference glyph bitmap for `character`: eight rows, bit 0 leftmost.
+///
+/// Public so a second painter draws the same glyphs the reference draws;
+/// two painters with two fonts cannot be diffed.
+#[must_use]
+pub fn glyph_rows(character: char) -> &'static [u8; 8] {
+    font::glyph(character)
+}
+
 use core::fmt;
 use turing_css::Color;
 use turing_layout::{DisplayItem, DisplayList, Rect};
@@ -129,6 +138,32 @@ impl Canvas {
     #[must_use]
     pub fn pixels(&self) -> &[Color] {
         &self.pixels
+    }
+
+    /// Wraps an existing pixel buffer as a canvas.
+    ///
+    /// Exists so a second painter can produce the same artifact type this
+    /// reference produces and be diffed against it pixel for pixel.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RasterError::CanvasTooLarge`] when `pixels` is not exactly
+    /// `width x height` or exceeds [`MAX_PIXELS`].
+    pub fn from_pixels(
+        width: usize,
+        height: usize,
+        pixels: Vec<Color>,
+    ) -> Result<Self, RasterError> {
+        let expected = width
+            .checked_mul(height)
+            .filter(|&count| count <= MAX_PIXELS && count == pixels.len())
+            .ok_or(RasterError::CanvasTooLarge { width, height })?;
+        debug_assert_eq!(expected, pixels.len());
+        Ok(Self {
+            width,
+            height,
+            pixels,
+        })
     }
 
     /// Fills `rect` with `color`, clipped to the canvas.

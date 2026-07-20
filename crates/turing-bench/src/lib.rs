@@ -41,6 +41,7 @@ use std::time::{Duration, Instant};
 use turing_css::{Color, SelectorIndex, Stylesheet, cascade};
 use turing_html::{Document, Tokenizer, TreeBuilder};
 use turing_layout::{TextMetrics, build_display_list, layout};
+use turing_paint::{PaintList, paint};
 use turing_raster::rasterize;
 
 /// How many iterations to run before recording, letting caches and the
@@ -208,6 +209,25 @@ pub fn run() -> Vec<StageResult> {
             }),
         },
         StageResult {
+            stage: "paint",
+            measurement: Measurement::of(|| {
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                    .expect("lays out");
+                let list = PaintList::from_display_list(&build_display_list(&root));
+                paint(
+                    &list,
+                    1280,
+                    720,
+                    Color {
+                        red: 255,
+                        green: 255,
+                        blue: 255,
+                    },
+                )
+                .expect("paints")
+            }),
+        },
+        StageResult {
             stage: "raster",
             measurement: Measurement::of(|| {
                 let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
@@ -260,6 +280,7 @@ mod tests {
                 "cascade",
                 "layout",
                 "display-list",
+                "paint",
                 "raster"
             ]
         );

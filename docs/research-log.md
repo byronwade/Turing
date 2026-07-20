@@ -1,5 +1,19 @@
 # Research Log
 
+## 2026-07-20 - The second painter: alpha, radii, and anti-aliasing, anchored to the reference
+
+The reference rasterizer's whole purpose was to be the painter a faster or richer one is diffed against. That painter now exists. `crates/turing-paint`, registered as `COMP-024`, adds exactly the three things the Nova design needs and the reference deliberately refuses: source-over alpha, rounded-corner fills, and anti-aliased edges.
+
+The contract that keeps it honest is parity: on the reference's domain — every item opaque and square — the compositor must produce the reference's output pixel for pixel. That is enforced by construction (the opaque square path is the reference's coverage rules verbatim: half-open intervals, rounded edges, clamped bounds, later over earlier, same glyph blit over the same public glyph table) and by a diff test that renders clipping, abutting, overlapping fills plus text through both painters and asserts canvas equality. Alpha and radius are extensions beyond the reference's domain, not deviations inside it. `Canvas::from_pixels` and `glyph_rows` were opened on the reference for exactly this: a second painter that produced a different artifact type or drew a different font could not be diffed.
+
+Anti-aliasing is a signed distance to the rounded rectangle at the pixel centre through a one-pixel linear filter — cheap, deterministic, and sub-pixel accurate, which is the right trade for a painter whose correctness anchor is the reference rather than a typography engine. Radius clamps to the short half-side, so an absurd radius degrades to a capsule instead of inverting.
+
+The chrome now wears the finish the tokens always recorded: 10px tab and pill radii, the circular avatar, the 14px palette panel, and a translucent ink veil dimming the page behind the palette — the honest stand-in for Nova's backdrop blur. The presenter composes one `PaintList` per frame; page display lists lift into it opaque and square.
+
+Measured: the compositor's opaque-square path costs the same as the reference on the bench fixture (722.9 µs vs 739.2 µs median at 1280x720, within noise), so compositing is paid only where alpha or radius is actually used. The `paint` stage joins the bench. The workspace is at 388 tests.
+
+What this does not do: no gradients, no shadows, no blur (the veil is a scrim, stated as such), no group opacity or clipping stacks — each fill composites alone — and no text anti-aliasing, since the glyph set is a bitmap font whose hard edges are its identity. The reference stays the definition of right where both can speak.
+
 ## 2026-07-20 - Theme toggle, cross-platform CI, and the frame measured
 
 Three closures toward the running product, none of them large, each one turning an implicit property into a checked one.
