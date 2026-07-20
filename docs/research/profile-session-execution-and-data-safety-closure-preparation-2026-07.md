@@ -7,7 +7,7 @@ Research date: 2026-07-20
 
 ## Purpose
 
-The [Profile Session Format Inventory](profile-session-format-inventory-2026-07.md) and [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) define the planning vocabulary. This report defines the evidence sequence that must replace those planning artifacts before profile/session work can be treated as executable or release-relevant. It is a closure route, not an implementation authorization.
+The [Profile Session Format Inventory](profile-session-format-inventory-2026-07.md), [Storage Engine and Recovery Policy Research](storage-engine-and-recovery-policy-research-2026-07.md), and [Profile and Session Data-Lifecycle Decision Preparation](profile-session-data-lifecycle-decision-prep-2026-07.md) define the planning vocabulary. This report defines the evidence sequence that must replace those planning artifacts before profile/session work can be treated as executable or release-relevant. It is a closure route, not an implementation authorization.
 
 The checked no-claim [profile/session source manifest](../storage/machine/profile-session-source-manifest.json) records the official storage, durability, clearing, migration, privacy, and credential-boundary observations that inform this route. It does not define a Turing profile format, migration protocol, credential vault, or data-loss readiness.
 
