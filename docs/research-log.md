@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - PB-020 source-control inventory synchronization
+
+Question:
+
+Does the top-level documentation-readiness completion audit enumerate the source manifests and validators used by the current build-readiness lanes?
+
+Method:
+
+Compared every checked source-manifest family under `docs/` with the PB-020 audit snapshot and its validator requirements. Added the accessibility, benchmark, IPC, technology/dependency, fresh-host, sandbox, and Nova schema controls to the audit inventory and validator. This strengthens audit coverage only; it does not close any readiness gate or change the 90% contained-M0 / 0% full-build measurements.
+
 ## 2026-07-19 - Nova design authority route synchronization
 
 Question:
