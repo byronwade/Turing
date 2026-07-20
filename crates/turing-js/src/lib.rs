@@ -39,6 +39,7 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
+use turing_gc::{GcRef, Heap, Trace};
 
 /// A construct this implementation does not model, or a program error.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -113,11 +114,14 @@ pub enum Value {
     String(String),
     /// Index into the compiled function table.
     Function(usize),
-    /// Index into the run's object store.
+    /// A reference into the collected heap.
     ///
     /// A handle rather than the object itself, because `o.self = o` is
-    /// expressible and an owned representation would not terminate.
-    Object(usize),
+    /// expressible and an owned representation would not terminate. The
+    /// reference carries a generation, so using one after its object was
+    /// collected is refused rather than silently reading whatever now occupies
+    /// the slot.
+    Object(GcRef),
 }
 
 impl Value {
@@ -974,6 +978,23 @@ struct ObjectData {
     index: std::collections::HashMap<String, usize>,
 }
 
+impl Trace for ObjectData {
+    /// Reports every object this one refers to.
+    ///
+    /// Exact rather than conservative: the collector learns reachability from
+    /// this rather than by guessing which words look like pointers. Missing a
+    /// reference here collects a live object, which is the defect this whole
+    /// arrangement is built to avoid, so it walks every property value rather
+    /// than any subset it believes to be interesting.
+    fn trace(&self, out: &mut Vec<GcRef>) {
+        for (_, value) in &self.entries {
+            if let Value::Object(reference) = value {
+                out.push(*reference);
+            }
+        }
+    }
+}
+
 impl ObjectData {
     fn get(&self, key: &str) -> Option<&Value> {
         self.index.get(key).map(|&at| &self.entries[at].1)
@@ -1556,15 +1577,10 @@ impl Vm {
     /// Returns [`JsError`] on a runtime type error, when the instruction budget
     /// is exhausted, or when the byte budget is exhausted.
     pub fn run(&self, program: &Program) -> Result<Value, JsError> {
-        let mut steps = 0_u64;
-        let mut bytes = 0_u64;
-        // One store for the whole run, so a handle stays meaningful across
-        // calls. Nothing is reclaimed within a run: collection is `WP-011`, and
-        // until it lands object memory is bounded by the byte budget rather
-        // than by reuse. That is a smaller claim than "bounded", and the right
-        // one to make.
-        let mut objects = Vec::new();
-        self.run_function(program, 0, Vec::new(), &mut steps, &mut bytes, &mut objects)
+        // One heap for the whole run, so a reference stays meaningful across
+        // calls.
+        let mut runtime = Runtime::default();
+        self.run_function(program, 0, Vec::new(), &mut runtime)
     }
 
     fn run_function(
@@ -1572,9 +1588,7 @@ impl Vm {
         program: &Program,
         index: usize,
         arguments: Vec<Value>,
-        steps: &mut u64,
-        bytes: &mut u64,
-        objects: &mut Vec<ObjectData>,
+        runtime: &mut Runtime,
     ) -> Result<Value, JsError> {
         let function = &program.functions[index];
         let mut locals = vec![Value::Undefined; function.locals.max(arguments.len())];
@@ -1585,8 +1599,8 @@ impl Vm {
         let mut pointer = 0_usize;
 
         while pointer < function.code.len() {
-            *steps += 1;
-            if *steps > self.step_limit {
+            runtime.steps += 1;
+            if runtime.steps > self.step_limit {
                 return Err(JsError::StepLimitExceeded {
                     limit: self.step_limit,
                 });
@@ -1618,8 +1632,8 @@ impl Vm {
                             // already resident and the result is at most their
                             // sum — there is no oversized intermediate to avoid,
                             // and the budget is what stops the next doubling.
-                            *bytes = bytes.saturating_add(joined.len() as u64);
-                            if *bytes > self.byte_limit {
+                            runtime.bytes = runtime.bytes.saturating_add(joined.len() as u64);
+                            if runtime.bytes > self.byte_limit {
                                 return Err(JsError::ByteLimitExceeded {
                                     limit: self.byte_limit,
                                 });
@@ -1639,14 +1653,26 @@ impl Vm {
                     // as a future amplification path when the byte budget was
                     // added; this is that path, so it is charged from the start
                     // rather than after someone finds the loop that exploits it.
-                    *bytes = bytes.saturating_add(OBJECT_OVERHEAD_BYTES);
-                    if *bytes > self.byte_limit {
+                    runtime.bytes = runtime.bytes.saturating_add(OBJECT_OVERHEAD_BYTES);
+                    if runtime.bytes > self.byte_limit {
                         return Err(JsError::ByteLimitExceeded {
                             limit: self.byte_limit,
                         });
                     }
-                    objects.push(ObjectData::default());
-                    stack.push(Value::Object(objects.len() - 1));
+                    // A safepoint. Collecting here is safe because every live
+                    // value is reachable: the frames above published theirs
+                    // into `runtime.outer`, and this frame's are right here.
+                    if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+                        collect_now(runtime, &stack, &locals);
+                    }
+                    let reference =
+                        runtime
+                            .heap
+                            .allocate(ObjectData::default())
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    stack.push(Value::Object(reference));
                 }
                 Op::GetProperty => {
                     let key = pop(&mut stack);
@@ -1660,7 +1686,13 @@ impl Vm {
                     // lookup in this workspace that is not a typed refusal, and
                     // it is specified: absence is an ordinary result here, not
                     // a gap in the implementation.
-                    let value = objects[handle]
+                    let object = runtime
+                        .heap
+                        .get(handle)
+                        .map_err(|error| JsError::TypeError {
+                            message: error.to_string(),
+                        })?;
+                    let value = object
                         .get(&property_key(&key))
                         .cloned()
                         .unwrap_or(Value::Undefined);
@@ -1675,9 +1707,16 @@ impl Vm {
                             message: format!("cannot access a property of {object}"),
                         });
                     };
-                    let charged = objects[handle].set(property_key(&key), value.clone());
-                    *bytes = bytes.saturating_add(charged as u64);
-                    if *bytes > self.byte_limit {
+                    let object =
+                        runtime
+                            .heap
+                            .get_mut(handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    let charged = object.set(property_key(&key), value.clone());
+                    runtime.bytes = runtime.bytes.saturating_add(charged as u64);
+                    if runtime.bytes > self.byte_limit {
                         return Err(JsError::ByteLimitExceeded {
                             limit: self.byte_limit,
                         });
@@ -1736,8 +1775,17 @@ impl Vm {
                 Op::Call { index, argc } => {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
-                    let result =
-                        self.run_function(program, *index, arguments, steps, bytes, objects)?;
+                    let result = {
+                        // Publish this frame's live values before recursing, so
+                        // a collection inside the call can see them, and drop
+                        // them again afterwards.
+                        let restore = runtime.outer.len();
+                        runtime.outer.extend(stack.iter().cloned());
+                        runtime.outer.extend(locals.iter().cloned());
+                        let outcome = self.run_function(program, *index, arguments, runtime);
+                        runtime.outer.truncate(restore);
+                        outcome
+                    }?;
                     stack.push(result);
                 }
                 Op::Return => return Ok(pop(&mut stack)),
@@ -1779,6 +1827,60 @@ fn compare(stack: &mut Vec<Value>, decide: fn(i32) -> bool) {
     };
     stack.push(Value::Boolean(decide(ordering)));
 }
+
+/// Roots the live value set and collects.
+///
+/// The root set is assembled fresh each time rather than maintained: a root
+/// registered once and forgotten keeps its object alive forever, and this
+/// interpreter's values move between stack slots constantly. Registering,
+/// collecting, and clearing is more work per collection and cannot leak a root.
+fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
+    let live = runtime
+        .outer
+        .iter()
+        .chain(stack)
+        .chain(locals)
+        .filter_map(|value| match value {
+            Value::Object(reference) => Some(*reference),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    for reference in &live {
+        runtime.heap.add_root(*reference);
+    }
+    runtime.heap.collect();
+    for reference in &live {
+        runtime.heap.remove_root(*reference);
+    }
+}
+
+/// Everything a running program owns that outlives a single instruction.
+///
+/// # Why the outer frames are here
+///
+/// Collection has to see every live value, and each call frame owns its own
+/// operand stack and locals. A collection triggered inside a nested call cannot
+/// reach the frames above it, so those frames publish their values here before
+/// recursing and truncate afterwards. Without that, an object held only by a
+/// caller is unreachable at the moment the callee allocates, and the collector
+/// is correct to free it — which is exactly how a rooting bug frees live data
+/// while every shallow test passes.
+#[derive(Debug, Default)]
+struct Runtime {
+    heap: Heap<ObjectData>,
+    /// Values held by call frames above the one currently executing.
+    outer: Vec<Value>,
+    steps: u64,
+    bytes: u64,
+}
+
+/// How many objects may be allocated before a collection is attempted.
+///
+/// A trigger, not a limit. Small enough that ordinary programs collect during a
+/// run rather than only at the end, because a collector that never runs in
+/// tests is a collector nobody has tested.
+const COLLECT_AFTER_ALLOCATIONS: usize = 64;
 
 /// Bytes charged for creating an object, before any property is added.
 ///
@@ -1855,6 +1957,14 @@ mod tests {
         evaluate(source).expect("evaluates")
     }
 
+    /// Compiles and runs `source`, calling `main` directly.
+    fn run_main_source(source: &str) -> Value {
+        let program = compile(source).expect("compiles");
+        Vm::default()
+            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
+            .expect("runs")
+    }
+
     /// Runs `body` as the whole of `main` and returns what it returns.
     ///
     /// Separate from `expr` because a nested `function` declaration is refused,
@@ -1862,7 +1972,7 @@ mod tests {
     fn run_main(body: &str) -> Value {
         let program = compile(&format!("function main() {{ {body} }} main();")).expect("compiles");
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
             .expect("runs")
     }
 
@@ -1872,7 +1982,7 @@ mod tests {
         let program = compile(&format!("{wrapped} main();")).expect("compiles");
         // The top level's last value is discarded, so call directly.
         Vm::default()
-            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
             .expect("runs")
     }
 
@@ -1943,7 +2053,7 @@ mod tests {
             compile("function f() { let a = 1; a = a + 4; return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1956,7 +2066,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(20.0)
         );
@@ -1971,7 +2081,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(10.0)
         );
@@ -1984,7 +2094,7 @@ mod tests {
                 .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 2, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(5.0)
         );
@@ -1999,7 +2109,7 @@ mod tests {
         .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 2, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 2, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(120.0)
         );
@@ -2011,7 +2121,7 @@ mod tests {
             .expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(7.0)
         );
@@ -2022,7 +2132,7 @@ mod tests {
         let program = compile("function f() { let a = 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Undefined
         );
@@ -2035,7 +2145,7 @@ mod tests {
             compile("function f() { let a = 1; { let a = 2; } return a; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -2069,7 +2179,7 @@ mod tests {
             ..Vm::default()
         };
         let error = vm
-            .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+            .run_function(&program, 1, Vec::new(), &mut Runtime::default())
             .expect_err("aborted");
         assert!(matches!(error, JsError::StepLimitExceeded { .. }));
     }
@@ -2106,7 +2216,7 @@ mod tests {
             compile("// leading\nfunction f() { /* inner */ return 1; } f();").expect("compiles");
         assert_eq!(
             Vm::default()
-                .run_function(&program, 1, Vec::new(), &mut 0, &mut 0, &mut Vec::new())
+                .run_function(&program, 1, Vec::new(), &mut Runtime::default())
                 .expect("runs"),
             Value::Number(1.0)
         );
@@ -2289,5 +2399,146 @@ mod tests {
                 "expected a refusal for {source}"
             );
         }
+    }
+    // -- collection ------------------------------------------------------
+
+    /// Allocates well past the collection trigger, so any test using it is
+    /// guaranteed to have collected at least once.
+    ///
+    /// Without this every test below would pass on an interpreter that never
+    /// collects, which is the state the previous iteration shipped.
+    fn allocations_beyond_trigger() -> usize {
+        COLLECT_AFTER_ALLOCATIONS * 4
+    }
+
+    #[test]
+    fn a_live_object_in_a_local_survives_collection() {
+        // The acceptance test for the wiring. A rooting protocol that missed
+        // locals would free `kept` here and the generation check would turn the
+        // later read into a dangling-reference error rather than the value.
+        let source = format!(
+            "function main() {{ let kept = {{}}; kept.mark = 7; let i = 0; \
+             while (i < {}) {{ let junk = {{}}; i = i + 1; }} return kept.mark; }} main();",
+            allocations_beyond_trigger()
+        );
+        assert_eq!(run_main_source(&source), Value::Number(7.0));
+    }
+
+    #[test]
+    fn a_live_object_on_the_operand_stack_survives_collection() {
+        // Locals are the obvious root; the operand stack is the one an
+        // implementation forgets. Here the outer object is mid-expression —
+        // held only on the stack — while the inner initialiser allocates past
+        // the trigger.
+        let source = format!(
+            "function main() {{ let n = 0; let o = {{ a: helper(), b: 2 }}; \
+             return o.b; }} \
+             function helper() {{ let i = 0; \
+             while (i < {}) {{ let junk = {{}}; i = i + 1; }} return 1; }} main();",
+            allocations_beyond_trigger()
+        );
+        assert_eq!(run_main_source(&source), Value::Number(2.0));
+    }
+
+    #[test]
+    fn an_object_held_only_by_a_caller_survives_a_collection_in_the_callee() {
+        // The frames above the one executing publish their values before
+        // recursing. Without that this object is unreachable at the moment the
+        // callee allocates, and the collector is *correct* to free it — the
+        // failure looks like a collector bug and is a rooting bug.
+        let source = format!(
+            "function main() {{ let held = {{}}; held.mark = 5; \
+             let ignored = churn(); return held.mark; }} \
+             function churn() {{ let i = 0; \
+             while (i < {}) {{ let junk = {{}}; i = i + 1; }} return 0; }} main();",
+            allocations_beyond_trigger()
+        );
+        assert_eq!(run_main_source(&source), Value::Number(5.0));
+    }
+
+    #[test]
+    fn a_reachable_chain_survives_collection() {
+        // Reachability is transitive, which is what `Trace` on the object is
+        // for. A collector that rooted only the values it could see directly
+        // would free the far end of this chain.
+        let source = format!(
+            "function main() {{ let root = {{}}; let mid = {{}}; let leaf = {{}}; \
+             leaf.mark = 11; mid.next = leaf; root.next = mid; \
+             mid = 0; leaf = 0; \
+             let i = 0; while (i < {}) {{ let junk = {{}}; i = i + 1; }} \
+             return root.next.next.mark; }} main();",
+            allocations_beyond_trigger()
+        );
+        assert_eq!(run_main_source(&source), Value::Number(11.0));
+    }
+
+    #[test]
+    fn unreachable_objects_are_actually_reclaimed() {
+        // The other half. Every test above would also pass on a collector that
+        // never frees anything, so this asserts that slots are reused: without
+        // reclamation the heap would hold every object ever allocated.
+        let allocations = allocations_beyond_trigger();
+        let source = format!(
+            "function main() {{ let i = 0; \
+             while (i < {allocations}) {{ let junk = {{}}; i = i + 1; }} return 0; }} main();"
+        );
+        let program = compile(&source).expect("compiles");
+        let mut runtime = Runtime::default();
+        Vm::default()
+            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .expect("runs");
+
+        assert!(
+            runtime.heap.occupied_slots() < allocations,
+            "{} slots occupied after {allocations} allocations; nothing was reclaimed",
+            runtime.heap.occupied_slots()
+        );
+    }
+
+    #[test]
+    fn an_unreachable_cycle_is_reclaimed() {
+        // The property that separates tracing from reference counting. Two
+        // objects referring to each other, dropped: a counting collector keeps
+        // them forever and every other test here still passes.
+        let allocations = allocations_beyond_trigger();
+        let source = format!(
+            "function main() {{ let i = 0; \
+             while (i < {allocations}) {{ let a = {{}}; let b = {{}}; \
+             a.peer = b; b.peer = a; i = i + 1; }} return 0; }} main();"
+        );
+        let program = compile(&source).expect("compiles");
+        let mut runtime = Runtime::default();
+        Vm::default()
+            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .expect("runs");
+
+        assert!(
+            runtime.heap.occupied_slots() < allocations,
+            "{} slots occupied; unreachable cycles were retained",
+            runtime.heap.occupied_slots()
+        );
+    }
+
+    #[test]
+    fn collection_leaves_no_roots_registered() {
+        // Roots are registered per collection and cleared afterwards. A root
+        // left behind keeps its object alive for the rest of the run, which
+        // looks exactly like a collector that is merely conservative.
+        let source = format!(
+            "function main() {{ let kept = {{}}; let i = 0; \
+             while (i < {}) {{ let junk = {{}}; i = i + 1; }} return 0; }} main();",
+            allocations_beyond_trigger()
+        );
+        let program = compile(&source).expect("compiles");
+        let mut runtime = Runtime::default();
+        Vm::default()
+            .run_function(&program, 1, Vec::new(), &mut runtime)
+            .expect("runs");
+
+        assert!(
+            runtime.heap.roots().is_empty(),
+            "{} roots left registered after the run",
+            runtime.heap.roots().len()
+        );
     }
 }

@@ -237,7 +237,9 @@
       "platforms": [
         "all-rust-hosts"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "turing-gc"
+      ],
       "failure_boundary": "refuse-unsupported-syntax-and-bound-execution-steps"
     },
     {
