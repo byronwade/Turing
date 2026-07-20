@@ -49,6 +49,20 @@ Before owner review, the maintainer must record the collection manifest in the p
 
 ## Decision record requirements
 
+## Operational closure crosswalk
+
+The following crosswalk prevents package/update, profile/session, incident-response, and ownership evidence from being substituted across boundaries. Each row requires its own retained artifacts and owner decisions; a passing lab or tabletop in one route cannot close another route.
+
+| Control surface | Package/update route | Profile/session route | Incident-response route | Ownership/control route | Current boundary |
+| --- | --- | --- | --- | --- | --- |
+| Artifact and identity | Source revision, build ID, toolchain, target, artifact digest/size, SBOM, provenance, package/channel identity | Schema version, profile/Space/session/snapshot/migration IDs, journal/checkpoint hashes, source and target generations | Affected build/source/platform, patch/build identity, advisory and evidence hashes | Protected path, review rule, CODEOWNERS, manifest and dependency digests | Planning only; no accepted shared identity packet |
+| Authorization and separation | Metadata roles, thresholds, freshness, target binding, fake-key separation | Profile/storage owner, vault boundary, export/delete authority, no cross-profile references | Human containment, disclosure, signing, and promotion authority remain separate | Named primary/backup roles, reviewer separation, two-person control, stale-access removal | Owner decisions and qualified backups are missing |
+| Rollback and recovery | Staged activation, known-good rollback, vulnerable-version refusal, crash-loop hold | Journal resume/rollback, quarantine, downgrade refusal, protected-work and data-loss accounting | Patch/backport, revocation, staged rollout, minimum secure version, postmortem | Emergency replacement, escalation, recusal, expiry, and rollback authority | No executable cross-route rehearsal has been accepted |
+| Privacy and retention | Redacted local events, no keys/profile contents/private-session data | State-class retention, credential separation, private-session exclusion, redacted export | Sanitized incident evidence, embargo, access log, destruction | Access review, retention owner, no stale privileged access | Templates define controls; no reviewed artifact package exists |
+| Failure denominator and cleanup | Tamper, replay, mismatch, expiry, partial-write, disk-full, power-loss, cleanup | Corruption, power-loss, quota, deletion, migration, recovery, cleanup | Intake, reproduction, containment, patch, disclosure, rotation, cleanup | Owner loss, inactive backup, blocked path, review failure, emergency replacement | No route has execution evidence or independent review |
+
+This crosswalk is a coordination aid for `PB-016` through `PB-020`; the owning route, machine registry, and accepted decision record remain authoritative. It does not authorize signing, release, migration, disclosure, incident closure, production, or broad implementation.
+
 For each gate, the closure record must contain:
 
 - a concrete scope covering the relevant `PB-*`, `WP-*`, `TASK-*`, `ADR-*`, and requirement records;

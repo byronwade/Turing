@@ -3,7 +3,7 @@
 Status: no-claim `PB-017` and `TASK-000009` execution/review preparation; no package format, updater, signing key, stable channel, production release, or user-profile migration claim
 Owner: release operations, security, build, storage, quality, privacy, support, and documentation-research
 Related gate: `PB-017` Research package identity and updater lab
-Research date: 2026-07-19
+Research date: 2026-07-20
 
 ## Purpose
 

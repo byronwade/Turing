@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Operational closure crosswalk
+
+Added a cross-lane crosswalk to the PB-020 closure preparation route connecting package/update identity, profile/session compatibility, incident rollback and disclosure, privacy/retention, failure denominators, and backup/two-person authority. It explicitly prevents evidence from one route being substituted for another and keeps all four routes no-claim until execution and independent owner review exist. This improves operational handoff coherence without granting signing, release, migration, disclosure, incident, production, or implementation authority.
+
 ## 2026-07-20 - Profile/session lifecycle transition matrix
 
 Added a checked lifecycle matrix to the profile/session format inventory for Profile, Space, Session, Snapshot, and Migration records. Each lifecycle now names states, allowed transitions, identity requirements, recovery boundaries, and unsupported claims; the schema and validator enforce all five record classes. Updated the profile/session inventory and closure routes to use the matrix as planning evidence. This does not implement storage or migration, permit real user data, or change `PB-016`; it closes a state-transition documentation gap needed by Nova recovery and future synthetic-fixture work.
