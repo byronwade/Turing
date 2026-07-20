@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Chrome-class traceability validator
+
+Added a standalone validator for the Chrome-class capability traceability map. It checks all 12 cross-domain capability rows, the L0-L3 performance evidence ladder, required trace fields, local references, and explicit unsupported-claim boundaries, then runs as part of the aggregate repository check. This closes a consistency-control gap without adding a capability, performance result, readiness promotion, or Chrome-class claim.
+
 ## 2026-07-20 - Central readiness control-surface synchronization
 
 Reconciled the pre-build registry, research crosswalk, documentation-readiness evidence matrix, continuation scorecard, build-information ledger, and their machine companions to the current 2026-07-20 audit state. Historical source-observation dates remain unchanged. This removes stale control metadata from the stop/resume path without changing any gate status, owner decision, task authority, or full-build claim.

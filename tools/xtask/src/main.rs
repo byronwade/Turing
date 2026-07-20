@@ -113,6 +113,11 @@ fn check() -> Result<(), String> {
     let root = repository_root();
     command(&root, "python3", ["-B", "tools/validate_blueprint.py"])?;
     command(&root, "python3", ["-B", "tools/validate_research_index.py"])?;
+    command(
+        &root,
+        "python3",
+        ["-B", "tools/validate_chrome_class_traceability.py"],
+    )?;
     command(&root, "python3", ["-B", "tools/validate_design_source.py"])?;
     command(
         &root,

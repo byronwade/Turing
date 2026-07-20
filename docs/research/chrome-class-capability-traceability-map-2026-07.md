@@ -16,7 +16,7 @@ The current implementation evidence remains limited to the M0 repository foundat
 
 ## Inputs Inspected
 
-This map is based on repository documentation and machine records current on 2026-07-19:
+This map is based on repository documentation and machine records current on 2026-07-20:
 
 - [Start Here](../start-here.md);
 - [Capability Parity](../blueprint-v1/02-capability-parity.md);
@@ -109,7 +109,7 @@ Update this map when any of these change:
 
 ## Validation
 
-This traceability map has no standalone validator. It stays checked through:
+This traceability map is checked by [`validate_chrome_class_traceability.py`](../../tools/validate_chrome_class_traceability.py), which enforces the required capability domains, evidence ladder, trace-row fields, local references, and no-claim boundary. It is also checked through:
 
 - relative-link validation in `tools/validate_blueprint.py`;
 - index and research-log coverage;
