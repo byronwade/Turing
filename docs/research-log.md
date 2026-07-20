@@ -1,5 +1,37 @@
 # Research Log
 
+## 2026-07-20 - The JavaScript parser had the same overflow, and the fuzzer could not have found it
+
+Question:
+
+The previous entry closed with a caveat: the fuzz generators are grammar-shaped, so they explore what their author thought to model. That caveat was worth testing immediately rather than leaving as a disclaimer, because the defect it had just found — unbounded recursion over attacker-controlled structure — is a *class*, and only two of its instances had been checked.
+
+Finding:
+
+`turing-js` is a recursive-descent parser, and it overflows the stack on three separate constructs: nested parentheses `((((1))))`, nested statement blocks `if(1){if(1){…}}`, and chained unary operators `-----1`. All three abort the process. All three are one line of hostile script.
+
+The threshold is far lower than the markup case. Measured with the bound removed, parsing overflowed a 1 MiB stack at roughly **95 nested parentheses** in a debug build — between 90 (fine) and 100 (abort). The cause is the precedence chain: `parse_assignment` descends through logical-or, logical-and, equality, relational, additive, multiplicative, and unary before reaching a primary, so a single source nesting level costs about ten native frames.
+
+CSS selector nesting was probed at the same time and is fine — descendant combinator handling is iterative.
+
+The part worth recording is not the bug but why the fuzzer missed it. The script generator emitted between one and ten short flat fragments. Nothing it could produce nested more than a level or two, so no sweep across any number of seeds could have reached the parser's recursion. The clean two-thousand-seed result from the previous entry was, on this dimension, a statement about the generator rather than about the engine. The caveat was accurate and it was not enough: a disclaimer in a doc comment does not stop a green result from being read as safety.
+
+Decision:
+
+A bound of 64 counted levels in the parser, chosen from the measurement rather than picked. Each source nesting level costs roughly two counted levels, so the bound stops at about thirty source levels — a third of the measured failure point. The margin is deliberately wide because the true limit moves with stack size, platform, and build profile, and the cost of being wrong is an uncatchable abort rather than a recoverable error. Real programs are unaffected: expressions nest single digits deep, and deeply parenthesised source is a pathological pattern rather than something a person or a minifier produces.
+
+One counter covers expressions, statements, and unary chains rather than three separate ones, because they interleave — a statement inside an expression inside a statement is the same stack.
+
+The generator was then extended to emit nesting explicitly, with a range that straddles the engine's bound so sweeps exercise both the accepted and the refused side.
+
+The more durable change is a test asserting the generator's *reach*: across three hundred seeds, more than ten scripts must actually be deep enough to trigger the refusal. Without it, a generator that quietly stops covering a construct turns every subsequent green sweep into a statement about the generator. Coverage of a fuzz corpus is not self-evident and has to be asserted like anything else.
+
+A second test now asserts that all three recursive consumers — script parsing, layout, and accessibility — refuse deep input, in one place, as behaviour rather than as constants. Checking that a limit is nonzero says nothing about whether it is enforced.
+
+Four tests. The workspace is at 268.
+
+What this does not change: `WP-015` is still gated on `IF-003`, which is still `not_started`. This is more evidence for the same one of its four items, not a new one. `IF-001` remains `partial`, and the `text-font-foundation-review` and `graphics-foundation-review` gates on `WP-009` remain open. No hang detection — the harness catches unwinds, not infinite loops — and the generators still do not cover script execution, the collector, or the raster path.
+
 ## 2026-07-20 - Fuzz harness, and the stack overflow it was built to find
 
 Question:

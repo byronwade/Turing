@@ -47,6 +47,8 @@ pub enum JsError {
     UnexpectedCharacter { character: char, offset: usize },
     /// The parser met a token it cannot use here.
     UnexpectedToken { found: String, expected: String },
+    /// The source nests deeper than the parser will recurse.
+    NestingTooDeep { limit: usize },
     /// A language feature that is not implemented.
     Unsupported { feature: String },
     /// A name was used before it was declared.
@@ -68,6 +70,10 @@ impl fmt::Display for JsError {
                     "unexpected character {character:?} at byte {offset}"
                 )
             }
+            Self::NestingTooDeep { limit } => write!(
+                formatter,
+                "the source nests deeper than {limit} levels; the parser is                  recursive descent, and continuing would overflow the stack,                  which aborts the process rather than returning an error"
+            ),
             Self::UnexpectedToken { found, expected } => {
                 write!(formatter, "unexpected {found}; expected {expected}")
             }
@@ -366,9 +372,37 @@ enum Stmt {
 
 // -- parser --------------------------------------------------------------
 
+/// The deepest grammatical nesting the parser will descend through.
+///
+/// This is a recursive-descent parser, so nesting in the source becomes
+/// recursion on the native stack. A stack overflow aborts the process and
+/// cannot be caught, so depth is bounded here rather than left to chance.
+/// `((((1))))`, `if(1){if(1){…}}`, and `-----1` all reach it, and all three are
+/// trivially producible by a hostile page.
+///
+/// # Where the number comes from
+///
+/// Measured, not chosen. With the bound removed, parsing overflowed a 1 MiB
+/// stack at roughly 95 nested parentheses in a debug build. The precedence
+/// chain runs about ten frames per expression level, which is why the figure is
+/// that low.
+///
+/// Each source nesting level costs about two counted levels here, so this bound
+/// stops at roughly thirty source levels — about a third of the measured
+/// failure point. The margin is deliberately generous because the true limit
+/// varies with stack size, platform, and build profile, and the cost of being
+/// wrong is an uncatchable abort rather than a recoverable error.
+///
+/// Still far above real programs: expressions nest single digits deep in
+/// practice, and deeply parenthesised source is a pathological pattern rather
+/// than something a person or a minifier produces.
+pub const MAX_NESTING_DEPTH: usize = 64;
+
 struct Parser {
     tokens: Vec<Token>,
     position: usize,
+    /// Current recursion depth, bounded by [`MAX_NESTING_DEPTH`].
+    depth: usize,
 }
 
 impl Parser {
@@ -376,7 +410,27 @@ impl Parser {
         Self {
             tokens,
             position: 0,
+            depth: 0,
         }
+    }
+
+    /// Enters one level of grammatical nesting.
+    ///
+    /// Paired with [`Self::leave`]. Every production that can recurse into
+    /// itself calls this first, so one check covers expressions, statements,
+    /// and blocks alike rather than each growing its own counter.
+    fn enter(&mut self) -> Result<(), JsError> {
+        self.depth += 1;
+        if self.depth > MAX_NESTING_DEPTH {
+            return Err(JsError::NestingTooDeep {
+                limit: MAX_NESTING_DEPTH,
+            });
+        }
+        Ok(())
+    }
+
+    fn leave(&mut self) {
+        self.depth -= 1;
     }
 
     fn peek(&self) -> &Token {
@@ -437,6 +491,13 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> Result<Stmt, JsError> {
+        self.enter()?;
+        let statement = self.parse_statement_inner();
+        self.leave();
+        statement
+    }
+
+    fn parse_statement_inner(&mut self) -> Result<Stmt, JsError> {
         self.refuse_unsupported_keyword()?;
 
         if self.check_keyword("function") {
@@ -551,7 +612,10 @@ impl Parser {
     }
 
     fn parse_expression(&mut self) -> Result<Expr, JsError> {
-        self.parse_assignment()
+        self.enter()?;
+        let expression = self.parse_assignment();
+        self.leave();
+        expression
     }
 
     fn parse_assignment(&mut self) -> Result<Expr, JsError> {
@@ -675,6 +739,13 @@ impl Parser {
     }
 
     fn parse_unary(&mut self) -> Result<Expr, JsError> {
+        self.enter()?;
+        let expression = self.parse_unary_inner();
+        self.leave();
+        expression
+    }
+
+    fn parse_unary_inner(&mut self) -> Result<Expr, JsError> {
         if let Token::Punct(value) = self.peek()
             && matches!(value.as_str(), "-" | "!")
         {
