@@ -1,0 +1,311 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+//! End-to-end composition of the engine crates.
+//!
+//! Every stage of the pipeline exists as its own crate with its own contract:
+//! `turing-html` parses, `turing-dom` tracks liveness, `turing-css` cascades,
+//! `turing-layout` positions, `turing-raster` paints, `turing-js` executes,
+//! `turing-webidl` binds, and `turing-input` routes. What did not exist until
+//! this crate is the composition — one type that owns a page and keeps the
+//! stages consistent with each other as the document changes.
+//!
+//! # What [`Page`] guarantees
+//!
+//! A `Page` holds a parsed document together with the layout computed from it,
+//! and every path that can mutate the document — running the page's scripts,
+//! dispatching an input event — ends by re-running layout when the document's
+//! epoch advanced. The hit router is rebuilt with the fresh layout at the same
+//! time, so the staleness refusal in `turing-input` is an invariant here, not
+//! a recoverable error: routing against outdated geometry is unrepresentable
+//! rather than merely detected.
+//!
+//! # What this crate refuses to hide
+//!
+//! Each stage's refusals pass through unchanged inside [`EngineError`]. A page
+//! whose stylesheet uses an unimplemented colour notation, or whose script
+//! uses unsupported syntax, fails loudly at load — pretending a stage
+//! succeeded is how a lab result quietly stops meaning anything.
+
+#![forbid(unsafe_code)]
+
+use core::fmt;
+
+use turing_css::{CssError, Stylesheet};
+use turing_dom::{Dispatch, Dom, DomError, Event};
+use turing_html::tree::{Document, NodeData, NodeId, TreeBuilder, TreeError};
+use turing_html::{Tokenizer, TokenizerError};
+use turing_input::{HitRouter, InputError};
+use turing_js::{JsError, Vm, compile};
+use turing_layout::{
+    DisplayList, LayoutBox, LayoutError, Point, TextMetrics, build_display_list, layout,
+};
+use turing_raster::{Canvas, RasterError, rasterize};
+use turing_webidl::DomHost;
+
+/// A stage refusal, passed through from the crate that owns the contract.
+#[derive(Clone, Debug, PartialEq)]
+pub enum EngineError {
+    Tokenize(TokenizerError),
+    Tree(TreeError),
+    Css(CssError),
+    Layout(LayoutError),
+    Dom(DomError),
+    Input(InputError),
+    Raster(RasterError),
+    Script(JsError),
+}
+
+impl fmt::Display for EngineError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Tokenize(error) => write!(formatter, "tokenizer: {error}"),
+            Self::Tree(error) => write!(formatter, "tree builder: {error}"),
+            Self::Css(error) => write!(formatter, "css: {error}"),
+            Self::Layout(error) => write!(formatter, "layout: {error}"),
+            Self::Dom(error) => write!(formatter, "dom: {error}"),
+            Self::Input(error) => write!(formatter, "input: {error}"),
+            Self::Raster(error) => write!(formatter, "raster: {error}"),
+            Self::Script(error) => write!(formatter, "script: {error}"),
+        }
+    }
+}
+
+impl std::error::Error for EngineError {}
+
+macro_rules! from_stage {
+    ($variant:ident, $error:ty) => {
+        impl From<$error> for EngineError {
+            fn from(error: $error) -> Self {
+                Self::$variant(error)
+            }
+        }
+    };
+}
+
+from_stage!(Tokenize, TokenizerError);
+from_stage!(Tree, TreeError);
+from_stage!(Css, CssError);
+from_stage!(Layout, LayoutError);
+from_stage!(Dom, DomError);
+from_stage!(Input, InputError);
+from_stage!(Raster, RasterError);
+from_stage!(Script, JsError);
+
+/// A loaded page: document, styles, layout, and input routing, kept coherent.
+#[derive(Debug)]
+pub struct Page {
+    dom: Dom,
+    sheet: Stylesheet,
+    layout: LayoutBox,
+    router: HitRouter,
+    viewport_width: f32,
+    metrics: TextMetrics,
+}
+
+impl Page {
+    /// Parses `html`, runs its `<script>` elements, and lays it out at
+    /// `viewport_width` CSS pixels.
+    ///
+    /// Styles come from the document's `<style>` elements, concatenated in
+    /// document order — there is no network, so there is nothing else they
+    /// could come from. Scripts run once, at load, in document order, against
+    /// the live document; a script mutation is reflected in the layout this
+    /// constructor returns.
+    ///
+    /// # Errors
+    ///
+    /// Any stage refusal, unchanged. A page that parses but styles with an
+    /// unsupported notation, or scripts with unsupported syntax, is an error
+    /// rather than a partially loaded page.
+    pub fn load(html: &str, viewport_width: f32) -> Result<Self, EngineError> {
+        let tokens = Tokenizer::new(html).tokenize()?.tokens;
+        let document = TreeBuilder::new().build(&tokens)?;
+        let sheet = Stylesheet::parse(&collect_element_text(&document, "style"))?;
+        let scripts = collect_scripts(&document);
+
+        let mut dom = Dom::new(document);
+        for source in &scripts {
+            let program = compile(source)?;
+            let mut host = DomHost::new(&mut dom);
+            Vm::default().run_with_host(&program, &mut host)?;
+        }
+
+        let metrics = TextMetrics::default();
+        let layout = layout(dom.document(), &sheet, viewport_width, metrics)?;
+        let router = HitRouter::new(&dom, layout.clone());
+        Ok(Self {
+            dom,
+            sheet,
+            layout,
+            router,
+            viewport_width,
+            metrics,
+        })
+    }
+
+    /// The page title, from the first `<title>` element's text.
+    #[must_use]
+    pub fn title(&self) -> Option<String> {
+        let title = collect_element_text(self.dom.document(), "title");
+        let trimmed = title.trim();
+        if trimmed.is_empty() {
+            None
+        } else {
+            Some(trimmed.to_owned())
+        }
+    }
+
+    /// The current layout root.
+    #[must_use]
+    pub fn layout(&self) -> &LayoutBox {
+        &self.layout
+    }
+
+    /// The live document.
+    #[must_use]
+    pub fn dom(&self) -> &Dom {
+        &self.dom
+    }
+
+    /// Builds the current display list.
+    #[must_use]
+    pub fn display_list(&self) -> DisplayList {
+        build_display_list(&self.layout)
+    }
+
+    /// Paints the current layout onto a canvas of the given pixel size.
+    ///
+    /// The canvas background is white, which is the initial value of the
+    /// canvas surface; a page that wants another background styles its `body`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the rasterizer's allocation refusal for an oversized canvas.
+    pub fn render(&self, width: usize, height: usize) -> Result<Canvas, EngineError> {
+        let background = turing_css::Color {
+            red: 255,
+            green: 255,
+            blue: 255,
+        };
+        Ok(rasterize(&self.display_list(), width, height, background)?)
+    }
+
+    /// Re-lays the page out at a new viewport width.
+    ///
+    /// # Errors
+    ///
+    /// Returns the layout stage's refusal, unchanged.
+    pub fn resize(&mut self, viewport_width: f32) -> Result<(), EngineError> {
+        self.viewport_width = viewport_width;
+        self.relayout()
+    }
+
+    /// The element at `point`, if any.
+    ///
+    /// # Errors
+    ///
+    /// Propagates the input stage's refusals. Staleness is prevented by
+    /// construction — every mutating path relays out before returning — so a
+    /// staleness error here is a bug in this crate, not a caller mistake.
+    pub fn target_at(&self, point: Point) -> Result<Option<NodeId>, EngineError> {
+        Ok(self.router.target_at(&self.dom, point)?)
+    }
+
+    /// Dispatches `event` to the element at `point`, then re-lays out if the
+    /// dispatch mutated the document.
+    ///
+    /// Returns the dispatch record, or `None` when nothing was hit.
+    ///
+    /// # Errors
+    ///
+    /// Propagates dispatch and layout refusals unchanged.
+    pub fn dispatch_at(
+        &mut self,
+        point: Point,
+        event: &Event,
+    ) -> Result<Option<Dispatch>, EngineError> {
+        let before = self.dom.epoch();
+        let dispatch = self.router.dispatch_at(&self.dom, point, event)?;
+        if self.dom.epoch() != before {
+            self.relayout()?;
+        }
+        Ok(dispatch)
+    }
+
+    /// Runs `source` against the live document, then re-lays out if it
+    /// mutated anything.
+    ///
+    /// This is the lab's stand-in for event-driven script: the embedder
+    /// decides when script runs, the page keeps itself coherent afterwards.
+    ///
+    /// # Errors
+    ///
+    /// Propagates compile, runtime, and layout refusals unchanged.
+    pub fn run_script(&mut self, source: &str) -> Result<turing_js::Value, EngineError> {
+        let program = compile(source)?;
+        let before = self.dom.epoch();
+        let mut host = DomHost::new(&mut self.dom);
+        let value = Vm::default().run_with_host(&program, &mut host)?;
+        if self.dom.epoch() != before {
+            self.relayout()?;
+        }
+        Ok(value)
+    }
+
+    /// Recomputes layout from the current document and rebuilds the router.
+    fn relayout(&mut self) -> Result<(), EngineError> {
+        self.layout = layout(
+            self.dom.document(),
+            &self.sheet,
+            self.viewport_width,
+            self.metrics,
+        )?;
+        self.router = HitRouter::new(&self.dom, self.layout.clone());
+        Ok(())
+    }
+}
+
+/// Concatenates the text children of every `name` element, in document order.
+fn collect_element_text(document: &Document, name: &str) -> String {
+    let mut collected = String::new();
+    for index in 0..document.len() {
+        let id = NodeId::from_index(index);
+        if document.element_name(id) != Some(name) {
+            continue;
+        }
+        for &child in &document.node(id).children {
+            if let NodeData::Text(text) = &document.node(child).data {
+                collected.push_str(text);
+                collected.push('\n');
+            }
+        }
+    }
+    collected
+}
+
+/// The text of each `<script>` element, one entry per element, in document
+/// order. Separate entries rather than one concatenation because each script
+/// compiles alone: one script's syntax refusal should name that script, not
+/// poison the sources around it.
+fn collect_scripts(document: &Document) -> Vec<String> {
+    let mut scripts = Vec::new();
+    for index in 0..document.len() {
+        let id = NodeId::from_index(index);
+        if document.element_name(id) != Some("script") {
+            continue;
+        }
+        let mut source = String::new();
+        for &child in &document.node(id).children {
+            if let NodeData::Text(text) = &document.node(child).data {
+                source.push_str(text);
+                source.push('\n');
+            }
+        }
+        if !source.trim().is_empty() {
+            scripts.push(source);
+        }
+    }
+    scripts
+}

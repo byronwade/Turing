@@ -1,5 +1,29 @@
 # Research Log
 
+## 2026-07-20 - The pipeline crate: composition became a contract of its own
+
+Question:
+
+Every engine stage existed as a crate with its own contract, and nothing composed them. The only end-to-end path in the repository was a layout test's private helper. For a working application that is the missing piece: not new capability, but a type that owns a page and keeps the stages consistent as the document changes.
+
+Method:
+
+`crates/turing-engine`, registered as `COMP-021`. One type, `Page`: parse, extract `<style>` text (there is no network, so element text is the only place styles can come from), run each `<script>` against the live document through `DomHost`, then lay out. The invariant the crate exists to hold: every path that can mutate the document — load-time script, an input dispatch, an embedder-driven script run — compares the epoch before and after, and re-lays out and rebuilds the hit router when it advanced. `turing-input`'s staleness refusal remains the backstop, but inside `Page` it is unreachable by construction rather than merely detected: there is no public path that leaves layout stale.
+
+Stage refusals pass through unchanged in an `EngineError` that names the stage. A page whose stylesheet uses `rgb()` or whose script uses unsupported syntax refuses to load. The test for the colour case initially expected the refusal from the CSS stage and got it from layout — which is where colour validation was deliberately placed last iteration, at style resolution. The test was corrected, not the placement; a load-time refusal that names the resolving stage is the documented design.
+
+What the composition surfaced:
+
+Writing the first real multi-element pages found an inline layout defect no single-crate test had hit: an inline *element*'s width was measured from its own (absent) text, so every `<span>` was zero-wide at line-breaking time, and `<span>a</span><span>b</span>` painted both words at the same pen position. The fix measures an inline box as its own text or the recursive sum of its descendants, and an element that does not fit moves to the next line whole — breaking inside an inline element is line fragmentation, which this layout does not implement and now says so. Two layout tests pin abutting and whole-element wrapping.
+
+This is the argument for the composition crate in one incident: the defect was invisible to every crate tested alone, because only composition produces a document, a cascade, and a line-breaking pass over the same multi-element content.
+
+Scripts run once, at load, in document order — the lab's stand-in for `<script>` semantics without a scheduler. Event listeners remain declarative effects; a dispatch that mutates nothing does not relayout. `Page::run_script` gives the embedder the same epoch-guarded path for driving script after load.
+
+Nine pipeline tests. The workspace is at 372.
+
+What this does not do: no network, no incremental layout (every relayout is total, and the mutation log's scoped-invalidation refusal from the previous entry stands), no event-listener script, no scrolling or viewport offset, and no claim that composing research stages produces a product browser. It produces a laboratory page that parses, styles, lays out, paints, scripts, and routes — which is what the next entry needs.
+
 ## 2026-07-20 - Text rasterization, and the gate that was decided rather than worked around
 
 Question:

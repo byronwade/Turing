@@ -1,0 +1,24 @@
+[package]
+name = "turing-engine"
+description = "End-to-end composition of the Turing engine crates: HTML source to pixels, script, and routed input"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-css = { path = "../turing-css" }
+turing-dom = { path = "../turing-dom" }
+turing-html = { path = "../turing-html" }
+turing-input = { path = "../turing-input" }
+turing-js = { path = "../turing-js" }
+turing-layout = { path = "../turing-layout" }
+turing-raster = { path = "../turing-raster" }
+turing-webidl = { path = "../turing-webidl" }
+
+[lints]
+workspace = true

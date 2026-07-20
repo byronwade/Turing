@@ -314,7 +314,7 @@
         "turing-css",
         "turing-layout"
       ],
-      "failure_boundary": "reject-glyph-rasterization-and-oversized-canvases"
+      "failure_boundary": "reject-oversized-canvases"
     },
     {
       "id": "COMP-018",
@@ -378,6 +378,31 @@
         "turing-js"
       ],
       "failure_boundary": "reject-unbound-and-revoked-operations"
+    },
+    {
+      "id": "COMP-021",
+      "package": "turing-engine",
+      "path": "crates/turing-engine",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "unprivileged",
+      "hostile_input": true,
+      "public_api": "internal-page-pipeline",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-dom",
+        "turing-html",
+        "turing-input",
+        "turing-js",
+        "turing-layout",
+        "turing-raster",
+        "turing-webidl"
+      ],
+      "failure_boundary": "propagate-stage-refusals-and-relayout-after-mutation"
     }
   ]
 }
