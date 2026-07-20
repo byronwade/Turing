@@ -129,6 +129,33 @@ Five other pathological shapes were measured at the same time and are all
 linear: one enormous text node, many sibling elements, many unmatched close
 tags, a long unterminated comment, and many declarations in one block.
 
+## Output amplification
+
+Time and memory are different questions. A path can be linear in time while
+producing far more output than it consumed, and accessible names were.
+
+Name-from-content concatenates a subject's descendant text, so nesting one
+name-from-content element inside another re-collects everything below it. Total
+name bytes grow with the *product* of nesting depth and text, not their sum:
+
+| Nested links, one word each | Input | Names produced | Amplification |
+| --- | --- | --- | --- |
+| 100 | 2.2 KiB | 35 KiB | 15.9× |
+| 200 | 4.5 KiB | 155 KiB | 34.4× |
+
+Doubling the nesting quadrupled the output. `MAX_NESTING_DEPTH` already capped
+the multiplier, so this was amplification rather than unbounded growth, but an
+attacker-chosen factor above a hundred is worth refusing on its own.
+
+`turing_a11y::MAX_ACCESSIBLE_NAME_BYTES` now bounds a single name at 64 KiB,
+enforced while accumulating so the oversized string is never built. Total name
+bytes for a document are therefore bounded by that limit times the nesting
+depth — about 16 MiB, against gigabytes for a large document before.
+
+That ceiling is still an amplification and is recorded rather than removed: a
+second limit on the total would make a refusal depend on document order, so the
+same name would be accepted or refused according to what preceded it.
+
 **The index only removes work that could not have matched.** A stylesheet of
 `div` rules against a document of `div` elements is still quadratic, because
 every pair genuinely matches and no index can help. The improvement above is on

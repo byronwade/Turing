@@ -550,3 +550,93 @@ fn many_attributes_stay_linear_and_specified() {
         "both duplicates reported"
     );
 }
+
+// -- accessible name size ------------------------------------------------
+
+/// Builds `depth` nested links, each carrying `text`.
+///
+/// Nesting name-from-content roles is what multiplies a document's own text:
+/// every link re-collects everything below it.
+fn nested_links(depth: usize, text: &str) -> String {
+    let open: String = (0..depth).map(|_| format!("<a href='#'>{text}")).collect();
+    format!("<html><body>{open}{}</body></html>", "</a>".repeat(depth))
+}
+
+#[test]
+fn an_oversized_accessible_name_is_refused_rather_than_truncated() {
+    // Truncating would hand an assistive technology a name that reads as
+    // complete, which is a worse failure than refusing: the user has no signal
+    // that anything was dropped.
+    let markup = nested_links(200, &"word ".repeat(200));
+    let document = document_of(&markup);
+    assert!(matches!(
+        turing_a11y::build(&document),
+        Err(turing_a11y::A11yError::NameTooLong { .. })
+    ));
+}
+
+#[test]
+fn a_single_enormous_text_node_is_refused() {
+    // The limit must sit on accumulation generally, not only on the
+    // concatenation path that nesting exercises. One huge text node inside one
+    // link reaches it without any nesting at all.
+    let huge = "x".repeat(turing_a11y::MAX_ACCESSIBLE_NAME_BYTES + 1);
+    let document = document_of(&format!("<html><body><a href='#'>{huge}</a></body></html>"));
+    assert!(matches!(
+        turing_a11y::build(&document),
+        Err(turing_a11y::A11yError::NameTooLong { .. })
+    ));
+}
+
+#[test]
+fn a_labelledby_target_is_bounded_too() {
+    // aria-labelledby resolves its targets through the same collection, so a
+    // bound applied only to name-from-content would leave this path open.
+    let huge = "x".repeat(turing_a11y::MAX_ACCESSIBLE_NAME_BYTES + 1);
+    let document = document_of(&format!(
+        "<html><body><span id='big'>{huge}</span>\
+         <button aria-labelledby='big'></button></body></html>"
+    ));
+    assert!(matches!(
+        turing_a11y::build(&document),
+        Err(turing_a11y::A11yError::NameTooLong { .. })
+    ));
+}
+
+#[test]
+fn ordinary_names_are_unaffected() {
+    // A bound that refused real documents would be a regression dressed as a
+    // fix. Real accessible names are a handful of words.
+    let document = document_of(&nested_links(20, "Read more"));
+    let tree = turing_a11y::build(&document).expect("builds");
+
+    fn first_name(node: &turing_a11y::AccessibilityNode) -> Option<String> {
+        node.name
+            .clone()
+            .or_else(|| node.children.iter().find_map(first_name))
+    }
+    assert!(
+        first_name(&tree).is_some_and(|name| name.contains("Read more")),
+        "a normal nested name still resolves"
+    );
+}
+
+#[test]
+fn name_growth_stays_within_the_documented_bound() {
+    // The composite bound is depth times the per-name limit. Asserted on the
+    // produced sizes rather than on elapsed time, so it cannot fail for reasons
+    // unrelated to the code.
+    fn name_bytes(node: &turing_a11y::AccessibilityNode) -> usize {
+        node.name.as_ref().map_or(0, String::len)
+            + node.children.iter().map(name_bytes).sum::<usize>()
+    }
+
+    let document = document_of(&nested_links(200, "word"));
+    let tree = turing_a11y::build(&document).expect("builds");
+    let produced = name_bytes(&tree);
+    let ceiling = turing_a11y::MAX_ACCESSIBLE_NAME_BYTES * turing_a11y::MAX_NESTING_DEPTH;
+    assert!(
+        produced <= ceiling,
+        "produced {produced} bytes of names, above the documented ceiling {ceiling}"
+    );
+}

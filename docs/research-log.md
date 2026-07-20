@@ -1,5 +1,35 @@
 # Research Log
 
+## 2026-07-20 - Accessible names amplified a document into far more of itself
+
+Question:
+
+The previous entry closed by naming memory growth as unmeasured: an input that allocates without bound would have passed every check in place. Time and memory are different questions, and a path can be perfectly linear in time while producing far more output than it consumed.
+
+Finding:
+
+Accessible names amplify. Name-from-content concatenates a subject's descendant text, so a name-from-content element nested inside another re-collects everything below it, and total name bytes grow with the *product* of nesting depth and text rather than their sum.
+
+A hundred nested links carrying one word each turned 2.2 KiB of markup into 35 KiB of names; two hundred turned 4.5 KiB into 155 KiB. Doubling the nesting quadrupled the output.
+
+The first probe measured only the total name bytes and found them linear, which was a wrong conclusion drawn from a badly chosen input: every level carried the *same* leaf text, so the names were all short and only the walking was quadratic. Changing the input so each nesting level carried its own text exposed the quadratic output. The measurement was fine; the input was not adversarial enough, which is the same failure the fuzz generators had twice.
+
+Decision:
+
+A per-name bound of 64 KiB with a typed error, enforced while accumulating rather than after. A limit applied to a finished string still lets the input decide how much is allocated before the check runs, which defeats the purpose.
+
+Refused rather than truncated. A truncated accessible name reads as complete to whoever hears it, with no signal that anything was dropped — worse than a refusal, which is at least visible.
+
+The bound was already partly present without being recognised as one: `MAX_NESTING_DEPTH` capped the multiplier at 256, so this was amplification rather than unbounded growth. That is worth recording because the depth bound was added for stack safety and happened to limit an unrelated attack; the coverage was luck, and luck that was noticed only because someone measured.
+
+What the bound does not do, stated because it would otherwise read as solved: it bounds one name, not their sum. Total name bytes remain bounded by the per-name limit times the nesting depth, about sixteen megabytes, against gigabytes for a large document before. Sixteen megabytes from a small input is still an amplification. A second limit on the total was considered and rejected: it would make a refusal depend on document order, so the same name would be accepted or refused according to what preceded it, which is harder to explain than the bound it removes.
+
+Five tests, including one asserting that ordinary nested names still resolve — a bound that refused real documents would be a regression dressed as a fix — and one checking that the limit sits on accumulation generally rather than only on the concatenation path that nesting exercises. A single enormous text node reaches it with no nesting at all, and the `aria-labelledby` path is covered because it resolves targets through the same collection.
+
+The workspace is at 283.
+
+What this does not do: allocation is still not measured directly, only inferred from produced output. A custom global allocator would measure it properly and needs `unsafe`, which every crate here forbids, so the honest instrument remains output size rather than bytes allocated. Script execution, the collector, and the raster path still have no growth measurements at all. The gates are unchanged: `WP-015` blocked on `IF-003`, `IF-001` `partial`, both `WP-009` decision gates open.
+
 ## 2026-07-20 - Termination checked at last, and a third quadratic path in tokenizing
 
 Question:
