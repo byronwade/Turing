@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Reference platform route synchronization
+
+Question:
+
+Does the native-shell continuation route expose the deferred `PB-006` reference-platform scorecard where toolkit, accessibility, benchmark, and fresh-host work will consume it?
+
+Method:
+
+Added the no-claim reference-platform research report, machine scorecard, schema, and validator to the native-shell crosswalk and human lane index. The platform remains unselected and `PB-006` remains deferred; this change only makes the dependency visible and mechanically checked.
+
 ## 2026-07-19 - Chrome-class capability route synchronization
 
 Question:
