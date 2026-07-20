@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Research-question coverage drift control
+
+Question:
+
+Can the human research-question coverage audit remain synchronized with the machine crosswalk as evidence routes are added?
+
+Method:
+
+Compared `docs/research/research-question-coverage-audit-2026-07.md` with `research-readiness-crosswalk.json` and ran `validate_research_question_coverage.py` on 2026-07-19. The machine crosswalk resolved 213 evidence-start entries while the human audit still recorded 207.
+
+Decision:
+
+Corrected the human audit to the current 213-entry count and added a validator assertion that the active-question, lane, and evidence-entry sentence in the human audit matches the machine-derived values.
+
+Impact:
+
+This closes a documentation-drift defect and improves continuation reliability. It does not answer a research question, promote a readiness gate, approve a task, or change the 90% contained-M0 / 0% full-build closure measures.
+
+Next question:
+
+Which remaining human status or closure statements should be machine-linked next so that owner-decision and readiness percentages cannot drift from their registries?
+
 ## 2026-07-19 - Sustained performance policy research
 
 Question:

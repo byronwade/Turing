@@ -13,6 +13,7 @@ AUDIT = ROOT / "docs/blueprint-v1/machine/research-question-coverage.json"
 SCHEMA = ROOT / "docs/blueprint-v1/machine/research-question-coverage.schema.json"
 PROGRAM = ROOT / "docs/blueprint-v1/22-research-program.md"
 CROSSWALK = ROOT / "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
+HUMAN_AUDIT = ROOT / "docs/research/research-question-coverage-audit-2026-07.md"
 
 # These rows previously passed identifier-only validation while pointing to
 # unrelated research domains. Keep a small, explicit guard until the registry
@@ -58,6 +59,7 @@ def main() -> int:
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
         program = PROGRAM.read_text(encoding="utf-8")
         crosswalk = json.loads(CROSSWALK.read_text(encoding="utf-8"))
+        human_audit = HUMAN_AUDIT.read_text(encoding="utf-8")
     except (OSError, json.JSONDecodeError) as exc:
         fail(f"cannot read source: {exc}")
 
@@ -114,6 +116,14 @@ def main() -> int:
                 fail(f"crosswalk {lane_id}.evidence_start escapes repository: {entry}")
             if not candidate.exists():
                 fail(f"crosswalk {lane_id}.evidence_start does not resolve: {entry}")
+
+    expected_audit_sentence = (
+        f"The current crosswalk routes all {len(crosswalk_ids)} active questions to research evidence; "
+        f"it has {len(lanes)} lanes and {evidence_entries} evidence-start entries, all of which resolve "
+        "to an existing file or directory."
+    )
+    if expected_audit_sentence not in human_audit:
+        fail("human research-question coverage audit is stale relative to the machine crosswalk")
 
     active = strings(audit.get("active_question_ids"), "active_question_ids", 1)
     active_set = set(active)
