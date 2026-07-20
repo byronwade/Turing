@@ -110,6 +110,8 @@ Decision output: an evidence-ranked list of architecture patterns to adopt, reje
 
 Prototype WebDriver BiDi integration plus a schema-generated Turing engine-instrumentation protocol. Compare capability negotiation, versioning, generated clients, command/event latency, streaming, backpressure, cancellation, authentication, redaction, replay, malformed input, and support-window cost.
 
+The [Public Developer Protocol Stability and Observability Research](../research/public-developer-protocol-stability-and-observability-research-2026-07.md) defines the deferred source-backed comparison and evidence route.
+
 Evaluate common developer workflows across Chromium CDP, Firefox remote protocols, WebKit Inspector Protocol, and Turing's proposal without making another engine's protocol the internal source of truth.
 
 Decision output: protocol layering, version policy, stable and experimental domains, client-generation plan, security boundary, and compatibility-adapter policy.

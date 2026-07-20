@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Public developer protocol stability and observability research
+
+Question:
+
+What public developer protocol can lead on stability and observability without creating an ambient-control, privacy, compatibility, or maintenance liability?
+
+Method:
+
+Checked the W3C WebDriver BiDi Working Draft published 2026-06-01, the official ChromeDevTools `devtools-protocol` repository, and Chrome's Protocol Monitor documentation on 2026-07-19. Reconciled the observations with `RQ-17`, the API-design and developer-experience books, agent authority rules, IPC and security boundaries, accessibility evidence requirements, protocol versioning requirements, and independent-verification controls.
+
+Decision:
+
+Added a deferred no-claim packet separating standards-facing automation, diagnostic observability, capability-scoped local integrations and agents, and private test seams. It defines wire, semantic, observability, and lifecycle compatibility axes; authority, redaction, identity, budget, ordering, cancellation, reconnect, and version-skew evidence; and rejection rules for treating schemas, generated clients, drafts, or self-review as compatibility or security proof. No protocol, transport, public API, compatibility promise, automation authority, security, accessibility, performance, or release decision changed.
+
+Next question:
+
+Which owner-approved protocol inventory and threat-model packet should become the first synthetic conformance and independent-review target once developer-protocol work enters the active pre-build crosswalk?
+
 ## 2026-07-19 - RQ-60 independent verification for agent-generated code
 
 Question:
