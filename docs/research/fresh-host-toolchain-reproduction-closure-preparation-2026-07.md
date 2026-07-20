@@ -46,6 +46,12 @@ On 2026-07-19, the current Windows checkout ran `tools/doctor.ps1 --ci` with `CA
 
 This is a current-host wrapper and toolchain diagnostic only. The output was not retained as a fresh-host run record, the host was not independently provisioned, `bootstrap`, `check`, and direct `xtask` paths were not thereby reproduced, and no gate status changed. It confirms that the documented Windows doctor entry point is executable in this checkout and that the observed tool identities match the pinned M0 baseline; it does not prove clean-host reproduction, toolchain equivalence, source-tree cleanliness after a complete run, release confidence, or readiness for broad implementation.
 
+## 2026-07-20 current-host diagnostic refresh
+
+The current continuation checkout was rechecked with `rustc --version --verbose`, `cargo --version`, `rustfmt --version`, `cargo clippy --version`, `python --version`, `git --version`, `rustup --version`, and `rustup show`. It reported `rustc 1.97.1 (8bab26f4f 2026-07-14)`, Cargo `1.97.1`, rustfmt `1.9.0-stable`, Clippy `0.1.97`, Python `3.12.10`, Git `2.52.0.windows.1`, rustup `1.29.0`, host `x86_64-pc-windows-msvc`, and the active `1.97.1-x86_64-pc-windows-msvc` toolchain selected by this repository's `rust-toolchain.toml`, with the matching target installed. The working tree was clean at the observed commit.
+
+This refresh is same-host diagnostic evidence only. It does not provide a fresh-host run record, independent toolchain equivalence, owner review, or `PB-008`/`PB-009` promotion.
+
 `PB-008` and `PB-009` remain `partial`. This report adds a consolidated replay protocol and terminology so that the next run can be reviewed against one stable contract. It does not authorize `TASK-000002`, promote either gate, or change any product, performance, security, compatibility, accessibility, release, or Chrome-class claim.
 
 The [Fresh-Host Reproduction Packet Examples](fresh-host-reproduction-packet-examples-2026-07.md) provides a fictitious field-level packet for host and source identity, attempted-command denominator, retained hashes, failure classification, cleanup, and readiness-review handoff. It is an example only and does not provide a fresh-host run.

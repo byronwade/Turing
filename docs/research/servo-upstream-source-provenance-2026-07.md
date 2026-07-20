@@ -39,16 +39,16 @@ Evidence was collected outside the Turing repository using:
 
 No upstream source or release artifact was copied into this repository.
 
-## 2026-07-19 local / 2026-07-20 UTC official metadata refresh
+## 2026-07-20 local / 2026-07-20 UTC official metadata refresh
 
-A read-only refresh of the official GitHub repository, branch, release, and crates.io APIs was performed on 2026-07-19 local time. The GitHub API response was captured with UTC timestamps on 2026-07-20 and changes the freshness boundary for repository activity, but it does not replace the dated build, archive, or package evidence captured on 2026-07-17.
+A read-only refresh of the official GitHub repository, branch, release, and crates.io APIs was performed on 2026-07-20 local time. It changes the freshness boundary for repository activity, but it does not replace the dated build, archive, or package evidence captured on 2026-07-17.
 
 | Field | Refreshed observation |
 |---|---|
 | Repository default branch | `main` |
-| Latest observed `main` commit | `736ad1bda08c1af419aadc903e82938f8610a65d` |
-| Latest observed `main` commit author date | `2026-07-19T19:09:15Z` |
-| Repository pushed/updated timestamps | `2026-07-20T01:44:34Z` / `2026-07-20T02:09:56Z` |
+| Latest observed `main` commit | `f542a355e5565e380aa0570132d4138dde328bae` |
+| Latest observed `main` commit author date | Current API head commit; commit-author metadata was not used as a release or build date |
+| Repository pushed/updated timestamps | `2026-07-20T03:24:57Z` / `2026-07-20T03:53:53Z` |
 | Latest published release | `v0.3.0`, published `2026-06-25T15:09:42Z`, target `release/v0.3` |
 | Release immutability | GitHub API reports `immutable: true` |
 | Latest crates.io `servo` version | `0.4.0`, metadata updated `2026-07-16T12:14:01.753698Z` |
@@ -214,7 +214,7 @@ This report proves, for the inspected date and host only:
 
 - the successful external build baseline, current fetched upstream `main`, latest GitHub release tag, latest GitHub release source archive, and latest crates.io package are not the same source object;
 - the successful external build baseline was two commits behind the historical 2026-07-17 fetched `origin/main` observation;
-- the 2026-07-17 `origin/main` observation is historical; the 2026-07-19 API refresh identifies `736ad1bda08c1af419aadc903e82938f8610a65d` as a later `main` commit that has not been built or compared in Turing's evidence process;
+- the 2026-07-17 `origin/main` observation is historical; the 2026-07-20 API refresh identifies `f542a355e5565e380aa0570132d4138dde328bae` as a later `main` commit that has not been built or compared in Turing's evidence process;
 - GitHub reports valid commit verification for the build baseline and current `origin/main` commits;
 - `v0.3.0` is a lightweight tag pointing to an unsigned commit that also heads `release/v0.3`;
 - the downloaded `servo-v0.3.0-src-vendored.tar.gz` matches GitHub's asset digest and is readable;

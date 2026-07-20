@@ -42,9 +42,9 @@ The analysis inspected:
 
 No Servo sandbox test, compromised-renderer test, WPT security run, fuzz run, negative filesystem/socket/device test, release drill, upstream merge drill, or security-response exercise was executed.
 
-## 2026-07-19 local / 2026-07-20 UTC upstream metadata refresh
+## 2026-07-20 local / 2026-07-20 UTC upstream metadata refresh
 
-A read-only refresh of the official GitHub repository, `main` branch, latest release, and crates.io package metadata found that the repository was pushed and updated at `2026-07-20T01:44:34Z` and `2026-07-20T02:09:56Z`, respectively; `main` still points to `736ad1bda08c1af419aadc903e82938f8610a65d`; the latest published release remains immutable `v0.3.0` on `release/v0.3`; and the latest crates.io package remains `servo 0.4.0`. These are freshness observations only. No new checkout, build, sandbox, dependency, compatibility, performance, security, or maintenance evidence was produced.
+A read-only refresh of the official GitHub repository, `main` branch, latest release, and crates.io package metadata found that the repository was pushed and updated at `2026-07-20T03:24:57Z` and `2026-07-20T03:53:53Z`, respectively; `main` now points to `f542a355e5565e380aa0570132d4138dde328bae`; the latest published release remains immutable `v0.3.0` on `release/v0.3`; and the latest crates.io package remains `servo 0.4.0`. These are freshness observations only. No new checkout, build, sandbox, dependency, compatibility, performance, security, or maintenance evidence was produced.
 
 ## Security and Sandbox Observations
 
@@ -85,7 +85,7 @@ The upstream project has active maintenance signals, but those signals are not T
 
 | Signal | Observation | Turing implication |
 |---|---|---|
-| Repository state | `servo/servo` is public, not archived, and the 2026-07-19 local / 2026-07-20 UTC refresh observed push/update metadata at `2026-07-20T01:44:34Z` / `2026-07-20T02:09:56Z` | Active upstream signal only; not a contractual dependency guarantee |
+| Repository state | `servo/servo` is public, not archived, and the 2026-07-20 refresh observed push/update metadata at `2026-07-20T03:24:57Z` / `2026-07-20T03:53:53Z` | Active upstream signal only; not a contractual dependency guarantee |
 | Release cadence | Recent release list includes `v0.3.0` and LTS-labeled `v0.1.x` releases in 2026 | Useful for monitoring, but Turing needs exact patch/backport expectations |
 | Security reporting | GitHub security policy is enabled and local `SECURITY.md` points to GitHub security reports | Good upstream channel signal; not a Turing vulnerability SLA |
 | CODEOWNERS | `25` path rules cover script, layout, compositing, fonts, servoshell, canvas, WebGPU, WebDriver, XPath, DevTools, CI, and crown | Review ownership exists upstream; Turing still needs its own named owners and backup owners |

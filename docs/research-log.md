@@ -4,6 +4,10 @@
 
 Re-ran read-only official GitHub API observations for `servo/servo` and `servo/mozjs`. Servo's moving `main` head changed to `f542a355e5565e380aa0570132d4138dde328bae`, while `mozjs` remained at `f5cbf8aa6076064fd658a1e9fb16147c2347affb`; updated timestamps and release identities were preserved in the source manifest and upstream delta packet. Marked the changed moving head as a freshness delta that invalidates downstream evidence tied only to that ref. This is no-claim source freshness work; it does not select a baseline, approve Servo, or change PB-002.
 
+## 2026-07-20 - Fresh-host current-toolchain diagnostic refresh
+
+Rechecked the current Windows checkout's Rust, Cargo, rustfmt, Clippy, Python, Git, rustup, host tuple, repository toolchain override, installed target, and clean working-tree state. The observed identities remain aligned with the pinned M0 baseline. Added the dated diagnostic to the fresh-host closure packet while preserving the boundary that same-host facts are not independent fresh-host or owner-reviewed readiness evidence.
+
 ## 2026-07-20 - Repository-wide source-manifest provenance audit
 
 Audited all thirteen checked source-manifest families and every declared `source_documents` entry. All twelve manifests with document lists resolve to existing files and are referenced by each owning document, including the repository-root `.github/CODEOWNERS` control file. Extended `tools/validate_source_manifest_coverage.py` to enforce this repository-wide identity link invariant so future audits cannot omit non-`docs/` paths. This closes provenance organization only; it does not create implementation evidence or promote M0 or full-build readiness.
