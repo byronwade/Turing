@@ -10,9 +10,13 @@ Specified manifest: [`TASK-000001.json`](machine/tasks/TASK-000001.json)
 
 This handoff converts the proposed `TASK-000001` queue row into a bounded, machine-shaped specification for owner review. It does not change the queue status, approve execution, select a source baseline, approve Servo adoption, or authorize release-path code.
 
-The source queue SHA-256 at preparation time is:
+The source queue SHA-256 is:
 
-`617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0`
+`6F6C75429D8DD582EA99149F25C1B6A51522E27044A9B22EAECD80EA2A200CEC`
+
+This digest is the canonical-JSON hash of [`build-readiness-task-queue.json`](machine/../../blueprint-v1/machine/build-readiness-task-queue.json), computed as `sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")))` and rendered uppercase. It is the same value asserted by all ten specified task manifests and enforced by [`validate_specified_task_manifests.py`](../../tools/validate_specified_task_manifests.py). Reproduce it with that method rather than hashing the file bytes, which yields a different and non-authoritative value.
+
+A previous revision of this handoff recorded `617B0BE3B25BB9DF6D112FC8F08D5A0779D703A20FC53F0E7B367D6828A187C0` as the preparation-time digest. That value matches neither the current queue nor the task manifests and must not be used as an acceptance gate.
 
 ## Current boundary
 

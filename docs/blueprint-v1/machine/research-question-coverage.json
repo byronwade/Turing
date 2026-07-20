@@ -8,69 +8,658 @@
   "crosswalk_source": "docs/blueprint-v1/machine/research-readiness-crosswalk.json",
   "progress_snapshot_source": "docs/project-buildout/22-build-readiness-progress-snapshot.md",
   "active_question_ids": [
-    "RQ-02", "RQ-04", "RQ-05", "RQ-13", "RQ-14", "RQ-15", "RQ-16", "RQ-20", "RQ-22", "RQ-23", "RQ-25", "RQ-27", "RQ-29", "RQ-30", "RQ-31", "RQ-34", "RQ-35", "RQ-36", "RQ-37", "RQ-38", "RQ-40", "RQ-44", "RQ-45", "RQ-46", "RQ-47", "RQ-48", "RQ-49", "RQ-50", "RQ-53", "RQ-54", "RQ-55", "RQ-56", "RQ-57", "RQ-60", "RQ-63", "RQ-64", "RQ-66"
+    "RQ-02",
+    "RQ-04",
+    "RQ-05",
+    "RQ-13",
+    "RQ-14",
+    "RQ-15",
+    "RQ-16",
+    "RQ-20",
+    "RQ-22",
+    "RQ-23",
+    "RQ-25",
+    "RQ-27",
+    "RQ-29",
+    "RQ-30",
+    "RQ-31",
+    "RQ-34",
+    "RQ-35",
+    "RQ-36",
+    "RQ-37",
+    "RQ-38",
+    "RQ-40",
+    "RQ-44",
+    "RQ-45",
+    "RQ-46",
+    "RQ-47",
+    "RQ-48",
+    "RQ-49",
+    "RQ-50",
+    "RQ-53",
+    "RQ-54",
+    "RQ-55",
+    "RQ-56",
+    "RQ-57",
+    "RQ-60",
+    "RQ-63",
+    "RQ-64",
+    "RQ-66"
   ],
   "deferred_route_index": [
-    { "question_id": "RQ-01", "route_status": "planned_research_route", "research_routes": ["docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md", "docs/engine/README.md"] },
-    { "question_id": "RQ-03", "route_status": "planned_research_route", "research_routes": ["docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md", "docs/research/process-topology-isolation-adjusted-memory-research-2026-07.md"] },
-    { "question_id": "RQ-06", "route_status": "planned_research_route", "research_routes": ["docs/research/text-shaping-fonts-and-input-research-2026-07.md", "docs/accessibility/README.md"] },
-    { "question_id": "RQ-07", "route_status": "planned_research_route", "research_routes": ["docs/research/javascript-bytecode-representation-research-2026-07.md", "docs/javascript/README.md"] },
-    { "question_id": "RQ-08", "route_status": "planned_research_route", "research_routes": ["docs/research/javascript-dom-wrapper-lifetime-research-2026-07.md", "docs/javascript/README.md"] },
-    { "question_id": "RQ-09", "route_status": "planned_research_route", "research_routes": ["docs/research/javascript-runtime-tiering-and-collector-research-2026-07.md", "docs/javascript/README.md"] },
-    { "question_id": "RQ-10", "route_status": "planned_research_route", "research_routes": ["docs/research/independent-verification-for-agent-generated-code-research-2026-07.md", "docs/ai/README.md"] },
-    { "question_id": "RQ-11", "route_status": "planned_research_route", "research_routes": ["docs/research/agent-execution-production-readiness-audit-2026-07.md", "docs/ai/README.md"] },
-    { "question_id": "RQ-12", "route_status": "planned_research_route", "research_routes": ["docs/research/capacity-and-sustainability-research-2026-07.md", "docs/research/sustained-performance-policy-research-2026-07.md"] },
-    { "question_id": "RQ-17", "route_status": "planned_research_route", "research_routes": ["docs/research/public-developer-protocol-stability-and-observability-research-2026-07.md", "docs/developer-experience/README.md"] },
-    { "question_id": "RQ-18", "route_status": "planned_research_route", "research_routes": ["docs/research/rendering-artifacts-and-invalidation-research-2026-07.md", "docs/engine/README.md"] },
-    { "question_id": "RQ-19", "route_status": "planned_research_route", "research_routes": ["docs/research/javascript-runtime-tiering-and-collector-research-2026-07.md", "docs/javascript/README.md"] },
-    { "question_id": "RQ-21", "route_status": "planned_research_route", "research_routes": ["docs/research/performance-security-developer-expansion-audit-2026-07.md", "docs/developer-experience/README.md"] },
-    { "question_id": "RQ-24", "route_status": "planned_research_route", "research_routes": ["docs/research/independent-verification-for-agent-generated-code-research-2026-07.md", "docs/research/bounded-api-and-protocol-contract-research-2026-07.md"] },
-    { "question_id": "RQ-26", "route_status": "planned_research_route", "research_routes": ["docs/research/bounded-api-and-protocol-contract-research-2026-07.md", "docs/research/web-platform-source-and-conformance-evidence-2026-07.md"] },
-    { "question_id": "RQ-28", "route_status": "planned_research_route", "research_routes": ["docs/media-documents/README.md", "docs/research/human-release-legal-and-incident-capacity-research-2026-07.md"] },
-    { "question_id": "RQ-32", "route_status": "planned_research_route", "research_routes": ["docs/extensions-enterprise/README.md", "docs/research/browser-market-gap-2026-07.md"] },
-    { "question_id": "RQ-33", "route_status": "planned_research_route", "research_routes": ["docs/research/open-web-governance-feature-lifecycle-research-2026-07.md", "docs/research/web-platform-source-and-conformance-evidence-2026-07.md"] },
-    { "question_id": "RQ-39", "route_status": "planned_research_route", "research_routes": ["docs/research/deterministic-replay-and-causal-observability-research-2026-07.md", "docs/quality-assurance/README.md"] },
-    { "question_id": "RQ-41", "route_status": "planned_research_route", "research_routes": ["docs/research/technology-and-dependency-decision-research-2026-07.md", "docs/research/secure-development-and-provenance-level-research-2026-07.md"] },
-    { "question_id": "RQ-42", "route_status": "planned_research_route", "research_routes": ["docs/extensions-enterprise/README.md", "docs/research/independent-verification-for-agent-generated-code-research-2026-07.md"] },
-    { "question_id": "RQ-43", "route_status": "planned_research_route", "research_routes": ["docs/research/bounded-api-and-protocol-contract-research-2026-07.md", "docs/api-design/README.md"] },
-    { "question_id": "RQ-51", "route_status": "planned_research_route", "research_routes": ["docs/research/semantic-resource-attribution-taxonomy-2026-07.md", "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md"] },
-    { "question_id": "RQ-52", "route_status": "planned_research_route", "research_routes": ["docs/research/independent-verification-for-agent-generated-code-research-2026-07.md", "docs/research/agent-execution-production-readiness-audit-2026-07.md"] },
-    { "question_id": "RQ-58", "route_status": "planned_research_route", "research_routes": ["docs/research/pre-build-readiness-gap-audit-2026-07.md", "docs/research/documentation-readiness-completion-audit-2026-07.md"] },
-    { "question_id": "RQ-59", "route_status": "planned_research_route", "research_routes": ["docs/research/agent-execution-production-readiness-audit-2026-07.md", "docs/research/project-controls-and-review-system-research-2026-07.md"] },
-    { "question_id": "RQ-61", "route_status": "planned_research_route", "research_routes": ["docs/research/stable-v1-scope-and-platform-contract-research-2026-07.md", "docs/research/reference-platform-support-scorecard-2026-07.md"] },
-    { "question_id": "RQ-62", "route_status": "planned_research_route", "research_routes": ["docs/research/product-slos-and-error-budgets-research-2026-07.md", "docs/research/capacity-and-sustainability-research-2026-07.md"] },
-    { "question_id": "RQ-65", "route_status": "planned_research_route", "research_routes": ["docs/research/service-and-offline-architecture-research-2026-07.md", "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md"] }
+    {
+      "question_id": "RQ-01",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md",
+        "docs/engine/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-03",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md",
+        "docs/research/process-topology-isolation-adjusted-memory-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-06",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/text-shaping-fonts-and-input-research-2026-07.md",
+        "docs/accessibility/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-07",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/javascript-bytecode-representation-research-2026-07.md",
+        "docs/javascript/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-08",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/javascript-dom-wrapper-lifetime-research-2026-07.md",
+        "docs/javascript/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-09",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/javascript-runtime-tiering-and-collector-research-2026-07.md",
+        "docs/javascript/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-10",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/independent-verification-for-agent-generated-code-research-2026-07.md",
+        "docs/ai/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-11",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/agent-execution-production-readiness-audit-2026-07.md",
+        "docs/ai/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-12",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/capacity-and-sustainability-research-2026-07.md",
+        "docs/research/sustained-performance-policy-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-17",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/public-developer-protocol-stability-and-observability-research-2026-07.md",
+        "docs/developer-experience/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-18",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/rendering-artifacts-and-invalidation-research-2026-07.md",
+        "docs/engine/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-19",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/javascript-runtime-tiering-and-collector-research-2026-07.md",
+        "docs/javascript/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-21",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/performance-security-developer-expansion-audit-2026-07.md",
+        "docs/developer-experience/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-24",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/independent-verification-for-agent-generated-code-research-2026-07.md",
+        "docs/research/bounded-api-and-protocol-contract-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-26",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
+        "docs/research/web-platform-source-and-conformance-evidence-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-28",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/media-documents/README.md",
+        "docs/research/human-release-legal-and-incident-capacity-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-32",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/extensions-enterprise/README.md",
+        "docs/research/browser-market-gap-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-33",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/open-web-governance-feature-lifecycle-research-2026-07.md",
+        "docs/research/web-platform-source-and-conformance-evidence-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-39",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/deterministic-replay-and-causal-observability-research-2026-07.md",
+        "docs/quality-assurance/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-41",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/technology-and-dependency-decision-research-2026-07.md",
+        "docs/research/secure-development-and-provenance-level-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-42",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/plugins/README.md",
+        "docs/extensions-enterprise/README.md",
+        "docs/research/independent-verification-for-agent-generated-code-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-43",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/bounded-api-and-protocol-contract-research-2026-07.md",
+        "docs/api-design/README.md"
+      ]
+    },
+    {
+      "question_id": "RQ-51",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/semantic-resource-attribution-taxonomy-2026-07.md",
+        "docs/research/memory-object-representation-and-tab-lifecycle-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-52",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/independent-verification-for-agent-generated-code-research-2026-07.md",
+        "docs/research/agent-execution-production-readiness-audit-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-58",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/pre-build-readiness-gap-audit-2026-07.md",
+        "docs/research/documentation-readiness-completion-audit-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-59",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/agent-execution-production-readiness-audit-2026-07.md",
+        "docs/research/project-controls-and-review-system-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-61",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/stable-v1-scope-and-platform-contract-research-2026-07.md",
+        "docs/research/reference-platform-support-scorecard-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-62",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/product-slos-and-error-budgets-research-2026-07.md",
+        "docs/research/capacity-and-sustainability-research-2026-07.md"
+      ]
+    },
+    {
+      "question_id": "RQ-65",
+      "route_status": "planned_research_route",
+      "research_routes": [
+        "docs/research/service-and-offline-architecture-research-2026-07.md",
+        "docs/research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md"
+      ]
+    }
   ],
   "deferred_questions": [
-    { "question_id": "RQ-01", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Research program and engine architecture owner; map to a future engine or performance lane.", "revisit_trigger": "Revisit before representation or memory budgets become an accepted implementation contract.", "required_future_evidence": ["legal corpus definition", "object-layout alternatives", "memory and allocation measurements"] },
-    { "question_id": "RQ-03", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Engine lifecycle and performance owner; map to a future tab-lifecycle lane.", "revisit_trigger": "Revisit before freeze, pressure, or revival behavior becomes a supported product contract.", "required_future_evidence": ["resource ownership inventory", "freeze and revival fixtures", "working-set and latency measurements"] },
-    { "question_id": "RQ-06", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Text and platform owner; start with the deferred Text Shaping, Fonts, and Input Research packet, then map to a future web-engine and native-platform lane.", "revisit_trigger": "Revisit before multilingual shaping, raster, or IME behavior enters a support commitment.", "required_future_evidence": ["script and font corpus", "shaping/raster alternatives", "accessibility and IME measurements"] },
-    { "question_id": "RQ-07", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "JavaScript runtime owner; start with the deferred JavaScript Bytecode Representation Research packet, then map to the runtime implementation lane.", "revisit_trigger": "Revisit before a bytecode format becomes an engine ABI or Test262 baseline.", "required_future_evidence": ["representative language kernels", "debug and exception behavior", "memory and dispatch measurements"] },
-    { "question_id": "RQ-08", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "JavaScript runtime and storage owner; start with the deferred JavaScript and DOM Wrapper Lifetime Research packet, then map to the runtime and DOM-lifetime lane.", "revisit_trigger": "Revisit before DOM wrappers, GC roots, or teardown semantics become implementation contracts.", "required_future_evidence": ["cycle and teardown fixtures", "collector alternatives", "external-memory accounting"] },
-    { "question_id": "RQ-09", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "JavaScript runtime and compiler owner; map to the JIT decision lane.", "revisit_trigger": "Revisit after the interpreter and baseline runtime have an accepted semantic oracle.", "required_future_evidence": ["backend comparison", "W^X and signing review", "compile and code-quality measurements"] },
-    { "question_id": "RQ-10", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "AI-agent platform and accessibility owner; map to the agent observation lane.", "revisit_trigger": "Revisit before semantic snapshots or screenshot observation become supported agent surfaces.", "required_future_evidence": ["task-success corpus", "stale-target and leakage tests", "prompt-injection and accessibility review"] },
-    { "question_id": "RQ-11", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "AI-agent and trusted-UI owner; map to the agent policy usability lane.", "revisit_trigger": "Revisit before grant, confirmation, or batching behavior becomes a product policy.", "required_future_evidence": ["user study protocol", "keyboard and screen-reader cases", "approval error and habituation measurements"] },
-    { "question_id": "RQ-12", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "AI-agent and performance owner; map to the local-model resource lane.", "revisit_trigger": "Revisit before a local model is included in a supported browser product profile.", "required_future_evidence": ["hardware tiers", "memory and energy measurements", "quality and unload policy"] },
-    { "question_id": "RQ-17", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Developer-experience and protocol owner; start with the deferred Public Developer Protocol Stability and Observability Research packet, then map to the public developer protocol lane.", "revisit_trigger": "Revisit before a stable public protocol or generated client promise is made.", "required_future_evidence": ["protocol comparison", "authentication and redaction tests", "version and support-window policy"] },
-    { "question_id": "RQ-18", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Web-engine pipeline owner; start with the deferred Rendering Artifacts and Invalidation Research packet, then map to the artifact and invalidation lane.", "revisit_trigger": "Revisit before parser, style, layout, paint, accessibility, or compositor artifacts become stable interfaces.", "required_future_evidence": ["static and mutation corpus", "invalidation oracle", "retention and cancellation measurements"] },
-    { "question_id": "RQ-19", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "JavaScript runtime and performance owner; start with the deferred JavaScript Runtime Tiering and Collector Research packet, then map to the runtime tiering lane.", "revisit_trigger": "Revisit after interpreter semantics and collector baselines are accepted.", "required_future_evidence": ["warm-up corpus", "GC pause distribution", "deoptimization and no-JIT evidence"] },
-    { "question_id": "RQ-21", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Developer-experience owner; map to the workflow and protocol measurement lane.", "revisit_trigger": "Revisit before developer workflows or protocol domains are used as leadership claims.", "required_future_evidence": ["workflow corpus", "accessibility and error measurements", "equivalent protocol comparison"] },
-    { "question_id": "RQ-24", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "AI-agent, API, security, accessibility, and product owners; map to the agent observation/action/provider and tool-authority lane.", "revisit_trigger": "Revisit before agent observations, actions, memory, providers, or tools become a supported product or SDK contract.", "required_future_evidence": ["task-success and misuse corpus", "semantic and vision observation comparison", "redaction and opaque-handle tests", "confirmation, revocation, and stale-target tests", "provider/tool resource and privacy review"] },
-    { "question_id": "RQ-26", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Networking, security, storage, privacy, and performance owners; map to the network-service and Fetch-policy lane.", "revisit_trigger": "Revisit before a network-service, Fetch policy, cache, cookie, transport, or partitioning behavior becomes a supported contract.", "required_future_evidence": ["origin, redirect, Fetch, and transport corpus", "network-process and broker authority tests", "fault, cancellation, cache, and cookie fixtures", "fixed-hardware resource measurements", "security, privacy, and support review"] },
-    { "question_id": "RQ-28", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Media, document, platform, security, accessibility, performance, and release owners; map to the media/codec/PDF/printing lane.", "revisit_trigger": "Revisit before media, codec, DRM, PDF, printing, capture, or protected-content behavior enters a release profile.", "required_future_evidence": ["bounded media, PDF, and print corpus", "decoder/document-process isolation tests", "software and hardware path measurements", "licensing, patent, and distribution review", "accessibility, energy, and unsupported-service matrix"] },
-    { "question_id": "RQ-32", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Extensions, enterprise, account, sync, security, storage, and product owners; map to the restricted extension and policy lane.", "revisit_trigger": "Revisit before extension, enterprise-policy, account, sync, native-messaging, or background-work behavior enters product scope.", "required_future_evidence": ["permission and host-grant model", "extension process and lifecycle isolation", "policy precedence and quota tests", "sync encryption, conflict, and recovery review", "store/update, privacy, accessibility, and support boundaries"] },
-    { "question_id": "RQ-33", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Web-platform standards owner; map to the open-web governance lane.", "revisit_trigger": "Revisit before a web-platform feature is selected for implementation or compatibility support.", "required_future_evidence": ["normative source revision", "WPT/Test262 and interop denominator", "privacy, security, and accessibility review"] },
-    { "question_id": "RQ-39", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Quality, developer-experience, engine, security, privacy, performance, and operations owners; map to the deterministic-replay and causal-observability lane.", "revisit_trigger": "Revisit before deterministic replay, causal traces, or differential diagnostic evidence becomes an implementation task, release support promise, or public debugging claim.", "required_future_evidence": ["versioned replay and trace schema", "nondeterminism and input-package manifest", "causal identity and divergence oracle", "redaction, retention, and authority-negative tests", "replay overhead and unsupported-platform measurements"] },
-    { "question_id": "RQ-41", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Architecture, dependency, security, build, release, legal, and maintenance owners; start with the deferred Technology and Dependency Decision Research packet, then map to the technology and dependency decision lane.", "revisit_trigger": "Revisit before a language, framework, foundational dependency, or runtime foundation becomes an accepted architecture or release dependency.", "required_future_evidence": ["candidate dependency and foundation inventory", "security, unsafe, FFI, license, advisory, and SBOM review", "build, provenance, and maintenance measurements", "compatibility, performance, and replacement evidence", "owner-approved dependency policy"] },
-    { "question_id": "RQ-42", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Plug-in, extensions, enterprise, security, API, and product owners; map to the native Plug-in capability/Wasm/WebExtensions lane.", "revisit_trigger": "Revisit before Plug-ins, WebAssembly components, WebExtensions, or native messaging enters product scope.", "required_future_evidence": ["capability and principal model", "process/Wasm/extension isolation tests", "host-grant, resource, lifecycle, and revocation fixtures", "schema/API and compatibility policy", "enterprise, update, privacy, and support review"] },
-    { "question_id": "RQ-43", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Embedding, API, architecture, security, platform, and release owners; map to the public embedding contract lane.", "revisit_trigger": "Revisit before an opaque embedding ABI, generated SDK, WebView, or external application integration becomes a supported contract.", "required_future_evidence": ["opaque ABI and generated-SDK schema", "lifecycle, threading, event-loop, and cancellation tests", "authority, isolation, and resource-accounting review", "platform adapter and packaging evidence", "versioning, deprecation, and compatibility policy"] },
-    { "question_id": "RQ-51", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Performance, product, engine, storage, security, and accessibility owners; map to the Resource Truth Center and lifecycle-control lane.", "revisit_trigger": "Revisit before semantic resource attribution, freeze/discard controls, or 30-tab resource claims become a supported product contract.", "required_future_evidence": ["resource-owner taxonomy and instrumentation", "30-tab mixed/all-live corpus", "freeze/discard/revival and dangerous-action fixtures", "physical-versus-charged accounting validation", "accessibility, privacy, energy, and user-comprehension review"] },
-    { "question_id": "RQ-52", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "AI-agent, security, privacy, accessibility, product, and usability owners; map to the Trustworthy Agent Mode lane.", "revisit_trigger": "Revisit before Agent Mode, autonomous workflows, or agent safety claims enter a supported product profile.", "required_future_evidence": ["task-success and harmful-action corpus", "capability, confirmation, revocation, and stop tests", "prompt-injection, secret, cross-origin, and stale-target review", "accessibility and user-comprehension studies", "provider, audit, resource, and recovery evidence"] },
-    { "question_id": "RQ-58", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Program architecture, build-readiness, quality, security, release, and documentation owners; map to the pre-build readiness control lane.", "revisit_trigger": "Revisit before a pre-build gate, task authority rule, documentation-completion measure, or readiness-promotion process is treated as sufficient for broad implementation.", "required_future_evidence": ["complete PB gate and dependency inventory", "task and owner authority tests", "closure-review and exception records", "documentation semantic-drift checks", "independent review and readiness-promotion evidence"] },
-    { "question_id": "RQ-59", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Agent-execution, architecture, security, quality, production-readiness, and governance owners; map to the agent task and authority model lane.", "revisit_trigger": "Revisit before agents can shape, execute, review, or hand off browser engineering work beyond explicitly bounded no-claim tasks.", "required_future_evidence": ["task decomposition and scope schema", "capability, provenance, and approval model", "self-approval and authority-negative tests", "escalation, rollback, and audit evidence", "independent verification and production-control review"] },
-    { "question_id": "RQ-61", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Product, platform, native-shell, accessibility, compatibility, security, support, and release owners; map to the stable-v1 scope and platform contract lane.", "revisit_trigger": "Revisit before a stable-v1 capability list, supported-platform matrix, or daily-use support statement is published.", "required_future_evidence": ["finite capability and unsupported matrix", "versioned platform images and clean-host runs", "native workflow and assistive-technology evidence", "compatibility, security, update, recovery, and support results", "maintenance capacity and owner-backup review"] },
-    { "question_id": "RQ-62", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Product, performance, reliability, compatibility, accessibility, migration, update, agent, security, and support owners; map to the product SLO and error-budget lane.", "revisit_trigger": "Revisit before numeric SLOs, error budgets, support commitments, or stable-release gates are accepted.", "required_future_evidence": ["metric definitions and complete denominators", "fixed-hardware latency, memory, energy, and longevity baselines", "compatibility, accessibility, migration, update, and agent-safety targets", "error-budget and incident response policy", "support, ownership, and release review"] },
-    { "question_id": "RQ-65", "status": "deferred_outside_current_prebuild_crosswalk", "reason": "The question remains in the research program but is not a current PB closure dependency.", "owner_route": "Product, networking, storage, privacy, security, release, and platform owners; map to the service and offline architecture lane.", "revisit_trigger": "Revisit before optional services, accounts, sync, cloud dependency, offline mode, export, or graceful-shutdown behavior enters product scope.", "required_future_evidence": ["service dependency and data-flow inventory", "offline/degraded-mode and export fixtures", "privacy, account, sync, and self-hosting review", "network, storage, update, and shutdown fault tests", "support, cost, recovery, and user-control policy"] }
+    {
+      "question_id": "RQ-01",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Research program and engine architecture owner; map to a future engine or performance lane.",
+      "revisit_trigger": "Revisit before representation or memory budgets become an accepted implementation contract.",
+      "required_future_evidence": [
+        "legal corpus definition",
+        "object-layout alternatives",
+        "memory and allocation measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-03",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Engine lifecycle and performance owner; map to a future tab-lifecycle lane.",
+      "revisit_trigger": "Revisit before freeze, pressure, or revival behavior becomes a supported product contract.",
+      "required_future_evidence": [
+        "resource ownership inventory",
+        "freeze and revival fixtures",
+        "working-set and latency measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-06",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Text and platform owner; start with the deferred Text Shaping, Fonts, and Input Research packet, then map to a future web-engine and native-platform lane.",
+      "revisit_trigger": "Revisit before multilingual shaping, raster, or IME behavior enters a support commitment.",
+      "required_future_evidence": [
+        "script and font corpus",
+        "shaping/raster alternatives",
+        "accessibility and IME measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-07",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "JavaScript runtime owner; start with the deferred JavaScript Bytecode Representation Research packet, then map to the runtime implementation lane.",
+      "revisit_trigger": "Revisit before a bytecode format becomes an engine ABI or Test262 baseline.",
+      "required_future_evidence": [
+        "representative language kernels",
+        "debug and exception behavior",
+        "memory and dispatch measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-08",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "JavaScript runtime and storage owner; start with the deferred JavaScript and DOM Wrapper Lifetime Research packet, then map to the runtime and DOM-lifetime lane.",
+      "revisit_trigger": "Revisit before DOM wrappers, GC roots, or teardown semantics become implementation contracts.",
+      "required_future_evidence": [
+        "cycle and teardown fixtures",
+        "collector alternatives",
+        "external-memory accounting"
+      ]
+    },
+    {
+      "question_id": "RQ-09",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "JavaScript runtime and compiler owner; map to the JIT decision lane.",
+      "revisit_trigger": "Revisit after the interpreter and baseline runtime have an accepted semantic oracle.",
+      "required_future_evidence": [
+        "backend comparison",
+        "W^X and signing review",
+        "compile and code-quality measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-10",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "AI-agent platform and accessibility owner; map to the agent observation lane.",
+      "revisit_trigger": "Revisit before semantic snapshots or screenshot observation become supported agent surfaces.",
+      "required_future_evidence": [
+        "task-success corpus",
+        "stale-target and leakage tests",
+        "prompt-injection and accessibility review"
+      ]
+    },
+    {
+      "question_id": "RQ-11",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "AI-agent and trusted-UI owner; map to the agent policy usability lane.",
+      "revisit_trigger": "Revisit before grant, confirmation, or batching behavior becomes a product policy.",
+      "required_future_evidence": [
+        "user study protocol",
+        "keyboard and screen-reader cases",
+        "approval error and habituation measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-12",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "AI-agent and performance owner; map to the local-model resource lane.",
+      "revisit_trigger": "Revisit before a local model is included in a supported browser product profile.",
+      "required_future_evidence": [
+        "hardware tiers",
+        "memory and energy measurements",
+        "quality and unload policy"
+      ]
+    },
+    {
+      "question_id": "RQ-17",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Developer-experience and protocol owner; start with the deferred Public Developer Protocol Stability and Observability Research packet, then map to the public developer protocol lane.",
+      "revisit_trigger": "Revisit before a stable public protocol or generated client promise is made.",
+      "required_future_evidence": [
+        "protocol comparison",
+        "authentication and redaction tests",
+        "version and support-window policy"
+      ]
+    },
+    {
+      "question_id": "RQ-18",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Web-engine pipeline owner; start with the deferred Rendering Artifacts and Invalidation Research packet, then map to the artifact and invalidation lane.",
+      "revisit_trigger": "Revisit before parser, style, layout, paint, accessibility, or compositor artifacts become stable interfaces.",
+      "required_future_evidence": [
+        "static and mutation corpus",
+        "invalidation oracle",
+        "retention and cancellation measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-19",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "JavaScript runtime and performance owner; start with the deferred JavaScript Runtime Tiering and Collector Research packet, then map to the runtime tiering lane.",
+      "revisit_trigger": "Revisit after interpreter semantics and collector baselines are accepted.",
+      "required_future_evidence": [
+        "warm-up corpus",
+        "GC pause distribution",
+        "deoptimization and no-JIT evidence"
+      ]
+    },
+    {
+      "question_id": "RQ-21",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Developer-experience owner; map to the workflow and protocol measurement lane.",
+      "revisit_trigger": "Revisit before developer workflows or protocol domains are used as leadership claims.",
+      "required_future_evidence": [
+        "workflow corpus",
+        "accessibility and error measurements",
+        "equivalent protocol comparison"
+      ]
+    },
+    {
+      "question_id": "RQ-24",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "AI-agent, API, security, accessibility, and product owners; map to the agent observation/action/provider and tool-authority lane.",
+      "revisit_trigger": "Revisit before agent observations, actions, memory, providers, or tools become a supported product or SDK contract.",
+      "required_future_evidence": [
+        "task-success and misuse corpus",
+        "semantic and vision observation comparison",
+        "redaction and opaque-handle tests",
+        "confirmation, revocation, and stale-target tests",
+        "provider/tool resource and privacy review"
+      ]
+    },
+    {
+      "question_id": "RQ-26",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Networking, security, storage, privacy, and performance owners; map to the network-service and Fetch-policy lane.",
+      "revisit_trigger": "Revisit before a network-service, Fetch policy, cache, cookie, transport, or partitioning behavior becomes a supported contract.",
+      "required_future_evidence": [
+        "origin, redirect, Fetch, and transport corpus",
+        "network-process and broker authority tests",
+        "fault, cancellation, cache, and cookie fixtures",
+        "fixed-hardware resource measurements",
+        "security, privacy, and support review"
+      ]
+    },
+    {
+      "question_id": "RQ-28",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Media, document, platform, security, accessibility, performance, and release owners; map to the media/codec/PDF/printing lane.",
+      "revisit_trigger": "Revisit before media, codec, DRM, PDF, printing, capture, or protected-content behavior enters a release profile.",
+      "required_future_evidence": [
+        "bounded media, PDF, and print corpus",
+        "decoder/document-process isolation tests",
+        "software and hardware path measurements",
+        "licensing, patent, and distribution review",
+        "accessibility, energy, and unsupported-service matrix"
+      ]
+    },
+    {
+      "question_id": "RQ-32",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Extensions, enterprise, account, sync, security, storage, and product owners; map to the restricted extension and policy lane.",
+      "revisit_trigger": "Revisit before extension, enterprise-policy, account, sync, native-messaging, or background-work behavior enters product scope.",
+      "required_future_evidence": [
+        "permission and host-grant model",
+        "extension process and lifecycle isolation",
+        "policy precedence and quota tests",
+        "sync encryption, conflict, and recovery review",
+        "store/update, privacy, accessibility, and support boundaries"
+      ]
+    },
+    {
+      "question_id": "RQ-33",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Web-platform standards owner; map to the open-web governance lane.",
+      "revisit_trigger": "Revisit before a web-platform feature is selected for implementation or compatibility support.",
+      "required_future_evidence": [
+        "normative source revision",
+        "WPT/Test262 and interop denominator",
+        "privacy, security, and accessibility review"
+      ]
+    },
+    {
+      "question_id": "RQ-39",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Quality, developer-experience, engine, security, privacy, performance, and operations owners; map to the deterministic-replay and causal-observability lane.",
+      "revisit_trigger": "Revisit before deterministic replay, causal traces, or differential diagnostic evidence becomes an implementation task, release support promise, or public debugging claim.",
+      "required_future_evidence": [
+        "versioned replay and trace schema",
+        "nondeterminism and input-package manifest",
+        "causal identity and divergence oracle",
+        "redaction, retention, and authority-negative tests",
+        "replay overhead and unsupported-platform measurements"
+      ]
+    },
+    {
+      "question_id": "RQ-41",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Architecture, dependency, security, build, release, legal, and maintenance owners; start with the deferred Technology and Dependency Decision Research packet, then map to the technology and dependency decision lane.",
+      "revisit_trigger": "Revisit before a language, framework, foundational dependency, or runtime foundation becomes an accepted architecture or release dependency.",
+      "required_future_evidence": [
+        "candidate dependency and foundation inventory",
+        "security, unsafe, FFI, license, advisory, and SBOM review",
+        "build, provenance, and maintenance measurements",
+        "compatibility, performance, and replacement evidence",
+        "owner-approved dependency policy"
+      ]
+    },
+    {
+      "question_id": "RQ-42",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Plug-in, extensions, enterprise, security, API, and product owners; map to the native Plug-in capability/Wasm/WebExtensions lane.",
+      "revisit_trigger": "Revisit before Plug-ins, WebAssembly components, WebExtensions, or native messaging enters product scope.",
+      "required_future_evidence": [
+        "capability and principal model",
+        "process/Wasm/extension isolation tests",
+        "host-grant, resource, lifecycle, and revocation fixtures",
+        "schema/API and compatibility policy",
+        "enterprise, update, privacy, and support review"
+      ]
+    },
+    {
+      "question_id": "RQ-43",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Embedding, API, architecture, security, platform, and release owners; map to the public embedding contract lane.",
+      "revisit_trigger": "Revisit before an opaque embedding ABI, generated SDK, WebView, or external application integration becomes a supported contract.",
+      "required_future_evidence": [
+        "opaque ABI and generated-SDK schema",
+        "lifecycle, threading, event-loop, and cancellation tests",
+        "authority, isolation, and resource-accounting review",
+        "platform adapter and packaging evidence",
+        "versioning, deprecation, and compatibility policy"
+      ]
+    },
+    {
+      "question_id": "RQ-51",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Performance, product, engine, storage, security, and accessibility owners; map to the Resource Truth Center and lifecycle-control lane.",
+      "revisit_trigger": "Revisit before semantic resource attribution, freeze/discard controls, or 30-tab resource claims become a supported product contract.",
+      "required_future_evidence": [
+        "resource-owner taxonomy and instrumentation",
+        "30-tab mixed/all-live corpus",
+        "freeze/discard/revival and dangerous-action fixtures",
+        "physical-versus-charged accounting validation",
+        "accessibility, privacy, energy, and user-comprehension review"
+      ]
+    },
+    {
+      "question_id": "RQ-52",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "AI-agent, security, privacy, accessibility, product, and usability owners; map to the Trustworthy Agent Mode lane.",
+      "revisit_trigger": "Revisit before Agent Mode, autonomous workflows, or agent safety claims enter a supported product profile.",
+      "required_future_evidence": [
+        "task-success and harmful-action corpus",
+        "capability, confirmation, revocation, and stop tests",
+        "prompt-injection, secret, cross-origin, and stale-target review",
+        "accessibility and user-comprehension studies",
+        "provider, audit, resource, and recovery evidence"
+      ]
+    },
+    {
+      "question_id": "RQ-58",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Program architecture, build-readiness, quality, security, release, and documentation owners; map to the pre-build readiness control lane.",
+      "revisit_trigger": "Revisit before a pre-build gate, task authority rule, documentation-completion measure, or readiness-promotion process is treated as sufficient for broad implementation.",
+      "required_future_evidence": [
+        "complete PB gate and dependency inventory",
+        "task and owner authority tests",
+        "closure-review and exception records",
+        "documentation semantic-drift checks",
+        "independent review and readiness-promotion evidence"
+      ]
+    },
+    {
+      "question_id": "RQ-59",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Agent-execution, architecture, security, quality, production-readiness, and governance owners; map to the agent task and authority model lane.",
+      "revisit_trigger": "Revisit before agents can shape, execute, review, or hand off browser engineering work beyond explicitly bounded no-claim tasks.",
+      "required_future_evidence": [
+        "task decomposition and scope schema",
+        "capability, provenance, and approval model",
+        "self-approval and authority-negative tests",
+        "escalation, rollback, and audit evidence",
+        "independent verification and production-control review"
+      ]
+    },
+    {
+      "question_id": "RQ-61",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Product, platform, native-shell, accessibility, compatibility, security, support, and release owners; map to the stable-v1 scope and platform contract lane.",
+      "revisit_trigger": "Revisit before a stable-v1 capability list, supported-platform matrix, or daily-use support statement is published.",
+      "required_future_evidence": [
+        "finite capability and unsupported matrix",
+        "versioned platform images and clean-host runs",
+        "native workflow and assistive-technology evidence",
+        "compatibility, security, update, recovery, and support results",
+        "maintenance capacity and owner-backup review"
+      ]
+    },
+    {
+      "question_id": "RQ-62",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Product, performance, reliability, compatibility, accessibility, migration, update, agent, security, and support owners; map to the product SLO and error-budget lane.",
+      "revisit_trigger": "Revisit before numeric SLOs, error budgets, support commitments, or stable-release gates are accepted.",
+      "required_future_evidence": [
+        "metric definitions and complete denominators",
+        "fixed-hardware latency, memory, energy, and longevity baselines",
+        "compatibility, accessibility, migration, update, and agent-safety targets",
+        "error-budget and incident response policy",
+        "support, ownership, and release review"
+      ]
+    },
+    {
+      "question_id": "RQ-65",
+      "status": "deferred_outside_current_prebuild_crosswalk",
+      "reason": "The question remains in the research program but is not a current PB closure dependency.",
+      "owner_route": "Product, networking, storage, privacy, security, release, and platform owners; map to the service and offline architecture lane.",
+      "revisit_trigger": "Revisit before optional services, accounts, sync, cloud dependency, offline mode, export, or graceful-shutdown behavior enters product scope.",
+      "required_future_evidence": [
+        "service dependency and data-flow inventory",
+        "offline/degraded-mode and export fixtures",
+        "privacy, account, sync, and self-hosting review",
+        "network, storage, update, and shutdown fault tests",
+        "support, cost, recovery, and user-control policy"
+      ]
+    }
   ],
   "validation_commands": [
     "python3 -B tools/validate_research_question_coverage.py",

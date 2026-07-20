@@ -22,7 +22,8 @@ WP-001 Repository and evidence foundation
   │     ├── WP-012 Navigation transactions and renderer assignment
   │     │     └── WP-013 Scoped HTTP/TLS/cache/cookies
   │     │           └── WP-014 Storage broker and service-worker foundation
-  │     │                 └── WP-017 Signed update, rollback, migration laboratory
+  │     │                 ├── WP-017 Signed update, rollback, migration laboratory
+  │     │                 └── WP-020 Everyday product surfaces and browser workflows
   │     └── WP-016 Agent reference implementation
   │
   ├── WP-006 HTML tokenizer and tree builder
@@ -39,9 +40,12 @@ WP-001 Repository and evidence foundation
         └── WP-011 Exact GC and Web IDL bindings
               └── WP-019 Baseline JIT and hardened JavaScript execution
 
+WP-015 additionally depends on WP-002.
+WP-016 additionally depends on WP-015.
+WP-017 additionally depends on WP-001 and WP-002.
 WP-018 additionally depends on WP-005 and WP-013.
 WP-019 additionally depends on WP-010 and WP-011.
-WP-016 additionally depends on WP-015.
+WP-020 additionally depends on WP-004 and WP-012.
 ```
 
 The machine source is [`backlog.json`](../../blueprint-v1/machine/backlog.json). This diagram must be updated in the same change whenever the machine graph changes.

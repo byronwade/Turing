@@ -94,15 +94,23 @@ A malformed page, renderer crash, GPU reset, storage corruption, extension failu
 - **REQ-PROD-001:** Open, navigate, reload, stop, duplicate, pin, mute, close, restore, and move tabs without cross-profile state leakage.
 - **REQ-PROD-002:** Support multiple isolated profiles and ephemeral private sessions.
 - **REQ-ENG-001:** Parse and represent HTML without invoking an existing browser engine.
-- **REQ-ENG-002:** Implement a Turing-owned CSS cascade, style system, layout system, display-list builder, and hit-testing model.
+- **REQ-ENG-002:** Implement a Turing-owned DOM and event model.
+- **REQ-ENG-003:** Implement a Turing-owned CSS parser, cascade, and computed-value system.
+- **REQ-ENG-004:** Implement a Turing-owned layout fragment system.
+- **REQ-ENG-005:** Implement a Turing-owned paint display-list and hit-test pipeline.
 - **REQ-JS-001:** Execute ECMAScript through a Turing-owned language frontend and runtime architecture.
 - **REQ-SEC-001:** Run untrusted web content in OS-sandboxed processes with no direct ambient filesystem or unrestricted socket access.
 - **REQ-SEC-002:** Enforce origin, site, browsing-context-group, and profile separation in process assignment and storage.
+- **REQ-SEC-004:** Ship only signed, reproducible, rollback-capable updates from protected release workflows.
 - **REQ-PERF-001:** Publish reproducible startup, interaction, page-load, memory, energy, and 30-tab lifecycle benchmarks.
-- **REQ-A11Y-001:** Produce a semantic accessibility tree and bridge it to native platform accessibility APIs.
+- **REQ-ENG-006:** Generate the accessibility tree from engine semantics.
+- **REQ-A11Y-001:** Provide native browser UI accessibility on supported platforms.
+- **REQ-A11Y-002:** Bridge web-content semantics to platform accessibility APIs.
 - **REQ-DEV-001:** Provide versioned inspection and automation protocols independent of product UI.
-- **REQ-AI-001:** Require deterministic authorization for every model-initiated action and confirmation for configured high-impact actions.
-- **REQ-OPS-001:** Ship only signed, reproducible, rollback-capable artifacts from protected release workflows.
+- **REQ-AI-001:** Treat agents as separately identified capability principals.
+- **REQ-AI-003:** Validate origin, profile, grant, and document epoch on every agent action.
+- **REQ-AI-004:** Require a deterministic confirmation policy for consequential agent actions.
+- **REQ-OPS-001:** Keep SBOM, provenance, symbols, notices, and release evidence bound to a shared build identity.
 
 ## 5. Claim maturity labels
 

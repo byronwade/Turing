@@ -18,7 +18,7 @@ The UI distinguishes measured physical totals from charged estimates. Shared mem
 
 ## Lifecycle control
 
-Supported states remain explicit: Active, Background, Frozen, Serialized, Discarded, Restoring, Crashed, and Terminated where applicable. Before an action the browser reports:
+Supported states remain explicit and follow the normative [tab lifecycle model](../blueprint-v1/09-performance-memory.md#6-tab-lifecycle-model): `Active`, `Background`, `Throttled`, `Frozen`, `Serialized`, `Discarded`, and `Crashed`. This chapter does not define its own state set; the Blueprint and the prototype's `TabState` enum are authoritative. Before an action the browser reports:
 
 - predicted savings;
 - state-loss risk;

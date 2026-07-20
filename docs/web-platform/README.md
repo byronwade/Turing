@@ -30,7 +30,7 @@ Turing should not become a private web platform. New behavior starts with user o
 - Accessibility, privacy, localization, developer tooling, and platform differences are designed with the subsystem.
 - Research does not change accepted requirements or support status without the normal decision process.
 
-The machine-checked [web-platform source manifest](machine/web-platform-source-manifest.json) records which research questions are active in the approved PB-002 source-strategy crosswalk and which questions are only deferred context. A deferred context question is not an implementation task, compatibility commitment, or readiness signal.
+The machine-checked [web-platform source manifest](machine/web-platform-source-manifest.json) records which research questions are active in the `PB-002` source-strategy crosswalk and which questions are only deferred context. The crosswalk is not approved: [`research-readiness-crosswalk.json`](../blueprint-v1/machine/research-readiness-crosswalk.json) carries `status: no_claim_research_control` and states that no source-strategy decision is approved by it, and `PB-002` remains blocked. A deferred context question is not an implementation task, compatibility commitment, or readiness signal.
 
 ## Leadership criteria
 
