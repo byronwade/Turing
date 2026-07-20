@@ -22,7 +22,7 @@ This is the single-screen starting state for this documentation-heavy pass.
 - **90% contained-M0 documentation organization:** 9 of 10 criteria in the checked `PB-020` documentation-readiness audit are `ready_for_contained_m0`.
 - **0% full-build closure:** 0 of 10 audit criteria are `ready_for_full_goal`; this is a closure metric, not a count of documents or research pages.
 - The remaining criterion is `DOC-READY-OWNER_DECISIONS` (`blocked_for_full_goal`).
-- Research-route coverage is mechanically checked: all `37/37` active research questions have at least one `docs/research/` route, and all `259/259` crosswalk evidence paths resolve to existing repository files or directories.
+- Research-route coverage is mechanically checked: all `37/37` active research questions have at least one `docs/research/` route, and all `260/260` crosswalk evidence paths resolve to existing repository files or directories.
 - Active research quality is also checked: all `7/7` active packets pass observation/inference/next-work/source-context checks.
 - The measurement source is [`documentation-readiness-completion-audit.json`](machine/documentation-readiness-completion-audit.json); recompute it whenever criterion status changes.
 

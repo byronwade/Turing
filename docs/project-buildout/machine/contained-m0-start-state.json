@@ -31,7 +31,8 @@
     "docs/agent-execution/README.md",
     "docs/agent-execution/machine/tasks/TASK-000011.json",
     "docs/research/task-000011-wp002-review-handoff-2026-07.md",
-    "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json"
+    "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
+    "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-20.json"
   ],
   "current_state": {
     "contained_m0_continuation_allowed": true,
@@ -109,6 +110,7 @@
         "docs/agent-execution/machine/tasks/TASK-000011.json",
         "docs/research/task-000011-wp002-review-handoff-2026-07.md",
         "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json",
+        "docs/agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-20.json",
         "docs/research/wp-002-kernel-ipc-2026-07.md"
       ],
       "prohibited_claims": [

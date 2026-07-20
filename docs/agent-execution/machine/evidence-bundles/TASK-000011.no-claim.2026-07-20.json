@@ -2,7 +2,7 @@
   "schema_version": 1,
   "bundle_id": "EVID-20260720-TASK-000011-NOCLAIM",
   "task_id": "TASK-000011",
-  "source_commit": "f009632a6120deabc22c465c489e62b035d6afe6",
+  "source_commit": "eb0473eb711d0f7fa68cf9aea0c5971d026af456",
   "environment": {
     "captured_at": "2026-07-20",
     "host_os": "Windows",
@@ -29,7 +29,7 @@
     {"type": "source_file", "path": "apps/turing-shell/src/main.rs", "sha256": "4e14c6d206ef24467e6063fbaae7d061e2e7a22a5edc95bfc083781bb48c51ba", "result": "present_at_source_commit"},
     {"type": "source_file", "path": "tools/validate_build_foundation.py", "sha256": "912e60714f14e3575ea87a06253d5346a648d44118e6f75276b7274d38467907", "result": "present_at_source_commit"},
     {"type": "source_file", "path": "docs/research/wp-002-kernel-ipc-2026-07.md", "sha256": "3bae09a0de4fed5c74520ff218e4820b200d0e26d45d269986849e8c1cf77342", "result": "present_at_source_commit"},
-    {"type": "source_file", "path": "docs/research/task-000011-wp002-review-handoff-2026-07.md", "sha256": "b1ad108319d356264936f7e9d6702a405ebf72cec259a7d227f839b3c4169414", "result": "present_at_source_commit"},
+    {"type": "source_file", "path": "docs/research/task-000011-wp002-review-handoff-2026-07.md", "sha256": "1befbd72edaa49c3a988b29fbe19506ac1de0fa91cc12835dd58b63058790565", "result": "present_at_source_commit"},
     {"type": "source_file", "path": "docs/agent-execution/machine/tasks/TASK-000011.json", "sha256": "097e07bc5309c5ca4f11c9494c256ab17d0d47b3fd8d08369de7a4909079f8aa", "result": "present_at_source_commit"}
   ],
   "failures": [],

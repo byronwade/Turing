@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Rebound TASK-000011 no-claim capture to current main
+
+Rebound the current non-accepting `TASK-000011` source-identity capture to the pushed `main` commit `eb0473eb711d0f7fa68cf9aea0c5971d026af456` and refreshed the changed review-handoff hash. This keeps the current bundle, handoff, machine start-state, evidence matrix, and repository map on one exact source commit without changing the `review_pending`, `90%` contained-M0, or `0%` full-build status.
+
 ## 2026-07-20 - Current TASK-000011 no-claim evidence capture
 
 Captured current source-file identities and Windows toolchain context for `TASK-000011` at commit `f009632a6120deabc22c465c489e62b035d6afe6` in a new non-accepting `needs_independent_review` bundle. The bundle is discoverable from the agent index, review handoff, evidence matrix, and repository map. It does not retain raw command logs, accept the task, promote `PB-011`, or change the `90%` contained-M0 / `0%` full-build measures.
@@ -4119,7 +4123,7 @@ Can the review-pending `TASK-000011` source evidence be bound to a checked sourc
 
 Inputs:
 
-- checked no-claim [TASK-000011 evidence capture](agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-18.json);
+- checked no-claim [TASK-000011 evidence capture](agent-execution/machine/evidence-bundles/TASK-000011.no-claim.2026-07-20.json);
 - [TASK-000011 WP-002 Review Handoff](research/task-000011-wp002-review-handoff-2026-07.md);
 - [`TASK-000011`](agent-execution/machine/tasks/TASK-000011.json);
 - [`evidence-bundle.schema.json`](agent-execution/machine/evidence-bundle.schema.json);
