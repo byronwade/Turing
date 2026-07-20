@@ -77,6 +77,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-raster"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-layout",
+]
+
+[[package]]
 name = "turing-shell"
 version = "0.1.0"
 dependencies = [

@@ -54,7 +54,7 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_css::{ElementTree, Stylesheet, cascade};
+use turing_css::{Color, CssError, ElementTree, Stylesheet, cascade};
 
 /// What layout needs from a tree beyond selector matching.
 ///
@@ -86,6 +86,8 @@ pub trait LayoutTree: ElementTree {
 /// A feature this implementation does not model.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LayoutError {
+    /// A CSS value that the value layer refused, most often a colour notation.
+    Value(CssError),
     /// `float` removes a box from normal vertical stacking.
     FloatUnsupported { value: String },
     /// `position` other than `static` changes the containing block.
@@ -98,9 +100,16 @@ pub enum LayoutError {
     NegativeEdgeUnsupported { property: String, value: String },
 }
 
+impl From<CssError> for LayoutError {
+    fn from(error: CssError) -> Self {
+        Self::Value(error)
+    }
+}
+
 impl fmt::Display for LayoutError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Value(error) => write!(formatter, "{error}"),
             Self::FloatUnsupported { value } => write!(
                 formatter,
                 "float: {value} is not implemented; floats leave normal flow and require clearance"
@@ -229,8 +238,8 @@ pub struct LayoutBox {
     /// Text content for [`BoxKind::Text`].
     pub text: Option<String>,
     /// Resolved declarations that painting needs.
-    pub background: Option<String>,
-    pub color: Option<String>,
+    pub background: Option<Color>,
+    pub color: Option<Color>,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -239,12 +248,12 @@ pub struct LayoutBox {
 #[derive(Clone, Debug, PartialEq)]
 pub enum DisplayItem {
     /// Fill `rect` with `color`.
-    SolidColor { rect: Rect, color: String },
+    SolidColor { rect: Rect, color: Color },
     /// Draw `text` at `rect` in `color`.
     Text {
         rect: Rect,
         text: String,
-        color: String,
+        color: Color,
     },
 }
 
@@ -264,8 +273,8 @@ struct Style {
     margin: EdgeSizes,
     padding: EdgeSizes,
     border: EdgeSizes,
-    background: Option<String>,
-    color: Option<String>,
+    background: Option<Color>,
+    color: Option<Color>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -305,17 +314,16 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
     if let Some(color) = &layout_box.background {
         list.items.push(DisplayItem::SolidColor {
             rect: layout_box.dimensions.border_box(),
-            color: color.clone(),
+            color: *color,
         });
     }
     if let (BoxKind::Text, Some(text)) = (layout_box.kind, &layout_box.text) {
         list.items.push(DisplayItem::Text {
             rect: layout_box.dimensions.content,
             text: text.clone(),
-            color: layout_box
-                .color
-                .clone()
-                .unwrap_or_else(|| "black".to_string()),
+            // The initial value of `color` is black, per CSS. This is a
+            // specified default rather than a fallback for a missing value.
+            color: layout_box.color.unwrap_or_default(),
         });
     }
     for child in &layout_box.children {
@@ -329,7 +337,7 @@ fn build_box<T: LayoutTree>(
     tree: &T,
     stylesheet: &Stylesheet,
     node: T::Node,
-    inherited_color: Option<&str>,
+    inherited_color: Option<Color>,
 ) -> Result<Option<LayoutBox>, LayoutError> {
     if let Some(text) = tree.text(node) {
         if text.trim().is_empty() {
@@ -343,7 +351,7 @@ fn build_box<T: LayoutTree>(
             background: None,
             // `color` is inherited, so a text run paints in the colour of
             // the nearest ancestor that set one.
-            color: inherited_color.map(str::to_string),
+            color: inherited_color,
             children: Vec::new(),
         }));
     }
@@ -357,7 +365,7 @@ fn build_box<T: LayoutTree>(
         return Ok(None);
     }
 
-    let own_color = style.color.as_deref().or(inherited_color);
+    let own_color = style.color.or(inherited_color);
     let mut children = Vec::new();
     for child in tree.children(node) {
         if let Some(built) = build_box(tree, stylesheet, child, own_color)? {
@@ -399,8 +407,8 @@ fn build_box<T: LayoutTree>(
         kind,
         node: Some(tree.node_index(node)),
         text: None,
-        background: style.background.clone(),
-        color: own_color.map(str::to_string),
+        background: style.background,
+        color: own_color,
         children,
     }))
 }
@@ -496,8 +504,8 @@ fn resolve_style<T: LayoutTree>(
             "margin" => style.margin = uniform(non_negative(property, value)?),
             "padding" => style.padding = uniform(non_negative(property, value)?),
             "border-width" => style.border = uniform(non_negative(property, value)?),
-            "background" | "background-color" => style.background = Some(value.to_string()),
-            "color" => style.color = Some(value.to_string()),
+            "background" | "background-color" => style.background = Some(Color::parse(value)?),
+            "color" => style.color = Some(Color::parse(value)?),
             _ => {}
         }
     }
@@ -1456,7 +1464,7 @@ mod tests {
         let list = build_display_list(&root);
         assert!(list.items.iter().any(|item| matches!(
             item,
-            DisplayItem::SolidColor { color, .. } if color == "red"
+            DisplayItem::SolidColor { color, .. } if *color == Color::parse("red").expect("named colour")
         )));
     }
 
@@ -1504,7 +1512,7 @@ mod tests {
         )));
         assert!(list.items.iter().any(|item| matches!(
             item,
-            DisplayItem::Text { color, .. } if color == "navy"
+            DisplayItem::Text { color, .. } if *color == Color::parse("navy").expect("named colour")
         )));
     }
 

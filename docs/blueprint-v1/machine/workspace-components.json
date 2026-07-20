@@ -294,6 +294,25 @@
         "turing-html"
       ],
       "failure_boundary": "reject-unmapped-elements-roles-and-name-sources"
+    },
+    {
+      "id": "COMP-017",
+      "package": "turing-raster",
+      "path": "crates/turing-raster",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "unprivileged",
+      "hostile_input": true,
+      "public_api": "internal-reference-rasterizer",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-layout"
+      ],
+      "failure_boundary": "reject-glyph-rasterization-and-oversized-canvases"
     }
   ]
 }
