@@ -1,6 +1,6 @@
 [package]
-name = "turing-chrome"
-description = "Toolkit-neutral Nova chrome renderer: shell state in, display list and typed commands out"
+name = "turing-paint"
+description = "CPU compositing painter: alpha, rounded corners, and anti-aliasing, diffed against the reference rasterizer where their domains overlap"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -13,9 +13,7 @@ publish = false
 [dependencies]
 turing-css = { path = "../turing-css", default-features = false }
 turing-layout = { path = "../turing-layout", default-features = false }
-turing-paint = { path = "../turing-paint" }
-turing-types = { path = "../turing-types" }
-turing-ui-model = { path = "../turing-ui-model" }
+turing-raster = { path = "../turing-raster" }
 
 [lints]
 workspace = true

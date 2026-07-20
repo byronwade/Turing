@@ -34,7 +34,8 @@
 pub mod tokens;
 
 use turing_css::Color;
-use turing_layout::{DisplayItem, DisplayList, Point, Rect};
+use turing_layout::{Point, Rect};
+use turing_paint::{PaintItem, PaintList};
 use turing_types::TabId;
 use turing_ui_model::{ShellCommand, ShellSnapshot, TabLifecycle};
 
@@ -192,62 +193,38 @@ fn geometry(model: &ChromeModel<'_>) -> Geometry {
     }
 }
 
-fn fill(list: &mut DisplayList, rect: Rect, color: Color) {
-    list.items.push(DisplayItem::SolidColor { rect, color });
+fn fill(list: &mut PaintList, rect: Rect, color: Color) {
+    rounded(list, rect, color, 0.0);
 }
 
-/// A one-pixel inset border drawn as four fills.
-fn border(list: &mut DisplayList, rect: Rect, color: Color) {
-    let Rect {
-        x,
-        y,
-        width,
-        height,
-    } = rect;
-    fill(
+fn rounded(list: &mut PaintList, rect: Rect, color: Color, radius: f32) {
+    list.items.push(PaintItem::Fill {
+        rect,
+        color,
+        alpha: 1.0,
+        radius,
+    });
+}
+
+/// A one-pixel ring: the border colour rounded, then the interior inset by
+/// one pixel over it.
+fn ring(list: &mut PaintList, rect: Rect, border: Color, interior: Color, radius: f32) {
+    rounded(list, rect, border, radius);
+    rounded(
         list,
         Rect {
-            x,
-            y,
-            width,
-            height: 1.0,
+            x: rect.x + 1.0,
+            y: rect.y + 1.0,
+            width: rect.width - 2.0,
+            height: rect.height - 2.0,
         },
-        color,
-    );
-    fill(
-        list,
-        Rect {
-            x,
-            y: y + height - 1.0,
-            width,
-            height: 1.0,
-        },
-        color,
-    );
-    fill(
-        list,
-        Rect {
-            x,
-            y,
-            width: 1.0,
-            height,
-        },
-        color,
-    );
-    fill(
-        list,
-        Rect {
-            x: x + width - 1.0,
-            y,
-            width: 1.0,
-            height,
-        },
-        color,
+        interior,
+        (radius - 1.0).max(0.0),
     );
 }
 
 /// Text centred vertically in `rect`, truncated with `..` when it cannot fit.
-fn text_in(list: &mut DisplayList, rect: Rect, text: &str, color: Color, pad: f32) {
+fn text_in(list: &mut PaintList, rect: Rect, text: &str, color: Color, pad: f32) {
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let capacity = (((rect.width - 2.0 * pad) / GLYPH_ADVANCE).floor().max(0.0)) as usize;
     if capacity == 0 {
@@ -263,7 +240,7 @@ fn text_in(list: &mut DisplayList, rect: Rect, text: &str, color: Color, pad: f3
     };
     #[allow(clippy::cast_precision_loss)]
     let width = shown.chars().count() as f32 * GLYPH_ADVANCE;
-    list.items.push(DisplayItem::Text {
+    list.items.push(PaintItem::Text {
         rect: Rect {
             x: rect.x + pad,
             y: rect.y + (rect.height - TEXT_LINE) / 2.0,
@@ -272,12 +249,13 @@ fn text_in(list: &mut DisplayList, rect: Rect, text: &str, color: Color, pad: f3
         },
         text: shown,
         color,
+        alpha: 1.0,
     });
 }
 
 /// A single glyph centred in `rect` — the reference stand-in for an icon.
-fn glyph_in(list: &mut DisplayList, rect: Rect, glyph: char, color: Color) {
-    list.items.push(DisplayItem::Text {
+fn glyph_in(list: &mut PaintList, rect: Rect, glyph: char, color: Color) {
+    list.items.push(PaintItem::Text {
         rect: Rect {
             x: rect.x + (rect.width - GLYPH_ADVANCE) / 2.0,
             y: rect.y + (rect.height - TEXT_LINE) / 2.0,
@@ -286,6 +264,7 @@ fn glyph_in(list: &mut DisplayList, rect: Rect, glyph: char, color: Color) {
         },
         text: glyph.to_string(),
         color,
+        alpha: 1.0,
     });
 }
 
@@ -294,9 +273,9 @@ fn glyph_in(list: &mut DisplayList, rect: Rect, glyph: char, color: Color) {
 /// Coordinates are window coordinates: the bar occupies
 /// `y in [0, bar_height())` across the window's width.
 #[must_use]
-pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> DisplayList {
+pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> PaintList {
     let geometry = geometry(model);
-    let mut list = DisplayList::default();
+    let mut list = PaintList::default();
 
     // The bar surface and its hairline bottom border.
     fill(
@@ -337,7 +316,7 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> DisplayList {
     glyph_in(&mut list, geometry.reload, 'R', theme.text2);
 
     if let Some(pill) = geometry.site_pill {
-        fill(&mut list, pill, theme.surface3);
+        rounded(&mut list, pill, theme.surface3, 10.0);
         let address = model
             .snapshot
             .tabs
@@ -384,18 +363,9 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> DisplayList {
 
     for tab in &geometry.tabs {
         if tab.active {
-            // `.ttab.on`: surface 3 with a 1px `--line2` inset ring.
-            fill(&mut list, tab.rect, theme.line2);
-            fill(
-                &mut list,
-                Rect {
-                    x: tab.rect.x + 1.0,
-                    y: tab.rect.y + 1.0,
-                    width: tab.rect.width - 2.0,
-                    height: tab.rect.height - 2.0,
-                },
-                theme.surface3,
-            );
+            // `.ttab.on`: surface 3 with a 1px `--line2` inset ring, at
+            // Nova's 10px tab radius.
+            ring(&mut list, tab.rect, theme.line2, theme.surface3, 10.0);
         }
         let title_color = match (tab.active, tab.lifecycle) {
             (true, _) => theme.text,
@@ -444,8 +414,14 @@ pub fn render(model: &ChromeModel<'_>, theme: &Theme) -> DisplayList {
         },
         theme.line2,
     );
-    fill(&mut list, geometry.avatar, theme.surface3);
-    border(&mut list, geometry.avatar, theme.line2);
+    // `.avatar` is a circle: radius half the box.
+    ring(
+        &mut list,
+        geometry.avatar,
+        theme.line2,
+        theme.surface3,
+        tokens::AVATAR_SIZE / 2.0,
+    );
     glyph_in(&mut list, geometry.avatar, 'T', theme.text2);
 
     list
@@ -508,8 +484,8 @@ pub fn command_at(model: &ChromeModel<'_>, point: Point) -> Option<ShellCommand>
 /// until the first character arrives. The veil's blur is not reproducible, so
 /// the panel simply paints opaque on surface 1 with a `--line2` border.
 #[must_use]
-pub fn render_palette(width: f32, height: f32, input: &str, theme: &Theme) -> DisplayList {
-    let mut list = DisplayList::default();
+pub fn render_palette(width: f32, height: f32, input: &str, theme: &Theme) -> PaintList {
+    let mut list = PaintList::default();
     let panel_width = (width * 0.94).min(900.0);
     let panel_height = (height * 0.74).min(590.0);
     let panel = Rect {
@@ -518,8 +494,21 @@ pub fn render_palette(width: f32, height: f32, input: &str, theme: &Theme) -> Di
         width: panel_width,
         height: panel_height,
     };
-    fill(&mut list, panel, theme.surface1);
-    border(&mut list, panel, theme.line2);
+    // The veil: Nova blurs the page behind the palette; without blur the
+    // honest stand-in is a translucent ink scrim that dims it.
+    list.items.push(PaintItem::Fill {
+        rect: Rect {
+            x: 0.0,
+            y: 0.0,
+            width,
+            height,
+        },
+        color: theme.ink,
+        alpha: 0.45,
+        radius: 0.0,
+    });
+    // `.cmd` panel at Nova's large radius with the `--line2` ring.
+    ring(&mut list, panel, theme.line2, theme.surface1, 14.0);
 
     let input_row = Rect {
         x: panel.x + 1.0,
@@ -613,19 +602,20 @@ mod tests {
         let list = render(&model, &LIGHT);
         assert!(matches!(
             list.items.first(),
-            Some(DisplayItem::SolidColor { color, .. }) if *color == LIGHT.surface2
+            Some(PaintItem::Fill { color, .. }) if *color == LIGHT.surface2
         ));
         assert!(
             list.items.iter().any(|item| matches!(
                 item,
-                DisplayItem::SolidColor { color, .. } if *color == LIGHT.surface3
+                PaintItem::Fill { color, radius, .. }
+                    if *color == LIGHT.surface3 && *radius > 0.0
             )),
-            "the active tab paints surface 3"
+            "the active tab paints surface 3 rounded"
         );
         assert!(
             list.items.iter().any(|item| matches!(
                 item,
-                DisplayItem::Text { text, .. } if text == "Tab 2"
+                PaintItem::Text { text, .. } if text == "Tab 2"
             )),
             "tab titles are painted"
         );
@@ -740,12 +730,19 @@ mod tests {
         let empty = render_palette(1000.0, 700.0, "", &LIGHT);
         assert!(empty.items.iter().any(|item| matches!(
             item,
-            DisplayItem::Text { text, .. } if text.contains("Search the web")
+            PaintItem::Text { text, .. } if text.contains("Search the web")
         )));
+        assert!(
+            empty.items.iter().any(|item| matches!(
+                item,
+                PaintItem::Fill { alpha, .. } if *alpha < 1.0
+            )),
+            "the palette dims the page behind it"
+        );
         let typed = render_palette(1000.0, 700.0, "notes.html", &LIGHT);
         assert!(typed.items.iter().any(|item| matches!(
             item,
-            DisplayItem::Text { text, .. } if text == "notes.html_"
+            PaintItem::Text { text, .. } if text == "notes.html_"
         )));
     }
 }

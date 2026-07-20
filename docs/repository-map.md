@@ -244,6 +244,7 @@ Current crates:
 - `turing-dom`: live document with mutation epochs, a change log, and event dispatch;
 - `turing-layout`: block and inline layout, display list, and hit testing;
 - `turing-raster`: CPU reference rasterizer, including the embedded reference glyph set;
+- `turing-paint`: CPU compositing painter — alpha, rounded corners, anti-aliasing — pixel-identical to the reference on the opaque square domain and diff-tested against it;
 - `turing-js`: JavaScript compiler and bounded bytecode interpreter;
 - `turing-gc`: exact tracing collector;
 - `turing-webidl`: capability-registered DOM bindings for script;

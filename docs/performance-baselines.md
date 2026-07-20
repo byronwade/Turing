@@ -58,7 +58,8 @@ the `layout` row reset; earlier layout numbers are not comparable.
 | cascade | 8.2 µs | 8.3 µs | 13.0 µs |
 | layout | 15.3 µs | 16.5 µs | 24.6 µs |
 | display-list | 17.9 µs | 18.2 µs | 22.4 µs |
-| raster | 611.8 µs | 725.8 µs | 1.54 ms |
+| paint | 610.6 µs | 722.9 µs | 1.04 ms |
+| raster | 670.1 µs | 739.2 µs | 1.00 ms |
 
 The `layout` rise from the morning's 6.4 µs median is attributable: inline
 layout now splits text into words, measures collapsed whitespace, and
@@ -66,6 +67,11 @@ allocates one fragment box per placed word. The `cascade` rise from 3.5 µs
 to 8.3 µs has **no identified cause** — the styling crates did not change
 between the recordings — and is retained as an open observation rather than
 explained away; re-measure on a quiet machine before treating it as real.
+
+`paint` is the compositing painter (`turing-paint`) consuming the same
+display list through its opaque-square fast path; costing the same as the
+reference (within noise) is the design intent — compositing is paid only
+where alpha or radius is actually used.
 
 `raster` dominates the frame by more than an order of magnitude, which is
 expected for an unoptimised per-pixel reference painter and is the

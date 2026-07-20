@@ -273,9 +273,11 @@
         "all-rust-hosts"
       ],
       "dependencies": [
-        "turing-html",
         "turing-css",
-        "turing-layout"
+        "turing-html",
+        "turing-layout",
+        "turing-paint",
+        "turing-raster"
       ],
       "failure_boundary": "reject-fixtures-the-engine-does-not-implement"
     },
@@ -428,6 +430,7 @@
         "turing-dom",
         "turing-engine",
         "turing-layout",
+        "turing-paint",
         "turing-raster",
         "turing-types",
         "turing-ui-model",
@@ -452,10 +455,31 @@
       "dependencies": [
         "turing-css",
         "turing-layout",
+        "turing-paint",
         "turing-types",
         "turing-ui-model"
       ],
       "failure_boundary": "shared-geometry-for-paint-and-hit-testing"
+    },
+    {
+      "id": "COMP-024",
+      "package": "turing-paint",
+      "path": "crates/turing-paint",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "unprivileged",
+      "hostile_input": true,
+      "public_api": "internal-compositing-painter",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-layout",
+        "turing-raster"
+      ],
+      "failure_boundary": "reference-parity-on-the-opaque-square-domain"
     }
   ]
 }

@@ -38,8 +38,8 @@ use turing_chrome::{ChromeModel, Theme};
 use turing_css::Color;
 use turing_dom::Event;
 use turing_engine::Page;
-use turing_layout::{DisplayItem, DisplayList, Point};
-use turing_raster::rasterize;
+use turing_layout::{DisplayItem, Point};
+use turing_paint::{PaintItem, PaintList, paint};
 use turing_types::{ProfileId, SpaceId, TabId, ViewId, WindowId};
 use turing_ui_model::{ShellCommand, ShellSnapshot, TabLifecycle, TabSummary};
 use winit::application::ApplicationHandler;
@@ -377,12 +377,12 @@ impl Browser {
     /// Paint order is the compositing model: the page first (translated below
     /// the bar and by scroll), the opaque bar over any page overflow, the
     /// palette over everything.
-    fn compose(&mut self, window_width: f32, window_height: f32) -> DisplayList {
+    fn compose(&mut self, window_width: f32, window_height: f32) -> PaintList {
         let bar = turing_chrome::bar_height();
 
-        let mut list = DisplayList::default();
+        let mut list = PaintList::default();
         // The page viewport background is the theme's ink.
-        list.items.push(DisplayItem::SolidColor {
+        list.items.push(PaintItem::Fill {
             rect: turing_layout::Rect {
                 x: 0.0,
                 y: bar,
@@ -390,10 +390,12 @@ impl Browser {
                 height: window_height - bar,
             },
             color: self.theme.ink,
+            alpha: 1.0,
+            radius: 0.0,
         });
         // Pages assume a white canvas; paint one exactly the page's height.
         let tab = self.active_tab();
-        list.items.push(DisplayItem::SolidColor {
+        list.items.push(PaintItem::Fill {
             rect: turing_layout::Rect {
                 x: 0.0,
                 y: bar - tab.scroll_y,
@@ -405,16 +407,20 @@ impl Browser {
                 green: 255,
                 blue: 255,
             },
+            alpha: 1.0,
+            radius: 0.0,
         });
         let offset = bar - tab.scroll_y;
-        for mut item in tab.page.display_list().items {
-            match &mut item {
+        let mut page_items = tab.page.display_list();
+        for item in &mut page_items.items {
+            match item {
                 DisplayItem::SolidColor { rect, .. } | DisplayItem::Text { rect, .. } => {
                     rect.y += offset;
                 }
             }
-            list.items.push(item);
         }
+        list.items
+            .extend(PaintList::from_display_list(&page_items).items);
 
         let snapshot = self.snapshot();
         let model = ChromeModel {
@@ -446,7 +452,7 @@ impl Browser {
 
         #[allow(clippy::cast_precision_loss)]
         let list = self.compose(size.width as f32, size.height as f32);
-        let canvas = match rasterize(
+        let canvas = match paint(
             &list,
             size.width as usize,
             size.height as usize,
@@ -691,7 +697,7 @@ fn screenshot(out: &str, source: PageSource, extra_tabs: usize) -> Result<(), St
     let (width, height) = (INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32);
     let list = browser.compose(width, height);
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let canvas = rasterize(&list, width as usize, height as usize, browser.theme.ink)
+    let canvas = paint(&list, width as usize, height as usize, browser.theme.ink)
         .map_err(|error| error.to_string())?;
     std::fs::write(out, turing_raster::encode_bmp(&canvas))
         .map_err(|error| format!("cannot write {out}: {error}"))?;
