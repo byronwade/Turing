@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Live GitHub handoff refreshed
+
+Question:
+
+Does the durable GitHub issue and pull-request handoff still match the live repository state and current `main` baseline after the documentation refreshes?
+
+Method:
+
+Ran the documented `gh issue list` and `gh pr list` queries against `byronwade/Turing`, checked the issue/PR states and cleanup branches, and compared the result with the checked handoff registry and current `git rev-parse HEAD`.
+
+Result:
+
+The canonical issue set remains `#1` through `#12` plus `#14`; issue `#1` is closed, `#2` through `#12` and `#14` remain open, and the previously cleaned PRs remain closed with their remote branches deleted. The handoff snapshot now records observation date `2026-07-19` and baseline commit `7a1c75f6f912f71cc9ec3f5cd79fb00f1e1dbc1e`.
+
+Impact:
+
+This refresh removes stale snapshot metadata without changing issue dispositions, task authority, readiness, implementation, security, compatibility, performance, release, or Chrome-class claims. GitHub remains a coordination surface only.
+
+Next question:
+
+Can the next accepted task or owner decision update the canonical issue handoff, task records, readiness registries, and research log in one synchronized change?
+
 ## 2026-07-19 - Fresh-host acquisition and replay modes separated
 
 Question:

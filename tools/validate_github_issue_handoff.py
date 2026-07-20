@@ -75,8 +75,9 @@ def check_snapshot() -> dict[str, object]:
         fail("snapshot must be an object")
     if snapshot.get("repository") != "byronwade/Turing":
         fail("snapshot repository must be byronwade/Turing")
-    if snapshot.get("observed_date") != "2026-07-18":
-        fail("snapshot observed_date must remain explicit")
+    observed_date = require_string(snapshot.get("observed_date"), "snapshot.observed_date")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", observed_date):
+        fail("snapshot observed_date must be an explicit ISO date")
     baseline = require_string(snapshot.get("baseline_commit"), "snapshot.baseline_commit")
     if not re.fullmatch(r"[0-9a-f]{40}", baseline):
         fail("snapshot baseline_commit must be a full Git SHA")
@@ -161,10 +162,13 @@ def check_pr_cleanup(payload: dict[str, object]) -> None:
 
 def check_prose(payload: dict[str, object]) -> None:
     text = HANDOFF.read_text(encoding="utf-8")
+    snapshot = payload["snapshot"]
+    assert isinstance(snapshot, dict)
+    baseline = require_string(snapshot.get("baseline_commit"), "snapshot.baseline_commit")
     required = [
         "# GitHub Issue Handoff",
         "Status: coordination snapshot; no task approval",
-        "Baseline commit at observation: `ff114a26b4240c9756ba168b5eb226e8f74ff97a`.",
+        f"Baseline commit at observation: `{baseline}`.",
         "github-issue-handoff.json",
         "validate_github_issue_handoff.py",
         "Issue number `#13` is not a missing backlog issue",

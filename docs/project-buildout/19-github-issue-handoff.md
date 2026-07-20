@@ -2,7 +2,7 @@
 
 Status: coordination snapshot; no task approval
 Owner: program, documentation-research, engineering operations, and issue triage
-Last refreshed: 2026-07-18
+Last refreshed: 2026-07-19
 
 ## Purpose
 
@@ -20,7 +20,7 @@ gh pr list --state all --limit 100 --json number,title,state,mergedAt,headRefNam
 git rev-parse HEAD
 ```
 
-Baseline commit at observation: `ff114a26b4240c9756ba168b5eb226e8f74ff97a`.
+Baseline commit at observation: `7a1c75f6f912f71cc9ec3f5cd79fb00f1e1dbc1e`.
 
 The checked machine snapshot is [`github-issue-handoff.json`](machine/github-issue-handoff.json), validated by [`tools/validate_github_issue_handoff.py`](../../tools/validate_github_issue_handoff.py).
 
