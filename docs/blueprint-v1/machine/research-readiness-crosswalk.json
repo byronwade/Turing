@@ -32,6 +32,7 @@
         "docs/research/servo-generated-output-generator-manifest-2026-07.md",
         "docs/research/servo-generated-output-source-provenance-map-2026-07.md",
         "docs/research/web-platform-source-and-conformance-evidence-2026-07.md",
+        "docs/research/traceability-at-browser-scale-research-2026-07.md",
         "docs/web-platform/machine/web-platform-source-manifest.json",
         "docs/web-platform/machine/web-platform-source-manifest.schema.json",
         "tools/validate_web_platform_sources.py"
@@ -69,6 +70,7 @@
         "docs/project-buildout/machine/build-information-readiness-ledger.json",
         "docs/research/fresh-host-reproduction-inventory-2026-07.md",
         "docs/research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+        "docs/research/traceability-at-browser-scale-research-2026-07.md",
         "docs/project-buildout/machine/fresh-host-reproduction.schema.json",
         "docs/project-buildout/machine/fresh-host-reproduction.json",
         "docs/project-buildout/machine/fresh-host-run-record.schema.json",
@@ -453,6 +455,7 @@
       "evidence_start": [
         "docs/research/backup-ownership-gap-inventory-2026-07.md",
         "docs/research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+        "docs/research/traceability-at-browser-scale-research-2026-07.md",
         "docs/project-buildout/README.md",
         "docs/project-buildout/machine/backup-ownership-gap.schema.json",
         "docs/project-buildout/machine/backup-ownership-gap.json",

@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Traceability at browser scale research
+
+Question:
+
+Can requirement-to-evidence records remain accurate, bidirectional, reviewable, and useful as Turing grows from a documented prototype into a multi-process browser with standards, platform, security, accessibility, performance, release, and support obligations?
+
+Method:
+
+Checked NASA systems-engineering guidance on bidirectional traceability, requirements rationale, impact analysis, verification matrices, and configuration/change control, plus NIST SP 800-218 SSDF lifecycle evidence on 2026-07-19. Reconciled the observations with `RQ-47`, `RQ-44`, `RQ-46`, `RQ-48`, `RQ-60`, `PB-002`, `PB-008`, `PB-009`, `PB-019`, `PB-020`, the professional traceability registry, requirement verification matrix, crosswalk, and documentation policy.
+
+Decision:
+
+Added an active no-claim packet defining a typed graph model, bidirectional edge types, status/freshness rules, invalidation triggers, browser identity boundaries, generated-view controls, change-impact traversal, adversarial fixtures, and rejection/promotion rules. Added the packet to the source-strategy, fresh-host, and ownership crosswalk evidence starts. No coverage, implementation, verification, readiness, release, or support decision changed.
+
+Next question:
+
+Which first executable traceability audit should independently sample the source-strategy, fresh-host, and ownership lanes, and what findings must block a task or claim rather than merely create a warning?
+
 ## 2026-07-19 - Capacity and sustainability research
 
 Question:

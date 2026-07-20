@@ -327,6 +327,8 @@ Current `PB-008`/`PB-009` planning evidence starts with the checked [Build Infor
 
 Can requirement-to-evidence records remain accurate and useful?
 
+The [Traceability at Browser Scale Research](../research/traceability-at-browser-scale-research-2026-07.md) defines the active source-backed route for typed bidirectional edges, status and freshness, change impact, generated views, orphan/stale detection, cross-boundary identity, and independent traceability audits. It does not prove coverage, implementation, verification, readiness, or support.
+
 ## RQ-48 — Capacity and sustainability
 
 What staffing, funding, infrastructure, and support capacity is required at each maturity?
