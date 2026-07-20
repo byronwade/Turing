@@ -32,14 +32,14 @@ TASK_MANIFESTS_BY_SCOPE = {
     frozenset({"PB-002", "ADR-0009"}): ("TASK-000001",),
     frozenset({"PB-003", "PB-004", "PB-005", "PB-014", "PB-015"}): ("TASK-000006",),
     frozenset({"PB-008", "PB-009"}): ("TASK-000002",),
-    frozenset({"PB-011"}): ("TASK-000003",),
+    frozenset({"PB-011"}): ("TASK-000003", "TASK-000011"),
     frozenset({"PB-012"}): ("TASK-000004",),
     frozenset({"PB-013"}): ("TASK-000005",),
     frozenset({"PB-016"}): ("TASK-000007",),
     frozenset({"PB-017"}): ("TASK-000009",),
     frozenset({"PB-018"}): ("TASK-000010",),
     frozenset({"PB-019"}): ("TASK-000008",),
-    frozenset({"PB-020"}): tuple(f"TASK-{index:06d}" for index in range(1, 11)),
+    frozenset({"PB-020"}): tuple(f"TASK-{index:06d}" for index in range(1, 12)),
 }
 
 

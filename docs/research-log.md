@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active M0 task added to closure synchronization
+
+Added `TASK-000011` to the `PB-011` IPC and `PB-020` build-readiness synchronization routes alongside its no-claim evidence capture. The validator now requires the active manifest in both scopes, while proposed `TASK-000001` through `TASK-000010` remain owner-approval-required. No task acceptance, owner decision, gate promotion, or readiness percentage changed.
+
 ## 2026-07-20 - Owner/task synchronization added to entrypoints
 
 Updated the root README and Start Here guide to point directly to the owner-decision synchronization control. A maintainer resuming from either entrypoint can now find the rule that closure decisions must remain aligned with the canonical task queue and affected task manifests. No gate, task, owner decision, or readiness percentage changed.
