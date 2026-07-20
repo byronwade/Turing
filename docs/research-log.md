@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-20 - The first cross-engine measurement, scoped until it is honest
+
+The owner's product direction says "fastest"; `PB-013` forbids saying it without measurement. Those two constraints stop colliding the moment a controlled measurement exists, so one now does: `docs/benchmark-lab/first-cross-engine-measurement-2026-07.md`, the first execution of the comparison lane the benchmark book specifies.
+
+The design problem was condition matching, and the first attempt had it wrong: `turing-bench` reports warm-loop medians — twenty discarded warm-ups, a hot cache, amortised allocation — while a browser trace measures a cold navigation. Comparing those flatters Turing by roughly 10x. The fix is `cold_load`, a one-shot probe run once per fresh process; its numbers are what may face another engine's navigation. The warm numbers remain the right instrument for tracking Turing against itself, and the record says which number is for which job.
+
+The measurement: the bench fixture, inlined styles, committed to `benchmarks/corpus/cross-engine/`. Five cold Turing processes against three Chrome DevTools traces of the same file on the same machine, medians per stage. On the matched span — parse, style, layout, paint-command generation — Turing's median is 155 µs against roughly 1,003 µs of Chrome main-thread events. Pixel production is explicitly not compared: GPU raster threads against a deliberately unoptimised CPU reference is not a comparison.
+
+What the record licenses is one sentence: on this fixture, on this machine, Turing's cold comparable span ran in about one sixth of Chrome's equivalent main-thread time. What it refuses is the sentence the product direction wants — "fastest on the market" — and it enumerates why: one fixture inside Turing's own subset, one competitor, no thermal control, no statistical protocol, instrumentation asymmetry favouring Turing, and an engine that is fast substantially because it does less. Each refusal names the book chapter that turns it into future work.
+
+The workspace is at 390 tests, plus the probe example.
+
 ## 2026-07-20 - Hover, a scrollbar, event arguments, and CSS pixels that mean it
 
 Four gaps between "renders correctly" and "feels like an application", closed in one pass.

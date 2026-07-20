@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
+body { display: block; margin: 8px; }
+div { display: block; }
+h1 { display: block; margin: 16px; }
+p { display: block; margin: 12px; color: #222222; }
+p.lead { color: #000000; }
+span { display: inline; }
+.page { background: #ffffff; width: 800px; }
+.row { display: block; background: #eeeeee; }
+  </style>
+  </head>
+  <body>
+    <div class='page'>
+      <h1>Turing</h1>
+      <p class='lead'>A browser engine written from the specifications.</p>
+      <p>Block and inline formatting, margin collapse, and greedy line breaking
+         are implemented. Constructs that would change where content lands are
+         refused rather than approximated.</p>
+      <div class='row'><span>one</span><span>two</span><span>three</span></div>
+      <p>Trailing paragraph so the block stacking path has more than one
+         sibling to walk.</p>
+    </div>
+  </body>
+</html>
