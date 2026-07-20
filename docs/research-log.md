@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Source equivalence and build replay freshness alignment
+
+Question:
+
+Can the remaining ADR-0009 source-equivalence and build-reproduction packets prevent historical `main` and toolchain observations from being reused as current evidence?
+
+Method:
+
+Compared the 2026-07-17 source-baseline equivalence policy and same-host build-reproduction report with the later upstream refresh and provenance records. Both reports retained valid capture-time evidence but lacked a direct freshness boundary and newer-baseline rerun instruction.
+
+Decision:
+
+Added explicit historical-capture boundaries and links to the current refresh route. The reports now require a new equivalence or reproduction run whenever a later source baseline is selected.
+
+Impact:
+
+This completes the freshness alignment across the ADR-0009 source-strategy evidence chain without changing any source, dependency, build, compatibility, performance, security, or release decision. `PB-002` remains blocked and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which benchmark competitor catalogs and host inventories need the same capture-date refresh discipline before they can support future comparison planning?
+
 ## 2026-07-19 - ADR-0009 historical packet freshness alignment
 
 Question:

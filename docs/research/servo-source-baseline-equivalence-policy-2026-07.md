@@ -5,6 +5,8 @@ Owner: architecture, provenance, release operations, security, legal-review, eng
 Audit date: 2026-07-17
 Confidence: high for file-count and path-set comparisons; medium for package-to-repository path equivalence; low for legal, source-offer, blob-content, release-reproducibility, dependency, generated-output, compatibility, performance, and adoption conclusions until owner reviews run
 
+Freshness boundary: this policy preparation preserves source-surface comparisons captured on 2026-07-17. The `main` identity used here is the historical capture-time ref, not the later upstream head. For current upstream identity, use [Servo Upstream Refresh and Source-Strategy Delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md) and [Servo Upstream Source Provenance](servo-upstream-source-provenance-2026-07.md); any selected newer baseline requires a new equivalence run.
+
 ## Question
 
 What source-content, release-archive, and crates.io package equivalence evidence exists for the Servo source candidates, and what policy decisions remain before `ADR-0009` can select or reject a source baseline?

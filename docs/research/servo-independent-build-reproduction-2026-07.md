@@ -5,6 +5,8 @@ Owner: release operations, quality, architecture, provenance, and documentation 
 Retrieval date: 2026-07-17
 Confidence: medium for the reference Windows host; low for independent-host reproducibility until a clean replay runs elsewhere
 
+Freshness boundary: this is a historical same-host build capture from 2026-07-17. The checkout, toolchain, and `origin/main` relation recorded below are evidence for that run and are not a current upstream or reproducibility claim. For later upstream identity, use [Servo Upstream Refresh and Source-Strategy Delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md); any selected newer source baseline requires a fresh reproduction.
+
 ## Question
 
 Can the successful external Servo Windows bootstrap and development build be handed off with enough source, environment, log, artifact, and cache detail for `ADR-0009`, and what still prevents `ADR9-EV-002` from becoming decision-grade independent build evidence?
