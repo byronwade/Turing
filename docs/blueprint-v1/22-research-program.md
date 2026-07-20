@@ -46,6 +46,8 @@ Decision output: shaping/raster/fallback architecture per platform.
 
 Implement representative language kernels in both forms. Compare code size, dispatch, compile time, exception handling, debug mapping, stack maps, baseline JIT lowering, memory, and Test262 diagnostics. Do not use microbenchmarks alone.
 
+The [JavaScript Bytecode Representation Research](../research/javascript-bytecode-representation-research-2026-07.md) defines the deferred source-backed comparison, semantic oracle, and evidence route.
+
 Decision output: bytecode format v1 and versioning policy.
 
 ## RQ-08 — GC heap representation and DOM wrapper strategy

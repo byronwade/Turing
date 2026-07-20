@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - JavaScript bytecode representation research
+
+Question:
+
+Should the first JavaScript interpreter use register, stack, or hybrid bytecode, and what format can support semantics, debugging, exceptions, GC, baseline compilation, versioning, and resource limits without excessive size or dispatch cost?
+
+Method:
+
+Checked V8 Ignition, V8 documentation, V8 background-compilation and interpreter/compiler material, and the WebAssembly 3.0 execution and abstract-machine specification on 2026-07-19. Reconciled the observations with `RQ-07`, the JavaScript runtime, compiler, debugging, memory, security, and quality books, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet separating stack, register, hybrid, and semantic-reference formats. It defines bytecode identity, exceptions, async/generators, source locations, GC maps, baseline lowering, validation, malformed input, versioning, cache, and workload evidence, and rejects treating V8 or WebAssembly formats as a JavaScript standard. No bytecode, interpreter, compiler, JIT, memory, performance, or readiness decision changed.
+
+Next question:
+
+Which owner-approved semantic instruction inventory and reference interpreter should become the first conformance, debug/exception/GC-map, and independent-format review target when this lane enters the active pre-build crosswalk?
+
 ## 2026-07-19 - Text shaping, fonts, and input research
 
 Question:
