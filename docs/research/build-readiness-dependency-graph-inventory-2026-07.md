@@ -47,6 +47,33 @@ The graph makes the current sequencing constraints checkable:
 
 This is a dependency-control improvement only. It does not close `PB-002`, `PB-008`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-003` through `PB-005`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, `PB-019`, `PB-020`, the owner-reviewed benchmark readiness review required beyond the checked no-claim benchmark readiness-review template, or the owner-reviewed build-readiness closure review required beyond the checked no-claim template.
 
+## Proposed review-capacity finding (not owner-ratified)
+
+The graph records fifteen `proposed_independent_review_dependency` edges from `PB-019` to `PB-002`, `PB-003`, `PB-004`, `PB-005`, `PB-008`, `PB-009`, `PB-011`, `PB-012`, `PB-013`, `PB-014`, `PB-015`, `PB-016`, `PB-017`, `PB-018`, and `PB-020`. They carry `status: proposed_no_claim_pending_owner_ratification` and are analytical findings, not established dependencies.
+
+### What is transcribed from existing records
+
+- Each of the eleven closure scopes in [`owner-decision-synchronization.json`](../project-buildout/machine/owner-decision-synchronization.json) names a distinct `independent_reviewer_role`, and that registry states that a passing validator is not owner review or independent review.
+- The [ADR-0009 closure preparation](adr-0009-source-strategy-closure-preparation-2026-07.md) decision worksheet rejects a row on `self-approval, title-only identity, or missing independent review`.
+- [`professional-owners.json`](../blueprint-v1/machine/professional-owners.json) records the same single primary across all twenty-two build-critical scopes, each with a null backup.
+- [`professional-review-rules.json`](../blueprint-v1/machine/professional-review-rules.json) sets `minimum_approvals` of 2 to 3 distinct reviewer roles for security, public-API, performance, release, market, and UI-runtime changes.
+
+### What is inference
+
+No repository document states that `PB-019` backup ownership and independent-reviewer availability are the same condition. A backup owner carries succession, recusal, inactivity, and emergency-replacement obligations; an independent reviewer may only need to be a competent non-author. The repository may permit a qualified independent reviewer who is not a full `PB-019` backup owner.
+
+The conclusion that follows from the transcribed records alone is narrower and does hold: the reviewer roles required for owner-reviewed closure currently resolve to one person, so the distinct-reviewer and no-self-approval requirements cannot presently be satisfied. Whether the remedy is `PB-019` backup qualification, a lighter independent-reviewer route, or both is an owner decision that this inventory does not make.
+
+### What this does not change
+
+Producing evidence is not the same as closing a gate. Evidence work on `PB-002` through `TASK-000001`, and on `PB-008`/`PB-009` through `TASK-000002`, remains the stated next step and is unaffected by this finding. The constraint applies to owner-reviewed closure, not to the contained no-claim work that precedes it.
+
+The [Solo-Owner Residual-Risk Acceptance](solo-owner-residual-risk-acceptance-2026-07.md) records an owner-accepted, time-bounded acceptance of the single-owner exposure. It does not relieve this finding: accepting the risk of having no second reviewer does not produce one, and `PB-019` remains blocked.
+
+### Next proof for this finding
+
+An owner ruling on whether independent review for closure scopes requires a `PB-019`-qualified backup owner or a separately defined reviewer role. Until that ruling, these edges stay proposed and must not be cited as sequencing rules.
+
 ## Parallel No-Claim Work
 
 The graph explicitly allows continued no-claim work in these lanes while preserving stop conditions:
