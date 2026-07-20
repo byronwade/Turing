@@ -100,6 +100,8 @@ def main() -> int:
     documents = manifest.get("source_documents")
     if not isinstance(documents, list) or not documents:
         fail("source_documents must be a non-empty array")
+    if len(documents) != len(set(documents)):
+        fail("source_documents must not contain duplicate paths")
     for document in documents:
         path = ROOT / require_string(document, "source_documents entry")
         if not path.is_file():

@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Source-manifest provenance invariant completed
+
+Question:
+
+Do all machine source manifests that track `source_documents` enforce the same unique-path provenance rule?
+
+Method:
+
+Audited all repository `*-source-manifest.schema.json` files and their focused validators after applying the rule to web-platform, sandbox, profile/session, and package/update lanes. Six remaining lanes lacked the schema and validator guard: accessibility, benchmark, IPC wire, fresh-host toolchain, incident response, and ownership control.
+
+Decision:
+
+Added `uniqueItems` to each remaining schema and duplicate-path rejection to each focused validator. The design-source manifest is not included because it has no `source_documents` array and uses a different single-artifact manifest contract.
+
+Impact:
+
+All source-manifest provenance lists now have a consistent machine-enforced uniqueness rule. This improves traceability only; it does not create accessibility, benchmark, IPC, fresh-host, incident-response, ownership, security, release, or implementation evidence, and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which source-manifest field should next receive a cross-lane invariant: freshness/expiry identity, or explicit source-document ownership and regeneration policy?
+
 ## 2026-07-19 - Package/update source manifest provenance control
 
 Question:
