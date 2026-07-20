@@ -40,6 +40,24 @@ Impact:
 
 Recent research additions now have explicit discovery and build-readiness navigation from the top-level docs. No research question, readiness gate, implementation status, owner decision, or claim boundary changed.
 
+## 2026-07-19 - Benchmark owner-handoff synchronization
+
+Question:
+
+Does the owner-decision board, machine synchronization matrix, and final build-readiness collection manifest require the sustained-performance policy route before benchmark closure review?
+
+Method:
+
+Compared the `PB-013` row in the owner-decision closure board, `OWNER-SYNC-06` in the machine synchronization matrix, the benchmark evidence matrix, and the build-readiness closure-preparation collection manifest.
+
+Decision:
+
+Added the sustained-performance policy route to each benchmark owner-handoff surface. The route remains no-claim and policy-comparative; browser-run evidence, owner review, benchmark readiness, and performance claims remain separate requirements.
+
+Impact:
+
+The benchmark closure handoff now consistently requires scheduler, memory, cache, lifecycle, pressure, energy, thermal, recovery, and isolation-adjusted policy coverage before benchmark claim review. No gate, task, implementation status, or claim changed.
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:

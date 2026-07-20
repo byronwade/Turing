@@ -73,7 +73,7 @@
       "gate_scope": ["PB-013"],
       "owner_role": "performance and measurement owner",
       "independent_reviewer_role": "independent benchmark and statistics reviewer",
-      "required_evidence": ["fixed hardware, OS controls, browser pins, and equal-workload manifest", "raw runner artifacts, traces, samples, failures, and statistics", "claim bundle and direct validator output"],
+      "required_evidence": ["sustained-performance policy comparison for scheduler, memory, cache, lifecycle, pressure, energy, thermal, recovery, and isolation-adjusted dimensions", "fixed hardware, OS controls, browser pins, and equal-workload manifest", "raw runner artifacts, traces, samples, failures, and statistics", "claim bundle and direct validator output"],
       "required_synchronization": ["docs/blueprint-v1/machine/pre-build-readiness.json", "docs/blueprint-v1/machine/benchmark-readiness-reviews/no-claim-benchmark-readiness-template.json", "docs/project-buildout/machine/build-information-readiness-ledger.json", "docs/benchmark-lab/"],
       "exception_policy": ["hidden tab discarding or unmatched workloads invalidate the comparison", "missing failures cannot be omitted from the denominator", "public claim exceptions require explicit expiry and rollback"],
       "prohibited_until": ["no Chrome-class result is supported", "no extreme-performance claim is supported", "no benchmark readiness is promoted from a manifest alone"]
