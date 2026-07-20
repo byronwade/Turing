@@ -5,6 +5,8 @@ Owner: architecture, engine, security, provenance, release operations, and embed
 Retrieval date: 2026-07-17
 Confidence: medium for public project posture; low for adoption cost until local prototypes run
 
+Freshness boundary: this inventory preserves the source and public-posture observations retrieved on 2026-07-17. Its `origin/main`, release, and package values are historical capture-time values, not the current upstream state. For the later official metadata refresh and source-strategy delta, use [Servo Upstream Refresh and Source-Strategy Delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md) and [Servo Upstream Source Provenance](servo-upstream-source-provenance-2026-07.md).
+
 ## Question
 
 Which Servo relationship should Turing evaluate before web-engine implementation expands: clean implementation informed by Servo, selective Servo components, upstream-first collaboration, Servo-derived engine, or explicit charter change?

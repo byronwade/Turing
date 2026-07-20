@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - ADR-0009 historical packet freshness alignment
+
+Question:
+
+Do the remaining dated Servo source-strategy packets clearly distinguish capture-time upstream values from the later 2026-07-19 refresh?
+
+Method:
+
+Scanned the 2026-07-17 source-archive provenance audit and source-strategy inventory after the independent source-verification freshness correction. Both retained valid historical observations but lacked an explicit route to the later official refresh packet.
+
+Decision:
+
+Added freshness boundaries and links to the later upstream refresh/provenance reports. The older source, release, package, and local-artifact observations remain unchanged and remain historical evidence for ADR-0009.
+
+Impact:
+
+This makes the source-strategy evidence set internally coherent across capture dates. It does not select a source baseline, change `PB-002`, approve a dependency, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which non-Servo external research packets contain similarly time-sensitive “latest” observations that need a dated refresh route before owner review?
+
 ## 2026-07-19 - Historical source-verification freshness boundary
 
 Question:

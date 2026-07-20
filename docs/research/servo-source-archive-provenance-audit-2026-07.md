@@ -5,6 +5,8 @@ Owner: architecture, security, provenance, release operations, engine, and embed
 Audit date: 2026-07-17
 Confidence: medium for local Git, Cargo cache, and Windows bootstrap artifact identity; low for adoption, legal, security, native-binary, and reproducible-release conclusions until independent and owner reviews run
 
+Freshness boundary: this audit preserves local artifact observations captured on 2026-07-17. Its references to upstream `main`, the latest release, and the latest package are capture-time observations. For the later official upstream refresh, use [Servo Upstream Refresh and Source-Strategy Delta](servo-upstream-refresh-and-source-strategy-delta-2026-07.md) and [Servo Upstream Source Provenance](servo-upstream-source-provenance-2026-07.md).
+
 ## Question
 
 Which exact local source identities, archive digests, Cargo registry cache checks, Stylo git-source checks, and Windows bootstrap artifact summaries exist for the successful external Servo build, and what remains before Turing can decide `ADR-0009`?
