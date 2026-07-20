@@ -10,5 +10,8 @@ homepage.workspace = true
 authors.workspace = true
 publish = false
 
+[dependencies]
+turing-gc = { path = "../turing-gc" }
+
 [lints]
 workspace = true

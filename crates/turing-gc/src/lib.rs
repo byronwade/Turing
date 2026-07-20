@@ -168,8 +168,8 @@ impl Trace for Payload {
 }
 
 #[derive(Clone, Debug)]
-struct Slot {
-    payload: Option<Payload>,
+struct Slot<P> {
+    payload: Option<P>,
     generation: u32,
     marked: bool,
 }
@@ -186,9 +186,15 @@ pub struct Statistics {
 }
 
 /// A mark-and-sweep heap.
-#[derive(Debug, Default)]
-pub struct Heap {
-    slots: Vec<Slot>,
+///
+/// Generic over what it stores. The collector never interprets a payload beyond
+/// asking it to [`Trace`] its outgoing references, so the object shape belongs
+/// to whoever owns the objects — the interpreter — rather than here. A
+/// collector that knew about JavaScript object layout would have to change
+/// every time that layout did.
+#[derive(Debug)]
+pub struct Heap<P = Payload> {
+    slots: Vec<Slot<P>>,
     free: Vec<usize>,
     /// Roots in registration order, which fixes the order tracing visits them
     /// and keeps collection behaviour comparable across runs.
@@ -205,7 +211,22 @@ pub struct Heap {
     capacity_limit: Option<usize>,
 }
 
-impl Heap {
+/// Written out rather than derived: deriving would require `P: Default`, and a
+/// payload type has no reason to have a default just to be collectable.
+impl<P> Default for Heap<P> {
+    fn default() -> Self {
+        Self {
+            slots: Vec::new(),
+            free: Vec::new(),
+            roots: Vec::new(),
+            root_set: std::collections::HashSet::new(),
+            statistics: Statistics::default(),
+            capacity_limit: None,
+        }
+    }
+}
+
+impl<P: Trace> Heap<P> {
     /// Creates an empty heap.
     #[must_use]
     pub fn new() -> Self {
@@ -238,7 +259,7 @@ impl Heap {
     /// no slot can be reused. Collecting first may free one; if it does not,
     /// the caller has genuinely run out and needs to report that rather than
     /// grow past a limit someone set deliberately.
-    pub fn allocate(&mut self, payload: Payload) -> Result<GcRef, GcError> {
+    pub fn allocate(&mut self, payload: P) -> Result<GcRef, GcError> {
         // Reusing a freed slot bumps its generation, which is what makes an
         // older reference to that slot detectable rather than silently valid.
         if let Some(index) = self.free.pop() {
@@ -283,7 +304,7 @@ impl Heap {
     ///
     /// Returns [`GcError::DanglingReference`] if the slot has been collected
     /// and reused, rather than returning whatever now occupies it.
-    pub fn get(&self, reference: GcRef) -> Result<&Payload, GcError> {
+    pub fn get(&self, reference: GcRef) -> Result<&P, GcError> {
         let slot = self
             .slots
             .get(reference.index)
@@ -308,7 +329,7 @@ impl Heap {
     /// # Errors
     ///
     /// Returns [`GcError::DanglingReference`] for a stale reference.
-    pub fn set(&mut self, reference: GcRef, payload: Payload) -> Result<(), GcError> {
+    pub fn set(&mut self, reference: GcRef, payload: P) -> Result<(), GcError> {
         let current = self
             .slots
             .get(reference.index)
@@ -340,6 +361,38 @@ impl Heap {
     #[must_use]
     pub fn roots(&self) -> &[GcRef] {
         &self.roots
+    }
+
+    /// Returns a mutable reference to an object.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GcError::DanglingReference`] if the slot has been collected
+    /// and reused, rather than handing out whatever now occupies it.
+    pub fn get_mut(&mut self, reference: GcRef) -> Result<&mut P, GcError> {
+        let current = self
+            .slots
+            .get(reference.index)
+            .map_or(0, |slot| slot.generation);
+        if !self.is_live(reference) {
+            return Err(GcError::DanglingReference { reference, current });
+        }
+        self.slots[reference.index]
+            .payload
+            .as_mut()
+            .ok_or(GcError::DanglingReference { reference, current })
+    }
+
+    /// Returns how many slots currently hold an object.
+    ///
+    /// Distinct from `Statistics::live`, which counts what survived the most
+    /// recent collection and is therefore zero until one has run. A caller
+    /// deciding *when* to collect needs the present occupancy, not the last
+    /// result — using the latter means never collecting, because it starts at
+    /// zero and only a collection changes it.
+    #[must_use]
+    pub fn occupied_slots(&self) -> usize {
+        self.slots.len() - self.free.len()
     }
 
     /// Returns the current statistics.
@@ -524,7 +577,7 @@ mod tests {
 
     #[test]
     fn allocation_returns_a_live_reference() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let reference = heap.allocate(value("a")).expect("allocates");
         assert!(heap.is_live(reference));
         assert_eq!(heap.get(reference).expect("reads"), &value("a"));
@@ -532,7 +585,7 @@ mod tests {
 
     #[test]
     fn unreachable_objects_are_collected() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let _garbage = heap.allocate(value("garbage")).expect("allocates");
         assert_eq!(heap.live_count(), 1);
         assert_eq!(heap.collect(), 1);
@@ -541,7 +594,7 @@ mod tests {
 
     #[test]
     fn rooted_objects_survive() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let kept = heap.allocate(value("kept")).expect("allocates");
         heap.add_root(kept);
         let _dropped = heap.allocate(value("dropped")).expect("allocates");
@@ -551,7 +604,7 @@ mod tests {
 
     #[test]
     fn objects_reachable_from_a_root_survive() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let leaf = heap.allocate(value("leaf")).expect("allocates");
         let root = heap
             .allocate(object(&[("child", leaf)]))
@@ -563,7 +616,7 @@ mod tests {
 
     #[test]
     fn dropping_a_root_makes_its_graph_collectable() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let leaf = heap.allocate(value("leaf")).expect("allocates");
         let root = heap
             .allocate(object(&[("child", leaf)]))
@@ -580,7 +633,7 @@ mod tests {
         // This is the property that separates a tracing collector from
         // reference counting. Two objects pointing at each other with nothing
         // else referring to them are garbage.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let first = heap.allocate(value("first")).expect("allocates");
         let second = heap
             .allocate(object(&[("peer", first)]))
@@ -593,7 +646,7 @@ mod tests {
 
     #[test]
     fn a_rooted_cycle_survives() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let first = heap.allocate(value("first")).expect("allocates");
         let second = heap
             .allocate(object(&[("peer", first)]))
@@ -608,7 +661,7 @@ mod tests {
     fn a_reference_to_a_collected_object_is_refused() {
         // The slot is reused, so a bare index would silently resolve to a
         // different object. The generation check is what prevents that.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let stale = heap.allocate(value("old")).expect("allocates");
         heap.collect();
         let fresh = heap.allocate(value("new")).expect("allocates");
@@ -620,7 +673,7 @@ mod tests {
 
     #[test]
     fn writing_through_a_stale_reference_is_refused() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let stale = heap.allocate(value("old")).expect("allocates");
         heap.collect();
         let error = heap.set(stale, value("x")).expect_err("refused");
@@ -629,7 +682,7 @@ mod tests {
 
     #[test]
     fn closures_keep_their_captures_alive() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let captured = heap.allocate(value("captured")).expect("allocates");
         let closure = heap
             .allocate(Payload::Closure {
@@ -646,7 +699,7 @@ mod tests {
     fn host_objects_hold_no_traced_references() {
         // A host object names a DOM node by index; the node's lifetime belongs
         // to the document, not this heap.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let host = heap
             .allocate(Payload::HostObject {
                 interface: "Node".to_string(),
@@ -663,7 +716,7 @@ mod tests {
     fn deep_graphs_do_not_exhaust_the_stack() {
         // A hostile page could nest objects arbitrarily; tracing must be
         // iterative rather than recursive.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let mut previous = heap.allocate(value("leaf")).expect("allocates");
         for _ in 0..50_000 {
             previous = heap
@@ -677,7 +730,7 @@ mod tests {
 
     #[test]
     fn statistics_track_collections() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let kept = heap.allocate(value("kept")).expect("allocates");
         heap.add_root(kept);
         let _garbage = heap.allocate(value("garbage")).expect("allocates");
@@ -690,7 +743,7 @@ mod tests {
 
     #[test]
     fn collecting_twice_reclaims_nothing_new() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let _garbage = heap.allocate(value("garbage")).expect("allocates");
         assert_eq!(heap.collect(), 1);
         assert_eq!(heap.collect(), 0);
@@ -698,14 +751,14 @@ mod tests {
 
     #[test]
     fn incremental_collection_is_refused_not_faked() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let error = heap.collect_incremental().expect_err("refused");
         assert!(matches!(error, GcError::IncrementalCollectionUnsupported));
     }
 
     #[test]
     fn weak_references_are_refused_not_faked() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let target = heap.allocate(value("t")).expect("allocates");
         let error = heap.allocate_weak(target).expect_err("refused");
         assert!(matches!(error, GcError::WeakReferenceUnsupported));
@@ -713,7 +766,7 @@ mod tests {
 
     #[test]
     fn cross_heap_references_are_refused() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let error = heap.add_cross_heap_reference(3).expect_err("refused");
         assert!(matches!(error, GcError::CrossHeapReferenceUnsupported));
     }
@@ -748,7 +801,7 @@ mod tests {
 
     #[test]
     fn a_bounded_heap_refuses_rather_than_growing() {
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         heap.set_capacity_limit(3);
         for i in 0..3 {
             heap.allocate(value(&format!("v{i}")))
@@ -765,7 +818,7 @@ mod tests {
         // A full heap is not necessarily an exhausted one. Refusing without
         // giving the caller the chance to collect first would turn a recoverable
         // state into a fatal one.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         heap.set_capacity_limit(2);
         let kept = heap.allocate(value("kept")).expect("allocates");
         heap.add_root(kept);
@@ -781,7 +834,7 @@ mod tests {
     fn a_heap_is_unbounded_until_a_limit_is_set() {
         // The default must stay unbounded, so a limit is always a number
         // somebody chose rather than one that appeared.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         for i in 0..1_000 {
             let reference = heap
                 .allocate(value(&format!("v{i}")))
@@ -800,7 +853,7 @@ mod tests {
         // with a set. Registering a root twice and removing it once would
         // otherwise leave it rooted forever, which reads as a leak rather than
         // as a bug in root bookkeeping.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let reference = heap.allocate(value("a")).expect("allocates");
         heap.add_root(reference);
         heap.add_root(reference);
@@ -818,7 +871,7 @@ mod tests {
         // Order fixes the sequence tracing visits roots in, which is what keeps
         // collection behaviour comparable across runs. A set alone would lose
         // it, so the vector is still the ordering authority.
-        let mut heap = Heap::new();
+        let mut heap: Heap<Payload> = Heap::new();
         let first = heap.allocate(value("first")).expect("allocates");
         let second = heap.allocate(value("second")).expect("allocates");
         let third = heap.allocate(value("third")).expect("allocates");

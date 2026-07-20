@@ -1,5 +1,49 @@
 # Research Log
 
+## 2026-07-20 - The collector wired to the interpreter, and the rooting protocol that makes it safe
+
+Question:
+
+The previous entry scoped this one precisely: wire `turing-gc` to the object store, with the acceptance test being to force a collection while live objects sit on the stack and in locals, prove they survive, and prove an unreachable cycle is reclaimed. That is what this is.
+
+The collector could not hold interpreter objects:
+
+`Heap` stored a concrete `Payload`, whose `Object` variant is a `BTreeMap<String, GcRef>` — lexicographic, and unable to hold a number or string inline. Neither matches a JavaScript object, whose property order is insertion-based and whose values are ordinary values.
+
+`Heap` is now generic over its payload, which is the completion of a design that already anticipated it: `Trace` was already a trait, and the collector never interprets a payload beyond asking it to report outgoing references. A collector that knew about JavaScript object layout would have to change every time that layout did.
+
+`Default` had to be written out rather than derived, because deriving requires `P: Default` and a payload type has no reason to have a default merely to be collectable.
+
+The rooting protocol, which is the whole difficulty:
+
+Each call frame owns its operand stack and locals. A collection triggered inside a nested call cannot reach the frames above it, so an object held only by a caller is genuinely unreachable at the moment a callee allocates — and the collector is *correct* to free it. The failure looks like a collector bug and is a rooting bug.
+
+Frames therefore publish their stack and locals into a shared list before recursing and truncate afterwards. At a safepoint the root set is that list plus the current frame's stack and locals, which is every live value by construction.
+
+Roots are registered per collection and cleared afterwards rather than maintained. A root registered once and forgotten keeps its object alive for the rest of the run, which is indistinguishable from a merely conservative collector; values here move between stack slots constantly, so maintaining registrations would be both more code and more ways to leak one.
+
+Collection triggers on heap occupancy, deliberately at a low threshold. A collector that never runs during tests is a collector nobody has tested.
+
+One accessor was missing and its absence would have been quiet: `Statistics::live` counts what survived the most recent collection and is therefore zero until one has run. Using it to decide *when* to collect means never collecting, because only a collection changes it. `Heap::occupied_slots` reports present occupancy instead.
+
+The tests, and the controls that make them mean something:
+
+Seven tests: a live object in a local survives; one held only on the operand stack survives; one held only by a caller survives a collection in the callee; a reachable chain survives transitively; unreachable objects are reclaimed; an unreachable cycle is reclaimed; and no roots are left registered afterwards.
+
+All seven passed on the first run, which by itself establishes nothing — the previous iteration's suite also passed while no collector existed. So both directions were injected and checked:
+
+Dropping the outer frames from the root set failed exactly the two tests written to catch it, and nothing else. Disabling the collection trigger failed exactly the two reclamation tests. A suite where every test passes under a broken implementation is measuring the tests, not the code.
+
+The reclamation tests exist because every survival test above would also pass on a collector that never frees anything, and the cycle test because every other test would pass on reference counting.
+
+The repository caught a mistake the tests could not:
+
+Adding `turing-gc` to `turing-js` without declaring it, and `xtask check` refused the build: manifest dependencies differed from the component record. That governance was written eleven iterations ago for exactly this and is the first time it has fired on real drift rather than on a stray `target` directory.
+
+Seven tests. The workspace is at 323.
+
+What this does not do: collection is stop-the-world at an allocation safepoint, with no incremental or generational behaviour — all three are refused by name in `turing-gc` and remain so. Strings are still Rust-owned rather than collected, so the byte budget continues to bound them. Closures capture nothing because closures are unimplemented, so `Payload::Closure` still has no producer. The binding registry still has nothing registered, which is the remaining half of `WP-011`.
+
 ## 2026-07-20 - Objects in the interpreter, and why the collector is not wired yet
 
 Question:
