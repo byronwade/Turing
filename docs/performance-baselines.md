@@ -185,6 +185,27 @@ Only concatenation is charged, because it is the only operation here that
 produces more data than it consumed. Arrays, objects, or a string-repeat builtin
 would each be a new amplification path needing the same treatment.
 
+## Collector
+
+Allocation and collection are linear: about 0.13 ms and 0.03 ms per thousand
+objects, flat from 50,000 to 800,000. The iterative tracing worklist written for
+stack safety also gave predictable cost.
+
+Registering roots was not. `add_root` checked existing roots for a duplicate
+with a linear scan:
+
+| Roots registered | Before | After |
+| --- | --- | --- |
+| 5,000 | 5.6 ms | 0.2 ms |
+| 20,000 | 90 ms | 1.4 ms |
+| 80,000 | 1,446 ms | 6.6 ms |
+
+Four times the roots for sixteen times the work. A live DOM is precisely the
+case with many roots. A set now answers membership while the vector keeps
+registration order, which fixes the sequence tracing visits roots in.
+
+Nothing depends on `turing-gc` yet, so this was latent rather than reachable.
+
 ## Footprint
 
 The other half of the mandate, and the part measurable without ambiguity today.

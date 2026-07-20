@@ -1,5 +1,43 @@
 # Research Log
 
+## 2026-07-20 - The collector, and the end of the hardening sweep
+
+Question:
+
+`turing-gc` was the last component with no growth measurement. Measuring it completes an enumeration: every crate in this workspace has now been probed for unbounded recursion, unbounded time, unbounded output, and unbounded allocation.
+
+Reachability first, because it changes what the findings mean:
+
+Nothing depends on `turing-gc`. It is a workspace member that no other crate imports, and it is not wired to the interpreter. Anything found here is latent — reachable only by a caller inside this repository, not by a page. That is stated before the findings rather than after, because the same defect deserves a different urgency depending on who can reach it, and it would be easy to write this entry as though a page could exploit it.
+
+Findings:
+
+Allocation and collection are both linear, at roughly 0.13 ms and 0.03 ms per thousand objects across a sixteenfold range. The iterative tracing worklist that was written for stack safety also gave the collector predictable cost.
+
+`add_root` is quadratic. Registering a root checked the existing roots for a duplicate with a linear scan: 5.6 ms for five thousand roots, 90 ms for twenty thousand, 1.45 s for eighty thousand — four times the roots for sixteen times the work. A live DOM is precisely the case with many roots, so this would have surfaced the moment the collector was wired to anything real.
+
+Fixed with a set for membership beside the vector for order. The vector remains the ordering authority, because root order fixes the sequence tracing visits them in and keeps collection behaviour comparable across runs. After: 6.6 ms at eighty thousand, from 1.45 s.
+
+Fixing it introduced a bug that the tests caught: `remove_root` still only updated the vector, so the set kept rejecting a re-registration for a root the vector no longer held, and an object would have stayed collectable while looking rooted. Two structures representing one fact must both be updated at every site that changes it, which is the standing cost of this kind of optimisation and is worth paying only where the measurement says so.
+
+The heap has no size limit, and one was added anticipatorily:
+
+`Heap::set_capacity_limit` bounds slot count, unbounded by default, with `allocate` returning `Result` rather than a bare reference. This is anticipatory work and is labelled as such — nothing can reach this heap today.
+
+The justification is that the shape of the mistake is already on record in the previous entry: the interpreter's step limit was taken for a memory limit until a script allocated two gigabytes inside its step budget. A heap that becomes the script heap has exactly that exposure, and a bound added before the wiring is one nobody has to remember afterwards. Making `allocate` fallible now also costs twenty-four mechanical call-site updates in one file, against a far more invasive change once callers exist.
+
+A full heap is not an exhausted one, so a test pins that collecting frees a slot and allocation then succeeds. Refusing without giving the caller a chance to collect would turn a recoverable state into a fatal one.
+
+Five tests. The workspace is at 293.
+
+On the sweep as a whole:
+
+Ten iterations of probing produced, in order: three stack overflows that aborted the process uncatchably, four quadratic time paths, one output amplification, one unbounded allocation reachable from three lines of script, and one quadratic path in an unwired component. Every one was found by measuring rather than by reading, and every one passed the full test suite beforehand.
+
+The enumeration is now complete. Every crate has been probed on all four axes, and there is no next surface — which is a different statement from "there are no more defects", and is the honest one to end on. Further work here would mean deeper probing of surfaces already covered, not new ground.
+
+What this does not do: `turing-gc` remains unwired, so the capacity limit is untested against real pressure and the byte budget in `turing-js` bounds string concatenation only. The gates are unchanged: `WP-015` blocked on `IF-003`, `IF-001` `partial`, both `WP-009` decision gates open.
+
 ## 2026-07-20 - A step limit is not a memory limit
 
 Question:
