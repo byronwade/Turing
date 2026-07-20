@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Owner/task synchronization added to entrypoints
+
+Updated the root README and Start Here guide to point directly to the owner-decision synchronization control. A maintainer resuming from either entrypoint can now find the rule that closure decisions must remain aligned with the canonical task queue and affected task manifests. No gate, task, owner decision, or readiness percentage changed.
+
 ## 2026-07-20 - Owner-decision task-authority synchronization
 
 Extended the owner-decision synchronization matrix and validator so each closure scope explicitly includes the canonical build-readiness task queue and its affected proposed task manifests. `PB-020` requires all ten proposed manifests; lane-specific scopes require their mapped manifest. This prevents a future owner decision from changing readiness records while leaving task authority stale. No owner decision, task approval, gate promotion, or readiness claim changed.
