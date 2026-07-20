@@ -165,6 +165,26 @@ The regression guard for this is a deterministic count of candidate rules, not
 a timing assertion. Wall-clock in a test suite fails on a loaded machine for
 reasons unrelated to the code.
 
+## Script execution budgets
+
+A step limit bounds how many operations run, not how much each one allocates.
+Repeated concatenation doubles its result every iteration, so a short script
+allocated far more than its size:
+
+| `s = s + s` iterations | Implied string | Time | Outcome before |
+| --- | --- | --- | --- |
+| 22 | 64 MiB | 144 ms | completed |
+| 25 | 512 MiB | 1.2 s | completed |
+| 27 | 2 GiB | 7.0 s | completed |
+
+A few hundred steps of a million-step budget. `Vm::byte_limit` now charges bytes
+produced by concatenation, cumulatively, and refuses past a million: the
+two-gigabyte case is rejected in 1.9 ms.
+
+Only concatenation is charged, because it is the only operation here that
+produces more data than it consumed. Arrays, objects, or a string-repeat builtin
+would each be a new amplification path needing the same treatment.
+
 ## Footprint
 
 The other half of the mandate, and the part measurable without ambiguity today.
