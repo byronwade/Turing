@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - TASK-000011 evidence-baseline recapture control
+
+Question:
+
+Does the `TASK-000011` review handoff distinguish its historical no-claim evidence capture from the current repository head before independent review?
+
+Method:
+
+Compared the task manifest, review handoff, checked no-claim evidence bundle, evidence-bundle validator, and current `main` commit. The bundle is correctly immutable and bound to source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`, but the handoff did not state the current audited head or require recapture after later commits.
+
+Decision:
+
+Recorded current head `12922b46165d8d941e0dc504148196f4497d8e91` in the review handoff and added an explicit rule requiring a new exact-commit evidence bundle before independent acceptance. The historical no-claim bundle remains unchanged and `TASK-000011` remains `review_pending`.
+
+Impact:
+
+The handoff now prevents stale candidate evidence from being mistaken for current acceptance evidence. This does not accept the task, promote `PB-011`, establish production IPC, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which reviewer-controlled environment and command artifacts will be captured against the exact commit selected for `TASK-000011` review?
+
 ## 2026-07-19 - Reference-platform scorecard provenance control
 
 Question:

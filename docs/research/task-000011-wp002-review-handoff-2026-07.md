@@ -19,6 +19,10 @@ Can `TASK-000011` move from implementation-complete-for-review to independent ac
 
 Current answer: the repository has candidate evidence and a checked non-accepting evidence capture for independent review, but acceptance is still unproven until a reviewer reruns the required checks on the exact commit under review, records an independent evidence bundle conforming to [`evidence-bundle.schema.json`](../agent-execution/machine/evidence-bundle.schema.json), and writes an explicit review decision.
 
+## Current baseline and recapture rule
+
+The latest repository head audited for this handoff is `12922b46165d8d941e0dc504148196f4497d8e91` (July 19, 2026). The checked no-claim bundle remains intentionally bound to historical source commit `4590aad94f298d380d43bffc7b9a5cb618beccac`; it is a valid record of that earlier capture, not evidence for the current head. Before independent review, the reviewer must recapture the required artifacts and command outputs against one exact source commit, record that commit in a new evidence bundle, and keep the historical bundle immutable. Documentation-only commits after this baseline also require recapture before acceptance.
+
 ## Scope boundary
 
 `TASK-000011` covers only the M0 reference portion of `WP-002`:
