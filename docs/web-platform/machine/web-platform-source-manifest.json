@@ -134,7 +134,6 @@
     "docs/blueprint-v1/18-source-bibliography.md",
     "docs/blueprint-v1/22-research-program.md",
     "docs/research/servo-local-compatibility-corpus-2026-07.md",
-    "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md",
     "docs/research/adr-0009-source-strategy-closure-preparation-2026-07.md"
   ],
   "unsupported": [

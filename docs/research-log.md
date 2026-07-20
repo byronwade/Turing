@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Web-platform source manifest duplicate-path control
+
+Question:
+
+Can the web-platform source manifest provide a trustworthy one-entry-per-document provenance list for compatibility and conformance research?
+
+Method:
+
+Inspected the manifest, schema, validator, and linked web-platform research route. The manifest listed the ADR-0009 source-strategy closure packet twice, while neither the schema nor validator rejected duplicate document paths.
+
+Decision:
+
+Removed the duplicate path, added `uniqueItems` to the machine schema, and made `validate_web_platform_sources.py` reject duplicate `source_documents` entries.
+
+Impact:
+
+This closes a traceability and provenance defect without changing any source observation, compatibility result, standards revision, gate status, implementation authority, or the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+When a compatibility profile is authorized, which reviewed capability-row manifest will bind its exact standards, test, harness, denominator, and unsupported-case identities?
+
 ## 2026-07-19 - Extreme-performance definition centralized
 
 Question:
