@@ -92,8 +92,8 @@ def main() -> int:
     paths = sorted(DOCS.rglob("*-source-manifest.json"))
     paths.append(DOCS / "blueprint-v1" / "machine" / "adr-0009-source-observation-manifest.json")
     paths = [path for path in paths if path.name != "design-source-manifest.json"]
-    if len(paths) != 11:
-        fail(DOCS, f"expected 11 source manifests, found {len(paths)}")
+    if len(paths) != 12:
+        fail(DOCS, f"expected 12 source manifests, found {len(paths)}")
     for path in paths:
         validate(path)
     print(f"source-manifest metadata validation passed: {len(paths)} manifests")

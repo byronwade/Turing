@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "manifest_id": "DEPENDENCY.SOURCES.2026_07",
+  "status": "no_claim_dependency_source_manifest",
+  "updated": "2026-07-19",
+  "related_questions": ["RQ-41", "RQ-44", "RQ-46"],
+  "claim_status": "No-claim technology and dependency source observations only; no language, framework, dependency, runtime, source strategy, license, provenance, security, performance, or release selection or approval follows.",
+  "evidence_axes": [
+    "language_and_unsafe_boundary",
+    "dependency_resolution_and_source_identity",
+    "build_script_and_native_authority",
+    "generated_output_and_provenance",
+    "license_and_distribution",
+    "reproducibility_and_independent_replay",
+    "security_advisory_and_maintenance",
+    "replaceability_and_component_boundary"
+  ],
+  "sources": [
+    {
+      "source_id": "DEP-SOURCE-RUST-UNSAFETY",
+      "title": "Unsafety - The Rust Reference",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/reference/unsafety.html",
+      "retrieved": "2026-07-19",
+      "observation": "Rust identifies operations that can violate memory-safety guarantees and keeps raw pointers, unsafe calls, unsafe traits, extern declarations, and related operations outside the safe subset.",
+      "decision_consequence": "A candidate foundation must inventory unsafe, FFI, platform-handle, allocator, JIT, codec, and generated-code boundaries; a Rust language choice alone is not safety evidence."
+    },
+    {
+      "source_id": "DEP-SOURCE-CARGO-REFERENCE",
+      "title": "Cargo Reference",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/cargo/reference/",
+      "retrieved": "2026-07-19",
+      "observation": "Cargo separates manifests, workspaces, dependency specifications, source replacement, dependency resolution, features, profiles, build scripts, registries, and package identity.",
+      "decision_consequence": "A dependency decision must record the complete configuration and resolution, not only a lockfile or package list, and must bind optional features and native/build-time inputs to the evidence record."
+    },
+    {
+      "source_id": "DEP-SOURCE-CARGO-SOURCE-REPLACEMENT",
+      "title": "Source Replacement",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/cargo/reference/source-replacement.html",
+      "retrieved": "2026-07-19",
+      "observation": "Cargo source replacement supports vendoring and mirroring and relies on the replacement source containing exactly the same source as the source it replaces.",
+      "decision_consequence": "A source policy must preserve source identity, checksums or equivalent content identity, mirror/vendor configuration, retrieval provenance, and rejection behavior for mismatches; replacement is not an implicit patch or private-registry policy."
+    },
+    {
+      "source_id": "DEP-SOURCE-CARGO-BUILD-SCRIPTS",
+      "title": "Build Scripts",
+      "publisher": "The Rust Project",
+      "url": "https://doc.rust-lang.org/cargo/reference/build-scripts.html",
+      "retrieved": "2026-07-19",
+      "observation": "Cargo build scripts can compile non-Rust code, discover system libraries, generate code, and perform platform-specific configuration before a package builds.",
+      "decision_consequence": "Build scripts and their compiler, linker, filesystem, environment, process, network, and native-library side effects are part of the dependency and authority boundary and require explicit inventories and replay evidence."
+    },
+    {
+      "source_id": "DEP-SOURCE-SPDX-OVERVIEW",
+      "title": "SPDX overview and license list",
+      "publisher": "SPDX Workgroup",
+      "url": "https://spdx.dev/learn/overview/",
+      "retrieved": "2026-07-19",
+      "observation": "SPDX provides standardized identifiers and exchange formats for software-license and supply-chain information.",
+      "decision_consequence": "An SPDX expression improves machine-readable inventory but must remain paired with exact observed license text, notices, source-offer obligations, patent or codec flags, list version, and legal-community review."
+    },
+    {
+      "source_id": "DEP-SOURCE-SPDX-SPEC",
+      "title": "SPDX 3.0.1 specification",
+      "publisher": "SPDX Workgroup",
+      "url": "https://spdx.dev/wp-content/uploads/sites/31/2024/12/SPDX-3.0.1-1.pdf",
+      "retrieved": "2026-07-19",
+      "observation": "The SPDX specification defines structured package, file, relationship, licensing, and provenance concepts for exchanging software supply-chain information.",
+      "decision_consequence": "The selected dependency record must bind SBOM entities and relationships to exact source revisions, generated outputs, native artifacts, notices, and build identity; an SBOM does not itself approve distribution."
+    },
+    {
+      "source_id": "DEP-SOURCE-SLSA-LEVELS",
+      "title": "SLSA security levels",
+      "publisher": "SLSA community",
+      "url": "https://slsa.dev/spec/v1.0/levels",
+      "retrieved": "2026-07-19",
+      "observation": "SLSA describes increasing provenance and build-platform expectations and distinguishes provenance properties from an absolute guarantee of artifact safety.",
+      "decision_consequence": "A candidate foundation must state the provenance level and its limits, retain builder and input identity, and avoid treating a provenance record as a substitute for source review, reproducibility, security, or release approval."
+    }
+  ],
+  "source_documents": [
+    "docs/research/technology-and-dependency-decision-research-2026-07.md",
+    "docs/research/m0-build-foundation-2026-07.md",
+    "docs/blueprint-v1/03-language-and-dependency-strategy.md",
+    "docs/blueprint-v1/08-security-and-sandbox.md",
+    "docs/blueprint-v1/13-build-release-operations.md",
+    "docs/project-buildout/14-adr-0009-source-strategy-decision-packet.md"
+  ],
+  "unsupported": [
+    "No language, framework, dependency, runtime, graphics stack, codec, storage engine, or source baseline is selected.",
+    "No license, patent, codec, SBOM, advisory, maintenance, reproducibility, or release decision is approved.",
+    "No clean-host dependency replay, independent build, benchmark, security, compatibility, accessibility, or production evidence exists in this manifest.",
+    "No broad implementation, Chrome-class, extreme-performance, or release claim follows from these source observations."
+  ]
+}

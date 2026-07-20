@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Technology and dependency source-manifest closure
+
+Question:
+
+Does the deferred technology/dependency research route have the same machine-checkable source identity, freshness, evidence-axis, and unsupported-boundary controls as the active pre-build source lanes?
+
+Method:
+
+Reviewed the `RQ-41` decision packet against the Rust Reference, Cargo Reference, Cargo source-replacement and build-script documentation, SPDX overview/specification, and SLSA levels. Added a no-claim source manifest and schema with retrieval dates, seven official source records, eight evidence axes, source-document links, and explicit selection/approval boundaries, then added a dedicated validator and aggregate-check entry.
+
+Decision:
+
+The deferred technology/dependency route now has machine-checked source provenance and evidence consequences. This improves deep-research continuity and does not select Rust, Cargo, a framework, a dependency, a runtime, a source strategy, a license, or a release foundation; `RQ-41` remains deferred and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which owner-approved candidate foundation and exact feature profile should receive independent unsafe/FFI, clean-host, legal, maintenance, replacement, and performance review, and what evidence will reject it?
+
 ## 2026-07-19 - Proposed-lane closure-route scope audit
 
 Question:

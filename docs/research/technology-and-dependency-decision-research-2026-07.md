@@ -11,6 +11,8 @@ Which languages, frameworks, and foundational dependencies minimize total securi
 
 This packet is a decision route, not a recommendation. It does not select Rust, a UI framework, a browser engine, a JavaScript runtime, a graphics abstraction, a codec stack, a storage engine, or any Servo component.
 
+The checked machine source record is [`technology-dependency-source-manifest.json`](../blueprint-v1/machine/technology-dependency-source-manifest.json), with schema [`technology-dependency-source-manifest.schema.json`](../blueprint-v1/machine/technology-dependency-source-manifest.schema.json) and validator [`validate_technology_dependency_sources.py`](../../tools/validate_technology_dependency_sources.py). It records official source observations and evidence consequences only; it does not select or approve a foundation.
+
 ## Why the choice is not a package list
 
 A browser foundation is a coupled set of language rules, unsafe boundaries, compiler and linker behavior, build scripts, generated output, native packages, licenses, advisories, platform adapters, and long-lived maintenance obligations. A dependency can be technically functional and still be unacceptable because its source cannot be reproduced, its license obligations are unresolved, its native build path is opaque, its security response is inadequate, or its replacement cost freezes an internal interface.

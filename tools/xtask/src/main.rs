@@ -167,6 +167,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_technology_dependency_sources.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_reference_platform_scorecard.py"],
     )?;
     command(
