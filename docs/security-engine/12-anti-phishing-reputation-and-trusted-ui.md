@@ -102,11 +102,18 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://spectreattack.com/spectre.pdf
-- https://www.usenix.org/conference/usenixsecurity20/presentation/narayan
-- https://llvm.org/docs/ControlFlowIntegrity.html
+Retrieved and individually verified 2026-07-20:
+
+- https://www.unicode.org/reports/tr39/ — UTS #39, Unicode Security Mechanisms. The canonical mechanism-level source for homograph and confusable spoofing: the skeleton algorithm, whole-script versus single-script confusables, mixed-script restriction levels, and `confusables.txt`.
+- https://datatracker.ietf.org/doc/html/rfc5894 — RFC 5894, IDNA Background, Explanation, and Rationale. Why IDNA2008 constrains the permitted repertoire and applies contextual rules, which is the registration-side half of the IDN spoofing problem.
+- https://developers.google.com/safe-browsing/reference — Google Safe Browsing API v5 Reference. Vendor specification of a privacy-preserving reputation lookup: the local hash-prefix database plus remote `SearchHashes` split.
+- https://www.usenix.org/conference/soups2016/technical-sessions/presentation/porter-felt — Porter Felt et al., "Rethinking Connection Security Indicators", SOUPS 2016. Measured effectiveness of TLS and origin indicators rather than assumed effectiveness.
+- https://doi.org/10.1007/978-3-540-77366-5_27 — Jackson, Simon, Tan, Barth, "An Evaluation of Extended Validation and Picture-in-Picture Phishing Attacks", FC 2007. The primary measured result for picture-in-picture and browser-chrome overlay spoofing.
+- https://doi.org/10.1145/1065545.1065546 — Ye, Smith, Anthony, "Trusted Paths for Browsers", ACM TISSEC 8(2), 2005. The foundational treatment of trusted UI and the line-of-death problem: protocols terminate in the computer while the services they support terminate in a human.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a Spectre, RLBox, and LLVM CFI list that was replicated verbatim across several chapters of this book and did not bear on phishing, reputation services, or trusted UI.
 
 ## Change discipline
 

@@ -38,7 +38,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 ## Primary sources
 
 - https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
+- https://w3c.github.io/webextensions/specification/
 - https://www.rfc-editor.org/rfc/rfc7516
 - https://www.rfc-editor.org/rfc/rfc5869
 

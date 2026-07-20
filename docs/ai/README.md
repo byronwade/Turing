@@ -19,7 +19,7 @@ This book expands the capability-safe agent model into observations, actions, pl
 
 A model is an untrusted reasoning component, not a browser authority. Turing supplies filtered observations and accepts typed proposals. Deterministic browser code validates identity, current document state, grant scope, action class, limits, policy, and user confirmation before effect. Page, document, model, extension, tool, and other-agent text never expands authority.
 
-Semantic observations should be the default because they are more accessible, compact, attributable, and actionable than screenshot-only control. Vision remains optional and visibly scoped. Credentials remain in brokers. Remote providers receive only declared data. Local models run in restricted, unloadable processes with separate resource budgets.
+The current working hypothesis is that semantic observations should be the default, on the expectation that they are more accessible, compact, attributable, and actionable than screenshot-only control. That comparison is `RQ-10` and remains open and deferred; it is not a measured result, and no accessibility, latency, token-cost, or task-success advantage over screenshot-first control has been demonstrated. Vision remains optional and visibly scoped. Credentials remain in brokers. Remote providers receive only declared data. Local models run in restricted, unloadable processes with separate resource budgets.
 
 ## Agent leadership criteria
 

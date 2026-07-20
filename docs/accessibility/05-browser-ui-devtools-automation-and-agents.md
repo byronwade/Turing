@@ -106,7 +106,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 - https://www.w3.org/TR/accname-1.2/
 - https://www.w3.org/TR/WCAG22/
 - https://developer.apple.com/accessibility/
-- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/
+- https://learn.microsoft.com/en-us/windows/apps/design/accessibility/accessibility-overview
 - https://gitlab.gnome.org/GNOME/at-spi2-core
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.

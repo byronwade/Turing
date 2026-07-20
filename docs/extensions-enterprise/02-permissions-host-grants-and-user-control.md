@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://w3c.github.io/webextensions/specification/ — WebExtensions Community Group specification (Draft Community Group Report; the fetched draft was dated 2026-06-05). Carries manifest-key sections for `permissions`, `optional_permissions`, `host_permissions`, and `optional_host_permissions`, plus sections on host permissions and on user gestures with activeTab. As a Draft Community Group Report it records cross-vendor behaviour and divergence rather than defining a normative permission model; Chrome and MDN remain the behavioural references below. Not a W3C Standard; record the revision date.
+- https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions — Chrome permission declaration across all four surfaces, install-time warning strings, and the incognito and file-URL grants behind `isAllowedIncognitoAccess` and `isAllowedFileSchemeAccess`.
+- https://developer.chrome.com/docs/extensions/develop/concepts/activeTab — The activeTab one-time grant: qualifying invocations, conferred capabilities, and revocation on navigation or tab close. The warning-free counterpart to broad host permissions.
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/permissions — Runtime grant and revocation: `request`, `remove`, `contains`, `getAll`, and the `onAdded`/`onRemoved` events, plus the user-activation constraint and user-visible revocation in the Add-ons Manager.
+- https://doi.org/10.1007/s10207-022-00610-w — Picazo-Sanchez et al., International Journal of Information Security 21(6), 2022. Empirical evidence on whether shipped extensions honor least privilege.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 

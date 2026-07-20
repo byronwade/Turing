@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://www.w3.org/TR/service-workers/ — Service Workers, W3C. The lifecycle and event-driven execution model that extension background service workers are built on.
+- https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle — Chrome extension service-worker lifecycle: idle termination, event-driven restart, and the state loss that follows.
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Background_scripts — MDN background scripts: persistent versus event-page behavior across engines.
+- https://developer.chrome.com/docs/extensions/reference/api/alarms — `chrome.alarms`, the scheduling primitive that survives background termination and replaces long-lived timers.
+- https://developer.chrome.com/docs/extensions/reference/api/storage — `chrome.storage`, including the quota constants that bound background work.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 

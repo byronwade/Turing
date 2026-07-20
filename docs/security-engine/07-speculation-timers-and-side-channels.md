@@ -104,7 +104,7 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 - https://spectreattack.com/spectre.pdf
 - https://www.usenix.org/conference/usenixsecurity20/presentation/narayan
-- https://llvm.org/docs/ControlFlowIntegrity.html
+- https://clang.llvm.org/docs/ControlFlowIntegrity.html
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
 

@@ -102,12 +102,16 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved 2026-07-20:
+
+- https://www.chromium.org/administrators/policy-templates/ — browser policy template formats per platform: Windows ADM/ADMX, macOS plist, Linux JSON, and ChromeOS.
+- https://learn.microsoft.com/en-us/windows/client-management/understanding-admx-backed-policies — ADMX policy definition structure, machine versus user scope, and the Enabled / Disabled / Not Configured state model that governs precedence and clearing.
+- https://developer.apple.com/documentation/devicemanagement — Apple configuration-profile and MDM payload reference for the macOS management path.
+- https://csrc.nist.gov/pubs/sp/800/92/final — NIST SP 800-92, log management infrastructure, retention, integrity checking, and analysis; the audit half of this chapter.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace an earlier list of WebExtensions, JWE, and HKDF references that was replicated verbatim across all seven chapters of this book and did not bear on enterprise policy precedence or audit. The WebExtensions and key-derivation references remain appropriate to the extension and sync chapters that actually scope them.
 
 ## Change discipline
 

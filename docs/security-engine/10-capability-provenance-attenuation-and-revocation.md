@@ -102,11 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://spectreattack.com/spectre.pdf
-- https://www.usenix.org/conference/usenixsecurity20/presentation/narayan
-- https://llvm.org/docs/ControlFlowIntegrity.html
+Retrieved and individually verified 2026-07-20:
+
+- https://doi.org/10.1145/54289.871709 — Hardy, "The Confused Deputy (or why capabilities might have been invented)", ACM SIGOPS OSR 22(4), 1988. Original statement of the confused-deputy failure mode this chapter lists among its primary risks, and of the argument that conveying authority together with designation prevents it. Hardy makes the argument but does not use the later term "ambient authority"; attribute the concept, not the wording.
+- https://www.usenix.org/conference/usenixsecurity10/capsicum-practical-capabilities-unix — Watson, Anderson, Laurie, Kennaway, "Capsicum: Practical Capabilities for UNIX", USENIX Security 2010. Retrofitting capability discipline onto a mainstream OS: capability mode removing ambient authority, file-descriptor capabilities carrying an explicit rights mask, and a browser compartmentalisation case study. The 2010 attenuation primitive is `cap_new`; `cap_rights_limit` is the later Capsicum 2.0 / FreeBSD 10 API.
+- https://sel4.systems/Info/Docs/seL4-manual-latest.pdf — seL4 Reference Manual, seL4 Foundation. The most precise available specification of capability provenance and revocation: the Capability Derivation Tree recording parent/child relationships, Copy/Mint/Grant/Mutate for rights reduction and badging, and Revoke removing all derived capabilities.
+- https://www.ndss-symposium.org/ndss2014/ndss-2014-programme/macaroons-cookies-contextual-caveats-decentralized-authorization-cloud/ — Birgisson et al., "Macaroons", NDSS 2014. Caveat-based delegation and attenuation via chained HMAC, where each caveat monotonically narrows authority and encodes expiry, context, or third-party discharge.
+- https://fuchsia.dev/fuchsia-src/concepts/kernel/handles — Zircon handles, Fuchsia kernel documentation. A shipping kernel-issued unforgeable capability with a per-handle rights set.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a Spectre, RLBox, and LLVM CFI list that was replicated verbatim across several chapters of this book and did not bear on capability provenance, attenuation, or revocation.
 
 ## Change discipline
 

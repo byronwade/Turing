@@ -102,12 +102,17 @@ Primary risks are semantic divergence, confused-deputy behavior, stale identity,
 
 ## Primary sources
 
-- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions
-- https://wicg.github.io/webextensions/
-- https://www.rfc-editor.org/rfc/rfc7516
-- https://www.rfc-editor.org/rfc/rfc5869
+Retrieved and individually verified 2026-07-20:
+
+- https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md — Chromium process model and site isolation. Extensions do not share a process with each other or with web pages; extension documents and workers are semi-privileged and run in dedicated renderers, while content scripts run in the unprivileged web renderer and must be treated as less trustworthy.
+- https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts — Chrome content scripts. Defines the isolated world as a private execution environment inaccessible to the page or other extensions, and documents the `world` parameter (ISOLATED default versus MAIN).
+- https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts — MDN content scripts. The cross-browser isolation contract: a clean DOM view, no visibility of page-script variables, and original rather than page-redefined built-ins.
+- https://firefox-source-docs.mozilla.org/dom/scriptSecurity/xray_vision.html — Gecko Xray vision. The second engine's implementation of the same boundary, including chrome/content/sandbox privilege levels and the waiveXrays escape hatch.
+- https://www.ndss-symposium.org/ndss2010/protecting-browsers-extension-vulnerabilities/ — Barth, Felt, Saxena, Boodman, NDSS 2010. The peer-reviewed basis for least privilege, privilege separation, and isolated worlds, and for the content-script versus extension-core split.
 
 Source URLs are starting points. An implementation records the exact revision, retrieval date, local patches, license, test commit, and behavior supported.
+
+These replace a four-item list shared verbatim by every chapter of this book. That list cited `https://wicg.github.io/webextensions/`, which returned HTTP 404 on 2026-07-20 because the WebExtensions Community Group specification moved to `https://w3c.github.io/webextensions/specification/`. RFC 7516 and RFC 5869 are retained only by chapter 07, whose scope actually covers encrypted envelopes and key derivation.
 
 ## Change discipline
 
