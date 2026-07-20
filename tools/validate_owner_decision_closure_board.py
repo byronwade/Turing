@@ -33,6 +33,25 @@ EXPECTED_GATES = {
     "PB-020",
 }
 
+EXPECTED_ACTION_LINKS = {
+    "PB-002": "adr-0009-source-strategy-closure-preparation-2026-07.md",
+    "PB-008": "fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "PB-009": "fresh-host-toolchain-reproduction-closure-preparation-2026-07.md",
+    "PB-011": "ipc-transport-and-authority-closure-preparation-2026-07.md",
+    "PB-012": "sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+    "PB-013": "benchmark-evidence-and-claim-closure-preparation-2026-07.md",
+    "PB-003": "native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "PB-004": "native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "PB-005": "native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "PB-014": "native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "PB-015": "native-ui-and-accessibility-closure-preparation-2026-07.md",
+    "PB-016": "profile-session-execution-and-data-safety-closure-preparation-2026-07.md",
+    "PB-017": "package-update-execution-and-release-safety-closure-preparation-2026-07.md",
+    "PB-018": "incident-response-execution-and-disclosure-closure-preparation-2026-07.md",
+    "PB-019": "backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md",
+    "PB-020": "build-readiness-closure-and-owner-decision-preparation-2026-07.md",
+}
+
 ROW_RE = re.compile(r"^\|\s*(?P<gate>[^|]+?)\s*\|(?P<body>.*)\|\s*$")
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)#]+)(?:#[^)]*)?\)")
 
@@ -104,6 +123,9 @@ def main() -> int:
             fail(errors, f"{gate}: minimum evidence cell lacks evidence/proof/review wording")
         if not any(term in cells[2] for term in ("action", "execute", "complete", "keep", "prepare", "resolve", "shape", "use")):
             fail(errors, f"{gate}: current next-action cell lacks an actionable verb")
+        expected_link = EXPECTED_ACTION_LINKS[gate]
+        if expected_link not in cells[2]:
+            fail(errors, f"{gate}: current next-action cell must link to {expected_link}")
 
     try:
         pre_build = json.loads(PRE_BUILD.read_text(encoding="utf-8"))

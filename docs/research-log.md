@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Owner-decision next-action link control
+
+Question:
+
+Can a future edit leave the owner-decision board's gate rows present while silently detaching a gate from its canonical closure-preparation route?
+
+Method:
+
+Added an explicit gate-to-closure-route map to `validate_owner_decision_closure_board.py` and linked the `PB-019` and `PB-020` rows to their canonical preparation documents. The validator now requires every canonical gate row to retain its expected route link in the current-next-action cell. This improves handoff integrity only; all owner decisions remain unresolved and the 90% contained-M0 / 0% full-build measures do not change.
+
 ## 2026-07-19 - Source-manifest coverage regression control
 
 Question:

@@ -84,6 +84,8 @@ The active closure-preparation routes are [source strategy](../research/adr-0009
 
 The documentation-readiness validator requires all ten lane-specific routes in both the audit and the no-claim closure template source records, and requires each route to name `PB-020`, the Owner Decision Closure Board, and the final build-readiness closure route. Removing a route or detaching its final handoff, even while leaving the central board present, is a validation failure.
 
+The owner-decision board validator also requires each canonical gate row to retain its gate-specific closure-preparation link in the current-next-action cell. This keeps a readable board row and its machine-tracked evidence route from drifting apart.
+
 The same validator requires the canonical implementation-plan README in both source lists and checks that its pre-build readiness handoff names the audit, build-information ledger, Owner Decision Closure Board, and final closure route. This keeps milestone playbooks behind the same stop/resume boundary as the readiness records.
 
 The cross-lane [`validate_source_manifest_metadata.py`](../../tools/validate_source_manifest_metadata.py) check applies one shared invariant to the eleven source-observation manifests: ISO retrieval/update dates, no future-dated observations relative to the manifest update, unique source IDs, non-empty consequence fields, unique repository-relative source-document paths, and existing source-document targets. Focused lane validators remain responsible for lane-specific source IDs, evidence axes, and no-claim boundaries.
