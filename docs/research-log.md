@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - JavaScript and DOM wrapper lifetime research
+
+Question:
+
+Which JavaScript heap representation and DOM-wrapper strategy preserves reachability, identity, teardown, cross-boundary safety, and memory accountability without unacceptable tracing or indirection cost?
+
+Method:
+
+Checked the current ECMAScript WeakRef/liveness model, V8's JS-to-DOM tracing documentation, Oilpan library and pointer-compression documentation, and Chromium's Blink memory-management overview on 2026-07-19. Reconciled the observations with `RQ-08`, the JavaScript, DOM, storage, memory, security, accessibility, and quality books, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet separating JS wrappers, native DOM ownership, cross-heap roots/edges, weak/ephemeron behavior, external resources, teardown, pointer compression, and allocator classes. It defines identity, cycle, stale-wrapper, crash/restart, memory, and safety evidence and rejects finalizer timing, one-heap totals, untracked native resources, or unreviewed pointer compression as proof. No heap, wrapper, collector, memory, security, performance, or readiness decision changed.
+
+Next question:
+
+Which owner-approved wrapper identity and root/edge schema should become the first cross-heap lifetime, teardown, restart, and independent safety-review target when this lane enters the active pre-build crosswalk?
+
 ## 2026-07-19 - JavaScript bytecode representation research
 
 Question:

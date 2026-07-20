@@ -54,6 +54,8 @@ Decision output: bytecode format v1 and versioning policy.
 
 Prototype tracing roots, handles, wrapper maps, nursery/mature spaces, external memory, weak maps, finalization, and document teardown. Stress cycles between JS and DOM. Compare movable versus nonmoving mature spaces and handle-indirection costs.
 
+The [JavaScript and DOM Wrapper Lifetime Research](../research/javascript-dom-wrapper-lifetime-research-2026-07.md) defines the deferred source-backed comparison, identity oracle, teardown, and memory-accounting route.
+
 Decision output: exact baseline collector and wrapper-lifetime contract.
 
 ## RQ-09 — Cranelift versus custom baseline code generation
