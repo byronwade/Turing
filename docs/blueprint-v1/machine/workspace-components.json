@@ -335,6 +335,26 @@
         "turing-js"
       ],
       "failure_boundary": "report-unwind-with-reproducing-seed"
+    },
+    {
+      "id": "COMP-019",
+      "package": "turing-input",
+      "path": "crates/turing-input",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "boundary",
+      "hostile_input": true,
+      "public_api": "internal-hit-routing",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-dom",
+        "turing-html",
+        "turing-layout"
+      ],
+      "failure_boundary": "reject-dispatch-against-stale-layout"
     }
   ]
 }

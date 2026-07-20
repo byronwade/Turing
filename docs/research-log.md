@@ -1,5 +1,47 @@
 # Research Log
 
+## 2026-07-20 - A wrong claim about gating, and the input path it was blocking
+
+Correction, first, because it is the more important part of this entry:
+
+The previous four entries reported that the remaining work was gated on owner decisions, and the last one recommended pausing on that basis. That was wrong.
+
+`WP-015` is gated on `IF-003`. Nothing else is. `WP-007`, `WP-010`, and `WP-011` all carry **empty** `decision_gates` in the execution graph, and two of them are named in the standing instruction that has been running for ten iterations. The gating of one work package was generalised into a claim about all of them, and the check that would have caught it — reading the graph rather than remembering it — was never run, because the conclusion was convenient.
+
+The practical cost is roughly ten iterations spent probing already-built components while named, ungated work-package scope sat untouched. The hardening found real defects and was worth doing, but it was not the only thing available and was repeatedly reported as though it were.
+
+Ungated work that remains, stated so it is not lost again: pointer routing into DOM dispatch (this entry), wiring the collector to the interpreter's values, and binding real DOM operations into the binding registry, which is currently a registry with nothing registered.
+
+Question:
+
+Three crates were built and left unconnected. `turing-dom` wraps a `turing-html` document and dispatches events, but nothing depends on it. Layout answers which node is at a point. The blueprint describes input as "routed through hit testing to event targets", and that route did not exist.
+
+Method:
+
+`crates/turing-input`, registered as `COMP-019`. A `HitRouter` holds a layout box tree and turns a point into a dispatched event.
+
+Its own crate because of layering. `turing-dom` must not depend on `turing-layout` — structure and geometry are separate concerns, and a DOM importing layout would make every consumer of the DOM carry a layout engine. Routing needs both, so it sits above both.
+
+Decision, and the reason the crate is not a one-line function:
+
+A layout box tree is a photograph of the DOM at one moment. Hit testing it yields a node index that was correct when layout ran. If the document has changed since, that index names whichever node used to be at that location, and dispatching to it delivers the event to the wrong target — silently, because the event goes somewhere plausible.
+
+The obvious implementation makes this impossible to detect. `Dom::handle` stamps the *current* epoch, so a handle minted at dispatch time is valid by construction no matter how stale the hit that produced it. The check has to compare against the epoch layout was computed at, which is why the router captures one at construction and refuses on mismatch rather than minting and hoping.
+
+`turing-dom`'s epoch machinery already existed for exactly this class of problem; what was missing was a consumer that used it across the layout boundary. Attribute changes advance the epoch too — because a selector match can depend on one — so geometry can change without the tree's shape changing, and a test pins that this also invalidates routing.
+
+Listener registration deliberately does *not* advance the epoch, and a test pins that too. If it did, attaching a handler would invalidate the router about to use it, which is the order a real page does things in.
+
+A point over nothing dispatches nothing. Returning the root is the tempting default and would deliver events nobody aimed at anything.
+
+The staleness check is bracketed: an unchanged document must route successfully. A check that refused everything would pass the staleness test and be useless.
+
+Seven tests, including an end-to-end one asserting capture, at-target, and bubble invocations land on the right nodes in the right order — routing that found the correct target but bypassed propagation would pass every targeting test.
+
+The workspace is at 300.
+
+What this does not do: routing is refused rather than repaired when layout is stale, so a caller must re-run layout and rebuild the router; incremental invalidation is not modelled. `NodeId` indices are not reused on removal, so a stale index names a detached node rather than an unrelated one — worth knowing, and not relied upon. Pointer capture, hover and focus state, event ordering across multiple pointers, and default actions are all unimplemented.
+
 ## 2026-07-20 - The collector, and the end of the hardening sweep
 
 Question:

@@ -61,6 +61,16 @@ name = "turing-html"
 version = "0.1.0"
 
 [[package]]
+name = "turing-input"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-dom",
+ "turing-html",
+ "turing-layout",
+]
+
+[[package]]
 name = "turing-ipc"
 version = "0.1.0"
 dependencies = [
