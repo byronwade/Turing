@@ -1,5 +1,31 @@
 # Research Log
 
+## 2026-07-20 - Text rasterization, and the gate that was decided rather than worked around
+
+Question:
+
+The owner directed that this project produce a working, visible browser application. The first thing standing between the engine and a readable page was the reference rasterizer's refusal of text: `DisplayItem::Text` returned `GlyphRasterizationUnsupported` because the `text-font-foundation-review` gate on `WP-009` was open and inventing a glyph representation would have preempted an owner decision.
+
+That reasoning has not changed — what changed is that the owner decision arrived. The direction to make output visible is itself the decision the gate was waiting on, so the right move was to record it as one (`docs/research/text-font-foundation-decision-2026-07.md`) rather than to invent quietly or keep refusing loudly.
+
+Decision:
+
+The reference glyph set is the printable-ASCII range of `font8x8_basic` — Daniel Hepper's public-domain 8x8 bitmaps, derived from Marcel Sondaar's public-domain VGA fonts. Embedded as source data with provenance documented at the table, not pulled as a dependency: no crate, no build script, nothing fetched at build time. The scope is deliberately the smallest that satisfies the direction. Shaping, hinting, Unicode coverage, font loading, and the product font stack remain undecided Foundation-class questions.
+
+Characters outside printable ASCII draw a hollow replacement box. A page of boxes reads as "missing glyphs"; silently dropped characters read as "nothing was here", and the second one is the lie.
+
+Method:
+
+A text item is a single line run — layout breaks lines between inline children, never inside one — so painting is a per-character blit. The advance is recovered from the run's rect by division rather than assumed at 8: layout sized the rect as `chars x advance`, so the painter follows whatever metric was injected into layout and the two cannot disagree. Glyphs centre vertically in the line box and clip to the canvas under the same half-open, rounded rules as every fill.
+
+One transcription hazard surfaced immediately: the glyph tables were `const`, and `const` data is inlined at each use site, so two references to the same glyph compared unequal by address and the identity tests failed. `static` restores one table in memory. The tests that caught it stay.
+
+Verification is two-layered because the table is transcribed data. Pixel tests assert exact ink for known rows of `H`, `I`, `#`, and the replacement box — but a wrong hex byte elsewhere produces a legible-looking wrong glyph that no test written against the same table catches. So `examples/glyph_sheet.rs` renders the full set plus pangrams to a BMP, and the sheet was inspected by eye: all ninety-five glyphs and both pangrams read correctly.
+
+The workspace is at 361 tests. `turing-raster` no longer has a text refusal; `RasterError` is down to the allocation bound.
+
+What this does not do: no styling of text beyond colour, no bold or italic synthesis, no font selection of any kind, no anti-aliasing — glyph edges are hard like every other edge here. The `graphics-foundation-review` gate on `WP-009` is still open; it is about the paint and presentation foundation, and the next entry will meet it where this one met the font gate.
+
 ## 2026-07-20 - A mutation log, and the invalidation shortcut that was refused
 
 Question:

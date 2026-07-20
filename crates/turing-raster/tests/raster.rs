@@ -216,29 +216,103 @@ fn partial_overlap_keeps_both_visible_regions() {
     assert_eq!(canvas.pixel(5, 0), Some(color("blue")));
 }
 
-// -- refusals ------------------------------------------------------------
+// -- text ----------------------------------------------------------------
 
 #[test]
-fn text_is_refused_rather_than_drawn_as_shapes() {
-    // WP-009 carries an unresolved text-font-foundation-review gate. Drawing
-    // blocks where glyphs belong would produce something that looks like a
-    // rendered page, invites comparison against a real renderer, and is not
-    // text.
-    let result = rasterize(
+fn a_text_run_draws_glyphs_at_the_advance_recovered_from_its_rect() {
+    // "HI" laid out with the default metrics: two characters, advance 8,
+    // line height 16. The 8x8 glyph is centred in the 16-tall line box, so
+    // the glyph's top row lands at y = 4.
+    let canvas = rasterize(
         &list(vec![DisplayItem::Text {
-            rect: rect(0.0, 0.0, 10.0, 10.0),
-            text: "hello".to_string(),
+            rect: rect(0.0, 0.0, 16.0, 16.0),
+            text: "HI".to_string(),
             color: color("black"),
         }]),
         16,
         16,
         color("white"),
-    );
-    assert!(matches!(
-        result,
-        Err(RasterError::GlyphRasterizationUnsupported { ref text }) if text == "hello"
-    ));
+    )
+    .expect("rasterizes");
+
+    // 'H' row 0 is 0x33: columns 0, 1, 4, and 5 are ink.
+    assert_eq!(canvas.pixel(0, 4), Some(color("black")), "H left stem");
+    assert_eq!(canvas.pixel(2, 4), Some(color("white")), "H counter");
+    assert_eq!(canvas.pixel(4, 4), Some(color("black")), "H right stem");
+    // 'I' starts one advance in. Row 0 is 0x1E: columns 1 through 4.
+    assert_eq!(canvas.pixel(8, 4), Some(color("white")), "I left of serif");
+    assert_eq!(canvas.pixel(9, 4), Some(color("black")), "I serif");
+    // Above and below the centred glyph the line box stays background.
+    assert_eq!(canvas.pixel(0, 0), Some(color("white")), "leading is empty");
+    assert_eq!(canvas.pixel(0, 13), Some(color("white")), "trailing is empty");
 }
+
+#[test]
+fn a_character_outside_printable_ascii_draws_the_replacement_box() {
+    let canvas = rasterize(
+        &list(vec![DisplayItem::Text {
+            rect: rect(0.0, 0.0, 8.0, 8.0),
+            text: "\u{e9}".to_string(),
+            color: color("black"),
+        }]),
+        8,
+        8,
+        color("white"),
+    )
+    .expect("rasterizes");
+
+    // The replacement is a hollow box: row 0 spans columns 0 through 6,
+    // row 1 has ink only at the walls.
+    assert_eq!(canvas.pixel(0, 0), Some(color("black")), "top edge");
+    assert_eq!(canvas.pixel(6, 0), Some(color("black")), "top edge end");
+    assert_eq!(canvas.pixel(7, 0), Some(color("white")), "column 7 is empty");
+    assert_eq!(canvas.pixel(3, 1), Some(color("white")), "hollow interior");
+    assert_eq!(canvas.pixel(0, 1), Some(color("black")), "left wall");
+}
+
+#[test]
+fn text_clips_to_the_canvas_like_every_other_draw() {
+    // A run whose rect starts left of the canvas and runs past its right
+    // edge must draw the visible middle and nothing else, not panic.
+    let canvas = rasterize(
+        &list(vec![DisplayItem::Text {
+            rect: rect(-8.0, -4.0, 24.0, 16.0),
+            text: "###".to_string(),
+            color: color("black"),
+        }]),
+        8,
+        8,
+        color("white"),
+    )
+    .expect("rasterizes");
+
+    // The middle '#' occupies columns 0..8 on screen; its dense row 2 (0x7F)
+    // sits at glyph row 2, shifted up 4 by the off-canvas centring: y = -4 +
+    // (16 - 8) / 2 + 2 = 2.
+    assert_eq!(canvas.pixel(0, 2), Some(color("black")), "clipped run still inks");
+}
+
+#[test]
+fn an_empty_text_run_draws_nothing() {
+    let canvas = rasterize(
+        &list(vec![DisplayItem::Text {
+            rect: rect(0.0, 0.0, 0.0, 16.0),
+            text: String::new(),
+            color: color("black"),
+        }]),
+        8,
+        8,
+        color("white"),
+    )
+    .expect("rasterizes");
+
+    assert!(
+        canvas.pixels().iter().all(|&pixel| pixel == color("white")),
+        "an empty run must not divide by zero or leave ink"
+    );
+}
+
+// -- refusals ------------------------------------------------------------
 
 #[test]
 fn an_oversized_canvas_is_refused_rather_than_allocated() {
