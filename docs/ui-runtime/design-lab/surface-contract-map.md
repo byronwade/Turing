@@ -68,6 +68,20 @@ The high-level contracts above are intentionally fewer than the visual source's 
 
 This reconciliation is a source-coverage audit, not a claim that these views are implemented natively. The committed source hash remains the integrity authority for the visual reference; the component-fixture inventory, Rust state/command model, page-surface contract, accessibility records, security policy, and accepted ADRs remain authoritative for behavior and release decisions.
 
+## Cross-lane evidence coverage
+
+This matrix is a continuation aid, not a second contract registry. It records the minimum evidence lanes that a Nova surface must satisfy before it can move from visual reference to an authorized native fixture. A surface may appear in more than one row. `Planning only` means the route and rejection criteria are documented; it does not mean the evidence has been executed.
+
+| Evidence lane | Nova contracts in scope | Canonical route | Current status |
+| --- | --- | --- | --- |
+| Page-surface identity and composition | `UI-COMPONENT-NEW-TAB-PAGE-SHELL`, `UI-COMPONENT-VIEW-TOOLS`, `UI-COMPONENT-RECOVERY`, `UI-COMPONENT-DEVTOOLS` | [Page Surface Composition Inventory](../../research/page-surface-composition-inventory-2026-07.md), `PB-005`, `UI-GATE-7`, `ADR-0016` | Planning only; no typed handle, brokered surface, compositor decision, or fault fixture is accepted |
+| Platform accessibility and assistive technology | All shell contracts, especially `UI-COMPONENT-BROWSER-CHROME`, `UI-COMPONENT-TABS`, `UI-COMPONENT-COMMAND-FIELD`, `UI-COMPONENT-SETTINGS`, `UI-COMPONENT-NEW-TAB-PAGE-SHELL`, and `UI-COMPONENT-AGENT-CONFIRMATION` | [Native UI and Accessibility Closure Preparation](../../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [accessibility source manifest](../../accessibility/machine/accessibility-source-manifest.json), `PB-015`, `UI-GATE-10` | Planning only; no platform tree snapshots, manual screen-reader transcripts, IME evidence, or composed page/chrome tree review is accepted |
+| Trusted-chrome authority and permissions | `UI-COMPONENT-BROWSER-CHROME`, `UI-COMPONENT-PERMISSION-PROMPT`, `UI-COMPONENT-SHIELD`, `UI-COMPONENT-VAULT`, `UI-COMPONENT-AGENT-CONFIRMATION`, `UI-COMPONENT-DEVTOOLS` | [Native UI and Accessibility Closure Preparation](../../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [security and sandbox Blueprint](../../blueprint-v1/08-security-and-sandbox.md), `PB-003`, `PB-012`, `PB-011` | Planning only; no toolkit, page, extension, DevTools, agent, or renderer callback may become authority |
+| Profile, storage, credentials, and recovery | `UI-COMPONENT-SPACES`, `UI-COMPONENT-SETTINGS`, `UI-COMPONENT-VAULT`, `UI-COMPONENT-LIBRARY`, `UI-COMPONENT-RECOVERY`, `UI-COMPONENT-AGENT-ACTIVITY` | [Profile/Session Execution and Data-Safety Closure Preparation](../../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), `PB-016`, `PB-017`, `PB-019` | Planning only; no production profile format, credential, migration, update, or backup-ownership evidence is accepted |
+| Fault, resource, and performance behavior | `UI-COMPONENT-TABS`, `UI-COMPONENT-RESOURCE-MANAGER`, `UI-COMPONENT-RECOVERY`, `UI-COMPONENT-VIEW-TOOLS`, `UI-COMPONENT-AGENT-ACTIVITY` | [Native UI and Accessibility Closure Preparation](../../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [Benchmark Evidence and Claim Closure Preparation](../../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), `PB-013`, `PB-015` | Planning only; no renderer/GPU fault, 30-tab, latency, memory, energy, or Chrome-class result is accepted |
+
+The matrix prevents two common handoff errors: treating visual coverage as behavioral coverage, and treating a component's presence in Nova as permission to invent an authority path. When a Nova source change affects one of these lanes, the owning route, machine registry, fixture inventory, and research log must be updated together.
+
 ## Required follow-up
 
 1. Bind each component to the Nova source region and shared token registry before screenshot or visual-diff review.

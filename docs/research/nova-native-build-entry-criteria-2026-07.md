@@ -23,7 +23,7 @@ The source may be used for:
 - interaction-story coverage for toolkit-neutral fixtures;
 - visual regression and screenshot/component review after the native fixture contract exists.
 
-The surface inventory now has an explicit fixture mapping for the new-tab/web-page shell through `UI-COMPONENT-NEW-TAB-PAGE-SHELL`, and the [surface-contract map](../ui-runtime/design-lab/surface-contract-map.md) reconciles all named Nova function components, including shared primitives and nested settings/popover/message sections, to parent contracts. This mapping covers the chrome/page boundary, typed page-surface generations, loading/error/recovery states, focus transfer, and page-tree accessibility work; it does not make the renderer or page surface trusted.
+The surface inventory now has an explicit fixture mapping for the new-tab/web-page shell through `UI-COMPONENT-NEW-TAB-PAGE-SHELL`, and the [surface-contract map](../ui-runtime/design-lab/surface-contract-map.md) reconciles all named Nova function components, including shared primitives and nested settings/popover/message sections, to parent contracts. Its cross-lane evidence matrix also maps those contracts to page-surface, accessibility, authority, profile/storage, fault, and performance routes. This mapping covers the chrome/page boundary, typed page-surface generations, loading/error/recovery states, focus transfer, and page-tree accessibility work; it does not make the renderer or page surface trusted.
 
 The source may not provide:
 

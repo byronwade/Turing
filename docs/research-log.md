@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Nova cross-lane evidence coverage map
+
+Extended the Nova surface-contract map with a cross-lane matrix connecting visual contracts to page-surface composition, platform accessibility, trusted-chrome authority, profile/storage, fault, and performance evidence routes. Updated the Nova native build-entry packet to point to the matrix. This closes a design-to-evidence navigation gap only; Nova remains a visual/layout reference, no native toolkit or adapter is selected, and the 90% contained-M0 / 0% full-build measures are unchanged.
+
 ## 2026-07-20 - Documentation-readiness control-surface re-audit
 
 Reconciled the current machine documentation-readiness audit with the progress snapshot, owner-decision board, implementation-plan entrypoint, and no-claim closure template. Re-ran the aggregate check and focused readiness/source validators; all passed. Synchronized the review dates and recorded the verification boundary. The result remains 90% organized for contained M0 continuation and 0% ready for full-build closure because owner decisions, executable lane evidence, and independent review are still absent.
