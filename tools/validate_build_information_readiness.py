@@ -351,9 +351,20 @@ def check_companion_records(path: Path) -> None:
         if task_status.get(task_id) != "proposed":
             fail(f"{task_id} must remain proposed")
 
+    task_schema = load_json(DOCS / "agent-execution" / "machine" / "execution-task.schema.json")
     task_000011 = load_json(DOCS / "agent-execution" / "machine" / "tasks" / "TASK-000011.json")
     if not isinstance(task_000011, dict):
         fail("TASK-000011 must be an object")
+    required_task_fields = set(task_schema.get("required", []))
+    missing_task_fields = sorted(required_task_fields - set(task_000011))
+    if missing_task_fields:
+        fail("TASK-000011 is missing execution-task schema fields: " + ", ".join(missing_task_fields))
+    allowed_task_fields = set(task_schema.get("properties", {}))
+    unknown_task_fields = sorted(set(task_000011) - allowed_task_fields)
+    if unknown_task_fields:
+        fail("TASK-000011 has fields outside execution-task schema: " + ", ".join(unknown_task_fields))
+    if task_000011.get("schema_version") != 1 or task_000011.get("id") != "TASK-000011":
+        fail("TASK-000011 schema version or task ID is incorrect")
     if task_000011.get("status") != "review_pending":
         fail("TASK-000011 must remain review_pending")
     if task_000011.get("work_packages") != ["WP-002"]:

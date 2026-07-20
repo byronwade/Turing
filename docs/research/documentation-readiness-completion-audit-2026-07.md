@@ -60,6 +60,7 @@ The focused validator checks that:
 - no criterion uses a completion status;
 - missing-evidence fields still name broad M1, Chrome-class, performance, security, compatibility, accessibility, source-strategy, pinned toolchain, fresh-host, IPC, sandbox, benchmark readiness, native-shell, profile/session, package/update, incident-response, and backup-ownership gaps;
 - task handoff evidence includes the checked no-claim task approval template before any proposed `TASK-*` row can become an immutable reviewed execution manifest;
+- the active `TASK-000011` manifest is checked against `execution-task.schema.json`, including required fields, identity, `WP-002` binding, and `review_pending` status;
 - specified task manifests mirror the queue's immutable `readiness_items` `PB-*` gate mapping, so task scope is directly traceable to readiness scope;
 - every partial, blocked, documented-no-runner, documented-no-source, or not-started `PB-*` item has a research-crosswalk route; intentionally `not_selected` items carry a machine-checked rationale and revisit trigger instead;
 - contained M0 start-state evidence keeps proposed tasks owner-approval-required and `TASK-000011` review-pending until reviewed evidence changes those states;

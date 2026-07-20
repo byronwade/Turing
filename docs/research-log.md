@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active task schema enforcement
+
+Extended the build-information validator to check `TASK-000011` against the execution-task schema for required and unknown fields, schema version, task identity, review-pending status, and exact `WP-002` binding. This makes the active task's machine shape auditable rather than relying on a single field check. No task acceptance, owner decision, gate promotion, or readiness percentage changed.
+
 ## 2026-07-20 - Active task work-package binding made explicit
 
 Added `work_packages: ["WP-002"]` to the active `TASK-000011` manifest and made the build-information validator enforce that exact binding. The agent-execution index now states the same relationship directly. This closes a schema/traceability ambiguity without changing the task's `review_pending` status or creating an acceptance, security, IPC, or readiness claim.
