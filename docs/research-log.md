@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Profile/session source manifest provenance control
+
+Question:
+
+Does the profile/session source manifest enforce the same one-entry-per-document provenance rule as the web-platform and sandbox source manifests?
+
+Method:
+
+Compared the profile/session source manifest, schema, validator, required source set, nine evidence axes, and the execution/data-safety closure route. The source list was unique but duplicate document paths were not rejected by the schema or validator.
+
+Decision:
+
+Added `uniqueItems` to the profile/session `source_documents` schema and made `validate_profile_session_sources.py` reject duplicate paths.
+
+Impact:
+
+This synchronizes provenance controls for the data-safety lane without creating executable schemas, migration or fault evidence, privacy approval, credential readiness, data-loss safety, or production profile-format evidence. `PB-016` remains partial and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which synthetic profile/session schema package and fault-injection record will first satisfy the execution/data-safety closure route after task authority is approved?
+
 ## 2026-07-19 - Sandbox source manifest provenance control
 
 Question:
