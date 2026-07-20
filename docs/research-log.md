@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-20 - The named-colour boundary moved to the other principled edge
+
+The value layer's named-colour set was the sixteen original HTML colours, chosen because a subset needs a defensible edge. The other defensible edge is the whole table, and the engine now sits on it: all one hundred and forty-eight CSS Color 4 names, generated mechanically from the specification's own table into the match — transcribing hex triplets by hand is how a plausible wrong colour enters, so no hand touched them. `rgb()` and `rgba()` parse too, in comma, space, and slash forms, with out-of-range channels clamped as the specification requires.
+
+The refusal that matters is the one that stayed: any alpha below 1 is still `ColorUnsupported`. The value layer is opaque; translucency belongs to the compositing painter, and a translucent colour silently flattened to opaque at parse time would be the exact plausible-wrong-colour failure this layer exists to prevent. `hsl()`, `lab()`, eight-digit hex, and `currentColor` remain refused, and the engine test that used `rgb()` as its canonical unsupported notation now uses `hsl()` — a test that outlives the boundary it guards has to move with it.
+
+Three new value-layer tests: spec spot-checks including the shared-value aliases, the `rgb()` forms, and the refusals. The workspace is at 393 tests.
+
 ## 2026-07-20 - The corpus grew, and the ratio narrowed where it should
 
 Three fixtures joined the cross-engine corpus — block-heavy, selector-heavy, and text-heavy, all inside the implemented subset — and the single number became a range: on four fixtures, Turing's cold comparable span runs roughly 2x to 6x faster than Chrome's equivalent main-thread events, same files, same machine.

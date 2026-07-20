@@ -346,10 +346,11 @@ fn a_canvas_size_that_would_overflow_is_refused() {
 fn an_unparseable_colour_is_refused_by_the_value_layer() {
     // The rasterizer never sees an invalid colour because parsing happens once,
     // in turing-css. Defaulting to black at paint time would render a plausible
-    // wrong colour that nobody notices.
-    assert!(Color::parse("rgb(1, 2, 3)").is_err());
+    // wrong colour that nobody notices. (rgb() and the full named set parse
+    // now; hsl() and malformed hex remain examples of the refusal.)
+    assert!(Color::parse("hsl(1, 2%, 3%)").is_err());
     assert!(Color::parse("#12345").is_err());
-    assert!(Color::parse("rebeccapurple").is_err());
+    assert!(Color::parse("not-a-colour").is_err());
 }
 
 // -- canvas basics -------------------------------------------------------

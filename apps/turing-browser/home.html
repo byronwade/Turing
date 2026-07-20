@@ -16,7 +16,7 @@ body { background: white; }
 <div id='header'>Turing browser laboratory</div>
 <div id='status'>If this bar is teal, the load-time script mutated the live DOM before first paint.</div>
 <p>This page travelled the whole engine: tokenizer, tree builder, live DOM, script, cascade, layout, display list, and the reference rasterizer. Click anywhere: the console names the element under the pointer.</p>
-<div class='card'>Every glyph on this page is the embedded 8x8 reference set. Text wraps between inline runs, blocks stack, and colours come from the sixteen HTML names plus hex.</div>
+<div class='card'>Every glyph on this page is the embedded 8x8 reference set. Text wraps between inline runs, blocks stack, and colours come from all 148 CSS names, hex, and rgb().</div>
 <div id='toggle' class='card'>Click me: a script listener flips my colour through the live DOM.</div>
 <script>
 setAttribute('status', 'class', 'card');
