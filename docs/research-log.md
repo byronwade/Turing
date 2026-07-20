@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Benchmark source route synchronization
+
+Question:
+
+Does the canonical benchmark lane expose its checked no-claim source observations wherever `PB-013` and `TASK-000005` owners will use them?
+
+Method:
+
+Compared the machine crosswalk and build-information ledger with the benchmark research index and operating board. Added the benchmark source manifest, schema, and validator to the active route and refreshed the evidence-start count. This closes traceability only; it creates no benchmark result, performance claim, or readiness promotion.
+
 ## 2026-07-19 - Build-information ledger dependency-route synchronization
 
 Question:
