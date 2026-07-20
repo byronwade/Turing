@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Sustained performance policy research
+
+Question:
+
+Which scheduling, memory, cache, lifecycle, and energy policies should be compared before Turing can make a sustained-performance claim across interactive, multi-tab, constrained-resource, and recovery workloads?
+
+Method:
+
+Checked Chromium's threading/task and Blink scheduling notes, Chrome's Page Lifecycle guidance, Linux Pressure Stall Information documentation, and Microsoft's Windows Performance Recorder guidance on 2026-07-19. Reconciled the observations with `RQ-23`, `PB-013`, `TASK-000005`, the benchmark-lab and performance books, the 30-tab, trace, resource-attribution, statistics, and claim-review contracts, and the research-readiness crosswalk.
+
+Decision:
+
+Added an active no-claim packet that separates scheduler, memory, cache, lifecycle, energy, thermal, and isolation-adjusted policy candidates; defines pressure, freeze/discard/revival, crash/recovery, accessibility, agent, and sustained-run scenarios; and records raw-artifact, failure-denominator, observer-effect, and rejection requirements. Added the packet to the RQ-23 Blueprint route, benchmark crosswalk, research index, and repository map.
+
+Impact:
+
+`RQ-23` now has a dedicated source-backed policy route. `PB-013` remains `partial` and `TASK-000005` remains proposed-only. No scheduler, allocator, cache, lifecycle, energy, performance, compatibility, security, accessibility, production, or Chrome-class claim changed.
+
+Next question:
+
+Which first candidate policy set should an owner approve for the L1 browser-run extension, and what exact pressure/recovery artifact schema should reject incomplete evidence?
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:

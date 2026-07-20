@@ -180,6 +180,8 @@ Measure p50/p95/p99 input, frame pacing, startup, 30-tab mixed/all-live, allocat
 
 Decision output: scheduler, pool, allocation, cache, pressure, startup, and benchmark-governance policies.
 
+Use the [Sustained Performance Policy Research](../research/sustained-performance-policy-research-2026-07.md) as the active no-claim route for the policy comparison. It defines source observations, candidate dimensions, isolation-adjusted experiment conditions, lifecycle and pressure recovery cases, and rejection rules; it does not select an implementation or support a performance, memory, energy, or Chrome-class claim.
+
 ## RQ-24 — Which agent observation, action, memory, provider, and tool design is safest and most useful?
 
 Compare semantic and vision observations, redaction strategies, opaque credential/file handles, action schemas, risk classification, confirmation, working/long-term memory, multi-agent delegation, recovery, local/remote providers, MCP/tool gateways, and resource budgets.
