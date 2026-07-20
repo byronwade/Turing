@@ -17,6 +17,8 @@ MACHINE = DOCS / "blueprint-v1" / "machine"
 PROJECT_MACHINE = DOCS / "project-buildout" / "machine"
 DEFAULT_LEDGER = PROJECT_MACHINE / "build-information-readiness-ledger.json"
 BACKLOG_PATH = MACHINE / "backlog.json"
+TRACEABILITY_PATH = MACHINE / "professional-traceability.json"
+VERIFICATION_MATRIX_PATH = MACHINE / "requirement-verification-matrix.json"
 
 LEDGER_ID = re.compile(r"^PB020\.BUILD_INFORMATION_READINESS_LEDGER\.[A-Z0-9._-]+$")
 PROPOSED_TASKS = {f"TASK-{number:06d}" for number in range(1, 11)}
@@ -377,6 +379,27 @@ def check_companion_records(path: Path) -> None:
         for item in work_packages
     ):
         fail("TASK-000011 binds to WP-002, but WP-002 is missing from the canonical backlog")
+    traceability = load_json(TRACEABILITY_PATH)
+    requirement_records = {
+        item.get("id"): item
+        for item in traceability.get("requirements", [])
+        if isinstance(item, dict)
+    }
+    wp_evidence_path = "docs/research/wp-002-kernel-ipc-2026-07.md"
+    for requirement_id in ("REQ-SEC-003", "REQ-PERF-004"):
+        record = requirement_records.get(requirement_id)
+        if not isinstance(record, dict) or wp_evidence_path not in record.get("evidence", []):
+            fail(f"{requirement_id} must point to the WP-002 evidence report")
+    verification_matrix = load_json(VERIFICATION_MATRIX_PATH)
+    verification_lanes = verification_matrix.get("lanes", [])
+    for requirement_id in ("REQ-SEC-003", "REQ-PERF-004"):
+        if not any(
+            isinstance(lane, dict)
+            and requirement_id in lane.get("requirement_ids", [])
+            and "WP-002" in lane.get("work_packages", [])
+            for lane in verification_lanes
+        ):
+            fail(f"requirement-verification matrix must route {requirement_id} through WP-002")
 
     report = DOCS / "research" / "build-information-readiness-ledger-2026-07.md"
     report_text = report.read_text(encoding="utf-8")

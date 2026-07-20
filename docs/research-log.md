@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - WP-002 requirement reverse-links enforced
+
+Extended the active-task readiness validator to require `REQ-SEC-003` and `REQ-PERF-004` to retain the WP-002 evidence report in professional traceability and to share a `WP-002` verification lane in the requirement-verification matrix. The active task, backlog, evidence, requirements, and planned verification route are now checked bidirectionally. No verification result, acceptance, owner decision, gate promotion, or readiness percentage changed.
+
 ## 2026-07-20 - Active task to backlog binding
 
 Extended the active-task readiness validator to confirm that `TASK-000011`'s exact `WP-002` binding resolves to the canonical `backlog.json` work-package record. This prevents a valid-looking task manifest from pointing at a removed or renamed work package. No task acceptance, owner decision, gate promotion, or readiness percentage changed.
