@@ -76,6 +76,24 @@ Impact:
 
 The native UI task handoff now carries the same Nova authority boundary as the UI runtime and readiness documents. `TASK-000006` remains specified/proposed and non-executable; no toolkit, native adapter, accessibility, page-surface, UI-gate, implementation, or production decision changed.
 
+## 2026-07-19 - Progress snapshot crosswalk-count correction
+
+Question:
+
+Does the one-screen build-readiness snapshot report the current machine-validated research crosswalk denominator?
+
+Method:
+
+Compared `docs/project-buildout/22-build-readiness-progress-snapshot.md` with the current `validate_research_question_coverage.py` output and `research-readiness-crosswalk.json` after the Nova task-handoff synchronization.
+
+Decision:
+
+Corrected the snapshot from `207/207` to `213/213` resolved crosswalk evidence paths. The active-question denominator remains `37/37`, and the machine audit remains the authority for the 90% contained-M0 and 0% full-build measures.
+
+Impact:
+
+The one-screen continuation document no longer understates the current evidence-route denominator. No question, gate, task, readiness state, implementation status, or claim boundary changed.
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:
