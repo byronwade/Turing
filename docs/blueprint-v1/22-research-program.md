@@ -130,6 +130,8 @@ Decision output: engine artifact identity, lifetime, invalidation, retention, an
 
 Build a constrained but semantically precise interpreter, object/shape model, exact collector, baseline compiler, and optional simple mid-tier. Compare register/hybrid bytecode, compiler backend, code memory, warm-up, GC pause distribution, external-memory accounting, deoptimization, no-JIT mode, and end-to-end application interaction.
 
+The [JavaScript Runtime Tiering and Collector Research](../research/javascript-runtime-tiering-and-collector-research-2026-07.md) defines the deferred source-backed comparison, semantic oracle, and measurement route.
+
 Security, Test262 coverage, debugger fidelity, and platform W^X/signing evidence accompany every result.
 
 Decision output: runtime tier responsibilities, GC baseline, code-generation boundary, and revisit trigger for a high-optimization tier.

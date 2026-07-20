@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - JavaScript runtime tiering and collector research
+
+Question:
+
+Which runtime tiering and collector architecture gives the best interaction-adjusted performance without sacrificing JavaScript semantics, predictable memory behavior, security boundaries, or reproducible evidence?
+
+Method:
+
+Checked the current ECMAScript specification, V8's public Sparkplug, Liftoff, and dynamic-tiering documentation, and the Bytecode Alliance Wasmtime project description for Cranelift's bounded code-generation role on 2026-07-19. Reconciled the observations with `RQ-19`, the JavaScript runtime, performance, memory, security, testing, and source-strategy books, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet separating ECMAScript semantics from interpreter, baseline, optimizing, collector, code-cache, and executable-memory choices. It defines cold/warm/interactive measurement, GC and external-memory accounting, no-JIT and deoptimization oracles, security and provenance evidence, and rejection rules for peak-only benchmarks, finalization timing, hidden background work, or unreviewed backend adoption. No runtime, JIT, collector, memory, security, performance, or readiness decision changed.
+
+Next question:
+
+Which owner-approved semantic baseline and no-JIT measurement manifest should become the first runtime conformance and independent-review target when this lane enters the active pre-build crosswalk?
+
 ## 2026-07-19 - Rendering artifacts and invalidation research
 
 Question:
