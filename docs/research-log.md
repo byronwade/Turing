@@ -94,6 +94,24 @@ Impact:
 
 The one-screen continuation document no longer understates the current evidence-route denominator. No question, gate, task, readiness state, implementation status, or claim boundary changed.
 
+## 2026-07-19 - Sustained-performance route added to continuation surfaces
+
+Question:
+
+Do the start guide, progress snapshot, and operating board all direct maintainers to the dedicated `RQ-23` policy route before benchmark execution and claim review?
+
+Method:
+
+Compared the sustained-performance packet, research index, Blueprint `RQ-23` route, benchmark owner board, benchmark evidence matrix, start guide, progress snapshot, and operating board.
+
+Decision:
+
+Added the sustained-performance policy packet to the start guide, progress snapshot, and `PB-013` operating-board evidence route. The sequence now explicitly distinguishes policy comparison from browser-run evidence, statistics review, and public claims.
+
+Impact:
+
+Benchmark continuation surfaces now agree on the full `RQ-23` handoff. No benchmark result, owner decision, task approval, readiness promotion, performance claim, or Chrome-class claim changed.
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:
