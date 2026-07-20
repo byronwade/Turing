@@ -73,6 +73,7 @@
     "docs/ui-runtime/machine/design-source-manifest.schema.json",
     "tools/validate_design_source.py",
     "tools/validate_source_manifest_metadata.py",
+    "tools/validate_source_manifest_coverage.py",
     "tools/validate_readiness_review_templates.py",
     "docs/research/owner-decision-synchronization-control-2026-07.md",
     "docs/project-buildout/machine/owner-decision-synchronization.json",

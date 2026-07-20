@@ -187,6 +187,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_source_manifest_coverage.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_readiness_review_templates.py"],
     )?;
     command(

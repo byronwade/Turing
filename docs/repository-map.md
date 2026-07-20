@@ -127,6 +127,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
     ├── validate_research_question_coverage.py
     ├── validate_web_platform_sources.py
     ├── validate_source_manifest_metadata.py
+    ├── validate_source_manifest_coverage.py
     ├── validate_readiness_review_templates.py
     ├── validate_fresh_host_reproduction.py
     ├── validate_fresh_host_run_records.py
@@ -355,6 +356,7 @@ Repository-owned tools live here.
 - `validate_profile_session_sources.py`: dependency-free validation for the checked no-claim PB-016 profile/session source manifest, official WHATWG/W3C source IDs and URLs, nine storage/data-safety evidence axes, source-document links, and unsupported format/migration/durability boundaries; it does not define a profile format, prove migration or durability, or provide data-loss readiness evidence;
 - `validate_technology_dependency_sources.py`: dependency-free validation for the checked no-claim RQ-41/RQ-44/RQ-46 technology/dependency source manifest, official Rust/Cargo/SPDX/SLSA source IDs and URLs, eight foundation evidence axes, source-document links, and unsupported selection/approval boundaries; it does not select a language, framework, dependency, source strategy, or release foundation;
 - `validate_source_manifest_metadata.py`: cross-lane validation for the twelve checked source-observation manifests; it enforces shared ISO freshness, source-ID uniqueness, non-empty consequence fields, and unique existing repository-relative source-document paths without creating implementation or readiness evidence;
+- `validate_source_manifest_coverage.py`: cross-lane regression validation for the twelve checked source-observation manifests; it requires each manifest, schema, and validator to remain bound to its owning research lane and to the crosswalk, build-information ledger, PB-020 audit, and closure template without creating implementation or readiness evidence;
 - `validate_readiness_review_templates.py`: cross-lane validation for the eleven no-claim ADR, lane-readiness, and PB-020 closure templates; it enforces shared identity, freshness, evidence-path, owner-review, rejection, unsupported-boundary, command, and all-false decision controls without creating owner review or readiness evidence;
 - `validate_servo_local_compatibility_corpus.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim local compatibility corpus manifest, generated fixture paths, SHA-256 hashes, byte counts, LF line endings, local-only origins and URLs, required case categories, artifact expectations, failure denominators, and unsupported compatibility/adoption claims;
 - `validate_servo_local_compatibility_https_harness.py`: dependency-free validation for the checked `ADR9-EV-013` no-claim HTTPS host-alias harness plan, corpus origin coverage, SNI/SAN expectations, isolated trust-store policy, host-to-loopback alias controls, cleanup evidence requirements, browser-run record fields, and unsupported compatibility/adoption claims;

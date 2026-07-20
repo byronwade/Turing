@@ -27,6 +27,7 @@
     "docs/web-platform/machine/web-platform-source-manifest.json",
     "docs/web-platform/machine/web-platform-source-manifest.schema.json",
     "tools/validate_web_platform_sources.py",
+    "tools/validate_source_manifest_coverage.py",
     "docs/research/research-question-coverage-audit-2026-07.md",
     "docs/blueprint-v1/machine/research-question-coverage.json",
     "docs/blueprint-v1/machine/research-question-coverage.schema.json",

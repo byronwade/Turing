@@ -56,6 +56,7 @@ REQUIRED_SOURCE_RECORDS = {
     "docs/web-platform/machine/web-platform-source-manifest.json",
     "docs/web-platform/machine/web-platform-source-manifest.schema.json",
     "tools/validate_web_platform_sources.py",
+    "tools/validate_source_manifest_coverage.py",
     "docs/accessibility/machine/accessibility-source-manifest.json",
     "docs/accessibility/machine/accessibility-source-manifest.schema.json",
     "tools/validate_accessibility_sources.py",
