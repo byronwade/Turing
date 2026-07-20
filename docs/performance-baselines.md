@@ -55,15 +55,28 @@ Recorded 2026-07-20. Release build.
 | cascade | 3.4 µs | 3.5 µs | 3.9 µs |
 | layout | 5.2 µs | 6.4 µs | 21.9 µs |
 
+**These rows are not disjoint and must not be summed.** `layout` calls
+`resolve_style`, which calls `cascade`, once per element — so the cascade work
+measured on its own row is also running inside the layout row. Box generation
+and block layout proper account for roughly the difference, about 3 µs, not the
+full 6.4 µs. Adding the five figures together double-counts the cascade and
+produces a "pipeline total" that does not correspond to any real run.
+
+They are measured separately anyway, because a stage that only ever appears
+inside another cannot be attributed when it regresses. Read the table as five
+independent measurements, not a breakdown of one.
+
 Environment: Windows 11, `x86_64-pc-windows-msvc`, release profile. Absolute
 figures are not portable across machines; the shape of the distribution and the
 relative cost of the stages are the parts worth reading.
 
 Two observations, recorded without acting on them yet:
 
-- Tokenizing costs more than tree construction and layout individually. It is
-  the stage that touches every input byte, so this is expected rather than
-  anomalous, but it is where optimisation effort would pay first.
+- Tokenizing is the most expensive stage, and by a wider margin than the table
+  first suggests: once the cascade is subtracted from layout, tokenizing costs
+  more than twice layout proper. It is the stage that touches every input byte,
+  so this is expected rather than anomalous, but it is where optimisation effort
+  would pay first.
 - Layout's maximum sits well above its median while every other stage is tight.
   That asymmetry is consistent with allocation during box-tree construction. It
   is a hypothesis, not a finding — confirming it needs allocation profiling that
