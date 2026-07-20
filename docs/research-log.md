@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Documentation percentage drift control
+
+Question:
+
+Can the narrative documentation-readiness audit and one-screen progress snapshot remain synchronized with the machine completion registry?
+
+Method:
+
+Reviewed `documentation-readiness-completion-audit.json`, `documentation-readiness-completion-audit-2026-07.md`, and `22-build-readiness-progress-snapshot.md`, then ran the focused completion-audit validator on 2026-07-19. The snapshot already checked machine-derived distributions; the narrative audit percentage sentence was not independently checked.
+
+Decision:
+
+Extended `validate_documentation_readiness_completion_audit.py` to validate the narrative audit's contained-M0 and full-build percentage statements against the machine criterion counts. The existing no-claim status and closure boundary remain authoritative.
+
+Impact:
+
+This adds a second human/machine drift control for the readiness percentage surfaces. It does not change the 90% contained-M0 or 0% full-build measures, promote `PB-020`, approve a task, or authorize broad implementation.
+
+Next question:
+
+Which remaining human gate summaries should be linked to machine-derived values before a real owner decision changes the readiness state?
+
 ## 2026-07-19 - Research-question coverage drift control
 
 Question:

@@ -27,6 +27,7 @@ DEFAULT_CLOSURE_REVIEW = (
     / "build-readiness-closure-reviews"
     / "no-claim-build-readiness-closure-template.json"
 )
+HUMAN_AUDIT = DOCS / "research" / "documentation-readiness-completion-audit-2026-07.md"
 
 AUDIT_ID = re.compile(r"^PB020\.DOCUMENTATION_READINESS_COMPLETION_AUDIT\.[A-Z0-9._-]+$")
 CLOSURE_REVIEW_ID = re.compile(
@@ -776,6 +777,11 @@ def validate_progress_snapshot(path: Path, audit: dict[str, Any]) -> None:
     except OSError as exc:
         fail(f"{snapshot_path}: unable to read progress snapshot: {exc}")
     normalized = normalize(snapshot)
+    try:
+        human_audit = HUMAN_AUDIT.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"{HUMAN_AUDIT}: unable to read narrative completion audit: {exc}")
+    human_normalized = normalize(human_audit)
 
     readiness = load_json(MACHINE / "pre-build-readiness.json")
     readiness_items = readiness.get("items") if isinstance(readiness, dict) else None
@@ -873,6 +879,31 @@ def validate_progress_snapshot(path: Path, audit: dict[str, Any]) -> None:
             f"{snapshot_path}: documentation progress distribution is stale; "
             f"expected {expected_docs}, found {actual_docs}"
         )
+
+    number_words = {
+        0: "zero",
+        1: "one",
+        2: "two",
+        3: "three",
+        4: "four",
+        5: "five",
+        6: "six",
+        7: "seven",
+        8: "eight",
+        9: "nine",
+        10: "ten",
+    }
+    contained_word = number_words.get(contained_ready, str(contained_ready))
+    full_word = number_words.get(full_goal_ready, str(full_goal_ready))
+    contained_percent = contained_ready * 100 // total_criteria if total_criteria else 0
+    full_percent = full_goal_ready * 100 // total_criteria if total_criteria else 0
+    human_progress_patterns = (
+        rf"{contained_word} criteria are .*?giving \*\*{contained_percent}% contained-m0",
+        rf"{full_word} criteria are .*?giving \*\*{full_percent}% full-build closure",
+    )
+    for pattern in human_progress_patterns:
+        if not re.search(pattern, human_normalized):
+            fail(f"{HUMAN_AUDIT}: narrative documentation percentage is stale")
 
     for term in ["pb-002", "pb-019", "doc-ready-owner-decisions"]:
         if term not in normalized:
