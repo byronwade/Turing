@@ -51,6 +51,10 @@ REQUIRED_CLOSURE_WORKSHEET_TERMS = [
     "does not replace their evidence",
 ]
 
+REQUIRED_TEMPLATE_SOURCE = (
+    "docs/research/build-readiness-closure-and-owner-decision-preparation-2026-07.md"
+)
+
 
 def fail(errors: list[str], message: str) -> None:
     errors.append(message)
@@ -235,6 +239,8 @@ def main() -> int:
         fail(errors, "source_records must contain at least 14 paths")
     else:
         check_links(errors, data["source_records"])
+        if REQUIRED_TEMPLATE_SOURCE not in data["source_records"]:
+            fail(errors, f"source_records must include {REQUIRED_TEMPLATE_SOURCE}")
     if path == DEFAULT_REVIEW or data.get("status") == "no_claim_build_readiness_closure_template":
         validate_template(data, errors)
     else:
