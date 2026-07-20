@@ -196,6 +196,13 @@ def check_freezes_and_evidence() -> None:
 
 
 def check_sequence_and_status() -> None:
+    plan_text = (PLAN / "README.md").read_text(encoding="utf-8")
+    required_authority_phrase = "owner-reviewed immutable ready TASK manifest with bounded authority"
+    if required_authority_phrase not in plan_text:
+        fail(
+            "implementation-plan README must require an owner-reviewed immutable ready TASK manifest with bounded authority"
+        )
+
     sequence = load_json(MACHINE_FILES["sequence"])
     waves = sequence.get("waves")
     if not isinstance(waves, list) or not all(isinstance(item, dict) for item in waves):

@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Implementation-plan authority regression guard
+
+Question:
+
+Can the implementation-plan validator prevent the human task-authority chain from drifting back to language that omits owner review or bounded authority?
+
+Method:
+
+Updated `validate_implementation_plan.py` to require the canonical authority phrase in the implementation-plan README, and updated the repository map to describe that check. This converts the prior wording correction into a permanent regression control; it does not approve any task or change the 90% contained-M0 / 0% full-build measures.
+
 ## 2026-07-19 - Implementation-plan task-authority wording correction
 
 Question:
