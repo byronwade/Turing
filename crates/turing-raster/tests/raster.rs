@@ -244,7 +244,11 @@ fn a_text_run_draws_glyphs_at_the_advance_recovered_from_its_rect() {
     assert_eq!(canvas.pixel(9, 4), Some(color("black")), "I serif");
     // Above and below the centred glyph the line box stays background.
     assert_eq!(canvas.pixel(0, 0), Some(color("white")), "leading is empty");
-    assert_eq!(canvas.pixel(0, 13), Some(color("white")), "trailing is empty");
+    assert_eq!(
+        canvas.pixel(0, 13),
+        Some(color("white")),
+        "trailing is empty"
+    );
 }
 
 #[test]
@@ -265,7 +269,11 @@ fn a_character_outside_printable_ascii_draws_the_replacement_box() {
     // row 1 has ink only at the walls.
     assert_eq!(canvas.pixel(0, 0), Some(color("black")), "top edge");
     assert_eq!(canvas.pixel(6, 0), Some(color("black")), "top edge end");
-    assert_eq!(canvas.pixel(7, 0), Some(color("white")), "column 7 is empty");
+    assert_eq!(
+        canvas.pixel(7, 0),
+        Some(color("white")),
+        "column 7 is empty"
+    );
     assert_eq!(canvas.pixel(3, 1), Some(color("white")), "hollow interior");
     assert_eq!(canvas.pixel(0, 1), Some(color("black")), "left wall");
 }
@@ -289,7 +297,11 @@ fn text_clips_to_the_canvas_like_every_other_draw() {
     // The middle '#' occupies columns 0..8 on screen; its dense row 2 (0x7F)
     // sits at glyph row 2, shifted up 4 by the off-canvas centring: y = -4 +
     // (16 - 8) / 2 + 2 = 2.
-    assert_eq!(canvas.pixel(0, 2), Some(color("black")), "clipped run still inks");
+    assert_eq!(
+        canvas.pixel(0, 2),
+        Some(color("black")),
+        "clipped run still inks"
+    );
 }
 
 #[test]

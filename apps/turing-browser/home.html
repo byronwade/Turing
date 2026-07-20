@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>Turing</title>
+<style>
+body { background: white; }
+#header { background: navy; color: white; padding: 8px; }
+/* No background here: the id selector would out-specify .card and hide
+   the script's class swap. The bar starts unstyled and turns teal only if
+   the load-time script really ran. */
+#status { padding: 4px; }
+.card { background: teal; color: white; margin: 8px; padding: 8px; }
+</style>
+</head>
+<body>
+<div id='header'>Turing browser laboratory</div>
+<div id='status'>If this bar is teal, the load-time script mutated the live DOM before first paint.</div>
+<p>This page travelled the whole engine: tokenizer, tree builder, live DOM, script, cascade, layout, display list, and the reference rasterizer. Click anywhere: the console names the element under the pointer.</p>
+<div class='card'>Every glyph on this page is the embedded 8x8 reference set. Text wraps between inline runs, blocks stack, and colours come from the sixteen HTML names plus hex.</div>
+<script>setAttribute('status', 'class', 'card');</script>
+</body>
+</html>

@@ -164,14 +164,20 @@ mod tests {
             // Identity, not equality: distinct characters may share blank rows,
             // but each must resolve to its own table entry.
             let index = (code - 0x20) as usize;
-            assert!(core::ptr::eq(bitmap, &GLYPHS[index]), "wrong slot for {character:?}");
+            assert!(
+                core::ptr::eq(bitmap, &GLYPHS[index]),
+                "wrong slot for {character:?}"
+            );
         }
     }
 
     #[test]
     fn characters_outside_printable_ascii_render_the_replacement_box() {
         for character in ['\u{0}', '\t', '\n', '\u{7F}', 'é', '中', '🦀'] {
-            assert!(core::ptr::eq(glyph(character), &REPLACEMENT), "{character:?}");
+            assert!(
+                core::ptr::eq(glyph(character), &REPLACEMENT),
+                "{character:?}"
+            );
         }
     }
 

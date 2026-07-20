@@ -224,6 +224,8 @@ Application binaries live here.
 
 `turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 
+`turing-browser` is the Research-maturity windowed laboratory presenter: it loads a local HTML file (or its built-in home page) through `turing-engine`, presents the reference rasterizer's pixels in a native window, and routes pointer input back through the engine's hit testing. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.
+
 Future application directories require an accepted purpose, owner, maturity label, support boundary, and package/update implications.
 
 ## `crates/`

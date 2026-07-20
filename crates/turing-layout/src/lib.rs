@@ -677,8 +677,15 @@ fn layout_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
 /// which this layout does not implement.
 fn inline_advance_width(layout_box: &LayoutBox, metrics: TextMetrics) -> f32 {
     if let Some(text) = &layout_box.text {
+        // Measured as it will be placed: words joined by single collapsed
+        // spaces, leading and trailing whitespace ignored.
+        let characters: usize = text
+            .split_whitespace()
+            .map(|word| word.chars().count())
+            .sum();
+        let words = text.split_whitespace().count();
         #[allow(clippy::cast_precision_loss)]
-        return text.chars().count() as f32 * metrics.advance;
+        return (characters + words.saturating_sub(1)) as f32 * metrics.advance;
     }
     layout_box
         .children
@@ -687,7 +694,13 @@ fn inline_advance_width(layout_box: &LayoutBox, metrics: TextMetrics) -> f32 {
         .sum()
 }
 
-/// Greedy line breaking over inline children.
+/// Greedy, word-level line breaking over inline children.
+///
+/// A text run breaks between words and its interior whitespace collapses to a
+/// single space, which is dropped at a line start; an inline element moves
+/// between lines whole. Each placed word becomes its own text fragment box
+/// carrying the source node, so painting and hit testing work on fragments
+/// without knowing lines exist.
 fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     let origin_x = layout_box.dimensions.content.x;
     let origin_y = layout_box.dimensions.content.y;
@@ -695,27 +708,79 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
 
     let mut pen_x = 0.0_f32;
     let mut line = 0.0_f32;
-    let mut children = core::mem::take(&mut layout_box.children);
+    // Whether whitespace was seen since the last placed word or element. A
+    // pending space paints nothing; it widens the gap the next placement must
+    // fit into, and it evaporates at a line start.
+    let mut pending_space = false;
+    let mut placed = Vec::new();
 
-    for child in &mut children {
-        let width = inline_advance_width(child, metrics);
-        if pen_x > 0.0 && pen_x + width > available {
-            pen_x = 0.0;
-            line += 1.0;
-        }
-        child.dimensions.content = Rect {
-            x: origin_x + pen_x,
-            y: origin_y + line * metrics.line_height,
-            width,
-            height: metrics.line_height,
-        };
-        pen_x += width;
-        // Nested inline boxes lay their own children out on the same line.
-        if !child.children.is_empty() {
-            layout_inline_children(child, metrics);
+    for child in core::mem::take(&mut layout_box.children) {
+        if child.kind == BoxKind::Text {
+            let text = child.text.clone().unwrap_or_default();
+            if text.starts_with(char::is_whitespace) {
+                pending_space = true;
+            }
+            for word in text.split_whitespace() {
+                #[allow(clippy::cast_precision_loss)]
+                let width = word.chars().count() as f32 * metrics.advance;
+                let space = if pending_space && pen_x > 0.0 {
+                    metrics.advance
+                } else {
+                    0.0
+                };
+                if pen_x > 0.0 && pen_x + space + width > available {
+                    pen_x = 0.0;
+                    line += 1.0;
+                } else {
+                    pen_x += space;
+                }
+                let mut fragment = child.clone();
+                fragment.text = Some(word.to_owned());
+                fragment.dimensions.content = Rect {
+                    x: origin_x + pen_x,
+                    y: line.mul_add(metrics.line_height, origin_y),
+                    width,
+                    height: metrics.line_height,
+                };
+                pen_x += width;
+                placed.push(fragment);
+                // Words inside one run are whitespace-separated by
+                // construction; whether a space follows the run's last word
+                // is decided below from the run's own tail.
+                pending_space = true;
+            }
+            pending_space =
+                text.ends_with(char::is_whitespace) || text.trim().is_empty() && pending_space;
+        } else {
+            let mut child = child;
+            let width = inline_advance_width(&child, metrics);
+            let space = if pending_space && pen_x > 0.0 {
+                metrics.advance
+            } else {
+                0.0
+            };
+            if pen_x > 0.0 && pen_x + space + width > available {
+                pen_x = 0.0;
+                line += 1.0;
+            } else {
+                pen_x += space;
+            }
+            child.dimensions.content = Rect {
+                x: origin_x + pen_x,
+                y: line.mul_add(metrics.line_height, origin_y),
+                width,
+                height: metrics.line_height,
+            };
+            pen_x += width;
+            pending_space = false;
+            // Nested inline boxes lay their own children out on the same line.
+            if !child.children.is_empty() {
+                layout_inline_children(&mut child, metrics);
+            }
+            placed.push(child);
         }
     }
-    layout_box.children = children;
+    layout_box.children = placed;
     layout_box.dimensions.content.height = (line + 1.0) * metrics.line_height;
 }
 
@@ -1548,15 +1613,61 @@ mod tests {
     }
 
     #[test]
+    fn a_long_text_run_wraps_between_words() {
+        // Five words of four characters each: 32px a word, 8px a space. At a
+        // 80px viewport, two words and a space fit a line (72px), a third
+        // word would need 112px, so the run breaks into three lines of two,
+        // two, and one word.
+        let root = run("<body>aaaa bbbb cccc dddd eeee</body>", "", 80.0).expect("lays out");
+        let list = build_display_list(&root);
+        let runs: Vec<(&str, &Rect)> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::Text { text, rect, .. } => Some((text.as_str(), rect)),
+                DisplayItem::SolidColor { .. } => None,
+            })
+            .collect();
+        let words: Vec<&str> = runs.iter().map(|(word, _)| *word).collect();
+        assert_eq!(words, ["aaaa", "bbbb", "cccc", "dddd", "eeee"]);
+        // Lines: y = 0, 0, 16, 16, 32. Second word sits after a collapsed
+        // single space: x = 32 + 8.
+        assert_eq!(
+            runs[1].1.x, 40.0,
+            "one space between words: {:?}",
+            runs[1].1
+        );
+        assert_eq!(runs[1].1.y, runs[0].1.y, "first two words share a line");
+        assert_eq!(runs[2].1.x, 0.0, "a line start drops the pending space");
+        assert!(runs[2].1.y > runs[0].1.y, "third word wrapped");
+        assert!(runs[4].1.y > runs[2].1.y, "fifth word wrapped again");
+    }
+
+    #[test]
+    fn interior_whitespace_collapses_to_one_space() {
+        let root = run("<body>a  \t  b</body>", "", 640.0).expect("lays out");
+        let list = build_display_list(&root);
+        let rects: Vec<&Rect> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(rect),
+                DisplayItem::SolidColor { .. } => None,
+            })
+            .collect();
+        assert_eq!(rects.len(), 2);
+        assert_eq!(
+            rects[1].x, 16.0,
+            "a run of mixed whitespace is one 8px space: {:?}",
+            rects[1]
+        );
+    }
+
+    #[test]
     fn adjacent_inline_elements_abut_rather_than_overlap() {
         // An inline element's width is the sum of its descendants' text, so
         // the second span's run starts where the first one ends.
-        let root = run(
-            "<body><span>ab</span><span>cd</span></body>",
-            "",
-            640.0,
-        )
-        .expect("lays out");
+        let root = run("<body><span>ab</span><span>cd</span></body>", "", 640.0).expect("lays out");
         let list = build_display_list(&root);
         let runs: Vec<&Rect> = list
             .items

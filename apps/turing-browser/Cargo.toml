@@ -1,0 +1,27 @@
+[package]
+name = "turing-browser"
+description = "Research-maturity windowed browser laboratory: the Turing engine pipeline presented in a native window"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-build-info = { path = "../../crates/turing-build-info" }
+turing-dom = { path = "../../crates/turing-dom" }
+turing-engine = { path = "../../crates/turing-engine" }
+turing-layout = { path = "../../crates/turing-layout" }
+
+# The only external runtime dependencies in the workspace, both scoped to
+# this laboratory presenter and both replaceable without touching the
+# engine. Accepted in docs/research/graphics-foundation-decision-2026-07.md;
+# the product toolkit selection (ADR-0014) remains open.
+winit = "0.30"
+softbuffer = "0.4"
+
+[lints]
+workspace = true
