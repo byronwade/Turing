@@ -1,0 +1,457 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+//! Deterministic fuzz harness for the engine's hostile-input surfaces.
+//!
+//! # What this is evidence for
+//!
+//! `IF-003`, the static engine semantic contract, lists four evidence items:
+//! `WP-006` through `WP-009`, WPT and reduced tests, fuzzing, and full-versus-
+//! incremental equivalence. This crate is the third. It does **not** complete
+//! the freeze — WPT is an external corpus import and there is no incremental
+//! path to compare against yet — and so it does not unblock `WP-015`.
+//!
+//! # The claim under test
+//!
+//! Every parser in this workspace claims that hostile input produces either a
+//! result or a typed error, never a panic and never a hang. Until now that
+//! claim was tested only against hand-written cases, which is to say against
+//! inputs chosen by the same person who wrote the code.
+//!
+//! An `Err` is a **pass** here, not a failure. Refusing malformed input is the
+//! designed behaviour. The only finding is an unwind, a hang, or an abort.
+//!
+//! # Determinism
+//!
+//! No system randomness and no wall-clock. Every input derives from a `u64`
+//! seed through the PRNG below, so a failure reproduces exactly from the seed
+//! printed alongside it. A fuzz finding that cannot be reproduced is an anecdote.
+//!
+//! # What this harness cannot catch
+//!
+//! A stack overflow aborts the process; it does not unwind, so
+//! [`std::panic::catch_unwind`] never sees it. That is not a gap to work around
+//! but a reason the engine must bound its own recursion — which is why
+//! `turing_layout::MAX_NESTING_DEPTH` exists. Generated nesting here stays
+//! within a bound for that reason, and the deep-nesting case is tested
+//! separately with the depth limit as its expected answer.
+//!
+//! This harness also runs only under an unwinding panic strategy. The release
+//! profile sets `panic = "abort"`, so it is a test-profile tool by construction.
+
+#![forbid(unsafe_code)]
+
+use std::panic::{AssertUnwindSafe, catch_unwind};
+
+/// A small deterministic pseudo-random generator.
+///
+/// xorshift64*, chosen because it is a dozen lines that can be read and
+/// verified rather than trusted. Statistical quality beyond "spreads bits
+/// around" is irrelevant here: the generator picks between grammar branches,
+/// it does not need to survive a randomness test suite.
+#[derive(Clone, Debug)]
+pub struct Rng {
+    state: u64,
+}
+
+impl Rng {
+    /// Creates a generator from `seed`.
+    ///
+    /// A zero seed would make xorshift emit zero forever, so it is remapped
+    /// rather than rejected — a caller sweeping a seed range should not have to
+    /// know to skip one.
+    #[must_use]
+    pub fn new(seed: u64) -> Self {
+        Self {
+            state: if seed == 0 {
+                0x9E37_79B9_7F4A_7C15
+            } else {
+                seed
+            },
+        }
+    }
+
+    /// Returns the next value.
+    pub fn next_u64(&mut self) -> u64 {
+        let mut x = self.state;
+        x ^= x >> 12;
+        x ^= x << 25;
+        x ^= x >> 27;
+        self.state = x;
+        x.wrapping_mul(0x2545_F491_4F6C_DD1D)
+    }
+
+    /// Returns a value below `bound`, or zero when `bound` is zero.
+    pub fn below(&mut self, bound: usize) -> usize {
+        if bound == 0 {
+            return 0;
+        }
+        (self.next_u64() % bound as u64) as usize
+    }
+
+    /// Picks an element of `options`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `options` is empty, which is a defect in a generator rather
+    /// than something an input can cause.
+    pub fn pick<'a, T>(&mut self, options: &'a [T]) -> &'a T {
+        assert!(!options.is_empty(), "cannot pick from an empty slice");
+        let index = self.below(options.len());
+        &options[index]
+    }
+
+    /// Returns true with probability `1 / n`.
+    pub fn one_in(&mut self, n: usize) -> bool {
+        self.below(n.max(1)) == 0
+    }
+}
+
+/// The deepest nesting a generator will emit.
+///
+/// Below `turing_layout::MAX_NESTING_DEPTH` so the general sweep exercises the
+/// normal path rather than repeatedly hitting the depth refusal. Deep nesting is
+/// a separate, deliberate case.
+pub const GENERATED_DEPTH_LIMIT: usize = 12;
+
+/// Generates a document that is plausible HTML but not necessarily valid.
+///
+/// Structure-aware rather than uniformly random bytes: random bytes almost
+/// always fail in the first few tokenizer states and never reach tree
+/// construction, so they test one shallow layer thoroughly and everything else
+/// not at all. This emits real tags, real attributes, and then corrupts them.
+#[must_use]
+pub fn generate_html(rng: &mut Rng) -> String {
+    const TAGS: &[&str] = &[
+        "div", "p", "span", "a", "h1", "ul", "li", "nav", "header", "footer", "img", "input",
+        "button", "script", "style", "table", "template",
+    ];
+    const ATTRS: &[&str] = &[
+        "id",
+        "class",
+        "href",
+        "aria-label",
+        "aria-labelledby",
+        "aria-hidden",
+        "role",
+        "alt",
+        "type",
+        "title",
+        "style",
+    ];
+    // Values chosen to reach refusal paths as well as success paths.
+    const VALUES: &[&str] = &[
+        "a",
+        "one two",
+        "true",
+        "false",
+        "presentation",
+        "",
+        "tablist",
+        "\"",
+        "'",
+        "<",
+        "&amp;",
+        "\u{0}",
+        "text",
+        "button",
+    ];
+
+    let mut out = String::from("<html><body>");
+    let mut open: Vec<&str> = Vec::new();
+
+    for _ in 0..rng.below(40) + 1 {
+        match rng.below(10) {
+            0..=4 if open.len() < GENERATED_DEPTH_LIMIT => {
+                let tag = *rng.pick(TAGS);
+                out.push('<');
+                out.push_str(tag);
+                for _ in 0..rng.below(3) {
+                    out.push(' ');
+                    out.push_str(rng.pick(ATTRS));
+                    out.push_str("='");
+                    out.push_str(rng.pick(VALUES));
+                    // Sometimes leave the quote unterminated.
+                    if !rng.one_in(8) {
+                        out.push('\'');
+                    }
+                }
+                // Sometimes leave the tag unterminated.
+                if rng.one_in(10) {
+                    out.push('<');
+                } else {
+                    out.push('>');
+                    open.push(tag);
+                }
+            }
+            5..=6 => {
+                if let Some(tag) = open.pop() {
+                    out.push_str("</");
+                    out.push_str(tag);
+                    out.push('>');
+                }
+            }
+            // A close tag that does not match anything open.
+            7 => {
+                out.push_str("</");
+                out.push_str(rng.pick(TAGS));
+                out.push('>');
+            }
+            8 => out.push_str(rng.pick(VALUES)),
+            _ => {
+                out.push_str("<!--");
+                out.push_str(rng.pick(VALUES));
+                if !rng.one_in(6) {
+                    out.push_str("-->");
+                }
+            }
+        }
+    }
+
+    // Deliberately do not close what remains open: unclosed elements at end of
+    // input are one of the cases a tree builder most easily gets wrong.
+    out.push_str("</body></html>");
+    out
+}
+
+/// Generates a stylesheet that is plausible CSS but not necessarily valid.
+#[must_use]
+pub fn generate_css(rng: &mut Rng) -> String {
+    const SELECTORS: &[&str] = &[
+        "div",
+        ".a",
+        "#b",
+        "p.lead",
+        "a[href]",
+        "div p",
+        "div > p",
+        "*",
+        "li:first-child",
+        "::before",
+        "@media screen",
+        "div,",
+        "",
+    ];
+    const PROPERTIES: &[&str] = &[
+        "display",
+        "width",
+        "height",
+        "margin",
+        "padding",
+        "border-width",
+        "color",
+        "background",
+        "float",
+        "position",
+        "writing-mode",
+        "unknown-property",
+    ];
+    const VALUES: &[&str] = &[
+        "block",
+        "inline",
+        "none",
+        "flex",
+        "grid",
+        "10px",
+        "-5px",
+        "0",
+        "auto",
+        "50%",
+        "#fff",
+        "#abcdef",
+        "red",
+        "rebeccapurple",
+        "rgb(1,2,3)",
+        "left",
+        "absolute",
+        "vertical-rl",
+        "",
+    ];
+
+    let mut out = String::new();
+    for _ in 0..rng.below(12) + 1 {
+        out.push_str(rng.pick(SELECTORS));
+        out.push_str(" {");
+        for _ in 0..rng.below(4) {
+            out.push_str(rng.pick(PROPERTIES));
+            out.push(':');
+            out.push_str(rng.pick(VALUES));
+            if !rng.one_in(8) {
+                out.push(';');
+            }
+        }
+        // Sometimes leave the block unterminated.
+        if !rng.one_in(10) {
+            out.push('}');
+        }
+    }
+    out
+}
+
+/// Generates a script that is plausible JavaScript but not necessarily valid.
+#[must_use]
+pub fn generate_js(rng: &mut Rng) -> String {
+    const FRAGMENTS: &[&str] = &[
+        "let a = 1;",
+        "var b = a + 2;",
+        "if (a) { a = 2; } else { a = 3; }",
+        "while (a) { a = a - 1; }",
+        "a = (1 + 2) * 3;",
+        "function f() { return 1; }",
+        "a = f(",
+        "a = {};",
+        "a = [1, 2];",
+        "class C {}",
+        "try { a } catch (e) {}",
+        "a = 'unterminated",
+        "a = 0x;",
+        "a === b;",
+        "return;",
+        "}",
+        "((((",
+    ];
+    let mut out = String::new();
+    for _ in 0..rng.below(10) + 1 {
+        out.push_str(rng.pick(FRAGMENTS));
+        out.push('\n');
+    }
+    out
+}
+
+/// What a single fuzz iteration produced.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Outcome {
+    /// The stage returned, with either a value or a typed error. Both pass.
+    Returned,
+    /// The stage unwound. This is the finding.
+    Panicked {
+        seed: u64,
+        stage: &'static str,
+        input: String,
+    },
+}
+
+/// Runs `body`, returning its value or the finding if it unwound.
+///
+/// Returns the value rather than just a verdict so a stage runs **once**. An
+/// earlier version guarded a stage and then re-ran it unguarded to obtain its
+/// output for the next stage; a panic in the second call escaped the harness
+/// entirely and surfaced as a raw backtrace with no seed. The positive control
+/// caught that, which is what a positive control is for.
+///
+/// `AssertUnwindSafe` is needed because the closures borrow local state. It
+/// asserts a property of this harness, not of the code under test: nothing here
+/// observes partially-mutated state after a panic, because the next iteration
+/// regenerates its input from a seed.
+fn guard<T, F: FnOnce() -> T>(
+    seed: u64,
+    stage: &'static str,
+    input: &str,
+    body: F,
+) -> Result<T, Outcome> {
+    // Panic output would otherwise bury the seed in noise. The previous hook is
+    // restored so a genuine failure elsewhere still reports normally.
+    let previous = std::panic::take_hook();
+    std::panic::set_hook(Box::new(|_| {}));
+    let result = catch_unwind(AssertUnwindSafe(body));
+    std::panic::set_hook(previous);
+
+    result.map_err(|_| Outcome::Panicked {
+        seed,
+        stage,
+        input: input.to_string(),
+    })
+}
+
+/// Records a finding and yields `None`, so the pipeline stops descending
+/// without losing it.
+///
+/// A free function rather than a closure because each stage returns a different
+/// type, and a closure would be monomorphised to whichever one it saw first.
+fn collect<T>(result: Result<T, Outcome>, findings: &mut Vec<Outcome>) -> Option<T> {
+    match result {
+        Ok(value) => Some(value),
+        Err(finding) => {
+            findings.push(finding);
+            None
+        }
+    }
+}
+
+/// Runs every input surface for one seed and returns any findings.
+///
+/// Each stage is guarded separately so a finding names the stage that produced
+/// it rather than "somewhere in the pipeline". A stage that returns `Err` is a
+/// pass — refusing malformed input is the designed behaviour — and simply
+/// leaves nothing to feed the stages below it.
+#[must_use]
+pub fn run_seed(seed: u64) -> Vec<Outcome> {
+    let mut findings = Vec::new();
+    let mut rng = Rng::new(seed);
+
+    let html = generate_html(&mut rng);
+    let css = generate_css(&mut rng);
+    let js = generate_js(&mut rng);
+
+    let tokenized = collect(
+        guard(seed, "tokenize", &html, || {
+            turing_html::Tokenizer::new(&html).tokenize()
+        }),
+        &mut findings,
+    );
+    let parsed_css = collect(
+        guard(seed, "parse-css", &css, || {
+            turing_css::Stylesheet::parse(&css)
+        }),
+        &mut findings,
+    );
+    collect(
+        guard(seed, "parse-js", &js, || turing_js::compile(&js)),
+        &mut findings,
+    );
+
+    let Some(Ok(tokenized)) = tokenized else {
+        return findings;
+    };
+    let tokens = tokenized.tokens;
+
+    let built = collect(
+        guard(seed, "tree-build", &html, || {
+            turing_html::TreeBuilder::new().build(&tokens)
+        }),
+        &mut findings,
+    );
+    let Some(Ok(document)) = built else {
+        return findings;
+    };
+
+    collect(
+        guard(seed, "accessibility", &html, || {
+            turing_a11y::build(&document)
+        }),
+        &mut findings,
+    );
+
+    if let Some(Ok(stylesheet)) = parsed_css {
+        collect(
+            guard(seed, "layout", &html, || {
+                turing_layout::layout(
+                    &document,
+                    &stylesheet,
+                    800.0,
+                    turing_layout::TextMetrics::default(),
+                )
+            }),
+            &mut findings,
+        );
+    }
+
+    findings
+}
+
+/// Runs seeds `first..first + count` and returns every finding.
+#[must_use]
+pub fn sweep(first: u64, count: u64) -> Vec<Outcome> {
+    (first..first + count).flat_map(run_seed).collect()
+}

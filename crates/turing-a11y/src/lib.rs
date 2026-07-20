@@ -81,6 +81,8 @@ pub enum A11yError {
     RoleUnsupported { role: String },
     /// The element's name would come from a source that is not implemented.
     NameSourceUnsupported { tag: String, source: String },
+    /// The document nests deeper than this implementation will recurse.
+    NestingTooDeep { limit: usize },
 }
 
 impl fmt::Display for A11yError {
@@ -96,6 +98,10 @@ impl fmt::Display for A11yError {
                 "role=\"{role}\" is not modelled; its name-from-content and \
                  required-children behaviour would have to be invented"
             ),
+            Self::NestingTooDeep { limit } => write!(
+                formatter,
+                "the document nests deeper than {limit} elements; tree construction                  recurses, and continuing would overflow the stack, which aborts the                  process rather than returning an error"
+            ),
             Self::NameSourceUnsupported { tag, source } => write!(
                 formatter,
                 "<{tag}> would take its accessible name from {source}, which is \
@@ -104,6 +110,13 @@ impl fmt::Display for A11yError {
         }
     }
 }
+
+/// The deepest element nesting this implementation will walk.
+///
+/// Matches `turing_layout::MAX_NESTING_DEPTH` deliberately: two consumers of the
+/// same document disagreeing about which documents are acceptable would mean a
+/// page that lays out but has no accessibility tree, or the reverse.
+pub const MAX_NESTING_DEPTH: usize = 256;
 
 /// A computed role.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -167,7 +180,7 @@ pub struct AccessibilityNode {
 /// implementation does not model, rather than exposing it with a guessed role.
 pub fn build<T: SemanticTree>(tree: &T) -> Result<AccessibilityNode, A11yError> {
     let root = tree.root();
-    let children = build_children(tree, root)?;
+    let children = build_children(tree, root, 0)?;
     Ok(AccessibilityNode {
         role: Role::Document,
         name: None,
@@ -179,10 +192,11 @@ pub fn build<T: SemanticTree>(tree: &T) -> Result<AccessibilityNode, A11yError> 
 fn build_children<T: SemanticTree>(
     tree: &T,
     node: T::Node,
+    depth: usize,
 ) -> Result<Vec<AccessibilityNode>, A11yError> {
     let mut exposed = Vec::new();
     for child in tree.children(node) {
-        exposed.extend(build_node(tree, child)?);
+        exposed.extend(build_node(tree, child, depth)?);
     }
     Ok(exposed)
 }
@@ -194,7 +208,17 @@ fn build_children<T: SemanticTree>(
 fn build_node<T: SemanticTree>(
     tree: &T,
     node: T::Node,
+    depth: usize,
 ) -> Result<Vec<AccessibilityNode>, A11yError> {
+    // Tree construction recurses on document depth. A stack overflow aborts the
+    // process and cannot be caught, so a document deeper than the limit is
+    // refused rather than allowed to crash.
+    if depth > MAX_NESTING_DEPTH {
+        return Err(A11yError::NestingTooDeep {
+            limit: MAX_NESTING_DEPTH,
+        });
+    }
+
     if !tree.is_element(node) {
         // Text contributes to names, not to structure.
         return Ok(Vec::new());
@@ -212,7 +236,7 @@ fn build_node<T: SemanticTree>(
 
     // Elements that structure the document without appearing in the tree.
     if matches!(tag.as_str(), "html" | "head" | "body") {
-        return build_children(tree, node);
+        return build_children(tree, node, depth + 1);
     }
     if matches!(tag.as_str(), "title" | "style" | "script" | "meta" | "link") {
         return Ok(Vec::new());
@@ -223,7 +247,7 @@ fn build_node<T: SemanticTree>(
         // `presentation` and `none` are synonyms: drop this element's
         // semantics, keep its children exposed.
         if matches!(role, "presentation" | "none") {
-            return build_children(tree, node);
+            return build_children(tree, node, depth + 1);
         }
     }
 
@@ -244,7 +268,7 @@ fn build_node<T: SemanticTree>(
         role,
         name,
         node: tree.node_index(node),
-        children: build_children(tree, node)?,
+        children: build_children(tree, node, depth + 1)?,
     }])
 }
 
@@ -478,20 +502,29 @@ fn descendant_text<T: SemanticTree>(tree: &T, node: T::Node) -> String {
     parts.join(" ")
 }
 
+/// Walks a subtree iteratively rather than recursively.
+///
+/// Name computation runs before the depth check reaches the deeper elements, so
+/// this can be called on a subtree of any depth even when the tree as a whole
+/// will be refused. An explicit stack means that cannot overflow — the same
+/// reason `turing-gc` traces iteratively.
 fn collect_text<T: SemanticTree>(tree: &T, node: T::Node, parts: &mut Vec<String>) {
-    // A hidden subtree contributes nothing to a name, the same way it
-    // contributes nothing to the tree.
-    if tree.is_element(node) && tree.attribute(node, "aria-hidden") == Some("true") {
-        return;
-    }
-    if let Some(text) = tree.text(node) {
-        let text = text.trim();
-        if !text.is_empty() {
-            parts.push(text.to_string());
+    let mut stack = vec![node];
+    while let Some(current) = stack.pop() {
+        // A hidden subtree contributes nothing to a name, the same way it
+        // contributes nothing to the tree.
+        if tree.is_element(current) && tree.attribute(current, "aria-hidden") == Some("true") {
+            continue;
         }
-    }
-    for child in tree.children(node) {
-        collect_text(tree, child, parts);
+        if let Some(text) = tree.text(current) {
+            let text = text.trim();
+            if !text.is_empty() {
+                parts.push(text.to_string());
+            }
+        }
+        // Reversed, because popping from a stack visits the last push first and
+        // a name must read in document order.
+        stack.extend(tree.children(current).into_iter().rev());
     }
 }
 

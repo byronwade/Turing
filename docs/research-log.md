@@ -1,5 +1,51 @@
 # Research Log
 
+## 2026-07-20 - Fuzz harness, and the stack overflow it was built to find
+
+Question:
+
+`WP-015` is the only remaining M2 work package, and it is gated on `IF-001` and `IF-003`. `IF-001` is `partial`; `IF-003` is `not_started`. Building through an ungated interface freeze is the same mistake as building through `WP-009`'s open text-font gate, so the honest next work is `IF-003`'s evidence rather than `WP-015` itself.
+
+`IF-003` requires four things: `WP-006` through `WP-009` (done), WPT and reduced tests, fuzzing, and full-versus-incremental equivalence. WPT is an external corpus import. There is no incremental path to compare against. Fuzzing is the tractable one.
+
+Finding, before any harness existed:
+
+A probe of deeply nested markup found that a 1000-level `<div>` nest **overflows the stack and aborts the process**. The tokenizer and tree builder survive it — they are iterative — but layout's box generation recurses, and so do painting, hit testing, and accessibility tree construction.
+
+This is the most serious defect found in this codebase so far, and it is worth being precise about why it survived. Every test written for layout, hit testing, the display list, and accessibility used documents a few levels deep, because those were the documents needed to exercise the features. Depth was never a variable. The defect is not subtle and was not hard to find; nobody looked.
+
+It is also uncatchable. A stack overflow does not unwind, so `catch_unwind` never sees it and no harness can convert it into a failed assertion. That has a consequence for the design: the engine must bound its own recursion, because no test infrastructure can compensate for not doing so.
+
+Decision:
+
+A depth bound with a typed error, not a larger stack and not a conversion of every walk to iteration. `turing_layout::MAX_NESTING_DEPTH` and `turing_a11y::MAX_NESTING_DEPTH` are both 256, and both refuse deeper documents with `NestingTooDeep`. Bounding box generation bounds everything downstream, because layout, painting, and hit testing all walk the box tree that generation produced.
+
+The two limits are equal deliberately, and a test asserts it. Different limits would mean a document that lays out but has no accessibility tree, or the reverse, which is a worse failure than either bound alone.
+
+One walk was made iterative rather than bounded. Accessible-name computation runs before the depth check reaches deeper elements, so it can be handed a subtree of any depth even when the document as a whole will be refused. An explicit stack there costs nothing — the same reasoning that made `turing-gc` trace iteratively.
+
+Tokenizing and tree building are deliberately left unbounded. They are iterative, they represent a 20,000-level document correctly, and bounding them would refuse documents the engine can in fact handle. The asymmetry is recorded in a test so it reads as a decision rather than an oversight.
+
+Method:
+
+`crates/turing-fuzz`, registered as `COMP-018`. Own xorshift64* PRNG, own generators, no external crates. Structure-aware rather than uniformly random bytes: random bytes fail in the first few tokenizer states and never reach tree construction, so they would test one shallow layer thoroughly and everything else not at all. The generators emit real tags, attributes, selectors, and statements, then corrupt them — unterminated quotes, unmatched close tags, unclosed blocks.
+
+An `Err` from any stage is a pass. Refusing malformed input is the designed behaviour; the only finding is an unwind.
+
+The positive control found a defect in the harness:
+
+A sweep that finds nothing proves nothing until the harness is shown to catch something, so a panic was injected into `Stylesheet::parse` and the sweep re-run. It failed — but with a raw backtrace and no seed, rather than a reported finding.
+
+The cause was that stages ran twice: once inside the guard to check for a panic, then again unguarded to obtain the value the next stage needed. A panic in the second call escaped entirely. The guard now returns the value, so each stage runs exactly once. With that fixed, the injected panic produced findings carrying a seed, a stage name, and the reproducing input, and the injection was reverted.
+
+This is the second time a positive control has changed an outcome here — the first deleted a prose-drift detector that caught neither of its known defects. A green result from an unverified detector is indistinguishable from a green result from a broken one.
+
+Two thousand seeds across five stages produce no findings. That is a real but bounded statement: it says these generators did not break these stages, and the generators are grammar-shaped, so they explore what their author thought to model.
+
+Thirteen tests. The workspace is at 264.
+
+What this does not do: it is one of four `IF-003` evidence items, arguably two counting the existing hand-written suites as the reduced tests. It does not complete the freeze and does not unblock `WP-015`. WPT and full-versus-incremental equivalence remain, and `IF-001` is still `partial`. No hang detection — the harness catches unwinds, not infinite loops. The generators do not cover `turing-js` execution, `turing-gc`, or the display-list-to-raster path.
+
 ## 2026-07-20 - CPU reference rasterizer, and colour moved into the value layer
 
 Question:

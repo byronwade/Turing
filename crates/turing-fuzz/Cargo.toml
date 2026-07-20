@@ -1,0 +1,21 @@
+[package]
+name = "turing-fuzz"
+description = "Turing-owned deterministic fuzz harness producing IF-003 hostile-input evidence"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-a11y = { path = "../turing-a11y" }
+turing-css = { path = "../turing-css" }
+turing-html = { path = "../turing-html" }
+turing-js = { path = "../turing-js" }
+turing-layout = { path = "../turing-layout" }
+
+[lints]
+workspace = true
