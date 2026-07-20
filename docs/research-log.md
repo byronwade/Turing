@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Nova design authority route synchronization
+
+Question:
+
+Does the canonical native-shell lane expose the Nova visual source, schema, and validator wherever `PB-003` through `PB-015` and `TASK-000006` are continued?
+
+Method:
+
+Compared the native-shell crosswalk, build-information ledger, research index, and operating board with the checked design-source manifest. Added the manifest, schema, and validator to the active machine and human handoffs while preserving the boundary that Nova governs visual/layout intent only; Rust shell state, native accessibility, security, and release policy remain authoritative.
+
 ## 2026-07-19 - Benchmark source route synchronization
 
 Question:

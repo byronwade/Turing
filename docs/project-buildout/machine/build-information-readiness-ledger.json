@@ -434,6 +434,9 @@
         "docs/ui-runtime/machine/framework-bakeoff-inventory.json",
         "docs/ui-runtime/machine/page-surface-composition.json",
         "docs/accessibility/machine/window-input-accessibility-spike.json",
+        "docs/ui-runtime/machine/design-source-manifest.json",
+        "docs/ui-runtime/machine/design-source-manifest.schema.json",
+        "tools/validate_design_source.py",
         "docs/ui-runtime/machine/native-ui-readiness-reviews/no-claim-native-ui-readiness-template.json"
       ],
       "missing_information": [
