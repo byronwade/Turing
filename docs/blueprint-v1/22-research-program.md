@@ -406,6 +406,8 @@ Current `PB-017` planning evidence starts with the checked [Research Package Upd
 
 Which NIST SSDF, SP 800-218A, SLSA Source/Build, SBOM, review-attestation, and reproducibility controls are achievable and useful at each maturity?
 
+Current preparation starts with the no-claim [Secure Development and Provenance Level research packet](../research/secure-development-and-provenance-level-research-2026-07.md). It must become a scope-specific, owner-reviewed maturity record with exact framework versions, source/dependency/generated-output identity, SBOM and advisory boundaries, provenance verification, independent replay or clean-host evidence, review/testing/vulnerability records, release/update controls, residual risk, and synchronized `ADR-0009`/`PB-002`/`PB-008`/`PB-009`/`PB-017`/`PB-018`/`PB-019`/`PB-020` decisions before it can support a secure-development, provenance, reproducibility, release-integrity, compliance, or production claim.
+
 ## RQ-65 — Service and offline architecture
 
 Which optional services materially improve safety or continuity, and how should the browser degrade, export, self-host, or shut down without lock-in?

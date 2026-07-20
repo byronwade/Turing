@@ -38,6 +38,8 @@ The active compatibility lane now also has a no-claim [Compatibility Prioritizat
 
 The deferred product-contract lane now also has a no-claim [Product SLOs and Error Budgets Research](product-slos-and-error-budgets-research-2026-07.md) packet for `RQ-62`. It routes the targetless production-readiness SLO catalog to explicit workflow, denominator, baseline, privacy, error-budget, and owner-review evidence without selecting numeric targets or creating a release gate.
 
+The secure-development and provenance lane now also has a no-claim [Secure Development and Provenance Level Research](secure-development-and-provenance-level-research-2026-07.md) packet for `RQ-64`. It separates SSDF practices, SLSA source/build evidence, SBOMs, reproducibility, attestations, review, and release authorization without selecting a maturity or compliance claim.
+
 The focused validator checks that:
 
 - all required source records exist;

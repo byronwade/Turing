@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - RQ-64 secure-development and provenance maturity route
+
+Question:
+
+Which evidence and scope rules are needed before Turing can describe secure development, provenance, reproducibility, release integrity, or compliance maturity?
+
+Method:
+
+Reviewed the final NIST SP 800-218 SSDF 1.1 publication and the approved SLSA 1.2 specification and Build Provenance model. Separated practice frameworks, source/build provenance, SBOMs, reproducibility, signatures, attestations, review, vulnerability handling, and release authorization, then mapped them to Turing's existing source, toolchain, package/update, incident, ownership, and closure gates.
+
+Result:
+
+Added a no-claim `RQ-64` packet with proposed Turing bookkeeping maturities, evidence fields, cross-framework boundaries, and an owner-review sequence. The packet explicitly avoids treating a passing local build, SBOM, signature, attestation, or matching rebuild as proof of a broader security or release property.
+
+Impact:
+
+The Blueprint, research index, repository map, documentation-readiness audit, machine audit source list, and research log now route `RQ-64` to a concrete maturity/provenance evidence path. This does not select a compliance level, claim SLSA or SSDF conformance, authorize implementation, change active/deferred counts, or change the `90%` contained-M0 / `0%` full-build measures.
+
+Next question:
+
+Can a scope-specific maturity record be captured and independently reviewed without turning proposed Turing bookkeeping labels into framework certification claims?
+
 ## 2026-07-19 - RQ-62 product SLO and error-budget preparation
 
 Question:

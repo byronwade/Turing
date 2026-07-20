@@ -557,6 +557,7 @@ These reports must remain linked from the research index and mapped back to the 
 
 - [`docs/research/research-package-update-lab-inventory-2026-07.md`](research/research-package-update-lab-inventory-2026-07.md).
 - [`docs/research/package-update-trust-and-recovery-decision-prep-2026-07.md`](research/package-update-trust-and-recovery-decision-prep-2026-07.md).
+- [`docs/research/secure-development-and-provenance-level-research-2026-07.md`](research/secure-development-and-provenance-level-research-2026-07.md).
 
 ### Security and incident research reports
 
