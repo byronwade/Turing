@@ -10058,3 +10058,21 @@ The worksheet improves decision completeness and resumability only. All five opt
 Next question:
 
 When will the owner provide the selected/rejected/deferred option, immutable source baseline, named independent reviewer, and evidence disposition required to replace the no-claim decision-review template?
+
+# 2026-07-20 - Fresh-host closure worksheet
+
+Question:
+
+Can the pinned-toolchain and fresh-host route preserve host class, source identity, command denominator, cache behavior, acquisition/replay mode, failures, cleanup, and promotion boundaries in one resumable handoff?
+
+Method:
+
+Compared the fresh-host reproduction inventory and registry with the toolchain-source manifest, run-record schema/template, readiness-review template, build-information ledger, `TASK-000002`, and fresh-host crosswalk lane. Added a required closure worksheet for host identity, source checkout, toolchain/commands, cache/artifact roots, acquisition/replay, failure/cleanup denominator, and review/promotion. Added validator coverage for the worksheet.
+
+Decision:
+
+The worksheet improves reproducibility handoff completeness only. No independent fresh-host run was executed; `PB-008`/`PB-009` remain partial, `TASK-000002` remains proposed-only, and no release-confidence, production, implementation, or Chrome-class claim changed.
+
+Next question:
+
+When will an approved `TASK-000002` manifest and independent host or owner-approved clean VM produce the first retained run record?

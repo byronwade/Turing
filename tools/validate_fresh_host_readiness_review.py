@@ -186,6 +186,18 @@ REQUIRED_VALIDATION_COMMANDS = [
     ".\\tools\\check.ps1",
 ]
 
+FRESH_HOST_WORKSHEET_TERMS = [
+    "fresh-host closure worksheet",
+    "host class and identity",
+    "source checkout identity",
+    "toolchain and commands",
+    "cache and artifact roots",
+    "acquisition and replay mode",
+    "failure and cleanup denominator",
+    "review and promotion",
+    "not_executed",
+]
+
 
 def fail(message: str) -> None:
     raise SystemExit(f"error: {message}")
@@ -450,12 +462,21 @@ def validate_crosswalk() -> None:
             fail(f"fresh-host lane must mention {phrase}")
 
 
+def validate_fresh_host_handoff() -> None:
+    path = DOCS / "research" / "fresh-host-toolchain-reproduction-closure-preparation-2026-07.md"
+    content = normalize(path.read_text(encoding="utf-8"))
+    for phrase in FRESH_HOST_WORKSHEET_TERMS:
+        if normalize(phrase) not in content:
+            fail(f"{path}: missing fresh-host worksheet term: {phrase}")
+
+
 def main() -> int:
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_REVIEW
     validate_review(path)
     validate_readiness_registry()
     validate_task_queue()
     validate_crosswalk()
+    validate_fresh_host_handoff()
     print(f"fresh-host readiness review validation passed: {path}")
     return 0
 

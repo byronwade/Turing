@@ -71,6 +71,22 @@ The record must identify which environment was used:
 
 The run record must not use `independent`, `fresh`, `reproducible`, or `equivalent` without naming the class and retaining supporting facts.
 
+## Fresh-host closure worksheet
+
+The real `PB-008`/`PB-009` review must complete one worksheet for each retained run record. The worksheet keeps environment identity, command coverage, cache behavior, and claim scope together instead of allowing a green final command to hide earlier failures.
+
+| Required field | Run record must retain | Rejection condition |
+|---|---|---|
+| Host class and identity | `reference host`, `same-host rerun`, `clean-VM equivalent`, or `independent fresh host`; OS/build, architecture, shell, locale, timezone, CPU, memory, disk, privilege, network, virtualization/image facts | Same-host output is called independent, or a clean-VM waiver has no owner, scope, expiry, and equivalence rationale |
+| Source checkout identity | Remote URL, branch, exact commit/tree, Git version/configuration, line-ending policy, path, and before/after dirty-state output | Source identity, prior checkout reuse, or generated/ignored output is unexplained |
+| Toolchain and commands | Rust/rustup/Cargo, compiler/SDK/linker/Git/Python versions and provenance; bootstrap, doctor, check, xtask commands, timestamps, shell, exit codes, stdout/stderr, and hashes | Success-only output, missing toolchain facts, or wrapper output substitutes for required direct command coverage without disposition |
+| Cache and artifact roots | `CARGO_TARGET_DIR`, Cargo/Rustup/cache/temp roots, artifact retention path, installer/archive handling, and proof durable source stayed clean | Target/cache reuse or generated artifacts are not classified and bounded |
+| Acquisition and replay mode | Network endpoints, mirrors/proxy/certificate posture, fetched artifact hashes, cache preloading state, offline/controlled-network policy, and equivalence rationale | Acquisition and replay are conflated, or preloaded caches are presented as clean dependency acquisition |
+| Failure and cleanup denominator | Every attempted command, retry, timeout, cancellation, failure classification, rollback, cleanup, unresolved warning, and post-run source status | A final green check erases a failed step or missing cleanup evidence |
+| Review and promotion | Owner/independent/release/quality reviewers, exact commit and host scope, highest supported reproducibility level, limitations, expiry, rerun trigger, and synchronized PB/task changes | Template or current-host diagnostic promotes PB-008/PB-009, release confidence, production, or Chrome-class readiness |
+
+Until a real run record and owner-reviewed readiness review replace the no-claim templates, every worksheet row is `not_executed`, `PB-008`/`PB-009` remain unresolved, and no reproducibility or release-confidence claim is supported.
+
 ## Network and cache modes
 
 The replay must distinguish two related but non-interchangeable modes:
