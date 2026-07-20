@@ -84,9 +84,28 @@ impl PageSource {
 struct Tab {
     id: TabId,
     view: ViewId,
-    source: PageSource,
+    /// Session history: sources visited, in order. Traversal re-reads the
+    /// source rather than caching page state, which is the honest reference
+    /// behaviour for a file-backed lab.
+    history: Vec<PageSource>,
+    /// Index of the current entry in `history`.
+    at: usize,
     page: Page,
     scroll_y: f32,
+}
+
+impl Tab {
+    fn source(&self) -> &PageSource {
+        &self.history[self.at]
+    }
+
+    fn can_go_back(&self) -> bool {
+        self.at > 0
+    }
+
+    fn can_go_forward(&self) -> bool {
+        self.at + 1 < self.history.len()
+    }
 }
 
 struct Browser {
@@ -130,7 +149,8 @@ impl Browser {
         Ok(Tab {
             id: TabId::new(identity).map_err(|error| error.to_string())?,
             view: ViewId::new(identity).map_err(|error| error.to_string())?,
-            source,
+            history: vec![source],
+            at: 0,
             page,
             scroll_y: 0.0,
         })
@@ -180,7 +200,7 @@ impl Browser {
                     id: tab.id,
                     view: tab.view,
                     title: tab.page.title().unwrap_or_else(|| "New Tab".to_owned()),
-                    display_url: tab.source.display_url(),
+                    display_url: tab.source().display_url(),
                     lifecycle: TabLifecycle::Active,
                     protects_unsaved_work: false,
                 })
@@ -212,7 +232,11 @@ impl Browser {
             Ok(page) => {
                 let tab = self.active_tab_mut();
                 tab.page = page;
-                tab.source = source;
+                // A navigation truncates the forward entries, which is what
+                // session history does everywhere.
+                tab.history.truncate(tab.at + 1);
+                tab.history.push(source);
+                tab.at = tab.history.len() - 1;
                 tab.scroll_y = 0.0;
                 self.sync_title();
             }
@@ -231,8 +255,52 @@ impl Browser {
         if let Some(index) = self.tabs.iter().position(|tab| tab.id == id) {
             let previous = self.active;
             self.active = index;
-            let source = self.active_tab().source.clone();
-            self.navigate_active(source);
+            self.load_current_entry();
+            self.active = previous;
+        }
+    }
+
+    /// Re-reads the active tab's current history entry without changing the
+    /// history — shared by reload and traversal.
+    fn load_current_entry(&mut self) {
+        let width = self.page_width();
+        let source = self.active_tab().source().clone();
+        match source
+            .read()
+            .and_then(|html| Page::load(&html, width).map_err(|error| error.to_string()))
+        {
+            Ok(page) => {
+                let tab = self.active_tab_mut();
+                tab.page = page;
+                tab.scroll_y = 0.0;
+                self.sync_title();
+            }
+            Err(error) => {
+                eprintln!("turing-browser: navigation refused: {error}");
+                if let Some(window) = &self.window {
+                    window.set_title(&format!("Turing (navigation refused: {error})"));
+                }
+            }
+        }
+        self.request_redraw();
+    }
+
+    /// Moves the tab's history cursor by `delta` and loads that entry.
+    fn traverse(&mut self, id: TabId, delta: isize) {
+        if let Some(index) = self.tabs.iter().position(|tab| tab.id == id) {
+            let previous = self.active;
+            self.active = index;
+            let tab = self.active_tab_mut();
+            let target = tab.at.checked_add_signed(delta);
+            match target {
+                Some(target) if target < tab.history.len() => {
+                    tab.at = target;
+                    self.load_current_entry();
+                }
+                // Traversal past either end is a no-op; the chrome should
+                // not have offered it.
+                _ => {}
+            }
             self.active = previous;
         }
     }
@@ -270,6 +338,8 @@ impl Browser {
                 Err(error) => eprintln!("turing-browser: {error}"),
             },
             ShellCommand::Reload { tab } => self.reload_tab(tab),
+            ShellCommand::Back { tab } => self.traverse(tab, -1),
+            ShellCommand::Forward { tab } => self.traverse(tab, 1),
             ShellCommand::OpenCommandField { .. } => {
                 self.palette = Some(String::new());
             }
@@ -348,6 +418,8 @@ impl Browser {
         let model = ChromeModel {
             snapshot: &snapshot,
             width: window_width,
+            can_go_back: self.tabs[self.active].can_go_back(),
+            can_go_forward: self.tabs[self.active].can_go_forward(),
         };
         list.items
             .extend(turing_chrome::render(&model, &self.theme).items);
@@ -430,10 +502,14 @@ impl Browser {
 
         let bar = turing_chrome::bar_height();
         if window_point.y < bar {
+            let can_go_back = self.active_tab().can_go_back();
+            let can_go_forward = self.active_tab().can_go_forward();
             let snapshot = self.snapshot();
             let model = ChromeModel {
                 snapshot: &snapshot,
                 width: self.window_size().0,
+                can_go_back,
+                can_go_forward,
             };
             if let Some(command) = turing_chrome::command_at(&model, window_point) {
                 self.apply(command);
