@@ -168,6 +168,24 @@
       ],
       "dependencies": [],
       "failure_boundary": "collect-parse-errors-and-reject-unmodeled-constructs"
+    },
+    {
+      "id": "COMP-010",
+      "package": "turing-css",
+      "path": "crates/turing-css",
+      "kind": "library",
+      "owner_scope": "engine",
+      "privilege": "neutral",
+      "hostile_input": true,
+      "public_api": "internal-style-cascade",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-html"
+      ],
+      "failure_boundary": "reject-unmodeled-selectors-and-at-rules"
     }
   ]
 }

@@ -51,6 +51,16 @@ impl NodeId {
     pub const fn index(self) -> usize {
         self.0
     }
+
+    /// Builds a handle from an arena index.
+    ///
+    /// Callers enumerating a [`Document`] use this to walk every node. An index
+    /// beyond the arena will panic on first access rather than read a
+    /// neighbouring node.
+    #[must_use]
+    pub const fn from_index(index: usize) -> Self {
+        Self(index)
+    }
 }
 
 /// Payload of a document node.

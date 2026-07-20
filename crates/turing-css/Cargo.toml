@@ -1,0 +1,17 @@
+[package]
+name = "turing-css"
+description = "Turing-owned CSS parser, selector matching, and cascade for WP-008 and REQ-ENG-003"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-html = { path = "../turing-html" }
+
+[lints]
+workspace = true

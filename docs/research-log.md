@@ -1,5 +1,33 @@
 # Research Log
 
+## 2026-07-20 - CSS parsing, selector matching, and cascade implemented
+
+Question:
+
+`WP-006` produces a document tree. `WP-008` decides which declarations apply to each node in it. What can be built honestly?
+
+Method:
+
+Implemented `crates/turing-css` from the CSS Syntax, Selectors, and Cascade specifications, deriving from no existing engine.
+
+Decision:
+
+The crate parses a stylesheet into rules, matches selectors against a `turing-html` document, and resolves the cascade to a winning declaration per property. It depends on `turing-html` rather than abstracting over a DOM trait, because that is the real pipeline shape and it means the integration is exercised rather than assumed; the end-to-end test styles a small page from markup through to computed declarations.
+
+Selector support covers what ordinary stylesheets use: type, universal, class, id, attribute presence and equality, descendant, child, adjacent sibling, general sibling, and selector lists. Specificity is the (id, class, type) triple, and the cascade orders by important, then specificity, then source order.
+
+Four construct families return `CssError` rather than being dropped: at-rules, whose conditions gate whole blocks; pseudo-classes such as `:nth-child()` and `:not()`; pseudo-elements, which generate boxes with no DOM node; and attribute operators beyond equality. The reason is the same one that governed the HTML work, in a sharper form. Dropping an unknown selector does not omit detail; it applies the rule to the wrong elements. A page would then render confidently and incorrectly, which is harder to diagnose than a refusal.
+
+One distinction inside the crate is worth recording. Malformed *declarations* are dropped rather than fatal, because per-declaration error recovery is specified behavior and a bad `color red` genuinely should be skipped. Malformed or unmodeled *selectors* are fatal. The difference is scope: a dropped declaration affects one property, a mis-parsed selector affects which elements are styled at all.
+
+Twenty-two tests, bringing the workspace to 106. They pin the quiet failures: `.b` must not match `class="bc"` by substring, a child combinator must not match a grandchild, an adjacent sibling must not match a non-adjacent one, and `!important` must outrank higher specificity, which is the cascade rule most often implemented backwards.
+
+What this does not do: no computed values, no unit resolution, no inheritance, no box generation, nothing laid out or painted.
+
+Next question:
+
+`WP-009` is layout and the display list: turning styled boxes into positioned geometry.
+
 ## 2026-07-20 - HTML tree construction implemented
 
 Question:
