@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Specified-task closure-route scope guard
+
+Question:
+
+Can a specified task manifest claim an acceptance route while its declared `allowed_paths` omit the closure records, source manifests, validators, or research-log entries needed to perform that route?
+
+Method:
+
+Audited the queue and all ten specified task manifests after repairing the sandbox scope omission. Compared each manifest's immutable queue fields and digest with its closure-route records, then extended `tools/validate_specified_task_manifests.py` with explicit exact-path coverage for the IPC and sandbox closure routes, including directory-prefix handling for intentionally broad lane scopes.
+
+Decision:
+
+The validator now rejects a specified manifest when the required IPC or sandbox closure-route files are outside its allowed paths. This closes a task-scope integrity gap without approving, executing, or promoting any task, and without changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+When a task becomes owner-approved, which independently reviewed evidence bundle will prove that the declared scope was sufficient for the actual execution and that no prohibited path was touched?
+
 ## 2026-07-19 - Current-host toolchain diagnostic refresh
 
 Question:

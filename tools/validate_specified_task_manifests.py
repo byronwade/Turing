@@ -50,6 +50,40 @@ IMMUTABLE_QUEUE_FIELDS = (
     "readiness_items",
 )
 
+# These are the narrow closure records that must be editable together with the
+# task. Broad directory entries are accepted when the queue intentionally owns
+# an entire lane; exact entries protect against omissions in explicit lists.
+REQUIRED_SCOPE_PATHS = {
+    "TASK-000003": (
+        "docs/research/ipc-transport-and-authority-closure-preparation-2026-07.md",
+        "docs/research/ipc-wire-encoding-decision-prep-2026-07.md",
+        "docs/research/ipc-transport-packet-examples-2026-07.md",
+        "docs/research/task-000011-wp002-review-handoff-2026-07.md",
+        "docs/research-log.md",
+        "docs/blueprint-v1/machine/ipc-wire-source-manifest.json",
+        "docs/blueprint-v1/machine/ipc-wire-source-manifest.schema.json",
+        "tools/validate_ipc_wire_sources.py",
+    ),
+    "TASK-000004": (
+        "docs/research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md",
+        "docs/research/sandbox-platform-evidence-decision-prep-2026-07.md",
+        "docs/research/sandbox-probe-result-packet-examples-2026-07.md",
+        "docs/research-log.md",
+    ),
+}
+
+
+def scope_path_is_allowed(path: str, allowed_paths: list[str]) -> bool:
+    """Return whether an exact path is covered by an exact or directory entry."""
+    normalized = path.rstrip("/")
+    for allowed in allowed_paths:
+        if allowed.endswith("/"):
+            if normalized.startswith(allowed.rstrip("/") + "/"):
+                return True
+        elif normalized == allowed:
+            return True
+    return False
+
 
 def load(path: Path) -> dict[str, Any]:
     try:
@@ -101,6 +135,18 @@ def main() -> int:
         for field in IMMUTABLE_QUEUE_FIELDS:
             if manifest.get(field) != row.get(field):
                 fail(f"{task_id}: immutable queue field drifted: {field}")
+        required_scope_paths = REQUIRED_SCOPE_PATHS.get(task_id, ())
+        allowed_paths = manifest.get("allowed_paths")
+        missing_scope_paths = [
+            path
+            for path in required_scope_paths
+            if not scope_path_is_allowed(path, allowed_paths)
+        ]
+        if missing_scope_paths:
+            fail(
+                f"{task_id}: allowed_paths omit required closure-route files: "
+                + ", ".join(missing_scope_paths)
+            )
         owner = str(manifest.get("owner", ""))
         reviewer = str(manifest.get("independent_reviewer", ""))
         if "name required before ready" not in owner or "name required before ready" not in reviewer:

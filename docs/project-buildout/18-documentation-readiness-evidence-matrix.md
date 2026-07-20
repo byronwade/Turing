@@ -16,6 +16,8 @@ The documentation system is organized enough for contained M0 implementation tas
 
 `PB-001` can stay `ready` only while the evidence below remains current and repository validation passes. If any row becomes stale, the owning document or machine registry must be updated before expanding implementation.
 
+The specified-task control now checks more than queue digests: `tools/validate_specified_task_manifests.py` also requires the IPC and sandbox manifests to include their exact closure-preparation, packet-example, review-handoff, source-manifest, validator, and research-log paths. This prevents an acceptance route from becoming editable outside the task's declared scope. The check remains a scope-integrity control; it does not approve or execute a task.
+
 ## Objective-To-Evidence Matrix
 
 | Objective requirement | Current evidence | What the evidence proves | What remains outside the proof |
