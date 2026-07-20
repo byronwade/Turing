@@ -667,6 +667,26 @@ fn layout_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     layout_box.dimensions.content.height = cursor.content.height;
 }
 
+/// The advance width of an inline box: its own text, or the sum of its
+/// descendants' text for an inline element.
+///
+/// Without the recursive arm an inline element measures as zero, every such
+/// element lands at the same pen position, and `<span>a</span><span>b</span>`
+/// paints both words on top of each other. An inline element moves between
+/// lines as one unbreakable unit; breaking inside one is line fragmentation,
+/// which this layout does not implement.
+fn inline_advance_width(layout_box: &LayoutBox, metrics: TextMetrics) -> f32 {
+    if let Some(text) = &layout_box.text {
+        #[allow(clippy::cast_precision_loss)]
+        return text.chars().count() as f32 * metrics.advance;
+    }
+    layout_box
+        .children
+        .iter()
+        .map(|child| inline_advance_width(child, metrics))
+        .sum()
+}
+
 /// Greedy line breaking over inline children.
 fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     let origin_x = layout_box.dimensions.content.x;
@@ -678,8 +698,7 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     let mut children = core::mem::take(&mut layout_box.children);
 
     for child in &mut children {
-        let text = child.text.clone().unwrap_or_default();
-        let width = text.chars().count() as f32 * metrics.advance;
+        let width = inline_advance_width(child, metrics);
         if pen_x > 0.0 && pen_x + width > available {
             pen_x = 0.0;
             line += 1.0;
@@ -1526,6 +1545,65 @@ mod tests {
         let error =
             run("<div>x</div>", "div { writing-mode: vertical-rl }", 800.0).expect_err("refused");
         assert!(matches!(error, LayoutError::WritingModeUnsupported { .. }));
+    }
+
+    #[test]
+    fn adjacent_inline_elements_abut_rather_than_overlap() {
+        // An inline element's width is the sum of its descendants' text, so
+        // the second span's run starts where the first one ends.
+        let root = run(
+            "<body><span>ab</span><span>cd</span></body>",
+            "",
+            640.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let runs: Vec<&Rect> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(rect),
+                DisplayItem::SolidColor { .. } => None,
+            })
+            .collect();
+        assert_eq!(runs.len(), 2);
+        assert!((runs[0].x - 0.0).abs() < f32::EPSILON);
+        assert!(
+            (runs[1].x - 16.0).abs() < f32::EPSILON,
+            "second span starts after the first: {:?}",
+            runs[1]
+        );
+        assert!((runs[0].y - runs[1].y).abs() < f32::EPSILON, "same line");
+    }
+
+    #[test]
+    fn an_inline_element_that_does_not_fit_moves_to_the_next_line_whole() {
+        let root = run(
+            "<body><span>hello</span><span>world</span></body>",
+            "",
+            64.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let runs: Vec<&Rect> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(rect),
+                DisplayItem::SolidColor { .. } => None,
+            })
+            .collect();
+        assert_eq!(runs.len(), 2);
+        assert!(
+            runs[1].y > runs[0].y,
+            "40px + 40px cannot share a 64px line: {:?} {:?}",
+            runs[0],
+            runs[1]
+        );
+        assert!(
+            (runs[1].x - 0.0).abs() < f32::EPSILON,
+            "the wrapped element starts at the line's origin"
+        );
     }
 
     #[test]

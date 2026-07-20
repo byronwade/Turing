@@ -42,6 +42,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-engine"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-dom",
+ "turing-html",
+ "turing-input",
+ "turing-js",
+ "turing-layout",
+ "turing-raster",
+ "turing-webidl",
+]
+
+[[package]]
 name = "turing-fuzz"
 version = "0.1.0"
 dependencies = [

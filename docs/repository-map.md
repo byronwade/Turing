@@ -236,7 +236,20 @@ Current crates:
 - `turing-build-info`: build and maturity identity;
 - `turing-ipc`: generated role/message contracts, bounded envelopes, exact sequence state, and bounded queues;
 - `turing-kernel`: process registration, role launch policy, capability attenuation, route authorization, and channel binding;
-- `turing-ui-model`: toolkit-neutral shell state and commands.
+- `turing-ui-model`: toolkit-neutral shell state and commands;
+- `turing-html`: HTML tokenizer and tree builder;
+- `turing-css`: CSS parser, selector matching, and cascade;
+- `turing-dom`: live document with mutation epochs, a change log, and event dispatch;
+- `turing-layout`: block and inline layout, display list, and hit testing;
+- `turing-raster`: CPU reference rasterizer, including the embedded reference glyph set;
+- `turing-js`: JavaScript compiler and bounded bytecode interpreter;
+- `turing-gc`: exact tracing collector;
+- `turing-webidl`: capability-registered DOM bindings for script;
+- `turing-input`: epoch-guarded pointer routing into DOM dispatch;
+- `turing-a11y`: accessibility tree generation;
+- `turing-engine`: end-to-end page pipeline composing the stages above — parse, script, cascade, layout, paint, route — with relayout after every mutation;
+- `turing-bench`: pipeline stage benchmarks;
+- `turing-fuzz`: seeded fuzz harness over the parse-to-layout stages.
 
 A toolkit, platform, GPU, network, storage, serializer, or runtime dependency may not enter these crates merely to accelerate a demo.
 
