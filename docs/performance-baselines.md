@@ -110,6 +110,25 @@ Causes and fixes: the cascade evaluated every rule against every element, now
 narrowed by `turing_css::SelectorIndex`; and `aria-labelledby` resolved each
 IDREF with a linear document scan, now a map owned by the document.
 
+A third was found later, in tokenizing. Dropping a duplicate attribute was a
+scan of the attributes collected so far, so an element's attribute count was
+quadratic:
+
+| Attributes on one element | Before | After |
+| --- | --- | --- |
+| 2,000 | 3.3 ms | 1.3 ms |
+| 8,000 | 80.3 ms | 4.0 ms |
+| 16,000 | — | 9.7 ms |
+| 32,000 | — | 18.5 ms |
+
+Four times the input cost twenty-four times the work, from markup a page emits
+in one line. A set of seen names replaces the scan; the attribute vector still
+owns source order and first-occurrence-wins.
+
+Five other pathological shapes were measured at the same time and are all
+linear: one enormous text node, many sibling elements, many unmatched close
+tags, a long unterminated comment, and many declarations in one block.
+
 **The index only removes work that could not have matched.** A stylesheet of
 `div` rules against a document of `div` elements is still quadratic, because
 every pair genuinely matches and no index can help. The improvement above is on
