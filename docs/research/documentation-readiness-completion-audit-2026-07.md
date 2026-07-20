@@ -36,6 +36,8 @@ The machine audit source list also names each current lane-specific closure-prep
 
 The active compatibility lane now also has a no-claim [Compatibility Prioritization and Closure Preparation](compatibility-prioritization-and-closure-preparation-2026-07.md) packet for `RQ-15`. It defines priority classes, capability-row fields, complete denominator accounting, differential/standards triage, and rejection rules without selecting a feature, support profile, or compatibility claim.
 
+The deferred product-contract lane now also has a no-claim [Product SLOs and Error Budgets Research](product-slos-and-error-budgets-research-2026-07.md) packet for `RQ-62`. It routes the targetless production-readiness SLO catalog to explicit workflow, denominator, baseline, privacy, error-budget, and owner-review evidence without selecting numeric targets or creating a release gate.
+
 The focused validator checks that:
 
 - all required source records exist;
