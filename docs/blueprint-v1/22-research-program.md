@@ -122,6 +122,8 @@ Prototype versioned parser output, DOM mutation epochs, computed-style blocks, l
 
 Measure bytes, allocations, rebuild scope, invalidation correctness, trace clarity, parallel publication, cancellation, and stale-artifact rejection.
 
+The [Rendering Artifacts and Invalidation Research](../research/rendering-artifacts-and-invalidation-research-2026-07.md) defines the deferred source-backed comparison, oracle, and evidence route.
+
 Decision output: engine artifact identity, lifetime, invalidation, retention, and diagnostic contracts.
 
 ## RQ-19 — Which runtime tiering and collector architecture gives the best interaction-adjusted performance?

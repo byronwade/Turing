@@ -1,5 +1,23 @@
 # Research Log
 
+## 2026-07-19 - Rendering artifacts and invalidation research
+
+Question:
+
+Which pipeline artifact and invalidation model is most correct, compact, and observable across parser, style, layout, paint, accessibility, and compositor stages?
+
+Method:
+
+Checked the WHATWG DOM Living Standard updated 2026-07-18, W3C CSS Containment Level 1, and Chromium's public rendering critical-path and rendering-architecture documentation on 2026-07-19. Reconciled the observations with `RQ-18`, the web-engine, performance, accessibility, security, and testing books, artifact identity rules, and the research-question coverage registry.
+
+Decision:
+
+Added a deferred no-claim packet separating standards-visible mutation and containment semantics from engine-specific artifact choices. It defines mutable, immutable-epoch, hybrid, and full-recomputation models; invalidation classes; pixel, accessibility, hit-test, focus, script, and recovery oracles; measurement fields; and rejection rules for stale output, screenshot-only validation, hidden failures, or copying another engine's pipeline as a decision. No artifact model, invalidation policy, compositor design, compatibility, accessibility, performance, or readiness decision changed.
+
+Next question:
+
+Which owner-approved artifact identity/dependency schema and synthetic mutation corpus should become the first full-recomputation and independent-review target when web-engine pipeline work enters the active pre-build crosswalk?
+
 ## 2026-07-19 - Public developer protocol stability and observability research
 
 Question:
