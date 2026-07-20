@@ -1,5 +1,31 @@
 # Research Log
 
+## 2026-07-20 - Foreign-tree test found width and height were parsed and discarded
+
+Question:
+
+The tree traits were in place, but every layout test still drove `turing_html::Document`. That proves the adapter works; it does not prove the trait surface is *sufficient*, because a missing method is invisible while the only implementor is the type the traits were extracted from.
+
+Method:
+
+Wrote a hand-built `HostTree` — a flat `Vec` of nodes with no relationship to `turing-html` — implementing `ElementTree` and `LayoutTree`, and ran `layout` on it. Deliberately not gated on the `html` feature, so it runs in the zero-dependency configuration an embedder actually builds.
+
+Finding:
+
+The trait surface was sufficient. The test still failed, for an unrelated reason worth recording.
+
+`width` and `height` were parsed by `resolve_style` into `Style` and then never read by anything. `calculate_width` and `calculate_height` both carried a comment saying an explicit value "was seeded into the content rect during generation" — box generation never did that. Two CSS properties were being accepted and silently dropped, and the comments asserted a behaviour that did not exist.
+
+This is exactly the failure mode this crate's typed-error discipline is meant to prevent, and the discipline did not catch it, because the value was neither honoured nor refused — it was stored. `dead_code` stayed silent because the derived `Debug` and `PartialEq` on `Style` count as reads of the fields.
+
+Decision:
+
+Fixed rather than worked around: box generation now seeds the content rect from `style.width`/`style.height`, and `calculate_height` restores a declared height after `layout_children` overwrites it with the children's. Three tests pin the now-live paths, including one asserting that an *absent* height is still derived from children, so the fix cannot regress into always-explicit.
+
+One limit is now explicit in a comment: zero means `auto` in the content rect, so a declared `height: 0` is indistinguishable from `auto`. That was already true of `width` under the pre-existing convention; it is recorded rather than left implicit.
+
+The general lesson is that testing a generic interface through its originating implementation tests almost nothing. The second implementor is what makes the abstraction real, and here it also found a defect that had nothing to do with abstraction.
+
 ## 2026-07-20 - Style and layout decoupled from the DOM behind tree traits
 
 Question:

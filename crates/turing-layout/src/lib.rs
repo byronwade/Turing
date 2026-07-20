@@ -366,10 +366,19 @@ fn build_box<T: LayoutTree>(
 
     Ok(Some(LayoutBox {
         dimensions: Dimensions {
+            // Explicit `width` and `height` are seeded into the content rect;
+            // layout treats a zero here as `auto` and resolves it from the
+            // containing block or the children. A declared `0` is therefore
+            // indistinguishable from `auto`, which is the one case this
+            // representation cannot express.
+            content: Rect {
+                width: style.width.unwrap_or(0.0),
+                height: style.height.unwrap_or(0.0),
+                ..Rect::default()
+            },
             padding: style.padding,
             border: style.border,
             margin: style.margin,
-            ..Dimensions::default()
         },
         kind,
         node: Some(tree.node_index(node)),
@@ -515,8 +524,11 @@ fn parse_length(value: &str) -> Option<f32> {
 fn layout_block(layout_box: &mut LayoutBox, containing: Dimensions, metrics: TextMetrics) {
     calculate_width(layout_box, containing);
     calculate_position(layout_box, containing);
+    // Laying out children overwrites the content height with theirs, so the
+    // declared height has to be read before that happens.
+    let declared_height = layout_box.dimensions.content.height;
     layout_children(layout_box, metrics);
-    calculate_height(layout_box);
+    calculate_height(layout_box, declared_height);
 }
 
 fn calculate_width(layout_box: &mut LayoutBox, containing: Dimensions) {
@@ -612,10 +624,198 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
     layout_box.dimensions.content.height = (line + 1.0) * metrics.line_height;
 }
 
-fn calculate_height(layout_box: &mut LayoutBox) {
-    // An explicit height was seeded into the content rect during generation.
-    if layout_box.dimensions.content.height <= 0.0 && layout_box.children.is_empty() {
-        layout_box.dimensions.content.height = 0.0;
+/// Applies a declared `height`, which overrides the height derived from
+/// children. `declared_height` of zero means the declaration was absent.
+fn calculate_height(layout_box: &mut LayoutBox, declared_height: f32) {
+    if declared_height > 0.0 {
+        layout_box.dimensions.content.height = declared_height;
+    }
+}
+
+// -- foreign tree acceptance test ----------------------------------------
+
+/// Drives style and layout from a tree that is not the engine's own.
+///
+/// This is the test the decoupling exists to pass. Every other test in this
+/// crate uses `turing_html::Document`, which proves the adapter works but not
+/// that the trait surface is *sufficient* — a missing method would be invisible
+/// as long as the only implementor is the one the traits were extracted from.
+///
+/// Deliberately not gated on the `html` feature, so it also runs in the
+/// zero-dependency configuration an embedder actually builds. The tree below is
+/// the whole of what implementing [`LayoutTree`] costs.
+#[cfg(test)]
+mod foreign_tree {
+    use super::{BoxKind, LayoutBox, LayoutTree, TextMetrics, layout};
+    use turing_css::{ElementTree, Stylesheet};
+
+    /// A node in a host application's own document representation.
+    struct HostNode {
+        tag: Option<String>,
+        text: Option<String>,
+        class: Option<String>,
+        parent: Option<usize>,
+        children: Vec<usize>,
+    }
+
+    struct HostTree {
+        nodes: Vec<HostNode>,
+    }
+
+    impl HostTree {
+        /// Builds `<root><p class="lead">Hello</p><p>World</p></root>`.
+        fn sample() -> Self {
+            let mut nodes = vec![HostNode {
+                tag: None,
+                text: None,
+                class: None,
+                parent: None,
+                children: Vec::new(),
+            }];
+            let push = |nodes: &mut Vec<HostNode>, node: HostNode, parent: usize| {
+                nodes.push(node);
+                let id = nodes.len() - 1;
+                nodes[parent].children.push(id);
+                id
+            };
+            let root = push(
+                &mut nodes,
+                HostNode {
+                    tag: Some("root".to_string()),
+                    text: None,
+                    class: None,
+                    parent: Some(0),
+                    children: Vec::new(),
+                },
+                0,
+            );
+            for (class, body) in [(Some("lead"), "Hello"), (None, "World")] {
+                let para = push(
+                    &mut nodes,
+                    HostNode {
+                        tag: Some("p".to_string()),
+                        text: None,
+                        class: class.map(str::to_string),
+                        parent: Some(root),
+                        children: Vec::new(),
+                    },
+                    root,
+                );
+                push(
+                    &mut nodes,
+                    HostNode {
+                        tag: None,
+                        text: Some(body.to_string()),
+                        class: None,
+                        parent: Some(para),
+                        children: Vec::new(),
+                    },
+                    para,
+                );
+            }
+            Self { nodes }
+        }
+    }
+
+    impl ElementTree for HostTree {
+        type Node = usize;
+
+        fn is_element(&self, node: Self::Node) -> bool {
+            self.nodes[node].tag.is_some()
+        }
+
+        fn tag_name(&self, node: Self::Node) -> Option<&str> {
+            self.nodes[node].tag.as_deref()
+        }
+
+        fn attribute(&self, node: Self::Node, name: &str) -> Option<&str> {
+            match name {
+                "class" => self.nodes[node].class.as_deref(),
+                _ => None,
+            }
+        }
+
+        fn parent(&self, node: Self::Node) -> Option<Self::Node> {
+            self.nodes[node].parent
+        }
+
+        fn previous_element_sibling(&self, node: Self::Node) -> Option<Self::Node> {
+            let parent = self.nodes[node].parent?;
+            let siblings = &self.nodes[parent].children;
+            let position = siblings.iter().position(|&s| s == node)?;
+            siblings[..position]
+                .iter()
+                .rev()
+                .copied()
+                .find(|&s| self.is_element(s))
+        }
+    }
+
+    impl LayoutTree for HostTree {
+        fn root(&self) -> Self::Node {
+            0
+        }
+
+        fn children(&self, node: Self::Node) -> Vec<Self::Node> {
+            self.nodes[node].children.clone()
+        }
+
+        fn text(&self, node: Self::Node) -> Option<&str> {
+            self.nodes[node].text.as_deref()
+        }
+
+        fn is_non_rendered(&self, _node: Self::Node) -> bool {
+            false
+        }
+
+        fn node_index(&self, node: Self::Node) -> usize {
+            node
+        }
+    }
+
+    fn collect(root: &LayoutBox, out: &mut Vec<(BoxKind, Option<String>)>) {
+        out.push((root.kind, root.text.clone()));
+        for child in &root.children {
+            collect(child, out);
+        }
+    }
+
+    #[test]
+    fn lays_out_a_tree_the_engine_does_not_own() {
+        let tree = HostTree::sample();
+        let sheet = Stylesheet::parse("p { display: block; height: 20px; }").expect("parses");
+
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+
+        let mut boxes = Vec::new();
+        collect(&root, &mut boxes);
+        let text: Vec<_> = boxes
+            .iter()
+            .filter(|(kind, _)| *kind == BoxKind::Text)
+            .map(|(_, text)| text.clone().expect("text box carries text"))
+            .collect();
+        assert_eq!(text, vec!["Hello".to_string(), "World".to_string()]);
+    }
+
+    #[test]
+    fn cascade_reads_attributes_through_the_host_tree() {
+        let tree = HostTree::sample();
+        // `.lead` only matches if the host tree's `attribute` is consulted, and
+        // the two paragraphs only differ by height if the cascade really ran.
+        let sheet = Stylesheet::parse(
+            ".lead { display: block; height: 40px; } p { display: block; height: 10px; }",
+        )
+        .expect("parses");
+
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+
+        let paragraphs: Vec<f32> = root.children[0]
+            .children
+            .iter()
+            .filter(|b| b.kind == BoxKind::Block)
+            .map(|b| b.dimensions.content.height)
+            .collect();
+        assert_eq!(paragraphs, vec![40.0, 10.0]);
     }
 }
 
@@ -669,6 +869,58 @@ mod tests {
         let document = TreeBuilder::new().build(&tokens).expect("builds");
         let sheet = Stylesheet::parse(css).expect("parses");
         layout(&document, &sheet, width, TextMetrics::default())
+    }
+
+    fn document_for(html: &str) -> Document {
+        let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
+        TreeBuilder::new().build(&tokens).expect("builds")
+    }
+
+    #[test]
+    fn explicit_width_overrides_filling_the_containing_block() {
+        let root = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; width: 120px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for("<html><body><div>x</div></body></html>");
+        assert_eq!(
+            find(&root, &document, "div").dimensions.content.width,
+            120.0
+        );
+    }
+
+    #[test]
+    fn explicit_height_overrides_the_height_of_children() {
+        // The div contains one line of text, so its derived height would be
+        // the 16px default line height. A declared height must win.
+        let root = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; height: 90px; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for("<html><body><div>x</div></body></html>");
+        assert_eq!(
+            find(&root, &document, "div").dimensions.content.height,
+            90.0
+        );
+    }
+
+    #[test]
+    fn absent_height_is_still_derived_from_children() {
+        let root = run(
+            "<html><body><div>x</div></body></html>",
+            "div { display: block; }",
+            400.0,
+        )
+        .expect("lays out");
+        let document = document_for("<html><body><div>x</div></body></html>");
+        assert_eq!(
+            find(&root, &document, "div").dimensions.content.height,
+            16.0
+        );
     }
 
     fn find<'tree>(root: &'tree LayoutBox, document: &Document, tag: &str) -> &'tree LayoutBox {
