@@ -22,6 +22,24 @@ Next question:
 
 Which first candidate policy set should an owner approve for the L1 browser-run extension, and what exact pressure/recovery artifact schema should reject incomplete evidence?
 
+## 2026-07-19 - Research packet navigation synchronization
+
+Question:
+
+Do the latest research packets appear in every canonical discovery and build-readiness route required by the documentation policy?
+
+Method:
+
+Compared the top-level documentation index, start-here continuation, research index, repository map, Blueprint research program, research-readiness crosswalk, and documentation-readiness evidence matrix for the recent `RQ-08`, `RQ-13`/`RQ-22`/`RQ-36`, `RQ-23`, `RQ-41`, `RQ-45`, `RQ-47`, and `RQ-48` packets.
+
+Decision:
+
+Added missing top-level index rows and connected the sustained-performance route to the start-here continuation and documentation-readiness evidence matrix. The source packets, research index, repository map, Blueprint routes, and machine crosswalk remain the authority for status and evidence ordering.
+
+Impact:
+
+Recent research additions now have explicit discovery and build-readiness navigation from the top-level docs. No research question, readiness gate, implementation status, owner decision, or claim boundary changed.
+
 ## 2026-07-19 - Bounded API and protocol contract research
 
 Question:
