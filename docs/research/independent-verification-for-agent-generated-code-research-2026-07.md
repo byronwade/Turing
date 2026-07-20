@@ -6,6 +6,10 @@ Question: Which combinations of separate agents, human review, conformance suite
 
 This packet consolidates the [Independent Verification and Adversarial Review](../agent-execution/08-independent-verification-and-adversarial-review.md) baseline with the agent task model and the quality, security, accessibility, benchmark, incident, and release routes. It does not certify any current implementation or treat the current M0 prototype as browser evidence.
 
+## Source observations
+
+The linked evidence policy treats independence as a relationship between implementation, oracle, fixtures, reviewer authority, and acceptance decision rather than as a second command or model invocation. It also requires attempted failures, unsupported cases, common-mode overlap, environment identity, retained artifacts, reviewer disposition, expiry, and rerun triggers to remain visible. These are observations about the repository's verification contract; they are not evidence that any current task, browser subsystem, or release path has been independently verified.
+
 ## Independence model
 
 Independence is a property of an evidence relationship, not a job title or a second command invocation. Each evidence item must record:

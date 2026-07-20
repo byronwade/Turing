@@ -2,7 +2,7 @@
 
 Status: active evidence index
 Owner: research and architecture
-Update rule: every durable study is indexed here, mapped to its decision owner, and logged in the research log. [`validate_research_index.py`](../../tools/validate_research_index.py) rejects orphaned research Markdown files, stale local Markdown links, and packets that omit a question/scope, evidence/method, disposition/next step, or explicit claim boundary.
+Update rule: every durable study is indexed here, mapped to its decision owner, and logged in the research log. [`validate_research_index.py`](../../tools/validate_research_index.py) rejects orphaned research Markdown files, stale local Markdown links, packets that omit a question/scope, evidence/method, disposition/next step, or explicit claim boundary, and active packets that fail to visibly separate observations, candidate inferences or recommendations, and unresolved next work.
 
 Before adding or continuing research:
 

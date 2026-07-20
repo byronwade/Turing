@@ -96,11 +96,41 @@ def main() -> int:
             + "; ".join(missing_continuity)
         )
 
+    active_quality_gaps = []
+    for path in sorted(durable_files):
+        text = path.read_text(encoding="utf-8")
+        status = re.search(r"(?m)^Status:\s*(.+)$", text)
+        if not status or not re.search(r"\bactive\b", status.group(1), re.IGNORECASE):
+            continue
+        quality_checks = {
+            "observations": re.search(r"\bobserv", text, re.IGNORECASE),
+            "inference-or-candidate": re.search(
+                r"\b(infer|candidate|recommend|proposal|hypothesis)",
+                text,
+                re.IGNORECASE,
+            ),
+            "unresolved-next-work": re.search(
+                r"\b(next|remaining|unresolved|missing|unsupported|current disposition)",
+                text,
+                re.IGNORECASE,
+            ),
+        }
+        missing_quality = [name for name, present in quality_checks.items() if not present]
+        if missing_quality:
+            active_quality_gaps.append(f"{path.name} ({', '.join(missing_quality)})")
+    if active_quality_gaps:
+        fail(
+            "active research files must separate observations, candidate inferences or "
+            "recommendations, and unresolved next work: "
+            + "; ".join(active_quality_gaps)
+        )
+
     print(
         "research-index validation passed: "
         f"{len(durable_files)} durable research files, "
         f"{len(indexed_paths)} indexed local Markdown links, "
-        f"{len(CONTINUITY_PATTERNS)} continuity fields per packet"
+        f"{len(CONTINUITY_PATTERNS)} continuity fields per packet, "
+        "active-packet observation/inference/next-work checks"
     )
     return 0
 

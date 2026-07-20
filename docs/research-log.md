@@ -1,5 +1,9 @@
 # Research Log
 
+## 2026-07-20 - Active research quality boundary
+
+Strengthened the research-index control so active packets must visibly separate source observations, candidate inferences or recommendations, and unresolved next work. Added the missing source-observations section to the active independent-verification packet and synchronized the research index and documentation policy. This improves deep-research continuity and does not answer a research question, accept a decision, promote a gate, or add an implementation claim.
+
 ## 2026-07-20 - Benchmark handoff freshness reconciliation
 
 Aligned the performance benchmark readiness packet and benchmark evidence/claim closure route with the checked 2026-07-20 BrowserBench source refresh and runbook. Historical source-table retrieval dates remain unchanged, and the suite-specific validity rules remain diagnostic only. No browser run, competitor result, performance claim, or `PB-013` readiness promotion was added.
