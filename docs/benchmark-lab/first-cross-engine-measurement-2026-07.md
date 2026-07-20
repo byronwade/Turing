@@ -82,6 +82,33 @@ equivalent main-thread events consumed.
   Turing and is stated rather than corrected, because correcting it would
   require instrumentation parity nobody has measured.
 
+## Corpus extension (same day)
+
+Three further fixtures joined the corpus, each stressing a different engine
+path, all inside the implemented subset: `blocks-150.html` (150 stacked
+margined blocks), `selectors-120.html` (120 class rules over 120 elements),
+and `text-30x120.html` (30 paragraphs of 120 words, exercising word-level
+line breaking). Same method: five cold Turing processes per fixture
+(medians of `load` + `display_list`), Chrome DevTools traces of the same
+files (two for `blocks-150`, one each for the others — a stated
+under-sampling to grow before any stronger wording is used).
+
+| Fixture | Turing comparable span | Chrome comparable span | Ratio |
+| --- | --- | --- | --- |
+| bench-fixture | 155 µs | ~1,003 µs | ~6.5x |
+| blocks-150 | ~1,095 µs | ~3,976–5,694 µs | ~3.6–5.2x |
+| selectors-120 | ~1,218 µs | ~6,164 µs | ~5.1x |
+| text-30x120 | ~1,599 µs | ~3,552 µs | ~2.2x |
+
+The licensed sentence widens to: on this four-fixture corpus, on this
+machine, Turing's cold comparable span ran roughly **2x to 6x faster** than
+Chrome's equivalent main-thread events, with the narrowest margin on
+text-heavy content — where Chrome's text machinery is most optimised and
+Turing allocates one fragment box per placed word. That narrowing is the
+most useful datum in the table: it says where optimisation attention goes
+if the corpus keeps growing this direction. Every scope limit from the
+single-fixture section applies unchanged.
+
 ## Growing this into the real lane
 
 Each step is already specified by this book: a corpus beyond one fixture

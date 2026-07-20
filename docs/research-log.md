@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-20 - The corpus grew, and the ratio narrowed where it should
+
+Three fixtures joined the cross-engine corpus — block-heavy, selector-heavy, and text-heavy, all inside the implemented subset — and the single number became a range: on four fixtures, Turing's cold comparable span runs roughly 2x to 6x faster than Chrome's equivalent main-thread events, same files, same machine.
+
+The range is more informative than the headline. The margin is widest on the small fixture and narrowest — 2.2x — on thirty paragraphs of wrapping text, which is exactly where Chrome's most-optimised machinery meets Turing's least: word-level line breaking that allocates one fragment box per placed word. A comparison lane earns its keep the first time it points at the next optimisation rather than flattering the engine; this one now has.
+
+Under-sampling is stated in the record (one trace for two of the fixtures), and every scope limit stands: the corpus is Turing-shaped by construction, Chrome does more per stage, pixels are not compared.
+
 ## 2026-07-20 - The first cross-engine measurement, scoped until it is honest
 
 The owner's product direction says "fastest"; `PB-013` forbids saying it without measurement. Those two constraints stop colliding the moment a controlled measurement exists, so one now does: `docs/benchmark-lab/first-cross-engine-measurement-2026-07.md`, the first execution of the comparison lane the benchmark book specifies.
