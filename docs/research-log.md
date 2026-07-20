@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Servo source-strategy freshness revalidated
+
+Question:
+
+Do the current official Servo project, repository release, crate, and embedding references change the source-strategy decision inputs or the boundary between an upstream engine observation and Turing approval?
+
+Method:
+
+Rechecked the official Servo repository release API, project/about page, Servo Book embedding overview, and current crate documentation. Compared those observations with the checked `ADR-0009` source-observation manifest and the upstream refresh packet without changing the local Servo checkout or importing source.
+
+Result:
+
+The latest public Servo release remains `v0.3.0` at the previously captured release commit, distinct from the captured `main` head. Official project material continues to describe an embeddable Rust engine whose production-readiness transition and embedding documentation are still in progress; the crate exposes a WebView integration surface, but public API presence does not establish Turing process, security, compatibility, maintenance, or release readiness.
+
+Impact:
+
+The source-strategy packet now records the public project/embedding boundary explicitly. This strengthens `ADR9-EV-001`, `ADR9-EV-002`, `ADR9-EV-012`, and `ADR9-EV-016` routing without selecting Servo, accepting `mozjs`, closing `PB-002`, authorizing source import, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which exact source baseline, runtime relationship, component boundary, and independent reproduction scope will the owner and reviewer accept for the chosen `ADR-0009` option?
+
 ## 2026-07-19 - Live GitHub handoff refreshed
 
 Question:

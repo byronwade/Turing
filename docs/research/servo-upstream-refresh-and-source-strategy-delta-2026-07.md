@@ -16,6 +16,9 @@ This packet is a freshness and routing update. It does not select Servo, approve
 The primary sources are the official upstream repositories and their live public documentation:
 
 - [Servo repository](https://github.com/servo/servo), including its README, tracked top-level structure, license, security policy, build files, and supported-platform statement;
+- [Servo project/about page](https://servo.org/about/), used for the project's stated engine and production-readiness direction;
+- [Servo Book embedding overview](https://book.servo.org/embedding/overview.html), used for the current embedding maturity and integration boundary;
+- [Servo crate documentation](https://doc.servo.org/servo/index.html), used only to identify the public `ServoBuilder`/`WebView` surface;
 - [Servo pull requests](https://github.com/servo/servo/pulls), used only as a current activity and maintenance signal;
 - [Servo `mozjs` repository](https://github.com/servo/mozjs), including its README and release metadata.
 
@@ -33,6 +36,12 @@ These observations strengthen the existing source-strategy inventory in two ways
 2. A source-strategy comparison must include the repository's build orchestration, native/bootstrap inputs, C API and embedding surface, test corpus, release/security process, and platform-specific toolchain—not only Rust source files.
 
 The repository's public description still calls the project a prototype. That is an upstream maturity statement, not a Turing maturity decision and not evidence that Turing can use Servo safely or compatibly.
+
+### Public project and embedding boundary
+
+The official Servo project page describes Servo as a Rust web-rendering engine intended for embeddable, modular, parallel, cross-platform use, while its project page says the short-term focus is moving from research toward production-ready engine APIs and interaction capabilities. The current Servo Book separately states that its embedding documentation is still a work in progress and identifies `servoshell` as the recommended way to run Servo as a browser, with WebView and third-party integration paths still being developed. The current crate documentation exposes a `ServoBuilder`/`WebView` integration surface, but API availability is not equivalent to a Turing-approved process, security, lifecycle, or release boundary.
+
+These sources sharpen the option comparison without changing it: Servo's public direction is relevant evidence for an embeddable-engine candidate, while the project's own maturity and embedding caveats require Turing to evaluate API stability, process ownership, platform integration, security controls, update policy, and maintenance independently. A public crate, a WebView API, or a recommended demo browser cannot be treated as proof that an independent browser release path is ready.
 
 ### Upstream activity is not release assurance
 
