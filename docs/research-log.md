@@ -1,5 +1,27 @@
 # Research Log
 
+## 2026-07-19 - Sandbox source manifest provenance control
+
+Question:
+
+Does the sandbox platform-source manifest enforce the same one-entry-per-document provenance rule as the web-platform source manifest?
+
+Method:
+
+Compared the sandbox manifest, schema, validator, required platform/source set, and no-claim evidence boundary with the corrected web-platform source controls. The sandbox source list was unique but its schema and validator did not prevent future duplicate paths.
+
+Decision:
+
+Added `uniqueItems` to the sandbox `source_documents` schema and made `validate_sandbox_platform_sources.py` reject duplicate paths.
+
+Impact:
+
+This synchronizes provenance controls for the security lane without creating effective-policy capture, packaged probe execution, sandbox readiness, renderer-security, hostile-browsing, or implementation evidence. `PB-012` remains partial and the 90% contained-M0 / 0% full-build measures remain unchanged.
+
+Next question:
+
+Which packaged expected-deny probe evidence will demonstrate effective policy on each selected platform after the sandbox task and host controls are approved?
+
 ## 2026-07-19 - Web-platform source manifest duplicate-path control
 
 Question:
