@@ -1,5 +1,41 @@
 # Research Log
 
+## 2026-07-19 - Research crosswalk count refresh
+
+Question:
+
+Does adding the dependency source record to the active source-strategy and fresh-host lanes leave the human research-coverage audit and readiness snapshot numerically synchronized with the machine crosswalk?
+
+Method:
+
+Ran `validate_research_question_coverage.py` after the crosswalk update. The machine record increased from 213 to 221 resolving evidence-start entries across the same 10 lanes and 37 active questions; updated the human coverage audit and build-readiness snapshot to the machine-derived count.
+
+Decision:
+
+The human and machine crosswalk counts now agree at `221/221`. This is a navigation and count correction only; it does not answer a research question, establish source or dependency approval, promote a gate, or change the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+Which future candidate foundation record will replace the no-claim dependency source route after owner review and independent replay evidence exist?
+
+## 2026-07-19 - Dependency evidence crosswalk synchronization
+
+Question:
+
+Does the machine research crosswalk expose the new technology/dependency source record wherever active `RQ-44` and `RQ-46` work routes through source strategy and fresh-host build confidence?
+
+Method:
+
+Compared the dependency packet's related questions with `research-readiness-crosswalk.json`, the human research index, and the source/dependency readiness records. Added the packet, manifest, schema, and validator to the source-strategy and fresh-host evidence-start arrays while preserving `RQ-41` as deferred and `RQ-44`/`RQ-46` as active.
+
+Decision:
+
+The active crosswalk now reaches the same dependency evidence from both relevant lanes. This closes a navigation and traceability gap without answering the research question, selecting a dependency, approving a source, promoting a gate, or changing the 90% contained-M0 / 0% full-build measures.
+
+Next question:
+
+When source-strategy or fresh-host owners review a candidate foundation, which exact candidate record and independent replay evidence will replace the no-claim source observations?
+
 ## 2026-07-19 - Technology and dependency source-manifest closure
 
 Question:
