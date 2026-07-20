@@ -78,6 +78,8 @@ The research program is also covered by the checked no-claim [research-question 
 
 `RQ-41`/`RQ-44`/`RQ-46` current evidence also includes the checked no-claim [technology/dependency source manifest](../blueprint-v1/machine/technology-dependency-source-manifest.json), [`technology-dependency-source-manifest.schema.json`](../blueprint-v1/machine/technology-dependency-source-manifest.schema.json), and [`validate_technology_dependency_sources.py`](../../tools/validate_technology_dependency_sources.py). The manifest tracks official Rust, Cargo, SPDX, and SLSA observations across eight foundation axes; it does not select a language, framework, dependency, source strategy, or release foundation.
 
+`RQ-16`/`RQ-25` current evidence also includes the checked no-claim [browser-engine landscape source manifest](../research/machine/browser-engine-landscape-source-manifest.json), [schema](../research/machine/browser-engine-landscape-source-manifest.schema.json), and [`validate_browser_engine_landscape_sources.py`](../../tools/validate_browser_engine_landscape_sources.py). The manifest tracks official engine architecture, runtime, protocol, standards, governance, and benchmark-context observations across nine evidence axes; it does not select an engine, authorize source use, establish comparative performance, or support a Chrome-class claim.
+
 ## Required Continuation Checks
 
 The active closure-preparation routes are [source strategy](../research/adr-0009-source-strategy-closure-preparation-2026-07.md), [toolchain/fresh host](../research/fresh-host-toolchain-reproduction-closure-preparation-2026-07.md), [IPC](../research/ipc-transport-and-authority-closure-preparation-2026-07.md), [sandbox](../research/sandbox-probe-execution-and-containment-closure-preparation-2026-07.md), [benchmark](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md), [native UI/accessibility](../research/native-ui-and-accessibility-closure-preparation-2026-07.md), [profile/session](../research/profile-session-execution-and-data-safety-closure-preparation-2026-07.md), [package/update](../research/package-update-execution-and-release-safety-closure-preparation-2026-07.md), [incident response](../research/incident-response-execution-and-disclosure-closure-preparation-2026-07.md), [backup ownership](../research/backup-ownership-execution-and-two-person-control-closure-preparation-2026-07.md), and final [PB-020 closure/owner decision](../research/build-readiness-closure-and-owner-decision-preparation-2026-07.md). They are synchronized no-claim evidence-order documents, not approvals or implementation proof.
@@ -186,6 +188,7 @@ python3 -B tools/validate_incident_response_sources.py
 python3 -B tools/validate_ownership_control_sources.py
 python3 -B tools/validate_profile_session_sources.py
 python3 -B tools/validate_technology_dependency_sources.py
+python3 -B tools/validate_browser_engine_landscape_sources.py
 python3 -B tools/validate_reference_platform_scorecard.py
 python3 -B tools/validate_web_platform_sources.py
 python3 -B tools/validate_source_manifest_metadata.py

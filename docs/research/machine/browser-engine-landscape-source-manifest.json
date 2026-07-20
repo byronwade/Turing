@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "manifest_id": "ENGINE_LANDSCAPE.SOURCES.2026_07",
+  "status": "no_claim_engine_landscape_source_manifest",
+  "updated": "2026-07-19",
+  "related_questions": ["RQ-16", "RQ-25"],
+  "claim_status": "No-claim engine-landscape source observations only; these sources do not select an engine architecture, approve a dependency or source relationship, establish comparative performance, compatibility, security, accessibility, or Chrome-class status, or authorize implementation.",
+  "evidence_axes": [
+    "engine_architecture_and_process_model",
+    "rendering_pipeline_and_compositor",
+    "javascript_runtime_and_wasm",
+    "developer_protocol_and_observability",
+    "standards_and_compatibility",
+    "security_privilege_and_site_isolation",
+    "platform_integration_and_embedding",
+    "project_governance_and_maintenance",
+    "performance_methodology_and_claim_limits"
+  ],
+  "sources": [
+    { "source_id": "ENGINE-SOURCE-CHROMIUM-RENDERING", "title": "RenderingNG architecture", "publisher": "Google Chrome Developers", "url": "https://developer.chrome.com/docs/chromium/renderingng-architecture", "retrieved": "2026-07-16", "observation": "Chromium documents a staged rendering pipeline from animation and style through layout, paint, raster, activation, aggregation, and drawing.", "decision_consequence": "Use explicit pipeline stages, invalidation, ownership, and trace boundaries as hypotheses; do not treat the architecture as proof of Turing performance." },
+    { "source_id": "ENGINE-SOURCE-CHROMIUM-PROCESS", "title": "Process model and site isolation", "publisher": "Chromium", "url": "https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md", "retrieved": "2026-07-16", "observation": "Chromium describes browser, renderer, utility, GPU, and site-isolation process roles and their security implications.", "decision_consequence": "Retain process authority and site identity as measured design inputs; require equivalent security and failure evidence before comparisons." },
+    { "source_id": "ENGINE-SOURCE-CDP", "title": "Chrome DevTools Protocol", "publisher": "Chrome DevTools", "url": "https://chromedevtools.github.io/devtools-protocol/", "retrieved": "2026-07-16", "observation": "CDP exposes a broad domain and command/event model for browser inspection and automation.", "decision_consequence": "Study protocol breadth and generation while keeping Turing's internal protocol independently versioned and security-bounded." },
+    { "source_id": "ENGINE-SOURCE-V8-SPARKPLUG", "title": "Sparkplug baseline compiler", "publisher": "V8", "url": "https://v8.dev/blog/sparkplug", "retrieved": "2026-07-16", "observation": "V8 documents a fast baseline compilation tier between interpretation and higher optimization.", "decision_consequence": "Treat tiering as an experiment requiring warmup, code-size, equivalence, and deoptimization measurements." },
+    { "source_id": "ENGINE-SOURCE-V8-MAGLEV", "title": "Maglev mid-tier compiler", "publisher": "V8", "url": "https://v8.dev/blog/maglev", "retrieved": "2026-07-16", "observation": "V8 documents a mid-tier compiler aimed at useful optimization with lower compilation cost than peak optimization.", "decision_consequence": "Compare tier cost and interaction benefit only through controlled runtime and end-to-end workloads." },
+    { "source_id": "ENGINE-SOURCE-WEBKIT-DOCS", "title": "WebKit documentation", "publisher": "WebKit", "url": "https://docs.webkit.org/", "retrieved": "2026-07-16", "observation": "WebKit's documentation connects architecture, testing, ports, and platform integration.", "decision_consequence": "Keep common engine contracts separate from replaceable platform adapters and test infrastructure." },
+    { "source_id": "ENGINE-SOURCE-WEBKIT2", "title": "WebKit2 architecture", "publisher": "WebKit", "url": "https://docs.webkit.org/Deep%20Dive/Architecture/WebKit2.html", "retrieved": "2026-07-16", "observation": "WebKit2 separates UI, web-content, and shared privileged services.", "decision_consequence": "Use brokered privileged operations as an architectural hypothesis, not as evidence of a safe Turing boundary." },
+    { "source_id": "ENGINE-SOURCE-WEBKIT-SITE-ISOLATION", "title": "WebKit site isolation", "publisher": "WebKit", "url": "https://docs.webkit.org/Deep%20Dive/SiteIsolation.html", "retrieved": "2026-07-16", "observation": "WebKit describes remote frames, browsing-context groups, provisional navigation, and cross-process coordination.", "decision_consequence": "Preserve document, frame, site, and epoch identity across process boundaries." },
+    { "source_id": "ENGINE-SOURCE-JSC", "title": "JavaScriptCore overview", "publisher": "WebKit", "url": "https://docs.webkit.org/Deep%20Dive/JSC/JavaScriptCore.html", "retrieved": "2026-07-16", "observation": "JavaScriptCore uses interpreter and tiered execution stages.", "decision_consequence": "Use tier boundaries and semantic-oracle requirements in the JavaScript research plan." },
+    { "source_id": "ENGINE-SOURCE-FIREFOX-PROCESS", "title": "Firefox process model", "publisher": "Mozilla", "url": "https://firefox-source-docs.mozilla.org/dom/ipc/process_model.html", "retrieved": "2026-07-16", "observation": "Firefox documents specialized parent, content, GPU, socket, media, service-worker, and other process roles.", "decision_consequence": "Evaluate specialized roles against launch, memory, scheduling, and blast-radius costs rather than assuming more processes are better." },
+    { "source_id": "ENGINE-SOURCE-SPIDERMONKEY", "title": "SpiderMonkey overview", "publisher": "Mozilla", "url": "https://firefox-source-docs.mozilla.org/js/index.html", "retrieved": "2026-07-16", "observation": "SpiderMonkey documents interpretation, baseline and optimizing compilation, garbage collection, and WebAssembly as distinct systems.", "decision_consequence": "Measure runtime tier state, GC, code retention, and WebAssembly behavior as separate evidence dimensions." },
+    { "source_id": "ENGINE-SOURCE-FIREFOX-PERFORMANCE", "title": "Firefox performance documentation", "publisher": "Mozilla", "url": "https://firefox-source-docs.mozilla.org/performance/index.html", "retrieved": "2026-07-16", "observation": "Firefox provides documentation for profiling, memory, power, heap, allocation, and process analysis.", "decision_consequence": "Treat resource observability as a product and diagnostic requirement, not a one-off benchmark aid." },
+    { "source_id": "ENGINE-SOURCE-SERVO", "title": "Servo goals and governance", "publisher": "Servo Project", "url": "https://servo.org/about/", "retrieved": "2026-07-16", "observation": "Servo presents a Rust-based, modular, embeddable engine project with independent governance and standards goals.", "decision_consequence": "Use Servo for architecture and governance comparison only; no source, component, or upstream relationship is approved." },
+    { "source_id": "ENGINE-SOURCE-LADYBIRD", "title": "Ladybird project", "publisher": "Ladybird Browser Initiative", "url": "https://ladybird.org/", "retrieved": "2026-07-16", "observation": "Ladybird presents an independent, greenfield browser and publicly reports ongoing engine, sandbox, GPU, and compatibility work.", "decision_consequence": "Use its visible sequencing as a comparison input while retaining Turing's stricter evidence and security gates." },
+    { "source_id": "ENGINE-SOURCE-WPT", "title": "Web Platform Tests", "publisher": "Web Platform Tests", "url": "https://web-platform-tests.org/", "retrieved": "2026-07-16", "observation": "WPT provides a shared cross-browser conformance and interoperability test corpus.", "decision_consequence": "Require standards tests and full failure denominators before compatibility conclusions; WPT presence is not a result." },
+    { "source_id": "ENGINE-SOURCE-WEBDRIVER-BIDI", "title": "WebDriver BiDi", "publisher": "W3C", "url": "https://w3c.github.io/webdriver-bidi/", "retrieved": "2026-07-16", "observation": "WebDriver BiDi defines a standards-facing bidirectional automation protocol.", "decision_consequence": "Use standards-facing automation as a separate compatibility layer from deep engine diagnostics." },
+    { "source_id": "ENGINE-SOURCE-INTEROP", "title": "Interop 2026", "publisher": "web.dev", "url": "https://web.dev/blog/interop-2026", "retrieved": "2026-07-16", "observation": "Interop prioritizes shared web-platform focus areas across browser engines.", "decision_consequence": "Use focus-area selection to shape compatibility research, not to infer product parity." },
+    { "source_id": "ENGINE-SOURCE-BROWSERBENCH", "title": "BrowserBench", "publisher": "BrowserBench", "url": "https://browserbench.org/", "retrieved": "2026-07-16", "observation": "BrowserBench provides synthetic suites that can diagnose selected web workloads under declared conditions.", "decision_consequence": "Pin suite versions and retain raw per-workload results; synthetic scores cannot establish a number-one claim." }
+  ],
+  "source_documents": [
+    "docs/research/browser-engine-landscape-2026-07.md",
+    "docs/blueprint-v1/22-research-program.md",
+    "docs/blueprint-v1/02-capability-parity.md",
+    "docs/project-buildout/22-build-readiness-progress-snapshot.md",
+    "docs/research/README.md"
+  ],
+  "unsupported": [
+    "No engine, source relationship, dependency, toolkit, or architecture is selected by this manifest.",
+    "No Turing or competitor browser run, benchmark result, compatibility result, security result, or accessibility result is recorded.",
+    "No fastest, lower-memory, lower-energy, Chrome-class, production, or number-one claim is supported.",
+    "No source code is approved for copying or release use by these observations."
+  ]
+}

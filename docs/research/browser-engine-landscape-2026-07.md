@@ -40,6 +40,8 @@ Turing should not copy one of these designs wholesale. The strongest strategy is
 
 This study reviewed official architecture documentation, source repositories, standards documents, test-suite documentation, current project status pages, and official benchmark documentation. Sources were retrieved on 2026-07-16 unless another revision date is stated.
 
+The checked no-claim [browser-engine landscape source manifest](machine/browser-engine-landscape-source-manifest.json), its [schema](machine/browser-engine-landscape-source-manifest.schema.json), and [`validate_browser_engine_landscape_sources.py`](../../tools/validate_browser_engine_landscape_sources.py) preserve the source identities and evidence axes used by this study. They improve provenance and freshness tracking only; they do not select an engine, authorize source use, or establish a comparative result.
+
 This is an architectural comparison, not a fixed-hardware benchmark. It does not rank current engines by unmeasured memory, speed, battery life, security incidence, or total compatibility. Product performance varies by operating system, workload, build flags, process topology, extensions, power mode, and tab lifecycle.
 
 No source code from another engine is proposed for copying. Established engines remain differential-test and interoperability references. Normative behavior comes from standards and tests.

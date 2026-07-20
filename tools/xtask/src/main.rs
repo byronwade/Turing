@@ -172,6 +172,11 @@ fn check() -> Result<(), String> {
     command(
         &root,
         "python3",
+        ["-B", "tools/validate_browser_engine_landscape_sources.py"],
+    )?;
+    command(
+        &root,
+        "python3",
         ["-B", "tools/validate_reference_platform_scorecard.py"],
     )?;
     command(

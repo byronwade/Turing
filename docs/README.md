@@ -108,6 +108,8 @@ This index supports contained M0 and no-claim evidence work only. It does not ap
 
 The source-strategy lane also has a checked no-claim [ADR-0009 source-observation manifest](blueprint-v1/machine/adr-0009-source-observation-manifest.json) and [`validate_adr_0009_source_observations.py`](../tools/validate_adr_0009_source_observations.py); these track official upstream source observations only and do not select a baseline or authorize source import.
 
+The source-strategy lane also has a checked no-claim [browser-engine landscape source manifest](research/machine/browser-engine-landscape-source-manifest.json), [schema](research/machine/browser-engine-landscape-source-manifest.schema.json), and [`validate_browser_engine_landscape_sources.py`](../tools/validate_browser_engine_landscape_sources.py); these track the official engine architecture, runtime, protocol, standards, governance, and benchmark-context observations behind `RQ-16`/`RQ-25` without selecting an engine or establishing comparative evidence.
+
 The fresh-host lane also has a checked no-claim [toolchain-source manifest](project-buildout/machine/fresh-host-toolchain-source-manifest.json) and [`validate_fresh_host_toolchain_sources.py`](../tools/validate_fresh_host_toolchain_sources.py); these track official toolchain observations only and do not prove independent reproduction or readiness.
 
 The IPC lane also has a checked no-claim [wire-source manifest](blueprint-v1/machine/ipc-wire-source-manifest.json) and [`validate_ipc_wire_sources.py`](../tools/validate_ipc_wire_sources.py); these track external wire-format and platform-identity observations only and do not select a codec, authenticate a transport, or authorize transport implementation.
@@ -128,7 +130,7 @@ The profile/session lane also has a checked no-claim [profile/session source man
 
   The web-platform lane also has a checked no-claim [source manifest](web-platform/machine/web-platform-source-manifest.json), [schema](web-platform/machine/web-platform-source-manifest.schema.json), and [`validate_web_platform_sources.py`](../tools/validate_web_platform_sources.py); these identify the standards, test-suite, interoperability, protocol, and governance evidence route only and do not establish conformance, compatibility, security, accessibility, performance, or production readiness.
 
-The checked [`validate_source_manifest_coverage.py`](../tools/validate_source_manifest_coverage.py) regression control requires all twelve source-manifest families, schemas, and validators to remain bound to their owning research lane, crosswalk, build-information ledger, PB-020 audit, and closure template; it does not create evidence or promote readiness.
+The checked [`validate_source_manifest_coverage.py`](../tools/validate_source_manifest_coverage.py) regression control requires all thirteen source-manifest families, schemas, and validators to remain bound to their owning research lane, crosswalk, build-information ledger, PB-020 audit, and closure template; it does not create evidence or promote readiness.
 
 | Study | Status and purpose |
 |---|---|

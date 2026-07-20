@@ -37,6 +37,9 @@
         "docs/blueprint-v1/machine/technology-dependency-source-manifest.json",
         "docs/blueprint-v1/machine/technology-dependency-source-manifest.schema.json",
         "tools/validate_technology_dependency_sources.py",
+        "docs/research/machine/browser-engine-landscape-source-manifest.json",
+        "docs/research/machine/browser-engine-landscape-source-manifest.schema.json",
+        "tools/validate_browser_engine_landscape_sources.py",
         "docs/web-platform/machine/web-platform-source-manifest.json",
         "docs/web-platform/machine/web-platform-source-manifest.schema.json",
         "tools/validate_web_platform_sources.py"
