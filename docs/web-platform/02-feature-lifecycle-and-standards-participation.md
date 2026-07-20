@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **feature lifecycle and standards participation**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the standards, test-suite, and governance observations that inform this lifecycle contract. It does not select a feature, approve a standards position, or authorize implementation.
+
 ## Scope
 
 The study covers:

@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **user needs and design principles**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the standards and governance observations that inform this contract. It does not establish compatibility, conformance, or implementation support.
+
 ## Scope
 
 The study covers:

@@ -2,6 +2,8 @@
 
 “Render common websites” is a small fraction of a modern browser. Turing tracks parity by capability domain and maturity state. The allowed states are `unplanned`, `specified`, `prototype`, `partial`, `conformant-subset`, `release-gated`, and `supported`. A domain is never marked supported solely because one demo works.
 
+The checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json) preserves the standards, test-suite, interoperability, and governance source identities used when capability rows are researched. It does not establish a parity result or promote any capability state.
+
 ## 1. Core browser product
 
 | Domain | Required surface | Release evidence |

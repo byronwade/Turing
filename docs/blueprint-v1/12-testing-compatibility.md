@@ -2,6 +2,8 @@
 
 ## 1. Test pyramid
 
+The checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json) preserves the standards, WPT, Test262, Interop, and WebDriver BiDi source identities used by this testing and compatibility plan. It does not establish conformance, compatibility, or release evidence.
+
 A browser cannot be validated by screenshots and manual browsing. Turing uses layered evidence:
 
 1. pure algorithm and data-structure unit tests;

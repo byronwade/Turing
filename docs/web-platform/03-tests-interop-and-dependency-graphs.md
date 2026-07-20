@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **tests, interoperability, and dependency graphs**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the standards, WPT, Test262, Interop, and protocol observations that inform this testing contract. It does not establish a test result, denominator, or compatibility claim.
+
 ## Scope
 
 The study covers:

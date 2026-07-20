@@ -11,6 +11,8 @@ What compatibility evidence exists around the external Servo build, and what cor
 
 This report does not claim that Servo, Turing, or any source-strategy option is compatible with the modern web. It does not approve Servo source, WPT metadata, Test262 files, or any browser-run result for Turing release claims. It records the test inventory and denominator requirements that must exist before compatibility evidence can influence `ADR-0009`.
 
+The checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json) records the standards, WPT, Test262, Interop, and protocol source identities that constrain this corpus plan. It does not make the external Servo observations Turing compatibility evidence.
+
 ## Sources and Environment
 
 Primary local evidence came from the external Servo checkout at `C:\ts\servo`, outside this repository.

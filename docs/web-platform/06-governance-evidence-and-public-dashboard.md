@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **governance evidence and public dashboard**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the standards, test-suite, interoperability, and governance observations that inform this dashboard contract. It does not establish current support, conformance, or public compatibility results.
+
 ## Scope
 
 The study covers:

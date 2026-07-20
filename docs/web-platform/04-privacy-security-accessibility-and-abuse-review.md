@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **privacy, security, accessibility, and abuse review**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the official standards and governance observations relevant to this review. It does not establish privacy, security, accessibility, abuse, or implementation evidence.
+
 ## Scope
 
 The study covers:

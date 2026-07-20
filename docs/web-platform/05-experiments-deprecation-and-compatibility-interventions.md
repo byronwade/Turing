@@ -9,6 +9,8 @@ Canonical overview: [Blueprint owner](../blueprint-v1/12-testing-compatibility.m
 
 This chapter defines the research contract for **experiments, deprecation, and compatibility interventions**. It is not an implementation or support claim. The design must remain compatible with the owning Blueprint, requirements, risks, security model, performance contract, accessibility obligations, and documentation policy.
 
+The checked no-claim [web-platform source manifest](machine/web-platform-source-manifest.json) records the standards, lifecycle, and interoperability observations that inform this contract. It does not approve an experiment, intervention, deprecation, or compatibility exception.
+
 ## Scope
 
 The study covers:

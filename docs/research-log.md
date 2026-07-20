@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-19 - Web-platform provenance route completion
+
+Question:
+
+Do the canonical web-platform, compatibility, parity, and source-strategy documents expose the checked web-platform manifest that governs their standards and conformance observations?
+
+Method:
+
+Compared the `WEB_PLATFORM.SOURCES.2026_07` source-document list with its 12 missing inbound references. Added direct no-claim manifest links across the six web-platform chapters, Blueprint parity/testing/bibliography/research routes, the Servo compatibility corpus report, and the ADR-0009 closure preparation. This closes provenance navigation only; it does not establish standards conformance, compatibility, security, accessibility, performance, or implementation evidence.
+
 ## 2026-07-19 - IPC, fresh-host, and sandbox provenance handoff audit
 
 Question:

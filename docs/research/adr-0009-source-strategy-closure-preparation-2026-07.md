@@ -13,6 +13,8 @@ This page is the short continuation route for the distributed ADR-0009 evidence 
 
 The [ADR-0009 source-strategy packet examples](adr-0009-source-strategy-packet-examples-2026-07.md) provides a fictitious field-level handoff for option scope, evidence maturity, authority boundaries, limitations, and authorization. It is an example only and does not close any `ADR9-EV-*` item.
 
+The checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json) preserves the standards, conformance, interoperability, and governance source identities relevant to the compatibility portion of this closure route. It does not establish web compatibility or close `ADR-0009`.
+
 ## Current decision state
 
 `PB-002` remains `blocked`. The repository has dated source metadata, external build reproduction, dependency/provenance inventories, supply-chain scans, license/advisory/SBOM preparation, generated/native/unsafe/FFI classification, source/archive equivalence work, local compatibility planning, performance preparation, and security/maintenance analysis. These records are evidence inputs, not an accepted decision.

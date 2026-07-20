@@ -4,6 +4,8 @@ This program uses standards, official platform documentation, upstream test suit
 
 Links below are starting points. Each implemented feature records the exact standard revision/test commit used by the corresponding milestone. Dated comparative studies additionally record retrieval date, product version, platform, and current project status where those can change.
 
+The checked no-claim [web-platform source manifest](../web-platform/machine/web-platform-source-manifest.json) is the machine provenance companion for the web-platform sources below. It records source identity and evidence consequences only; it does not select a standard, establish conformance, or authorize implementation.
+
 ## Web platform
 
 - WHATWG HTML Living Standard — https://html.spec.whatwg.org/
