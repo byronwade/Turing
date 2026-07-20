@@ -1,5 +1,51 @@
 # Research Log
 
+## 2026-07-20 - Objects in the interpreter, and why the collector is not wired yet
+
+Question:
+
+`WP-011` is "exact tracing GC and Web IDL bindings", it depends on `WP-007` and `WP-010` which are both implemented, and it carries no decision gates. The collector exists and is unwired. The obvious move was to wire it.
+
+Decision on scope, which is most of the value here:
+
+Split at the `WP-010`/`WP-011` line. Objects this iteration; collection next.
+
+"Back objects with the GC heap" sounds like one change and is two, and the hard half is not storage. Storing an object is one call. The difficulty is that once the interpreter holds references in its stack and locals, a collection at the wrong moment sweeps anything not reachable from a registered root, and a rooting protocol that is slightly wrong collects live objects — which the generation check then turns into a dangling-reference error rather than the object. That passes every simple test, because a simple test never triggers collection at the dangerous moment. It is the same failure this project has now hit four times: a green suite over a corpus that cannot express the failure.
+
+Combined, a rooting bug and an object-semantics bug are indistinguishable. Separated, each half has one claim to verify.
+
+Recorded so the next iteration is scoped around it rather than around "allocate through the heap": the acceptance test for wiring is to **force a collection while live objects sit on the stack and in locals, prove they survive, and prove an unreachable cycle is reclaimed**. Until that test exists, a passing suite says nothing about the wiring.
+
+Method:
+
+Objects are handles into a store owned by the run — `Value::Object(usize)` — rather than owned values. `o.self = o` is expressible, and an owned representation would not terminate. Identity comparison follows from the same fact: two objects with identical properties are different objects, and comparing contents would not terminate on a self-referential one.
+
+Property keys are strings, with numbers normalised to their canonical form, so `o[1]` and `o["1"]` are one property. `"01"` and `"1.0"` are not canonical and stay ordinary string keys.
+
+A missing property reads `undefined`. This is the one lookup in this workspace that is not a typed refusal, and it is worth calling out because the habit here is the opposite: absence is a specified ordinary result rather than a gap in the implementation.
+
+Object allocation and new property keys are charged against the byte budget. The previous entry named objects as a future amplification path when that budget was added; this is that path, charged from the start rather than after someone finds the loop that exploits it. Re-assigning an existing key charges nothing, or an ordinary loop would exhaust the budget.
+
+Computed keys, shorthand, methods, and spread are refused. Each changes what an initialiser means rather than only how it is written, so a partial implementation would silently drop properties the author wrote.
+
+Three defects found while testing:
+
+Object literals emptied the stack. `SetProperty` consumes the object, so the first property consumed it and every later access read a property of `undefined`. Fixed with a duplicate before each entry. This was found by a test rather than by reading, and it would have been invisible in any test with a single-property literal — `{ a: 1 }` works either way.
+
+Strict equality had no object case and fell through to `false`, so an object was not equal to itself.
+
+The lexer had no `.`, `[`, `]`, or `:`, which is why none of this was reachable before. `...` is now lexed as one token so spread can be refused as itself rather than as three property accesses.
+
+A correction about what shipped:
+
+Enumeration order — integer-like keys ascending, then the rest in insertion order — is implemented at the store and pinned by tests, but **nothing in the language reaches it**. There is no `for...in` and no `Object.keys`. Clippy caught this by reporting the accessor as dead code outside tests, which was the honest signal, and it is now gated `#[cfg(test)]` with the reason stated in the source rather than left looking like a feature.
+
+What ships is the storage order enumeration will read, not enumeration. The distinction matters and the tests are kept: the constraint falls on the store, a store that lost insertion order could not be fixed later by the enumerator, and pinning it now costs a test where discovering it later costs a rewrite.
+
+Sixteen tests. The workspace is at 316.
+
+What this does not do: no prototype chain, no `in`, no `delete`, no methods, no arrays, no `for...in`. Nothing is reclaimed within a run — object memory is bounded by the byte budget rather than by reuse, which is a smaller claim than "bounded" and the right one until collection lands. `OBJECT_OVERHEAD_BYTES` is a stand-in rather than a measured figure; its purpose is that allocation is charged at all.
+
 ## 2026-07-20 - A wrong claim about gating, and the input path it was blocking
 
 Correction, first, because it is the more important part of this entry:
