@@ -2,7 +2,7 @@
   "schema_version": 1,
   "manifest_id": "BENCHMARK.SOURCES.2026_07",
   "status": "no_claim_benchmark_source_manifest",
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "related_gate": "PB-013",
   "claim_status": "No-claim benchmark-source observations only; benchmark and vendor documentation is not a Turing benchmark result, competitor comparison, statistical approval, performance claim, or Chrome-class evidence.",
   "evidence_axes": [
@@ -23,8 +23,8 @@
       "title": "Speedometer 3.1 methodology",
       "publisher": "BrowserBench",
       "url": "https://www.browserbench.org/Speedometer3.1/about.html",
-      "retrieved": "2026-07-19",
-      "observation": "Speedometer is an interaction-driven web-application responsiveness diagnostic with suite-specific harness and workload rules.",
+      "retrieved": "2026-07-20",
+      "observation": "A 2026-07-20 refresh of the official page continues to identify Speedometer 3.1 as an interaction-driven web-application responsiveness diagnostic with suite-specific harness and workload rules.",
       "run_consequence": "Pin the exact suite revision and harness, focused page, viewport, profile, host state, repetitions, and every subtest outcome; missing duration is a failed run, not zero."
     },
     {

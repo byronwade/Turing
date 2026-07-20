@@ -8,6 +8,10 @@ Re-ran read-only official GitHub API observations for `servo/servo` and `servo/m
 
 Rechecked the current Windows checkout's Rust, Cargo, rustfmt, Clippy, Python, Git, rustup, host tuple, repository toolchain override, installed target, and clean working-tree state. The observed identities remain aligned with the pinned M0 baseline. Added the dated diagnostic to the fresh-host closure packet while preserving the boundary that same-host facts are not independent fresh-host or owner-reviewed readiness evidence.
 
+## 2026-07-20 - Benchmark suite identity freshness refresh
+
+Rechecked the official Speedometer 3.1 methodology page and found no suite-identity change. Synchronized the benchmark source manifest and performance runbook with the new retrieval date while preserving the no-runner, no-result, no-comparison, and no-performance-claim boundaries. Local browser-version mismatches and missing owner-reviewed runner evidence remain unresolved.
+
 ## 2026-07-20 - Repository-wide source-manifest provenance audit
 
 Audited all thirteen checked source-manifest families and every declared `source_documents` entry. All twelve manifests with document lists resolve to existing files and are referenced by each owning document, including the repository-root `.github/CODEOWNERS` control file. Extended `tools/validate_source_manifest_coverage.py` to enforce this repository-wide identity link invariant so future audits cannot omit non-`docs/` paths. This closes provenance organization only; it does not create implementation evidence or promote M0 or full-build readiness.

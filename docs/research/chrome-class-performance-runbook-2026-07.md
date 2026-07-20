@@ -2,7 +2,7 @@
 
 Status: `PB-013` evidence draft; no benchmark runner, result, competitor result, or performance claim
 Owner: performance measurement, benchmark operations, quality, security, accessibility, and release operations
-Research date: 2026-07-19
+Research date: 2026-07-20
 Confidence: medium for current suite and runbook shape; low for product readiness until hardware, corpus, runner, and raw results exist
 
 ## Question
@@ -52,6 +52,10 @@ Updated release-catalog check on 2026-07-18:
 - Safari resources and Technology Preview: https://developer.apple.com/safari/resources/
 
 These sources define useful measurement surfaces and competitor-version capture points. They do not prove anything about Turing's performance.
+
+### 2026-07-20 benchmark identity refresh
+
+A read-only refresh of the official [Speedometer 3.1 About page](https://browserbench.org/Speedometer3.1/about.html) continues to identify Speedometer 3 as a web-browser responsiveness benchmark based on simulated user interactions and multiple workloads. No suite-version change, Turing run, browser pin, raw sample, or performance result was produced. The benchmark manifest records the refreshed source date; all existing suite, hardware, security, lifecycle, failure-denominator, and owner-review gates remain in force.
 
 The checked [benchmark-source manifest](../blueprint-v1/machine/benchmark-source-manifest.json), validated by [`validate_benchmark_sources.py`](../../tools/validate_benchmark_sources.py), records the official suite, methodology, regression-policy, telemetry, compatibility, and vendor-context sources used by this runbook. It tracks measurement consequences only; it does not provide a Turing run, competitor result, statistical approval, or performance claim.
 
