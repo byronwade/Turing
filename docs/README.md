@@ -130,7 +130,7 @@ The profile/session lane also has a checked no-claim [profile/session source man
 
   The web-platform lane also has a checked no-claim [source manifest](web-platform/machine/web-platform-source-manifest.json), [schema](web-platform/machine/web-platform-source-manifest.schema.json), and [`validate_web_platform_sources.py`](../tools/validate_web_platform_sources.py); these identify the standards, test-suite, interoperability, protocol, and governance evidence route only and do not establish conformance, compatibility, security, accessibility, performance, or production readiness.
 
-The checked [`validate_source_manifest_coverage.py`](../tools/validate_source_manifest_coverage.py) regression control requires all thirteen source-manifest families, schemas, and validators to remain bound to their owning research lane, crosswalk, build-information ledger, PB-020 audit, and closure template; it does not create evidence or promote readiness.
+The checked [`validate_source_manifest_coverage.py`](../tools/validate_source_manifest_coverage.py) regression control requires all thirteen source-manifest families, schemas, and validators to remain bound to their owning research lane, crosswalk, build-information ledger, PB-020 audit, and closure template. For manifests with `source_documents`, it also requires every declared repository path, including root-level control files, to exist and reference the manifest identity. This does not create evidence or promote readiness.
 
 | Study | Status and purpose |
 |---|---|

@@ -61,6 +61,31 @@ def load(path: Path) -> dict:
     return value
 
 
+def validate_source_document_links(manifest_path: str, manifest: dict) -> int:
+    documents = manifest.get("source_documents")
+    if documents is None:
+        return 0
+    if not isinstance(documents, list) or not documents:
+        fail(f"{manifest_path} source_documents must be a non-empty array")
+    checked = 0
+    manifest_name = Path(manifest_path).name
+    for document in documents:
+        if not isinstance(document, str) or not document:
+            fail(f"{manifest_path} source_documents entries must be non-empty strings")
+        document_path = (ROOT / document).resolve()
+        try:
+            document_path.relative_to(ROOT)
+        except ValueError:
+            fail(f"{manifest_path} source document escapes repository: {document}")
+        if not document_path.is_file():
+            fail(f"{manifest_path} source document does not exist: {document}")
+        content = document_path.read_text(encoding="utf-8", errors="ignore")
+        if manifest_name not in content and manifest_path not in content:
+            fail(f"{manifest_path} is not referenced by source document: {document}")
+        checked += 1
+    return checked
+
+
 def main() -> int:
     if set(CONTROL) != set(VALIDATOR):
         fail("manifest and validator maps must cover the same paths")
@@ -81,7 +106,10 @@ def main() -> int:
     audit_entries = set(audit.get("source_records", []))
     closure_entries = set(closure.get("source_records", []))
     missing: list[str] = []
+    source_document_count = 0
     for manifest, lane_id in CONTROL.items():
+        manifest_data = load(ROOT / manifest)
+        source_document_count += validate_source_document_links(manifest, manifest_data)
         schema = manifest.removesuffix(".json") + ".schema.json"
         required = [manifest, schema]
         required.append(VALIDATOR[manifest])
@@ -100,7 +128,10 @@ def main() -> int:
             missing.append(f"lane:{lane_id}:{manifest}")
     if missing:
         fail("missing bindings: " + ", ".join(sorted(missing)))
-    print(f"source-manifest coverage validation passed: {len(CONTROL)} manifests, 4 control surfaces")
+    print(
+        f"source-manifest coverage validation passed: {len(CONTROL)} manifests, "
+        f"{source_document_count} repository source-document links, 4 control surfaces"
+    )
     return 0
 
 
