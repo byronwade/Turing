@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-21 - text-decoration: underline and line-through
+
+`text-decoration: underline | line-through | none`. The position choice matters more than it looks: the line is placed as a fraction of the text run's own line-box height (`0.85` for underline, `0.5` for line-through) rather than against any specific font's glyph metrics, because this crate only knows `TextMetrics` — advance and line height — not what a painter's glyphs actually look like. A line tied to the reference font's 8px bitmap would be wrong the instant a different painter injected different metrics, which is exactly the abstraction `TextMetrics` exists to keep honest.
+
+Threaded through the tree exactly the way `color` already is — declared on an element, propagated to the text nodes it contains — which is a stated simplification of real CSS's actual model (decoration *propagates* to descendants rather than being inherited in the strict property sense, and is drawn using each ancestor's own colour along its own span). Implementing that distinction properly is not worth its complexity next to the case that matters: an element declaring a decoration for text it directly contains. `overline`, multi-value combinations, and the colour/style/thickness longhands are refused rather than silently read as no decoration.
+
+Six tests: underline's position in the lower half of the line box, line-through at the vertical centre, no line at all when undeclared (the initial value), propagation to a nested span's text, and the unimplemented-value refusal. The workspace is at 454 tests.
+
 ## 2026-07-21 - outline: a ring that paints without moving anything
 
 A new CSS property rather than another gap in an existing one: `outline-width` and `outline-color`. Real CSS's defining fact about outline is that it never affects layout — it paints outside the border box without changing the box's size, which is exactly why it exists as a separate property from `border` rather than a border variant, and exactly what a focus ring needs (indicate without reflowing).
