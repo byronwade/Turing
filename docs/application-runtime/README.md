@@ -192,10 +192,16 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   nodes and read the tree to decide, not only mount.
 - **APP-4 — A microtask queue and a minimal scheduler.** Enough of an event
   loop for a runtime to flush work after an event.
-- **APP-5 — A tiny reconciler on the engine.** Prove the shape end to end
-  with a hand-written minimal React-like runtime before pulling in the real
-  one — the same "reference implementation first" discipline the rest of the
-  engine follows.
+- **APP-5 — A tiny reconciler on the engine.** *Demonstrated.* A minimal
+  React-like runtime — virtual nodes, a recursive `render`, and components
+  that are closures capturing const props — written entirely in the engine's
+  own JavaScript subset, produces real DOM the engine lays out and paints
+  (`benchmarks/corpus/framework-output/mini-react-runtime.html`, with a
+  pipeline test). This proves the language features and DOM bindings compose
+  into the createElement-over-components shape, which is the shape the real
+  runtime needs. It is a demonstration of composition, not the real React
+  runtime (APP-6), which additionally needs mutable capture, an event loop,
+  and a great deal more of the language.
 - **APP-6 — The real React runtime, then a bundler's output.** Load
   framework-emitted JS and run it.
 - **APP-7 — The Nova source rendered by the engine.** The chrome, and then

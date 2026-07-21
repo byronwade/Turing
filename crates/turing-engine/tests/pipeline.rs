@@ -184,6 +184,59 @@ fn a_script_builds_a_dom_subtree_that_lays_out_and_paints() {
 }
 
 #[test]
+fn a_component_runtime_written_in_the_engine_subset_renders() {
+    // The application-runtime thesis in miniature: a React-like runtime —
+    // virtual nodes via h()/txt(), a recursive render(), and components that
+    // are closures capturing const props — written entirely in the engine's
+    // own JavaScript subset, producing real DOM the engine lays out and
+    // paints. This composes arrays, closures, recursion, and DOM construction.
+    let html = "<html><head><style>\
+        .card { background: teal; } .badge { background: navy; }\
+        </style></head><body></body>\
+        <script>\
+        function h(tag, cls) { return { tag: tag, cls: cls, kids: [] }; }\
+        function txt(s) { return { tag: '#text', text: s }; }\
+        function child(p, c) { p.kids[p.kids.length] = c; return p; }\
+        function render(v) {\
+          if (v.tag === '#text') { return createText(v.text); }\
+          let node = createElement(v.tag);\
+          if (v.cls) { setNodeAttribute(node, 'class', v.cls); }\
+          let i = 0;\
+          while (i < v.kids.length) { appendChild(node, render(v.kids[i])); i = i + 1; }\
+          return node;\
+        }\
+        function Card(t) { const title = t; return function() { return child(h('div', 'card'), txt(title)); }; }\
+        function main() {\
+          let root = h('div', 'app');\
+          let items = [Card('one'), Card('two')];\
+          let i = 0;\
+          while (i < items.length) { let c = items[i]; child(root, c()); i = i + 1; }\
+          child(root, child(h('div', 'badge'), txt('done')));\
+          appendChild(documentBody(), render(root));\
+        }\
+        main();\
+        </script></body></html>";
+    let page = Page::load(html, 200.0).expect("loads");
+    let list = page.display_list();
+    // Two teal cards and one navy badge were produced by the runtime.
+    let teal = list
+        .items
+        .iter()
+        .filter(|item| matches!(item, turing_layout::DisplayItem::SolidColor { color: c, .. } if *c == color("teal")))
+        .count();
+    assert_eq!(teal, 2, "two Card components rendered");
+    assert!(
+        list.items.iter().any(|item| matches!(item, turing_layout::DisplayItem::SolidColor { color: c, .. } if *c == color("navy"))),
+        "the badge rendered"
+    );
+    // The closure-captured const title text is present.
+    assert!(
+        list.items.iter().any(|item| matches!(item, turing_layout::DisplayItem::Text { text, .. } if text.contains("one"))),
+        "a component's captured-const title painted"
+    );
+}
+
+#[test]
 fn a_script_removes_and_reorders_nodes_the_way_a_reconciler_patches() {
     // Mount two rows, then patch: remove the first, read parentNode and
     // firstChild to navigate, and insert a new row before what is now first.

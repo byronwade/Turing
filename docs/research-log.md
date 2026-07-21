@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-21 - A component runtime, written in the engine's own subset
+
+The application-runtime thesis has been argued rung by rung; this proves it composes. A minimal React-like runtime now runs *on the engine, written in the engine's own JavaScript*: `h(tag, cls)` and `txt(s)` build virtual nodes, a recursive `render(vnode)` reifies them into real DOM through `createElement`/`appendChild`, and a component is a closure — `Card(title)` captures its title as a const and returns a function producing a vnode. `App` holds an array of components, iterates it, and mounts the tree. The engine parses none of this specially; it runs it and paints three cards and a badge, none of which exist in the source `<body>`.
+
+What makes this worth recording is that it is not a new engine feature — it is the existing ones proven to compose into the exact shape the goal needs. Every piece the runtime uses landed correctly and separately this stretch: objects and arrays, first-class functions, closures over const, recursion, and the DOM construction bindings. Put together, they are a createElement-over-components renderer, which is what React *is* underneath its scheduler and reconciler.
+
+It is a demonstration, not the real React runtime. The real one additionally needs mutable/by-reference capture, an event loop and microtasks, and far more of the language and DOM. But the load-bearing claim — that this from-scratch engine can run a component runtime and render its output — is now shown, not asserted. The workspace is at 415 tests.
+
 ## # 2026-07-21 - Closures, for the case that is correct by construction
 
 Capture is the keystone rung, and there is a version of it that is correct without the machinery a general one needs: a closure over a `const`. A const binding cannot be reassigned, so capturing its value by copy is indistinguishable from capturing it by reference — there is nothing to observe changing. So closures now capture enclosing `const` bindings by value, and that is a real closure for the dominant real pattern: a callback closing over const props, const state, a const handler. `const base = 100; let add = function(x) { return base + x; }; add(23)` is 123; a returned closure carries its captured const out of the frame that made it; arrows capture the same way.

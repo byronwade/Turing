@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html><head><style>
+body { background: hsl(222, 47%, 11%); color: white; margin: 0; }
+.app { padding: 20px; }
+.card { background: hsl(217, 33%, 20%); border-radius: 10px; padding: 14px; margin: 0 0 10px 0; }
+.title { color: hsl(160, 84%, 55%); }
+.body { color: hsl(215, 20%, 75%); }
+.badge { background: hsl(221, 83%, 53%); border-radius: 6px; padding: 8px; text-align: center; }
+</style></head>
+<body></body>
+<script>
+// A minimal React-like runtime, written in the engine's own JS subset.
+// h() builds a virtual node; render() reifies it into real DOM.
+function h(tag, cls) { return { tag: tag, cls: cls, kids: [] }; }
+function txt(s) { return { tag: '#text', text: s }; }
+function child(parent, c) { parent.kids[parent.kids.length] = c; return parent; }
+
+function render(vnode) {
+  if (vnode.tag === '#text') { return createText(vnode.text); }
+  let node = createElement(vnode.tag);
+  if (vnode.cls) { setNodeAttribute(node, 'class', vnode.cls); }
+  let i = 0;
+  while (i < vnode.kids.length) {
+    appendChild(node, render(vnode.kids[i]));
+    i = i + 1;
+  }
+  return node;
+}
+
+// A component is a function returning a vnode. This one is a closure that
+// captures its title as a const — the dominant React pattern.
+function Card(titleText, bodyText) {
+  const title = titleText;
+  const body = bodyText;
+  return function() {
+    let root = h('div', 'card');
+    child(root, child(h('div', 'title'), txt(title)));
+    child(root, child(h('div', 'body'), txt(body)));
+    return root;
+  };
+}
+
+function App() {
+  let root = h('div', 'app');
+  let cards = [
+    Card('Rendered by a runtime', 'This UI came from h() and render(), not source HTML.'),
+    Card('Components are closures', 'Each Card closes over its const title and body.'),
+    Card('The engine ran all of it', 'Functions, arrays, closures, and DOM construction composed.')
+  ];
+  let i = 0;
+  while (i < cards.length) {
+    let component = cards[i];
+    child(root, component());
+    i = i + 1;
+  }
+  child(root, child(h('div', 'badge'), txt('Mini React-like runtime on the Turing engine')));
+  return root;
+}
+
+function main() {
+  appendChild(documentBody(), render(App()));
+}
+main();
+</script>
+</html>
