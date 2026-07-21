@@ -1800,25 +1800,35 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
                 text.ends_with(char::is_whitespace) || text.trim().is_empty() && pending_space;
         } else {
             let mut child = child;
+            // Horizontal margin on an inline element is real space between it
+            // and its neighbours on the line — unlike `padding`/`border`,
+            // which this layout does not yet reserve room for on an inline
+            // box, `margin` was already carried on `child.dimensions` from
+            // `build_box` and simply never consulted here, so it silently
+            // had no visual effect at all.
+            let margin_left = child.dimensions.margin.left;
+            let margin_right = child.dimensions.margin.right;
             let width = inline_advance_width(&child, metrics);
+            let margin_box_width = margin_left + width + margin_right;
             let space = if pending_space && pen_x > 0.0 {
                 metrics.advance
             } else {
                 0.0
             };
-            if pen_x > 0.0 && pen_x + space + width > available {
+            if pen_x > 0.0 && pen_x + space + margin_box_width > available {
                 pen_x = 0.0;
                 line += 1.0;
             } else {
                 pen_x += space;
             }
+            pen_x += margin_left;
             child.dimensions.content = Rect {
                 x: origin_x + pen_x,
                 y: line.mul_add(metrics.line_height, origin_y),
                 width,
                 height: metrics.line_height,
             };
-            pen_x += width;
+            pen_x += width + margin_right;
             pending_space = false;
             // Nested inline boxes lay their own children out on the same line.
             if !child.children.is_empty() {
@@ -3336,6 +3346,51 @@ mod tests {
             runs[1]
         );
         assert!((runs[0].y - runs[1].y).abs() < f32::EPSILON, "same line");
+    }
+
+    #[test]
+    fn margin_on_an_inline_element_leaves_a_real_gap_to_its_neighbour() {
+        // Regression test: `dimensions.margin` was already carried on every
+        // inline box from `build_box`, but `layout_inline_children` never
+        // read it when advancing the line pen, so `margin` on `display:
+        // inline` had no visible effect at all — found while building the
+        // engine-rendered chrome demo, documented, and fixed here.
+        //
+        // Only the `margin` shorthand exists in this crate (no
+        // `margin-left`/`margin-right` longhands yet, a separate, pre-existing
+        // gap noted but not fixed here), so this applies uniformly and the
+        // first span's own start position shifts by `margin-left` too.
+        let root = run(
+            "<body><span class=\"a\">ab</span><span>cd</span></body>",
+            ".a { margin: 10px; }",
+            640.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let runs: Vec<&Rect> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(rect),
+                DisplayItem::SolidColor { .. } | DisplayItem::RoundedColor { .. } => None,
+            })
+            .collect();
+        assert_eq!(runs.len(), 2);
+        // Without the fix, the first run starts at 0.0 and the second at
+        // 16.0 — the same positions the no-margin
+        // `adjacent_inline_elements_abut_rather_than_overlap` test asserts,
+        // as though `margin: 10px` had never been declared at all.
+        assert!(
+            (runs[0].x - 10.0).abs() < f32::EPSILON,
+            "first span's own margin-left should push it in from the edge, got {:?}",
+            runs[0]
+        );
+        assert!(
+            (runs[1].x - 36.0).abs() < f32::EPSILON,
+            "second span should start past the first span's margin-left (10) + width (16) + \
+             margin-right (10) = 36.0, got {:?}",
+            runs[1]
+        );
     }
 
     #[test]
