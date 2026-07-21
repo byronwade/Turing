@@ -184,6 +184,47 @@ fn a_script_builds_a_dom_subtree_that_lays_out_and_paints() {
 }
 
 #[test]
+fn a_queued_microtask_mutates_the_dom_after_the_synchronous_script_returns() {
+    // APP-4's minimal ask: a runtime needs to schedule work after the
+    // triggering script finishes, not only during it. The synchronous body
+    // builds one node directly; a queued microtask builds a second. Both
+    // must be present by the time the page finishes loading, because
+    // Page::load's script execution goes through Vm::run_with_host, which
+    // now drains the microtask queue before returning.
+    let html = "<html><head><style>\
+        .sync { background: teal; } .queued { background: navy; }\
+        </style></head><body></body>\
+        <script>\
+        function main() {\
+          const root = documentBody();\
+          let syncNode = createElement('div');\
+          setNodeAttribute(syncNode, 'class', 'sync');\
+          appendChild(syncNode, createText('sync'));\
+          appendChild(root, syncNode);\
+          queueMicrotask(function() {\
+            let queuedNode = createElement('div');\
+            setNodeAttribute(queuedNode, 'class', 'queued');\
+            appendChild(queuedNode, createText('queued'));\
+            appendChild(root, queuedNode);\
+          });\
+        }\
+        main();\
+        </script></body></html>";
+    let page = Page::load(html, 200.0).expect("loads");
+    let canvas = page.render(200, 32).expect("renders");
+    assert_eq!(
+        canvas.pixel(100, 8),
+        Some(color("teal")),
+        "the synchronously built node painted"
+    );
+    assert_eq!(
+        canvas.pixel(100, 24),
+        Some(color("navy")),
+        "the microtask-built node painted too — the queue drained before load finished"
+    );
+}
+
+#[test]
 fn a_component_runtime_written_in_the_engine_subset_renders() {
     // The application-runtime thesis in miniature: a React-like runtime —
     // virtual nodes via h()/txt(), a recursive render(), and components that

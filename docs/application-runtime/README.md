@@ -190,8 +190,23 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   reconciler also needs — `insertBefore`, `removeChild`, `parentNode`,
   `firstChild` — is bound too, so a script can move, replace, and remove
   nodes and read the tree to decide, not only mount.
-- **APP-4 — A microtask queue and a minimal scheduler.** Enough of an event
-  loop for a runtime to flush work after an event.
+- **APP-4 — A microtask queue.** *Done.* `queueMicrotask(fn)` is a
+  VM-native builtin — it cannot be a host operation, since it must reach the
+  interpreter's own queue, which a `Host` implementation has no access to.
+  Queued functions and closures run after the currently executing top-level
+  call finishes and before control returns to the embedder, one at a time,
+  including further tasks queued during draining — the defining property of
+  a microtask queue, not a single batch pass. Proven with a script that
+  builds one DOM node synchronously and a second inside a queued microtask;
+  both are present by the time `Page::load` returns
+  (`crates/turing-engine/tests/pipeline.rs`). A queued closure is rooted
+  through a collection before it runs, verified by a regression test that
+  fails without that rooting (a real use-after-free the collector's own
+  generation check caught rather than corrupting memory). This is not a
+  cooperative *scheduler* — there is still exactly one script execution at a
+  time, no timers, no task-vs-microtask distinction — but it is the minimal
+  primitive a runtime needs to schedule work after the script that triggered
+  it returns, which is what the milestone asked for.
 - **APP-5 — A tiny reconciler on the engine.** *Demonstrated.* A minimal
   React-like runtime — virtual nodes, a recursive `render`, and components
   that are closures capturing const props — written entirely in the engine's
