@@ -36,6 +36,19 @@
 //! Silently ignoring any of these would apply a rule to the wrong elements,
 //! which is worse than refusing, because the page would render confidently and
 //! incorrectly.
+//!
+//! # Custom properties and `var()`
+//!
+//! `--name: value` declarations, and `var(--name)` / `var(--name, fallback)`
+//! references, are parsed and resolved — see [`Declaration`]'s doc comment
+//! for how a custom property is stored, and [`resolve_declarations`] for how
+//! a reference is substituted following the same cascade and inheritance
+//! rules any other property gets. The same refuse-rather-than-guess policy
+//! applies here: a `var()` naming a custom property that is not declared
+//! anywhere applicable, with no fallback, is
+//! [`CssError::CustomPropertyUndefined`] rather than an empty or invented
+//! value, and malformed `var()` syntax or fallback nesting past a bounded
+//! depth are refused too, rather than parsed approximately.
 
 #![forbid(unsafe_code)]
 
@@ -83,6 +96,17 @@ pub enum CssError {
     UnterminatedBlock { offset: usize },
     /// A colour notation this implementation does not parse.
     ColorUnsupported { value: String },
+    /// `var()` named a custom property that is not declared anywhere
+    /// applicable to the element being resolved, and no fallback was given.
+    CustomPropertyUndefined { name: String },
+    /// A `var()` reference could not be parsed: no arguments, an unmatched
+    /// parenthesis, or a first argument that is not a custom property name
+    /// (it must start with `--`).
+    CustomPropertySyntax { text: String },
+    /// A `var()` fallback, or the chain of custom properties it resolves
+    /// through, nested past the depth this implementation bounds recursion
+    /// to (see the `MAX_VAR_NESTING` constant).
+    CustomPropertyNestingTooDeep { text: String },
 }
 
 /// An opaque sRGB colour.
@@ -412,6 +436,23 @@ impl fmt::Display for CssError {
                 "colour {value} is not parsed here; defaulting it would paint a \
                  plausible wrong colour rather than report a gap"
             ),
+            Self::CustomPropertyUndefined { name } => write!(
+                formatter,
+                "custom property {name} is referenced by var() but is not declared \
+                 anywhere this element inherits from, and no fallback was given; \
+                 inventing a value here would be a plausible wrong value nobody notices"
+            ),
+            Self::CustomPropertySyntax { text } => write!(
+                formatter,
+                "var() reference in `{text}` could not be parsed: it needs a \
+                 custom property name starting with `--`, and matching parentheses"
+            ),
+            Self::CustomPropertyNestingTooDeep { text } => write!(
+                formatter,
+                "var() in `{text}` nests custom property references past the \
+                 depth this implementation bounds recursion to; this is refused \
+                 rather than risking runaway recursion on a cyclic definition"
+            ),
         }
     }
 }
@@ -504,15 +545,52 @@ impl Selector {
 }
 
 /// A property/value pair, with its important flag.
+///
+/// # Custom properties share this type, deliberately
+///
+/// A declaration whose property starts with `--` (`--ink: #0a0a0a`) is a
+/// [custom property](https://drafts.csswg.org/css-variables/), not a
+/// standard one, and it is stored in this same struct rather than a parallel
+/// type. That is a narrower change than it looks: this syntax layer already
+/// stores every value as unparsed text and validates none of them at parse
+/// time — colour, length, and every other per-property grammar is checked
+/// only when a consumer asks a property implementation (such as
+/// [`Color::parse`]) to interpret the resolved string. A custom property's
+/// value needs exactly that treatment: opaque text, substituted verbatim
+/// wherever a `var()` reference names it. The one place custom properties do
+/// need different handling is `property` itself: standard property names are
+/// ASCII case-insensitive and are lowercased here, but a custom property's
+/// name is case-sensitive (`--Ink` and `--ink` are different properties), so
+/// the declaration-block parser preserves its case rather than folding it.
+///
+/// What genuinely differs is handled outside this struct: custom properties
+/// inherit unconditionally (unlike most standard properties, which inherit
+/// selectively or not at all), which is why resolving a `var()` reference
+/// needs to walk ancestors — see [`resolve_declarations`] — rather than
+/// something this crate's plain per-element `cascade` could express.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Declaration {
-    /// Lowercased property name.
+    /// Property name. Lowercased for a standard property; case-preserved for
+    /// a custom property (one starting with `--`).
     pub property: String,
     /// Value text, unparsed. Value parsing is per-property and belongs to the
     /// property implementations, not the syntax layer.
     pub value: String,
     /// Whether `!important` was present.
     pub important: bool,
+}
+
+/// Returns whether `property` names a custom property rather than a
+/// standard one.
+///
+/// A custom property is any property whose name begins with two dashes,
+/// per the CSS Custom Properties specification. This is the one bit of
+/// vocabulary the cascade and `var()` machinery need to share, so it is a
+/// named function rather than a `starts_with("--")` repeated at each call
+/// site.
+#[must_use]
+pub fn is_custom_property(property: &str) -> bool {
+    property.starts_with("--")
 }
 
 /// A style rule: a selector list and a declaration block.
@@ -857,7 +935,16 @@ fn parse_declarations(block: &str) -> Vec<Declaration> {
             // specification's error handling requires.
             continue;
         };
-        let property = property.trim().to_ascii_lowercase();
+        let raw_property = property.trim();
+        // Standard property names are ASCII case-insensitive, so `COLOR` and
+        // `color` must collide; a custom property's name is case-sensitive,
+        // so `--Ink` and `--ink` must not. Folding both the same way would
+        // make one of those two rules wrong.
+        let property = if is_custom_property(raw_property) {
+            raw_property.to_string()
+        } else {
+            raw_property.to_ascii_lowercase()
+        };
         let mut value = value.trim().to_string();
         let important = value.to_ascii_lowercase().ends_with("!important");
         if important {
@@ -1242,6 +1329,296 @@ fn beats(candidate: &ComputedDeclaration, existing: &ComputedDeclaration) -> boo
     }
 }
 
+// -- custom properties -----------------------------------------------------
+
+/// How many `var()` calls a fallback, or a chain of custom properties that
+/// reference one another, may nest before resolution is refused.
+///
+/// # Why a limit exists
+///
+/// A custom property's value can itself contain `var()` — `--gap: var(--space)`
+/// — and a `var()` fallback can contain another `var()` call —
+/// `var(--a, var(--b, red))`. Both are resolved by recursing, and both are
+/// driven by stylesheet text this crate does not control: a page (or, per
+/// `AGENTS.md`'s rule to bound recursion on untrusted input, a hostile one)
+/// can nest either arbitrarily deep, and a custom property can even name
+/// itself (`--a: var(--a)`) to build a cycle with no natural base case. A
+/// depth counter turns both the ordinary case and the adversarial one into
+/// the same bounded check: real design-token chains are a handful of levels
+/// deep, so thirty-two is generous headroom, and a chain that reaches it is
+/// refused with [`CssError::CustomPropertyNestingTooDeep`] rather than
+/// recursing until the stack gives out.
+const MAX_VAR_NESTING: u32 = 32;
+
+/// Resolves every `var(--name)` and `var(--name, fallback)` reference in
+/// `value` against `environment`, returning the value with all of them
+/// substituted.
+///
+/// `environment` maps a custom property name to its own cascaded value,
+/// *unresolved* — see [`custom_property_environment`] for why substitution is
+/// deferred to here rather than done while building it.
+///
+/// # Supported nesting
+///
+/// A referenced custom property's value may itself contain `var()`
+/// references (resolved against the same environment), and a fallback may
+/// itself be, or contain, a `var()` call. Both recurse through this
+/// function, sharing one depth counter bounded by [`MAX_VAR_NESTING`] — see
+/// its doc comment for why cycles and pathological nesting are refused
+/// rather than parsed wrong.
+fn resolve_var_references(
+    value: &str,
+    environment: &std::collections::HashMap<String, String>,
+) -> Result<String, CssError> {
+    resolve_var_references_at_depth(value, environment, 0)
+}
+
+fn resolve_var_references_at_depth(
+    value: &str,
+    environment: &std::collections::HashMap<String, String>,
+    depth: u32,
+) -> Result<String, CssError> {
+    let characters: Vec<char> = value.chars().collect();
+    let mut result = String::new();
+    let mut index = 0;
+    while index < characters.len() {
+        if is_var_call_at(&characters, index) {
+            let open_paren = index + 3;
+            let close_paren = find_matching_paren(&characters, open_paren).ok_or_else(|| {
+                CssError::CustomPropertySyntax {
+                    text: value.to_string(),
+                }
+            })?;
+            let inner: String = characters[open_paren + 1..close_paren].iter().collect();
+            let substitution = resolve_var_call(&inner, environment, depth, value)?;
+            result.push_str(&substitution);
+            index = close_paren + 1;
+        } else {
+            result.push(characters[index]);
+            index += 1;
+        }
+    }
+    Ok(result)
+}
+
+/// Returns whether a `var(` function call starts at `index`.
+///
+/// A preceding identifier character (letter, digit, `-`, or `_`) means this
+/// is the tail of some other name — `--somevar(` is one identifier token,
+/// not the custom property `--some` followed by a call — so that case is
+/// excluded rather than misread as `var()`.
+fn is_var_call_at(characters: &[char], index: usize) -> bool {
+    if index + 4 > characters.len() {
+        return false;
+    }
+    if characters[index] != 'v'
+        || characters[index + 1] != 'a'
+        || characters[index + 2] != 'r'
+        || characters[index + 3] != '('
+    {
+        return false;
+    }
+    match index.checked_sub(1).and_then(|i| characters.get(i)) {
+        Some(previous) => {
+            !(previous.is_ascii_alphanumeric() || *previous == '-' || *previous == '_')
+        }
+        None => true,
+    }
+}
+
+/// Returns the index of the `)` matching the `(` at `open_index`, accounting
+/// for parentheses nested inside (a fallback may itself contain a function
+/// call, `var()` or otherwise).
+fn find_matching_paren(characters: &[char], open_index: usize) -> Option<usize> {
+    let mut depth: i32 = 0;
+    for (offset, character) in characters[open_index..].iter().enumerate() {
+        match character {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(open_index + offset);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+/// Splits `characters` at its first top-level comma (one not nested inside
+/// parentheses), returning the name argument and, if a comma was found, the
+/// remaining text as the fallback.
+///
+/// Only the first comma is a delimiter: CSS fallback values routinely
+/// contain their own commas (`var(--font, Arial, sans-serif)`), and the
+/// fallback there is `Arial, sans-serif` whole, not `Arial` alone.
+fn split_top_level_comma(characters: &[char]) -> (String, Option<String>) {
+    let mut depth: i32 = 0;
+    for (position, character) in characters.iter().enumerate() {
+        match character {
+            '(' => depth += 1,
+            ')' => depth -= 1,
+            ',' if depth == 0 => {
+                let name: String = characters[..position].iter().collect();
+                let fallback: String = characters[position + 1..].iter().collect();
+                return (name, Some(fallback));
+            }
+            _ => {}
+        }
+    }
+    (characters.iter().collect(), None)
+}
+
+/// Resolves one `var(...)` call's arguments (`inner`, the text between its
+/// parentheses) to a substitution string.
+fn resolve_var_call(
+    inner: &str,
+    environment: &std::collections::HashMap<String, String>,
+    depth: u32,
+    whole_value: &str,
+) -> Result<String, CssError> {
+    if depth >= MAX_VAR_NESTING {
+        return Err(CssError::CustomPropertyNestingTooDeep {
+            text: whole_value.to_string(),
+        });
+    }
+    let characters: Vec<char> = inner.chars().collect();
+    let (name_part, fallback_part) = split_top_level_comma(&characters);
+    let name = name_part.trim();
+    // A var() reference must name a custom property: `var()` with nothing in
+    // it, or `var(--, ...)` with nothing after the two dashes, both fail
+    // this, and so does `var(color)`, which does not start with `--` at all.
+    if !is_custom_property(name) || name.len() <= 2 {
+        return Err(CssError::CustomPropertySyntax {
+            text: whole_value.to_string(),
+        });
+    }
+
+    if let Some(raw) = environment.get(name) {
+        // The referenced custom property's own value may reference further
+        // custom properties (`--gap: var(--space)`); resolving it here,
+        // lazily, rather than when the environment was built, means a
+        // custom property nobody actually uses can be malformed or
+        // undefined without refusing every element that merely inherits it.
+        return resolve_var_references_at_depth(raw, environment, depth + 1);
+    }
+
+    match fallback_part {
+        Some(fallback) => resolve_var_references_at_depth(fallback.trim(), environment, depth + 1),
+        None => Err(CssError::CustomPropertyUndefined {
+            name: name.to_string(),
+        }),
+    }
+}
+
+/// Returns `element` and its ancestors, root first.
+///
+/// Root-first order is what lets [`custom_property_environment`] express
+/// inheritance as a fold: a descendant's own declaration simply overwrites
+/// whatever an ancestor contributed for the same name, which is exactly how
+/// a nearer declaration is supposed to beat an inherited one.
+fn ancestor_chain<T: ElementTree>(tree: &T, element: T::Node) -> Vec<T::Node> {
+    let mut chain = vec![element];
+    let mut current = element;
+    while let Some(parent) = tree.parent(current) {
+        chain.push(parent);
+        current = parent;
+    }
+    chain.reverse();
+    chain
+}
+
+/// Builds the custom-property environment visible at `element`: for every
+/// custom property declared anywhere from the document root down to
+/// `element` inclusive, the value that wins the cascade at the nearest node
+/// that declares it.
+///
+/// # Why this exists, when [`cascade`] already resolves one element
+///
+/// `cascade` (deliberately, per this crate's scope) does not inherit: it
+/// reports only the declarations whose selectors match the element passed
+/// to it. Custom properties inherit unconditionally, so a `var()` reference
+/// three levels below the rule that declared the custom property has to see
+/// it anyway. This function is the walk that makes that true: it calls
+/// `cascade` once per ancestor — cheap, because a document's depth is
+/// nowhere near its element count — and keeps only the properties whose
+/// name starts with `--`, letting a closer declaration shadow a farther one
+/// simply by being inserted later.
+///
+/// # Why values here are not yet `var()`-resolved
+///
+/// Resolving every custom property's value while building this map would
+/// mean one broken definition — an undefined reference, a cycle — poisons
+/// the whole environment, refusing elements that never touch that property.
+/// [`resolve_var_references`] resolves a stored value lazily, only when
+/// something actually asks for it, which is the same reasoning `cascade`
+/// itself already applies to per-property value validation: an error should
+/// be attributable to the thing that actually needed the missing value.
+fn custom_property_environment<T: ElementTree>(
+    tree: &T,
+    chain: &[T::Node],
+    index: &SelectorIndex,
+    hovered: Option<T::Node>,
+) -> std::collections::HashMap<String, String> {
+    let mut environment = std::collections::HashMap::new();
+    for &node in chain {
+        for (property, computed) in cascade(tree, node, index, hovered) {
+            if is_custom_property(&property) {
+                environment.insert(property, computed.value);
+            }
+        }
+    }
+    environment
+}
+
+/// Resolves the declarations that apply to `element`, with every `var()`
+/// reference in a standard property's value substituted for the custom
+/// property it names — following the same cascade, specificity, and
+/// inheritance rules as any other property, per the CSS Custom Properties
+/// specification.
+///
+/// Declarations for the custom properties themselves (property names
+/// starting with `--`) are returned unresolved, verbatim: `var()`
+/// substitution is scoped to standard properties that *use* a custom
+/// property, not to the custom property's own stored text, matching this
+/// crate's wider policy of leaving a value unparsed until something asks to
+/// interpret it. Also see this module's custom-property environment builder
+/// for why a broken custom property does not refuse elements that never
+/// reference it.
+///
+/// # Errors
+///
+/// Returns [`CssError::CustomPropertyUndefined`] if a standard property's
+/// value names a custom property that is not declared anywhere from the
+/// document root down to `element`, and gives no fallback;
+/// [`CssError::CustomPropertySyntax`] for a `var()` call this
+/// implementation cannot parse (no arguments, unmatched parentheses, or a
+/// name not starting with `--`); and
+/// [`CssError::CustomPropertyNestingTooDeep`] for fallback or custom-property
+/// chains nested past the bound documented on `MAX_VAR_NESTING`.
+pub fn resolve_declarations<T: ElementTree>(
+    tree: &T,
+    element: T::Node,
+    index: &SelectorIndex,
+    hovered: Option<T::Node>,
+) -> Result<Vec<(String, ComputedDeclaration)>, CssError> {
+    let chain = ancestor_chain(tree, element);
+    let environment = custom_property_environment(tree, &chain, index, hovered);
+    let winners = cascade(tree, element, index, hovered);
+
+    let mut resolved = Vec::with_capacity(winners.len());
+    for (property, computed) in winners {
+        if is_custom_property(&property) {
+            resolved.push((property, computed));
+            continue;
+        }
+        let value = resolve_var_references(&computed.value, &environment)?;
+        resolved.push((property, ComputedDeclaration { value, ..computed }));
+    }
+    Ok(resolved)
+}
+
 // -- turing-html adapter -------------------------------------------------
 
 /// Implements [`ElementTree`] for the engine's own document.
@@ -1328,6 +1705,24 @@ mod tests {
             .into_iter()
             .map(|(property, computed)| (property, computed.value))
             .collect()
+    }
+
+    /// Like [`declarations`], but resolving `var()` references — the entry
+    /// point the custom-property tests below exercise.
+    fn resolved_declarations(
+        html: &str,
+        css: &str,
+        element: &str,
+    ) -> Result<Vec<(String, String)>, CssError> {
+        let doc = document(html);
+        let sheet = Stylesheet::parse(css).expect("parses");
+        let node = find(&doc, element);
+        let index = SelectorIndex::build(&sheet);
+        let resolved = resolve_declarations(&doc, node, &index, None)?;
+        Ok(resolved
+            .into_iter()
+            .map(|(property, computed)| (property, computed.value))
+            .collect())
     }
 
     #[test]
@@ -1691,6 +2086,183 @@ mod tests {
                 ("color".to_string(), "red".to_string()),
                 ("margin".to_string(), "2px".to_string()),
             ]
+        );
+    }
+
+    // -- custom properties and var() -------------------------------------
+    //
+    // These stylesheets declare a custom property on a plain class selector
+    // rather than `:root`. `:root` itself is a pseudo-class this crate does
+    // not evaluate (`PseudoClassUnsupported`, matching every structural or
+    // functional pseudo-class other than `:hover`) — a separate, pre-existing
+    // gap this task does not close. A class on the tree's outermost element
+    // plays the same role for these tests: something broad that a deep
+    // descendant inherits through.
+
+    #[test]
+    fn custom_property_names_preserve_case_but_standard_property_names_do_not() {
+        // Custom properties are case-sensitive (`--Ink` and `--ink` would be
+        // different properties); standard properties are ASCII
+        // case-insensitive, so `COLOR` must still fold to `color`.
+        let sheet = Stylesheet::parse("p { --Ink: not-a-real-color; COLOR: red; }")
+            .expect("parses even though --Ink's value is never validated as a colour");
+        let declarations = &sheet.rules[0].declarations;
+        assert_eq!(declarations[0].property, "--Ink");
+        assert_eq!(declarations[0].value, "not-a-real-color");
+        assert_eq!(declarations[1].property, "color");
+    }
+
+    #[test]
+    fn var_resolves_to_the_root_declared_value_from_a_deep_descendant() {
+        let html = "<div class=\"root\"><section><article><p>t</p></article></section></div>";
+        let css = ".root { --ac: blue; } p { color: var(--ac); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("color".to_string(), "blue".to_string())]
+        );
+    }
+
+    #[test]
+    fn var_fallback_is_used_when_the_custom_property_is_undefined() {
+        let html = "<p>t</p>";
+        let css = "p { color: var(--missing, green); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves via fallback"),
+            vec![("color".to_string(), "green".to_string())]
+        );
+    }
+
+    #[test]
+    fn undefined_custom_property_with_no_fallback_is_refused() {
+        let html = "<p>t</p>";
+        let css = "p { color: var(--missing); }";
+        let error = resolved_declarations(html, css, "p").expect_err("must be refused");
+        assert_eq!(
+            error,
+            CssError::CustomPropertyUndefined {
+                name: "--missing".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn a_more_specific_rule_overrides_the_custom_property_and_var_sees_the_winner() {
+        // `#y` outranks `.root` on specificity, on the same element, so the
+        // custom property's own cascade must pick `blue` before `var()` ever
+        // runs — the same rule that governs any other property.
+        let html = "<div class=\"root\" id=\"y\"><p>t</p></div>";
+        let css = ".root { --ac: red; } #y { --ac: blue; } p { color: var(--ac); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("color".to_string(), "blue".to_string())]
+        );
+    }
+
+    #[test]
+    fn a_later_rule_of_equal_specificity_overrides_the_custom_property_and_var_sees_the_winner() {
+        let html = "<div class=\"root\"><p>t</p></div>";
+        let css = ".root { --ac: red; } .root { --ac: green; } p { color: var(--ac); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("color".to_string(), "green".to_string())]
+        );
+    }
+
+    #[test]
+    fn nested_var_fallback_falls_through_to_the_innermost_default() {
+        // `var(--a, var(--b, red))`, with neither `--a` nor `--b` declared
+        // anywhere: this is the nesting shape the task calls out by name, and
+        // it must resolve soundly to the literal fallback, not error or
+        // truncate.
+        let html = "<p>t</p>";
+        let css = "p { color: var(--a, var(--b, red)); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("color".to_string(), "red".to_string())]
+        );
+    }
+
+    #[test]
+    fn nested_var_fallback_picks_up_an_inherited_inner_custom_property() {
+        // Same shape as above, but `--b` is declared on an ancestor, so the
+        // inner `var()` inside the fallback must resolve through the
+        // environment rather than only ever falling through to `red`.
+        let html = "<div class=\"root\"><p>t</p></div>";
+        let css = ".root { --b: teal; } p { color: var(--a, var(--b, red)); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("color".to_string(), "teal".to_string())]
+        );
+    }
+
+    #[test]
+    fn a_custom_property_chain_through_var_resolves_transitively() {
+        // `--gap` is not used directly; `width` uses `--space`, whose own
+        // (unresolved, stored) value is `var(--gap)`. Resolution has to
+        // follow that chain, not stop at the first substitution.
+        let html = "<div class=\"root\"><p>t</p></div>";
+        let css = ".root { --gap: 8px; --space: var(--gap); } p { width: var(--space); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p").expect("resolves"),
+            vec![("width".to_string(), "8px".to_string())]
+        );
+    }
+
+    #[test]
+    fn malformed_var_calls_are_refused_not_panicking() {
+        for value in [
+            "var()",        // no arguments at all
+            "var(--)",      // empty custom property name
+            "var(  , red)", // blank name before the fallback comma
+            "var(color)",   // not a custom property (no `--` prefix)
+            "var(--x",      // unterminated: no closing parenthesis
+        ] {
+            let html = "<p>t</p>";
+            let css = format!("p {{ color: {value}; }}");
+            let error = resolved_declarations(html, &css, "p")
+                .expect_err(&format!("{value} must be refused, not panic"));
+            assert!(
+                matches!(error, CssError::CustomPropertySyntax { .. }),
+                "{value} produced {error:?}, expected CustomPropertySyntax"
+            );
+        }
+    }
+
+    #[test]
+    fn var_nesting_past_the_bound_is_refused_rather_than_recursing_forever() {
+        // Neither declared anywhere: each level falls through to the next,
+        // recursing one level deeper per `var()`, until the depth bound is
+        // exceeded. Whether this comes from an honestly deep design-token
+        // chain or a cyclic custom property makes no difference to the
+        // implementation — both must terminate, not overflow the stack.
+        let mut value = "red".to_string();
+        for level in 0..40 {
+            value = format!("var(--x{level}, {value})");
+        }
+        let html = "<p>t</p>";
+        let css = format!("p {{ color: {value}; }}");
+        let error = resolved_declarations(html, &css, "p").expect_err("must be refused");
+        assert!(matches!(
+            error,
+            CssError::CustomPropertyNestingTooDeep { .. }
+        ));
+    }
+
+    #[test]
+    fn custom_property_declarations_pass_through_unresolved() {
+        // Resolution is scoped to standard properties that reference a
+        // custom property via var(); a custom property's own stored value is
+        // returned verbatim, unparsed, matching this crate's wider policy of
+        // never validating a value until something asks to interpret it.
+        let html = "<p>t</p>";
+        let css = "p { --raw: var(--never-declared, still not validated here); }";
+        assert_eq!(
+            resolved_declarations(html, css, "p")
+                .expect("the custom property itself is not resolved"),
+            vec![(
+                "--raw".to_string(),
+                "var(--never-declared, still not validated here)".to_string()
+            )]
         );
     }
 }
