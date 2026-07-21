@@ -253,3 +253,7 @@ Research reports inform decisions but do not silently promote requirements or su
 22. [Research and measurement](blueprint-v1/22-research-program.md)
 
 Machine-readable records live under the owning `machine/` directory and must remain synchronized with prose and source. Use the [core program registries](repository-map.md#core-program-registries) map to find the current source of truth for requirements, risks, work packages, readiness gates, proposed tasks, process capabilities, workspace/toolchains, professional controls, and agent action schemas before changing implementation scope or authority.
+
+## Application runtime (research direction)
+
+The owner-directed target of running the engine as an Electron-class application runtime — rendering React/Next.js/TanStack apps and the Nova source itself as the system UI — is planned in [`docs/application-runtime/`](application-runtime/README.md).
