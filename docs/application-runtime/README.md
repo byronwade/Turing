@@ -1,0 +1,153 @@
+# Turing as an Application Runtime
+
+Status: architecture and milestone research. Owner: @byronwade (product
+direction), engine and UI-runtime owners. Opened 2026-07-20 by owner
+direction.
+
+/ This book does not claim the runtime exists. It states the target, the
+honest gap from today's engine, and the order the gap can be closed in. /
+
+## The target
+
+Turing is not only a web browser. The owner's direction is that the Turing
+engine become an **application runtime** — the way Electron lets a product
+ship a React/Next.js/TanStack application as a desktop app, except that the
+rendering engine is Turing's own, built from scratch, with no Chromium,
+Blink, or V8 underneath.
+
+Two concrete ambitions define the target:
+
+1. **The system UI is the engine's own output.** The Nova design
+   (`docs/ui-runtime/design-lab/turing-nova-design-source.jsx`) is React.
+   The end state is that the engine *runs that React* and the running
+   result **is** the browser's chrome and, further out, the desktop system
+   interface — not a hand-port of Nova into Rust display lists. Today's
+   `turing-chrome` crate is an honest interim: it renders Nova's design at
+   reference fidelity from extracted tokens, which is what let the product
+   look right before the engine could run the source. It is a stepping
+   stone, explicitly not the destination.
+
+2. **Real framework apps run on the engine.** A React application, a
+   Next.js app, a TanStack app — the artifacts a working web developer
+   produces — should load and run on Turing the way they load and run in a
+   browser or an Electron shell.
+
+## Why this is the same engine, widened — not a second project
+
+Electron is Chromium plus Node. Its power is that the app author writes
+ordinary web code and a complete web engine renders it. Turing's bet is the
+same shape with a different foundation: the app author writes ordinary web
+code, and **Turing's from-scratch engine** renders it. Everything already
+built serves this directly — the HTML tree, the CSS cascade, block and
+inline layout, the display list, the reference and compositing painters, the
+DOM with mutation epochs, the capability-scoped script bindings, the input
+routing. An application runtime is not a pivot away from that work; it is
+that work carried far enough to run a framework.
+
+## What renders today
+
+The engine already renders the **static HTML output** that every React
+framework produces on the server. `benchmarks/corpus/framework-output/`
+holds `nextjs-ssr-dashboard.html` — a dark-themed analytics dashboard with a
+header, metric cards (borders, rounded corners, HSL theme colours), and a
+centred call-to-action button — the exact shape of a Next.js server-rendered
+page. It renders correctly through the normal pipeline with no special
+casing.
+
+This matters because it fixes the first rung: **server-rendered framework
+output is already in scope and already works.** A Next.js app that ships
+mostly static, server-rendered pages is closer to running on Turing than the
+distance from here to a full client runtime suggests.
+
+## The honest gap
+
+Running a framework's *client* runtime — hydration, hooks, reconciliation,
+event handlers — needs engine capability that does not exist yet. Named
+plainly rather than glossed:
+
+### JavaScript (`turing-js`)
+
+The interpreter is a deliberately bounded subset: numbers, strings,
+booleans, `null`/`undefined`, bindings, arithmetic and logic, control flow,
+function declarations, calls, recursion, **and objects with property
+access**. It refuses — by design, at compile time — the constructs a React
+runtime is built from:
+
+- **arrays** (children are arrays; `.map` over children is everywhere);
+- **closures and function expressions / arrow functions** (hooks close over
+  state; every JSX event handler is a closure);
+- **`class`** (older React components, many libraries);
+- **prototypes and `this` semantics**;
+- **`try`/`catch`**, **`async`/`await`**, **generators**, **modules**,
+  **regular expressions**.
+
+This is the largest gap, and it is the load-bearing one. The engine's
+governing principle here is a strength for this goal, not a weakness: a
+partially implemented language computes wrong values silently, so every
+unimplemented construct is refused visibly. The runtime can therefore grow
+one honest construct at a time, and everything that runs stays trustworthy.
+
+### DOM API surface
+
+`turing-webidl` binds a small capability set: `getAttribute`, `setAttribute`,
+`removeAttribute`, `tagName`, `hasElement`, `textContent`,
+`addEventListener`. React's renderer needs more — `createElement`,
+`createTextNode`, `appendChild`, `insertBefore`, `removeChild`, `parentNode`,
+`nextSibling`, node identity that crosses into script, and the property/style
+interfaces. The DOM crate already has the *operations* (create, append,
+insert, remove, mutation epochs); the gap is binding them to script with
+live node identity rather than the current id-string indirection.
+
+### Event loop and scheduling
+
+React schedules work on microtasks and, in concurrent mode, on a cooperative
+scheduler. The engine has no event loop, microtask queue, or timer yet.
+Script runs once, synchronously, on load or on an input dispatch.
+
+### Module loading and app entry
+
+A bundled app is a module graph with an entry point. The engine has no
+module loader; scripts are inline `<script>` text compiled in isolation.
+
+## The milestone ladder
+
+Each rung is independently useful and testable, and each is the smallest
+step that unlocks the next. The early rungs are ungated engine work; the
+later ones reach decisions the owner still holds (a production JS security
+posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
+
+- **APP-0 — Framework SSR output.** *Done.* Static server-rendered HTML/CSS
+  renders through the normal pipeline. Proven by the dashboard fixture.
+- **APP-1 — Arrays in `turing-js`.** Array literals, indexing, length. The
+  smallest self-contained step toward `createElement(type, props,
+  ...children)` and children arrays. Next up.
+- **APP-2 — Closures and function expressions.** Upvalue capture, arrow
+  functions. Unlocks event handlers and hook bodies.
+- **APP-3 — Live DOM bindings.** `createElement`/`appendChild`/etc. bound to
+  script with real node identity, so a script can build a subtree the way a
+  renderer does.
+- **APP-4 — A microtask queue and a minimal scheduler.** Enough of an event
+  loop for a runtime to flush work after an event.
+- **APP-5 — A tiny reconciler on the engine.** Prove the shape end to end
+  with a hand-written minimal React-like runtime before pulling in the real
+  one — the same "reference implementation first" discipline the rest of the
+  engine follows.
+- **APP-6 — The real React runtime, then a bundler's output.** Load
+  framework-emitted JS and run it.
+- **APP-7 — The Nova source rendered by the engine.** The chrome, and then
+  the system interface, rendered by running its own React rather than by the
+  Rust interim.
+
+## What does not change
+
+- **The independent-engine boundary holds.** No Chromium/Blink/V8/Electron
+  in any release path (`AGENTS.md`). "Electron-class" describes the *product
+  capability*, never the implementation.
+- **Security is not deferred to make this work.** Running arbitrary
+  framework JavaScript is exactly the hostile-input surface the security
+  book governs; the JS-hardening and trusted-chrome gates (`WP-019`,
+  `WP-004`) apply in full, and [Chromium as a security
+  reference](../security-engine/reference-chromium-security.md) is the
+  calibration for what running untrusted app code must survive.
+- **No completion claim.** This is the order of work, not a promise of
+  arrival. Every rung lands with evidence or it has not landed.
