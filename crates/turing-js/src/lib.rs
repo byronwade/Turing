@@ -477,6 +477,20 @@ enum Expr {
         name: String,
         delta: f64,
     },
+    /// Compound assignment to a property, `object[key] op= right` /
+    /// `object.key op= right`. A dedicated node rather than desugaring to
+    /// `SetMember { value: Binary { Member { object, key }, right } } }` at
+    /// parse time: that desugaring would compile `object` and `key` twice —
+    /// once for the write target, once inside the read of the current value
+    /// — silently re-running any side effect they contain (a call as the
+    /// object, a call as a computed key) an extra time. The specification
+    /// evaluates the base reference once; this node compiles that way.
+    CompoundMember {
+        object: Box<Expr>,
+        key: Box<Expr>,
+        operator: String,
+        right: Box<Expr>,
+    },
     /// `{ a: 1, "b": 2 }`, in source order.
     ObjectLiteral {
         entries: Vec<(String, Expr)>,
@@ -793,7 +807,7 @@ impl Parser {
             };
         }
         // Compound assignment `a += b` is `a = a + b`, and likewise for the
-        // other arithmetic operators. Desugaring keeps one assignment path.
+        // other arithmetic operators.
         if let Token::Punct(op) = self.peek()
             && matches!(op.as_str(), "+=" | "-=" | "*=" | "/=")
         {
@@ -801,6 +815,9 @@ impl Parser {
             self.position += 1;
             let right = Box::new(self.parse_assignment()?);
             return match target {
+                // A variable is a slot, not an expression with a side
+                // effect — resolving its name to a slot is pure metadata, so
+                // desugaring to `a = a + b` costs nothing extra to evaluate.
                 Expr::Variable(name) => Ok(Expr::Assign {
                     name: name.clone(),
                     value: Box::new(Expr::Binary {
@@ -809,14 +826,16 @@ impl Parser {
                         right,
                     }),
                 }),
-                Expr::Member { object, key } => Ok(Expr::SetMember {
-                    object: object.clone(),
-                    key: key.clone(),
-                    value: Box::new(Expr::Binary {
-                        operator,
-                        left: Box::new(Expr::Member { object, key }),
-                        right,
-                    }),
+                // A property's object and key *can* have side effects — a
+                // call as the object (`getObj().n += 1`), a call as a
+                // computed key (`arr[next()] += 1`) — so this compiles each
+                // exactly once rather than desugaring to two references of
+                // them. See `Expr::CompoundMember`.
+                Expr::Member { object, key } => Ok(Expr::CompoundMember {
+                    object,
+                    key,
+                    operator,
+                    right,
                 }),
                 _ => Err(JsError::UnexpectedToken {
                     found: "expression".to_string(),
@@ -1458,6 +1477,12 @@ pub enum Op {
     NewArray(usize),
     /// Push a copy of the top of stack.
     Dup,
+    /// Push a copy of the top two stack values, in the same order: `[.., a,
+    /// b]` becomes `[.., a, b, a, b]`. Used by compound property assignment
+    /// to read an object/key pair's current value and then write the new one
+    /// through the same pair, without recompiling — and so
+    /// re-evaluating — the object and key expressions a second time.
+    Dup2,
     /// Call a bound operation by name with `n` arguments from the stack.
     HostCall(String, usize),
     /// Indirect call: pop `argc` arguments then the callee (a function value)
@@ -2078,6 +2103,31 @@ impl Compiler {
                 self.code.push(Op::StoreLocal(slot));
                 self.code.push(Op::Pop);
             }
+            Expr::CompoundMember {
+                object,
+                key,
+                operator,
+                right,
+            } => {
+                // Object and key are compiled — and therefore evaluated —
+                // exactly once each; Dup2 supplies the second (object, key)
+                // pair GetProperty consumes to read the current value, so the
+                // property's read and write share the same reference rather
+                // than two independently evaluated ones. See the type's own
+                // doc comment for why that distinction matters.
+                self.expression(object)?;
+                self.expression(key)?;
+                self.code.push(Op::Dup2);
+                self.code.push(Op::GetProperty);
+                self.expression(right)?;
+                self.code.push(match operator.as_str() {
+                    "+" => Op::Add,
+                    "-" => Op::Sub,
+                    "*" => Op::Mul,
+                    _ => Op::Div,
+                });
+                self.code.push(Op::SetProperty);
+            }
         }
         Ok(())
     }
@@ -2350,6 +2400,18 @@ impl Vm {
                 Op::Dup => {
                     let top = stack.last().cloned().unwrap_or(Value::Undefined);
                     stack.push(top);
+                }
+                Op::Dup2 => {
+                    let len = stack.len();
+                    // A well-formed program (the only kind this compiler
+                    // emits) never reaches this op with fewer than two values
+                    // present; `saturating_sub` keeps a malformed one a
+                    // no-op read of `undefined` rather than a panic.
+                    let base = len.saturating_sub(2);
+                    let a = stack.get(base).cloned().unwrap_or(Value::Undefined);
+                    let b = stack.get(base + 1).cloned().unwrap_or(Value::Undefined);
+                    stack.push(a);
+                    stack.push(b);
                 }
                 Op::NewObject => {
                     // Charged like any other produced data. Objects were named
@@ -3534,6 +3596,63 @@ mod tests {
             compile("function main() { const x = 1; x += 1; } main();"),
             Err(JsError::AssignmentToConstant { .. })
         ));
+        // A computed key on the left of a compound assignment.
+        assert_eq!(
+            eval_in_fn("let a = [1, 2, 3]; a[1] += 10; return a[1];"),
+            Value::Number(12.0)
+        );
+    }
+
+    #[test]
+    fn compound_assignment_evaluates_the_object_and_key_exactly_once() {
+        // `getTarget().n += 10` must call `getTarget()` once, not twice. A
+        // const-captured array records a call each time getTarget runs — its
+        // reference is stable (const), but what it points to is ordinarily
+        // mutable, which is what makes it a call counter here rather than a
+        // capture-mutation test.
+        let program = compile(
+            "function main() { \
+                const counter = []; \
+                let getTarget = function() { \
+                    counter[counter.length] = 1; \
+                    let o = {}; \
+                    o.n = 5; \
+                    return o; \
+                }; \
+                getTarget().n += 10; \
+                return counter.length; \
+             } main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(1.0),
+            "getTarget() must run exactly once"
+        );
+
+        // A computed key must likewise be evaluated once.
+        let program = compile(
+            "function main() { \
+                const counter = []; \
+                let nextKey = function() { \
+                    counter[counter.length] = 1; \
+                    return 0; \
+                }; \
+                let a = [5]; \
+                a[nextKey()] += 10; \
+                return counter.length; \
+             } main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(1.0),
+            "nextKey() must run exactly once"
+        );
     }
 
     #[test]
