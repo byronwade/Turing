@@ -143,6 +143,47 @@ fn resizing_reflows_text_onto_more_lines() {
 }
 
 #[test]
+fn a_script_builds_a_dom_subtree_that_lays_out_and_paints() {
+    // The application-runtime shape in miniature: script constructs nodes the
+    // way a framework renderer does — createElement, setNodeAttribute,
+    // createText, appendChild — and the engine lays out and paints the
+    // result. Nothing in the source HTML has the built content; it exists
+    // only because the script ran.
+    let html = "<html><head><style>\
+        body { background: white; } .built { background: teal; color: white; }\
+        </style></head><body></body>\
+        <script>\
+        function build() {\
+          let root = documentBody();\
+          let card = createElement('div');\
+          setNodeAttribute(card, 'class', 'built');\
+          let text = createText('Made by JS');\
+          appendChild(card, text);\
+          appendChild(root, card);\
+        }\
+        build();\
+        </script></body></html>";
+    let page = Page::load(html, 200.0).expect("loads");
+
+    // The built div paints its teal background — proof the script-created
+    // node reached layout and paint.
+    let canvas = page.render(200, 32).expect("renders");
+    assert_eq!(
+        canvas.pixel(100, 8),
+        Some(color("teal")),
+        "the JS-built card painted its background"
+    );
+    // Its text is in the display list.
+    assert!(
+        page.display_list().items.iter().any(|item| matches!(
+            item,
+            turing_layout::DisplayItem::Text { text, .. } if text.contains("Made")
+        )),
+        "the JS-built text node is painted"
+    );
+}
+
+#[test]
 fn a_click_runs_the_script_listener_and_repaints() {
     // The full interactive loop: script registers a listener at load, a
     // dispatched click reports the invocation, the engine calls the named

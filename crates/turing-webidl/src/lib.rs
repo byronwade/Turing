@@ -18,17 +18,27 @@
 //! this host cannot expose an operation that auditing would not show, and
 //! revoking one takes effect on the next call.
 //!
-//! # Deliberate limits
+//! # Node handles
 //!
-//! Read-only, and over primitives. No operation takes or returns a live node.
+//! The read/query operations address elements by `id` string. The
+//! construction operations — `createElement`, `createText`, `appendChild`,
+//! `setNodeAttribute`, `documentBody` — address nodes by an **opaque numeric
+//! handle**: a `Number` equal to the node's arena index.
 //!
-//! A node reference is an index into the document's arena, which is a different
-//! address space from the interpreter's heap. If a node became a script value,
-//! the interpreter's tracing would see an index it would be entitled to read as
-//! a heap reference — a confusion invisible until a node is held across a
-//! collection. Node identity therefore crosses as an `id` string, and making
-//! nodes first-class script values is its own work with its own hazards,
-//! including the staleness one `turing-input` already had to solve.
+//! This handle is deliberately not a live node and not a heap reference. It is
+//! a plain integer the interpreter's tracing treats as a number, never as a
+//! pointer, so the address-space confusion that made live nodes hazardous
+//! cannot arise — a handle held across a collection is still just a number.
+//! The index is stable because construction only appends to the arena; nodes
+//! are never removed or reindexed here, so a handle cannot come to denote a
+//! different node. A handle to a node that does not exist fails on use rather
+//! than reading a neighbour, because [`turing_html::NodeId`] access is bounds
+//! checked.
+//!
+//! This is the renderer's vocabulary. React's host configuration is exactly
+//! `createElement` / `createTextNode` / `appendChild` / `setAttribute` over
+//! opaque host handles, which is why these five operations are the DOM step of
+//! the application-runtime ladder (`docs/application-runtime/README.md`).
 //!
 //! # Mutation and invalidation
 //!
@@ -65,7 +75,15 @@ const INTERFACE: &str = "Document";
 // `addEventListener` mutates no tree node, but it changes what future
 // dispatches do, which is a document-behaviour mutation; a read-only
 // principal must not get it.
-const MUTATING_OPERATIONS: &[&str] = &["setAttribute", "removeAttribute", "addEventListener"];
+const MUTATING_OPERATIONS: &[&str] = &[
+    "setAttribute",
+    "removeAttribute",
+    "addEventListener",
+    "createElement",
+    "createText",
+    "appendChild",
+    "setNodeAttribute",
+];
 
 /// A [`Host`] exposing read-only document operations to script.
 #[derive(Debug)]
@@ -86,6 +104,16 @@ impl<'dom> DomHost<'dom> {
         bindings.register(INTERFACE, "setAttribute", 3);
         bindings.register(INTERFACE, "removeAttribute", 2);
         bindings.register(INTERFACE, "addEventListener", 3);
+        // Construction operations. A node created or located by these crosses
+        // into script as an opaque numeric handle — its arena index — which is
+        // stable because construction only appends. This is the renderer's
+        // vocabulary: React's host config is createElement/createTextNode/
+        // appendChild/setAttribute over exactly such handles.
+        bindings.register(INTERFACE, "documentBody", 0);
+        bindings.register(INTERFACE, "createElement", 1);
+        bindings.register(INTERFACE, "createText", 1);
+        bindings.register(INTERFACE, "appendChild", 2);
+        bindings.register(INTERFACE, "setNodeAttribute", 3);
         Self { dom, bindings }
     }
 
@@ -128,6 +156,28 @@ impl<'dom> DomHost<'dom> {
     }
 }
 
+/// Reads a script value used as a node handle back into a [`NodeId`].
+///
+/// A handle crosses into script as a `Number` equal to the arena index. A
+/// non-integer or negative value is a script error naming the bad handle,
+/// not a silent read of node zero.
+fn node_handle(value: &Value) -> Result<NodeId, String> {
+    let Value::Number(index) = value else {
+        return Err(format!("expected a node handle, got {value}"));
+    };
+    if *index < 0.0 || index.fract() != 0.0 {
+        return Err(format!("{index} is not a node handle"));
+    }
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    Ok(NodeId::from_index(*index as usize))
+}
+
+/// The arena index of a node, as the `Number` script sees.
+fn node_value(node: NodeId) -> Value {
+    #[allow(clippy::cast_precision_loss)]
+    Value::Number(node.index() as f64)
+}
+
 impl Host for DomHost<'_> {
     fn bindings(&self) -> &Bindings {
         &self.bindings
@@ -139,23 +189,54 @@ impl Host for DomHost<'_> {
         name: &str,
         arguments: &[Value],
     ) -> Result<Value, String> {
-        // Arity was checked against the registry before this was called, so
-        // indexing here cannot be out of range.
-        let first = arguments[0].to_string();
+        // Arity was checked against the registry before this was called. The
+        // id-based operations read `arguments[0]` as an id string; the
+        // construction operations read handles, so `first` is computed only
+        // where an id is what the operation takes.
+        let first = || arguments[0].to_string();
         match name {
+            "documentBody" => Ok(document_body(self.dom).map_or(Value::Null, node_value)),
+            "createElement" => {
+                let handle = self
+                    .dom
+                    .create_element(&first())
+                    .map_err(|error| error.to_string())?;
+                Ok(node_value(handle.node()))
+            }
+            "createText" => {
+                let handle = self.dom.create_text(&first());
+                Ok(node_value(handle.node()))
+            }
+            "appendChild" => {
+                let parent = self.dom.handle(node_handle(&arguments[0])?);
+                let child = self.dom.handle(node_handle(&arguments[1])?);
+                self.dom
+                    .append_child(parent, child)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
+            "setNodeAttribute" => {
+                let node = self.dom.handle(node_handle(&arguments[0])?);
+                let name = arguments[1].to_string();
+                let value = arguments[2].to_string();
+                self.dom
+                    .set_attribute(node, &name, &value)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
             "hasElement" => Ok(Value::Boolean(
-                self.dom.document().element_by_id(&first).is_some(),
+                self.dom.document().element_by_id(&first()).is_some(),
             )),
             "tagName" => {
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 self.dom
                     .document()
                     .element_name(node)
                     .map(|tag| Value::String(tag.to_string()))
-                    .ok_or_else(|| format!("the node with id {first:?} is not an element"))
+                    .ok_or_else(|| format!("the node with id {:?} is not an element", first()))
             }
             "getAttribute" => {
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 let attribute = arguments[1].to_string();
                 // A missing attribute is `null`, which is what the DOM
                 // specifies. `undefined` would be the natural guess and is a
@@ -167,11 +248,11 @@ impl Host for DomHost<'_> {
                     .map_or(Value::Null, |text| Value::String(text.to_string())))
             }
             "textContent" => {
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 Ok(Value::String(text_of(self.dom, node)))
             }
             "setAttribute" => {
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 let handle = self.dom.handle(node);
                 let name = arguments[1].to_string();
                 let value = arguments[2].to_string();
@@ -183,7 +264,7 @@ impl Host for DomHost<'_> {
                 Ok(Value::Undefined)
             }
             "removeAttribute" => {
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 let handle = self.dom.handle(node);
                 let name = arguments[1].to_string();
                 self.dom
@@ -199,7 +280,7 @@ impl Host for DomHost<'_> {
                 // invocation back to the named function and calls it. This
                 // keeps propagation order the DOM's business and execution
                 // the embedder's, with the invocation record as the seam.
-                let node = self.element(&first)?;
+                let node = self.element(&first())?;
                 let handle = self.dom.handle(node);
                 let kind = arguments[1].to_string();
                 let function = arguments[2].to_string();
@@ -217,6 +298,24 @@ impl Host for DomHost<'_> {
 ///
 /// Iterative because document depth is attacker-controlled, and a recursive
 /// walk over it aborts the process rather than returning an error.
+/// The `<body>` element's node, or the first element if the document has no
+/// body, or `None` for an empty document. This is the attachment point a
+/// script builds its subtree under.
+fn document_body(dom: &Dom) -> Option<NodeId> {
+    let document = dom.document();
+    let mut first_element = None;
+    for index in 0..document.len() {
+        let node = NodeId::from_index(index);
+        if let Some(name) = document.element_name(node) {
+            if name == "body" {
+                return Some(node);
+            }
+            first_element.get_or_insert(node);
+        }
+    }
+    first_element
+}
+
 fn text_of(dom: &Dom, node: NodeId) -> String {
     let document = dom.document();
     let mut text = String::new();

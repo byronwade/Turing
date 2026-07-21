@@ -163,9 +163,14 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   step toward `createElement(type, props, ...children)` and children arrays.
 - **APP-2 — Closures and function expressions.** Upvalue capture, arrow
   functions. Unlocks event handlers and hook bodies.
-- **APP-3 — Live DOM bindings.** `createElement`/`appendChild`/etc. bound to
-  script with real node identity, so a script can build a subtree the way a
-  renderer does.
+- **APP-3 — DOM construction bindings.** *Done.* `documentBody`,
+  `createElement`, `createText`, `appendChild`, and `setNodeAttribute` bound
+  to script, with nodes crossing the boundary as opaque numeric handles (arena
+  indices, treated by the interpreter as plain numbers, never as heap
+  pointers). A script now builds a subtree the way a framework renderer does,
+  and the engine lays it out and paints it — proven by
+  `benchmarks/corpus/framework-output/script-built-ui.html`, whose entire UI
+  is constructed by a loop calling these operations.
 - **APP-4 — A microtask queue and a minimal scheduler.** Enough of an event
   loop for a runtime to flush work after an event.
 - **APP-5 — A tiny reconciler on the engine.** Prove the shape end to end
