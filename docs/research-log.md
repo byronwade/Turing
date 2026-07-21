@@ -1,5 +1,21 @@
 # Research Log
 
+## 2026-07-21 - A microtask queue: the next real rung, not another review pass
+
+APP-4 was still open on the application-runtime ladder: "a microtask queue and a minimal scheduler... enough of an event loop for a runtime to flush work after an event." Every other engine capability landed this stretch made the language or the DOM richer; this one gives script a way to defer work past the end of the script that scheduled it, which every non-trivial runtime needs and nothing before today provided — `queueMicrotask` did not exist, and there was no notion of "after this script finishes" at all.
+
+It has to be a VM-native builtin rather than a host operation: a host operation is dispatched through the `Host` trait, which knows nothing of the interpreter's own runtime state, and the queue has to live in exactly that state — `Runtime` gained a `microtasks: Vec<Value>` field. The parser checks the name `queueMicrotask` last, after every existing resolution step (declared function, local holding a function value, upvalue), so a script's own declaration of that name still wins — the same rule every other name in that chain already follows, kept rather than special-cased away for a builtin.
+
+The queue drains where the queue was always going to matter: at the two public entry points that finish a script (`Vm::call`, `Vm::run_with_host`), after the top-level call returns and before the embedder gets control back. Draining is one task at a time, not one batch snapshot, specifically so a task that itself calls `queueMicrotask` sees that new task run in the same flush rather than deferred — the property that makes a microtask queue a queue and not a fixed list.
+
+The collector needed one line and would have been wrong without it: a closure sitting in the queue, referenced from nowhere else, is exactly as live as one on the stack, and `collect_now`'s root walk did not know that until it was taught to chain `runtime.microtasks` in. This was not theoretical — a regression test with the fix reverted actually reclaimed a queued closure under allocation pressure and the later call surfaced a generation-mismatch error from the collector's own safety check, which is the collector doing its job correctly on a rooting bug that would otherwise have been a silent wrong answer or worse. The test stays with the fix, asserting the closure runs correctly after 200 allocations' worth of churn.
+
+Proven end to end in the engine, not only in the interpreter: a script builds one DOM node synchronously and queues a microtask that builds a second; both exist by the time `Page::load` returns, because `Page::load` and `run_script` already went through `run_with_host`, which now drains before returning — no engine-level plumbing needed beyond the interpreter change itself.
+
+What this is not: a scheduler. There is still exactly one script running at a time, no timers, no distinction between microtasks and macrotasks, no re-entrant dispatch — the milestone's own wording was "a microtask queue and a minimal scheduler," and only the queue landed. A minimal scheduler is a real next increment, not this one.
+
+The workspace is at 427 tests.
+
 ## 2026-07-21 - Compound assignment to a property ran its own side effect twice
 
 The owner asked for a careful engineering review of this session's new code, specifically for violations of the engine's own rule: never compute a silently-wrong value. The review found one, in the compound-assignment desugaring added earlier today. `object.key += right` was built at parse time by cloning the `object` and `key` sub-expressions into both the write target and a `Binary` read embedded inside the new value — which compiles each of them twice. For a bare property access that costs nothing extra to evaluate; for `getTarget().n += 10`, it calls `getTarget()` twice. Confirmed by reproduction, not inferred: a closure over a const-captured array recorded a call each time a synthetic `getTarget` ran, and one `+=` statement left two records.

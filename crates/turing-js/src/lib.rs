@@ -1498,6 +1498,9 @@ pub enum Op {
     },
     /// Push the current frame's captured upvalue at `0`-based index.
     LoadUpvalue(usize),
+    /// Pop a function or closure value and queue it as a microtask, pushing
+    /// `undefined` (`queueMicrotask`'s own return value).
+    QueueMicrotask,
     /// Pop key then object; push the property value, or `undefined`.
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
@@ -2050,6 +2053,22 @@ impl Compiler {
                     self.code.push(Op::CallValue {
                         argc: arguments.len(),
                     });
+                } else if callee == "queueMicrotask" {
+                    // A VM-native builtin, not a host operation: it must
+                    // reach the interpreter's own microtask queue, which a
+                    // `Host` implementation has no access to. Checked last,
+                    // like a host op, so a script's own declaration of the
+                    // same name still wins — consistent with every other
+                    // name in this resolution order.
+                    if arguments.len() != 1 {
+                        return Err(JsError::OperationArity {
+                            name: callee.clone(),
+                            expected: 1,
+                            got: arguments.len(),
+                        });
+                    }
+                    self.expression(&arguments[0])?;
+                    self.code.push(Op::QueueMicrotask);
                 } else {
                     for argument in arguments {
                         self.expression(argument)?;
@@ -2271,7 +2290,9 @@ impl Vm {
             });
         }
         let mut runtime = Runtime::default();
-        self.run_function(program, index, arguments, &mut runtime, host)
+        let result = self.run_function(program, index, arguments, &mut runtime, host)?;
+        self.drain_microtasks(program, &mut runtime, host)?;
+        Ok(result)
     }
 
     /// Runs `program` with `host` supplying the bound operations.
@@ -2284,7 +2305,46 @@ impl Vm {
         // One heap for the whole run, so a reference stays meaningful across
         // calls.
         let mut runtime = Runtime::default();
-        self.run_function(program, 0, Vec::new(), &mut runtime, host)
+        let result = self.run_function(program, 0, Vec::new(), &mut runtime, host)?;
+        self.drain_microtasks(program, &mut runtime, host)?;
+        Ok(result)
+    }
+
+    /// Runs every queued microtask to completion, including ones a microtask
+    /// itself queues, before returning control to the caller.
+    ///
+    /// This is the whole of what a microtask queue promises: work scheduled
+    /// during a script's execution runs after that script finishes and
+    /// before the caller regains control, in the order it was scheduled. One
+    /// task at a time — never a batch snapshot — so a task queuing another
+    /// sees it drained in this same flush rather than deferred to the next
+    /// external call into the interpreter.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first error any queued task produces. A microtask's
+    /// failure is not swallowed and does not let the remaining queue run
+    /// past it — this interpreter has no try/catch to isolate one task's
+    /// exception from another's, and every other failure mode here already
+    /// fails the whole call rather than continuing past a defect.
+    fn drain_microtasks(
+        &self,
+        program: &Program,
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<(), JsError> {
+        while !runtime.microtasks.is_empty() {
+            let task = runtime.microtasks.remove(0);
+            let (index, captured) = match task {
+                Value::Function(index) => (index, Vec::new()),
+                Value::Closure(handle) => closure_parts(runtime, handle)?,
+                // Op::QueueMicrotask type-checks before queuing; nothing else
+                // ever reaches this vector.
+                _ => continue,
+            };
+            self.run_function_with_upvalues(program, index, Vec::new(), &captured, runtime, host)?;
+        }
+        Ok(())
     }
 
     fn run_function(
@@ -2669,6 +2729,16 @@ impl Vm {
                 Op::LoadUpvalue(slot) => {
                     stack.push(upvalues.get(*slot).cloned().unwrap_or(Value::Undefined));
                 }
+                Op::QueueMicrotask => {
+                    let task = pop(&mut stack);
+                    if !matches!(task, Value::Function(_) | Value::Closure(_)) {
+                        return Err(JsError::TypeError {
+                            message: format!("queueMicrotask expects a function, got {task}"),
+                        });
+                    }
+                    runtime.microtasks.push(task);
+                    stack.push(Value::Undefined);
+                }
                 Op::Return => return Ok(pop(&mut stack)),
             }
             pointer += 1;
@@ -2760,11 +2830,16 @@ fn compare(stack: &mut Vec<Value>, decide: fn(i32) -> bool) {
 /// interpreter's values move between stack slots constantly. Registering,
 /// collecting, and clearing is more work per collection and cannot leak a root.
 fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
+    // Queued microtasks are live even though no frame currently references
+    // them: a closure sitting in the queue is exactly as reachable as one on
+    // the stack, and a collection between queuing and draining must not free
+    // it out from under the later call.
     let live = runtime
         .outer
         .iter()
         .chain(stack)
         .chain(locals)
+        .chain(&runtime.microtasks)
         .filter_map(|value| match value {
             Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
                 Some(*reference)
@@ -2861,6 +2936,12 @@ struct Runtime {
     outer: Vec<Value>,
     steps: u64,
     bytes: u64,
+    /// Functions and closures queued by `queueMicrotask`, FIFO. Drained after
+    /// the currently running top-level call finishes, in [`Vm::call`] and
+    /// [`Vm::run_with_host`] — the minimal event-loop primitive a runtime
+    /// needs to schedule work after the synchronous script that triggered it
+    /// returns, rather than during it.
+    microtasks: Vec<Value>,
 }
 
 /// How many objects may be allocated before a collection is attempted.
@@ -3600,6 +3681,149 @@ mod tests {
         assert_eq!(
             eval_in_fn("let a = [1, 2, 3]; a[1] += 10; return a[1];"),
             Value::Number(12.0)
+        );
+    }
+
+    /// Records each call made through `record(n)`, so a test can observe
+    /// what ran and in what order without a real embedder.
+    #[derive(Debug, Default)]
+    struct RecordingHost {
+        bindings: Bindings,
+        calls: Vec<f64>,
+    }
+
+    impl RecordingHost {
+        fn new() -> Self {
+            let mut bindings = Bindings::new();
+            bindings.register("Test", "record", 1);
+            Self {
+                bindings,
+                calls: Vec::new(),
+            }
+        }
+    }
+
+    impl Host for RecordingHost {
+        fn bindings(&self) -> &Bindings {
+            &self.bindings
+        }
+
+        fn invoke(
+            &mut self,
+            _interface: &str,
+            name: &str,
+            arguments: &[Value],
+        ) -> Result<Value, String> {
+            assert_eq!(name, "record");
+            self.calls.push(to_number(&arguments[0]));
+            Ok(Value::Undefined)
+        }
+    }
+
+    #[test]
+    fn queue_microtask_runs_after_the_synchronous_script_and_in_order() {
+        let program = compile(
+            "function main() { \
+                record(1); \
+                queueMicrotask(function() { record(3); }); \
+                record(2); \
+                queueMicrotask(function() { record(4); }); \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .call(&program, "main", Vec::new(), &mut host)
+            .expect("runs");
+        assert_eq!(
+            host.calls,
+            vec![1.0, 2.0, 3.0, 4.0],
+            "synchronous calls run first, in order; queued ones follow, in queue order"
+        );
+    }
+
+    #[test]
+    fn a_microtask_that_queues_another_is_drained_in_the_same_flush() {
+        let program = compile(
+            "function main() { \
+                queueMicrotask(function() { \
+                    record(1); \
+                    queueMicrotask(function() { record(2); }); \
+                }); \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .call(&program, "main", Vec::new(), &mut host)
+            .expect("runs");
+        assert_eq!(
+            host.calls,
+            vec![1.0, 2.0],
+            "a microtask queued during draining still runs before control returns"
+        );
+    }
+
+    #[test]
+    fn queue_microtask_accepts_a_closure_and_carries_its_captured_const() {
+        let program = compile(
+            "function main() { \
+                const tag = 42; \
+                queueMicrotask(function() { record(tag); }); \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .call(&program, "main", Vec::new(), &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![42.0]);
+    }
+
+    #[test]
+    fn queue_microtask_rejects_a_non_function_and_the_wrong_arity() {
+        let program = compile("function main() { queueMicrotask(5); } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
+        assert!(matches!(
+            compile("queueMicrotask();"),
+            Err(JsError::OperationArity { .. })
+        ));
+        assert!(matches!(
+            compile("queueMicrotask(a, b);"),
+            Err(JsError::OperationArity { .. })
+        ));
+    }
+
+    #[test]
+    fn a_queued_closure_survives_collection_before_it_runs() {
+        // The closure sits in the microtask queue, referenced from nowhere
+        // else, while allocation-heavy work runs before the queue drains. If
+        // the collector does not treat the queue as a root set, this
+        // reclaims the closure and the later call reads freed data instead
+        // of refusing cleanly or running correctly — it must do the latter.
+        let program = compile(
+            "function main() { \
+                const tag = 7; \
+                queueMicrotask(function() { record(tag); }); \
+                let i = 0; \
+                while (i < 200) { \
+                    let churn = { a: i, b: i }; \
+                    i = i + 1; \
+                } \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .call(&program, "main", Vec::new(), &mut host)
+            .expect("runs");
+        assert_eq!(
+            host.calls,
+            vec![7.0],
+            "the queued closure ran correctly after the churn"
         );
     }
 
