@@ -275,7 +275,16 @@ fn ordinary_script_nesting_still_parses() {
     // fix. Expressions nest single digits deep in practice.
     assert!(turing_js::compile("let a = ((((1 + 2))));").is_ok());
     assert!(turing_js::compile("if (1) { if (1) { if (1) { let a = 1; } } }").is_ok());
-    assert!(turing_js::compile("let a = ---1;").is_ok());
+    // Spaced triple negation parses as three nested unary minuses.
+    assert!(turing_js::compile("let a = - - -1;").is_ok());
+    // Unspaced `---1` is not the same program: the lexer takes `--` by
+    // maximal munch (the same rule real JS tokenizers use, and the one that
+    // makes `--`/`++` lex at all), leaving `- 1` as the operand of a prefix
+    // decrement — which is not an assignable target, so this is refused
+    // rather than silently reinterpreted as triple negation. Real JS engines
+    // reject `---1` the same way (SyntaxError), so this refusal is the
+    // spec-correct reading, not a regression.
+    assert!(turing_js::compile("let a = ---1;").is_err());
 }
 
 #[test]

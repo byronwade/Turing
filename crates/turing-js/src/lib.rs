@@ -23,10 +23,20 @@
 //!
 //! Implemented: numbers, strings, booleans, `null`, `undefined`, `var`/`let`/
 //! `const` bindings, arithmetic and comparison, logical operators with
-//! short-circuit evaluation, `if`/`else`, `while`, blocks with lexical
-//! scoping, function declarations, calls, recursion, `return`, objects with
-//! property access, arrays with indexing and `length`, and anonymous function
-//! *expressions* as first-class values with indirect calls.
+//! short-circuit evaluation, `if`/`else`, `while`, C-style `for`, prefix and
+//! postfix `++`/`--`, compound assignment (`+=`, `-=`, `*=`, `/=`), blocks
+//! with lexical scoping, function declarations, calls, recursion, `return`,
+//! objects with property access, arrays with indexing and `length`, and
+//! anonymous function *expressions* as first-class values with indirect
+//! calls.
+//!
+//! `for (init; condition; update)` desugars to a block holding the init and a
+//! `while`, so it needs no control-flow machinery beyond what `while` already
+//! has, and its loop variable is scoped to the enclosing block like any other
+//! `let`. `for...in` and `for...of` are not implemented and are refused as a
+//! parse error rather than misread as the C-style form. `++`/`--`/`+=` etc.
+//! desugar to ordinary assignment; incrementing anything but a plain variable
+//! (a property, an arbitrary expression) is refused.
 //!
 //! A function expression captures enclosing **`const`** bindings by value —
 //! a real closure for the safe case. Because a const cannot change, the
@@ -300,7 +310,6 @@ const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("switch", "switch"),
     ("import", "modules"),
     ("export", "modules"),
-    ("for", "for loops"),
     ("do", "do/while"),
 ];
 
@@ -382,7 +391,21 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
             index += 3;
             continue;
         }
-        if matches!(two, "==" | "!=" | "<=" | ">=" | "&&" | "||" | "=>") {
+        if matches!(
+            two,
+            "==" | "!="
+                | "<="
+                | ">="
+                | "&&"
+                | "||"
+                | "=>"
+                | "++"
+                | "--"
+                | "+="
+                | "-="
+                | "*="
+                | "/="
+        ) {
             tokens.push(Token::Punct(two.to_string()));
             index += 2;
             continue;
@@ -447,6 +470,12 @@ enum Expr {
     Lambda {
         parameters: Vec<String>,
         body: Vec<Stmt>,
+    },
+    /// Postfix `x++` / `x--`: assigns `x + delta` but evaluates to the old
+    /// value of `x`.
+    PostUpdate {
+        name: String,
+        delta: f64,
     },
     /// `{ a: 1, "b": 2 }`, in source order.
     ObjectLiteral {
@@ -676,6 +705,9 @@ impl Parser {
             let body = Box::new(self.parse_statement()?);
             return Ok(Stmt::While { condition, body });
         }
+        if self.check_keyword("for") {
+            return self.parse_for();
+        }
         if self.check_keyword("return") {
             self.position += 1;
             let value = if self.check_punct(";") || self.check_punct("}") {
@@ -757,6 +789,38 @@ impl Parser {
                 _ => Err(JsError::UnexpectedToken {
                     found: "expression".to_string(),
                     expected: "a variable or property on the left of `=`".to_string(),
+                }),
+            };
+        }
+        // Compound assignment `a += b` is `a = a + b`, and likewise for the
+        // other arithmetic operators. Desugaring keeps one assignment path.
+        if let Token::Punct(op) = self.peek()
+            && matches!(op.as_str(), "+=" | "-=" | "*=" | "/=")
+        {
+            let operator = op.trim_end_matches('=').to_string();
+            self.position += 1;
+            let right = Box::new(self.parse_assignment()?);
+            return match target {
+                Expr::Variable(name) => Ok(Expr::Assign {
+                    name: name.clone(),
+                    value: Box::new(Expr::Binary {
+                        operator,
+                        left: Box::new(Expr::Variable(name)),
+                        right,
+                    }),
+                }),
+                Expr::Member { object, key } => Ok(Expr::SetMember {
+                    object: object.clone(),
+                    key: key.clone(),
+                    value: Box::new(Expr::Binary {
+                        operator,
+                        left: Box::new(Expr::Member { object, key }),
+                        right,
+                    }),
+                }),
+                _ => Err(JsError::UnexpectedToken {
+                    found: "expression".to_string(),
+                    expected: "a variable or property before a compound assignment".to_string(),
                 }),
             };
         }
@@ -937,6 +1001,51 @@ impl Parser {
         Ok(left)
     }
 
+    /// `for (init; condition; update) body`, desugared to a block holding the
+    /// init and a `while`, so no new control-flow machinery is needed. The
+    /// enclosing block scopes the loop variable, and the update runs at the end
+    /// of each iteration — which is what putting it after the body in the
+    /// while's block achieves.
+    fn parse_for(&mut self) -> Result<Stmt, JsError> {
+        self.position += 1; // `for`
+        self.expect_punct("(")?;
+        let init = if self.eat_punct(";") {
+            None
+        } else {
+            // A declaration or expression statement, either way consuming its
+            // own `;`.
+            Some(self.parse_statement()?)
+        };
+        let condition = if self.check_punct(";") {
+            Expr::Boolean(true)
+        } else {
+            self.parse_expression()?
+        };
+        self.expect_punct(";")?;
+        let update = if self.check_punct(")") {
+            None
+        } else {
+            Some(self.parse_expression()?)
+        };
+        self.expect_punct(")")?;
+        let body = self.parse_statement()?;
+
+        let mut while_body = vec![body];
+        if let Some(update) = update {
+            while_body.push(Stmt::Expression(update));
+        }
+        let loop_statement = Stmt::While {
+            condition,
+            body: Box::new(Stmt::Block(while_body)),
+        };
+        let mut block = Vec::new();
+        if let Some(init) = init {
+            block.push(init);
+        }
+        block.push(loop_statement);
+        Ok(Stmt::Block(block))
+    }
+
     fn parse_unary(&mut self) -> Result<Expr, JsError> {
         self.enter()?;
         let expression = self.parse_unary_inner();
@@ -953,6 +1062,27 @@ impl Parser {
             let operand = Box::new(self.parse_unary()?);
             return Ok(Expr::Unary { operator, operand });
         }
+        // Prefix increment/decrement: `++x` is `x = x + 1` evaluating to the
+        // new value, which is the correct prefix semantics.
+        if let Token::Punct(value) = self.peek()
+            && matches!(value.as_str(), "++" | "--")
+        {
+            let delta = if value == "++" { 1.0 } else { -1.0 };
+            self.position += 1;
+            let Expr::Variable(name) = self.parse_unary()? else {
+                return Err(JsError::Unsupported {
+                    feature: "increment/decrement of anything but a variable".to_string(),
+                });
+            };
+            return Ok(Expr::Assign {
+                name: name.clone(),
+                value: Box::new(Expr::Binary {
+                    operator: "+".to_string(),
+                    left: Box::new(Expr::Variable(name)),
+                    right: Box::new(Expr::Number(delta)),
+                }),
+            });
+        }
         if self.check_keyword("typeof") {
             return Err(JsError::Unsupported {
                 feature: "typeof".to_string(),
@@ -963,7 +1093,22 @@ impl Parser {
 
     fn parse_primary(&mut self) -> Result<Expr, JsError> {
         let primary = self.parse_primary_base()?;
-        self.parse_member_suffix(primary)
+        let expression = self.parse_member_suffix(primary)?;
+        // Postfix increment/decrement evaluates to the *old* value, so it is
+        // its own node rather than a desugaring to assignment.
+        if let Token::Punct(value) = self.peek()
+            && matches!(value.as_str(), "++" | "--")
+        {
+            let Expr::Variable(name) = expression else {
+                return Err(JsError::Unsupported {
+                    feature: "postfix increment/decrement of anything but a variable".to_string(),
+                });
+            };
+            let delta = if value == "++" { 1.0 } else { -1.0 };
+            self.position += 1;
+            return Ok(Expr::PostUpdate { name, delta });
+        }
+        Ok(expression)
     }
 
     /// Consumes any run of `.name` and `[key]` suffixes.
@@ -1914,6 +2059,24 @@ impl Compiler {
                         upvalues: upvalues.len(),
                     });
                 }
+            }
+            Expr::PostUpdate { name, delta } => {
+                let (slot, constant) = self
+                    .resolve(name)
+                    .ok_or_else(|| JsError::UndefinedVariable { name: name.clone() })?;
+                if constant {
+                    return Err(JsError::AssignmentToConstant { name: name.clone() });
+                }
+                // Old value stays for the expression's result; Dup computes
+                // the new value from a copy, StoreLocal writes it back (and
+                // re-pushes it per its own contract), and the trailing Pop
+                // discards that pushed copy so only the old value remains.
+                self.code.push(Op::LoadLocal(slot));
+                self.code.push(Op::Dup);
+                self.code.push(Op::Const(Value::Number(*delta)));
+                self.code.push(Op::Add);
+                self.code.push(Op::StoreLocal(slot));
+                self.code.push(Op::Pop);
             }
         }
         Ok(())
@@ -3042,7 +3205,6 @@ mod tests {
             ("class A {}", "class"),
             ("try { } catch (e) { }", "try"),
             ("async function f() {}", "async"),
-            ("for (;;) {}", "for"),
             ("new Thing();", "new"),
             ("import x from \"y\";", "import"),
             ("switch (a) {}", "switch"),
@@ -3291,6 +3453,86 @@ mod tests {
         assert!(matches!(
             compile("let a = [...b];"),
             Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn for_loops_desugar_correctly() {
+        // Classic counted loop: sum 0..5.
+        assert_eq!(
+            eval_in_fn(
+                "let sum = 0; \
+                 for (let i = 0; i < 5; i = i + 1) { sum = sum + i; } \
+                 return sum;"
+            ),
+            Value::Number(10.0)
+        );
+        // The loop variable is scoped to the for statement's block, not
+        // visible after — a second `let i` outside must not collide.
+        assert_eq!(
+            eval_in_fn(
+                "for (let i = 0; i < 3; i = i + 1) {} \
+                 let i = 99; \
+                 return i;"
+            ),
+            Value::Number(99.0)
+        );
+        // Omitted clauses: no init, no update, and a body that exits itself.
+        assert_eq!(
+            eval_in_fn(
+                "let n = 0; \
+                 for (;;) { n = n + 1; if (n >= 3) { return n; } }"
+            ),
+            Value::Number(3.0)
+        );
+    }
+
+    #[test]
+    fn increment_and_decrement_operators() {
+        // Prefix returns the new value.
+        assert_eq!(eval_in_fn("let x = 5; return ++x;"), Value::Number(6.0));
+        assert_eq!(eval_in_fn("let x = 5; return --x;"), Value::Number(4.0));
+        // Postfix returns the old value but still mutates.
+        assert_eq!(
+            eval_in_fn("let x = 5; let old = x++; return old;"),
+            Value::Number(5.0)
+        );
+        assert_eq!(eval_in_fn("let x = 5; x++; return x;"), Value::Number(6.0));
+        assert_eq!(eval_in_fn("let x = 5; x--; return x;"), Value::Number(4.0));
+        // Incrementing a const is refused, like any other assignment to one.
+        assert!(matches!(
+            compile("function main() { const x = 1; x++; } main();"),
+            Err(JsError::AssignmentToConstant { .. })
+        ));
+    }
+
+    #[test]
+    fn compound_assignment_operators() {
+        assert_eq!(
+            eval_in_fn("let x = 5; x += 3; return x;"),
+            Value::Number(8.0)
+        );
+        assert_eq!(
+            eval_in_fn("let x = 5; x -= 3; return x;"),
+            Value::Number(2.0)
+        );
+        assert_eq!(
+            eval_in_fn("let x = 5; x *= 3; return x;"),
+            Value::Number(15.0)
+        );
+        assert_eq!(
+            eval_in_fn("let x = 6; x /= 3; return x;"),
+            Value::Number(2.0)
+        );
+        // Compound assignment to an object property.
+        assert_eq!(
+            eval_in_fn("let o = { n: 5 }; o.n += 10; return o.n;"),
+            Value::Number(15.0)
+        );
+        // Compound assignment to a const is refused.
+        assert!(matches!(
+            compile("function main() { const x = 1; x += 1; } main();"),
+            Err(JsError::AssignmentToConstant { .. })
         ));
     }
 
