@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html><head><style>
+body { background: hsl(222, 47%, 11%); margin: 0; }
+.wrap { padding: 20px; }
+.row { background: hsl(217, 33%, 20%); color: white; border-radius: 8px; padding: 12px; margin: 0 0 10px 0; }
+.tag { background: hsl(160, 84%, 39%); color: white; border-radius: 6px; padding: 8px; text-align: center; }
+</style></head>
+<body></body>
+<script>
+function render() {
+  let root = documentBody();
+  let wrap = createElement('div');
+  setNodeAttribute(wrap, 'class', 'wrap');
+  appendChild(root, wrap);
+  let titles = ['Built by the engine running JS', 'Each row is createElement + appendChild', 'No row exists in the source HTML'];
+  let i = 0;
+  while (i < 3) {
+    let row = createElement('div');
+    setNodeAttribute(row, 'class', 'row');
+    appendChild(row, createText(titles[i]));
+    appendChild(wrap, row);
+    i = i + 1;
+  }
+  let tag = createElement('div');
+  setNodeAttribute(tag, 'class', 'tag');
+  appendChild(tag, createText('This subtree was constructed by script'));
+  appendChild(wrap, tag);
+}
+render();
+</script>
+</html>

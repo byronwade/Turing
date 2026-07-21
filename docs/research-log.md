@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-20 - Script builds the DOM: the renderer's vocabulary, bound
+
+The application runtime needs script to *build* UI, not only mutate it. React's host configuration is a handful of operations — createElement, createTextNode, appendChild, setAttribute — over opaque host handles. Those five are now bound (`documentBody`, `createElement`, `createText`, `appendChild`, `setNodeAttribute`), and a script can construct a subtree the engine then lays out and paints.
+
+The design question was how a node crosses into script, and the earlier binding deliberately refused to let it: a node is an arena index, script values live on a different heap, and a raw index handed to the interpreter's tracing could be mistaken for a heap pointer. The resolution keeps that safety while adding the capability: a handle crosses as a plain `Number` equal to the arena index. The interpreter traces it as a number, never as a pointer, so the address-space confusion cannot arise — a handle held across a collection is still just a number. The index is stable because construction only appends; nodes are never removed or reindexed, so a handle cannot come to mean a different node, and an out-of-range handle fails on use because `NodeId` access is bounds-checked. All five join the mutating set `read_only` revokes.
+
+The proof is a page whose `<body>` is empty in source and whose entire UI — three rows built by a `while` loop indexing an array of titles, plus a tag — exists only because the script ran: createElement, setNodeAttribute, createText, appendChild, then the normal cascade, layout, and paint. It combines this rung with the arrays rung from earlier today; together they are the createElement-over-children shape a real renderer is built on.
+
+The workspace is at 404 tests. This is APP-3. The gap to a real React runtime is now closures (APP-2) and an event loop (APP-4) more than DOM surface — the renderer's calls exist; what is missing is the language to express the renderer.
+
 ## 2026-07-20 - Arrays, and the runtime target that made them the priority
 
 The owner redirected the goal: the engine should render the Nova React source as the real system UI and run real React/Next.js/TanStack apps — Electron-class, on the from-scratch engine. `docs/application-runtime/` states that target honestly, including that it extends the browser-only charter and conflicts with ADR-0008 (trusted chrome independent of the engine), and so requires those owner decisions to be revisited rather than assumed. The first rung is already standing: the engine renders framework *server-rendered output* today, proven by a Next.js-style dashboard fixture that goes through the normal pipeline untouched.
