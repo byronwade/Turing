@@ -123,6 +123,11 @@ struct Browser {
     /// Whether the pointer was over the chrome bar at the last move, so
     /// hover redraws happen when entering, moving inside, or leaving it.
     hover_in_bar: bool,
+    /// `Some(grab_offset)` while the scrollbar thumb is being dragged: the
+    /// distance from the press point to the thumb's own top edge, held
+    /// constant for the drag's duration so the thumb tracks the cursor at a
+    /// fixed offset rather than re-centring under it every frame.
+    scrollbar_drag: Option<f32>,
 }
 
 impl Browser {
@@ -140,6 +145,7 @@ impl Browser {
             cursor: PhysicalPosition::new(0.0, 0.0),
             modifiers: Modifiers::default(),
             hover_in_bar: false,
+            scrollbar_drag: None,
         };
         let tab = browser.open_tab(source)?;
         browser.tabs.push(tab);
@@ -397,6 +403,57 @@ impl Browser {
         }
     }
 
+    /// The scrollbar thumb's rect in window coordinates, or `None` when
+    /// there is nowhere to scroll — the same condition `compose` uses to
+    /// decide whether to paint one. Shared between paint and hit testing so
+    /// a drag always grabs exactly the rectangle the user can see.
+    fn scrollbar_thumb_rect(
+        &self,
+        window_width: f32,
+        window_height: f32,
+    ) -> Option<turing_layout::Rect> {
+        let bar = turing_chrome::bar_height();
+        let viewport = window_height - bar;
+        let tab = self.active_tab();
+        let content = tab.page.content_height();
+        if content <= viewport || viewport <= 0.0 {
+            return None;
+        }
+        let thumb_height = (viewport / content * viewport).max(24.0);
+        let travel = viewport - thumb_height;
+        let progress = (tab.scroll_y / (content - viewport)).clamp(0.0, 1.0);
+        Some(turing_layout::Rect {
+            x: window_width - 8.0,
+            y: progress.mul_add(travel, bar),
+            width: 6.0,
+            height: thumb_height,
+        })
+    }
+
+    /// Sets `scroll_y` from a scrollbar drag's absolute cursor position, given
+    /// the offset from the drag's start to where the thumb's top edge was
+    /// grabbed — so the thumb tracks the cursor at a fixed offset rather than
+    /// re-centring on it, which is what makes a drag feel anchored instead of
+    /// jumpy at the moment it starts.
+    fn scroll_to_drag(&mut self, cursor_y: f32, grab_offset: f32, window_height: f32) {
+        let bar = turing_chrome::bar_height();
+        let viewport = window_height - bar;
+        let tab = self.active_tab();
+        let content = tab.page.content_height();
+        if content <= viewport || viewport <= 0.0 {
+            return;
+        }
+        let thumb_height = (viewport / content * viewport).max(24.0);
+        let travel = viewport - thumb_height;
+        let thumb_top = cursor_y - grab_offset;
+        let progress = if travel > 0.0 {
+            ((thumb_top - bar) / travel).clamp(0.0, 1.0)
+        } else {
+            0.0
+        };
+        self.active_tab_mut().scroll_y = progress * (content - viewport);
+    }
+
     /// Composes page, chrome, and palette into one display list.
     ///
     /// Paint order is the compositing model: the page first (translated below
@@ -451,22 +508,19 @@ impl Browser {
 
         // Scrollbar: a translucent rounded thumb over the page area,
         // proportional to the visible fraction, only when there is anywhere
-        // to scroll.
-        let viewport = window_height - bar;
-        let content = tab.page.content_height();
-        if content > viewport && viewport > 0.0 {
-            let thumb_height = (viewport / content * viewport).max(24.0);
-            let travel = viewport - thumb_height;
-            let progress = (tab.scroll_y / (content - viewport)).clamp(0.0, 1.0);
+        // to scroll. The same rect hit testing grabs for a drag, so the two
+        // can never disagree about where the thumb is.
+        if let Some(rect) = self.scrollbar_thumb_rect(window_width, window_height) {
             list.items.push(PaintItem::Fill {
-                rect: turing_layout::Rect {
-                    x: window_width - 8.0,
-                    y: progress.mul_add(travel, bar),
-                    width: 6.0,
-                    height: thumb_height,
-                },
+                rect,
                 color: self.theme.text3,
-                alpha: 0.5,
+                // A touch more opaque mid-drag: the one piece of feedback
+                // that tells the user the thumb is theirs to move right now.
+                alpha: if self.scrollbar_drag.is_some() {
+                    0.75
+                } else {
+                    0.5
+                },
                 radius: 3.0,
             });
         }
@@ -574,6 +628,22 @@ impl Browser {
         if self.palette.is_some() {
             self.palette = None;
             self.request_redraw();
+            return;
+        }
+
+        // A press on the scrollbar thumb starts a drag rather than routing
+        // to the chrome or the page underneath it; the thumb floats over
+        // both. The grab offset — where within the thumb the press
+        // landed — is what CursorMoved needs to keep the thumb tracking the
+        // cursor at a fixed point instead of jumping to re-centre under it.
+        let (window_width, window_height) = self.window_size();
+        if let Some(thumb) = self.scrollbar_thumb_rect(window_width, window_height)
+            && window_point.x >= thumb.x
+            && window_point.x < thumb.x + thumb.width
+            && window_point.y >= thumb.y
+            && window_point.y < thumb.y + thumb.height
+        {
+            self.scrollbar_drag = Some(window_point.y - thumb.y);
             return;
         }
 
@@ -720,6 +790,12 @@ impl ApplicationHandler for Browser {
             }
             WindowEvent::CursorMoved { position, .. } => {
                 self.cursor = position;
+                if let Some(grab_offset) = self.scrollbar_drag {
+                    let window_height = self.window_size().1;
+                    self.scroll_to_drag(self.cursor_point().y, grab_offset, window_height);
+                    self.request_redraw();
+                    return;
+                }
                 let in_bar = self.cursor_point().y < turing_chrome::bar_height();
                 // Redraw while over the bar or on leaving it, so hover
                 // affordances appear and disappear; page hover is not a
@@ -745,6 +821,16 @@ impl ApplicationHandler for Browser {
                 button: MouseButton::Left,
                 ..
             } => self.click(),
+            WindowEvent::MouseInput {
+                state: ElementState::Released,
+                button: MouseButton::Left,
+                ..
+            } => {
+                // Ending a drag that never started is harmless: `Option::take`
+                // on `None` is a no-op, so an ordinary release after a click
+                // (which never sets `scrollbar_drag`) does nothing here.
+                self.scrollbar_drag.take();
+            }
             WindowEvent::KeyboardInput { event, .. } if event.state == ElementState::Pressed => {
                 if self.palette_key(&event.logical_key) {
                     return;
@@ -840,5 +926,122 @@ fn main() -> ExitCode {
             eprintln!("turing-browser: {error}");
             ExitCode::FAILURE
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A page tall enough to overflow any reasonable viewport: enough
+    /// stacked, margined divs that layout's block flow gives it real height
+    /// rather than relying on any one element's declared size.
+    fn tall_page() -> String {
+        let rows: String = (0..80)
+            .map(|i| format!("<div id='r{i}'>row {i}</div>"))
+            .collect();
+        format!("<html><body>{rows}</body></html>")
+    }
+
+    /// A `Browser` with no attached OS window — `window_size` falls back to
+    /// `INITIAL_WIDTH`/`INITIAL_HEIGHT`, which is exactly the fallback this
+    /// method exists to make the geometry testable without one.
+    fn windowless(html: &str) -> Browser {
+        let mut browser = Browser::new(PageSource::BuiltIn).expect("builds");
+        browser.tabs[0].page = Page::load(html, INITIAL_WIDTH as f32).expect("loads");
+        browser
+    }
+
+    #[test]
+    fn no_thumb_when_content_fits_the_viewport() {
+        let browser = windowless("<html><body><p>short</p></body></html>");
+        assert!(
+            browser
+                .scrollbar_thumb_rect(INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32)
+                .is_none(),
+            "a page shorter than the viewport has nothing to scroll"
+        );
+    }
+
+    #[test]
+    fn a_thumb_appears_and_sits_at_the_top_before_any_scroll() {
+        let browser = windowless(&tall_page());
+        let (width, height) = (INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32);
+        let thumb = browser
+            .scrollbar_thumb_rect(width, height)
+            .expect("the tall page overflows");
+        let bar = turing_chrome::bar_height();
+        assert!(
+            thumb.y >= bar - 0.01,
+            "the thumb never starts above the bar"
+        );
+        assert!(
+            (thumb.y - bar).abs() < 1.0,
+            "scroll_y is zero, so the thumb starts at the very top of the track: {thumb:?}"
+        );
+        assert!(thumb.height > 0.0 && thumb.height < height - bar);
+    }
+
+    #[test]
+    fn dragging_the_thumb_to_the_bottom_scrolls_to_the_bottom() {
+        let mut browser = windowless(&tall_page());
+        let (width, height) = (INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32);
+        let thumb = browser
+            .scrollbar_thumb_rect(width, height)
+            .expect("overflows");
+
+        // Grab the thumb at its own top edge (offset zero) and drag far past
+        // the bottom of the track; the drag must clamp rather than overshoot.
+        browser.scroll_to_drag(height * 10.0, 0.0, height);
+
+        let max_scroll = browser.active_tab().page.content_height() - browser.page_height();
+        assert!(
+            (browser.active_tab().scroll_y - max_scroll).abs() < 0.5,
+            "dragging past the end clamps to the maximum scroll: {} vs {max_scroll}",
+            browser.active_tab().scroll_y
+        );
+
+        // And the thumb the next paint would draw has moved down to meet it.
+        let after = browser
+            .scrollbar_thumb_rect(width, height)
+            .expect("still overflows");
+        assert!(
+            after.y > thumb.y,
+            "the thumb visibly moved toward the bottom of the track"
+        );
+    }
+
+    #[test]
+    fn the_grab_offset_keeps_the_thumb_under_the_cursor_rather_than_recentring() {
+        let mut browser = windowless(&tall_page());
+        let (width, height) = (INITIAL_WIDTH as f32, INITIAL_HEIGHT as f32);
+        let thumb = browser
+            .scrollbar_thumb_rect(width, height)
+            .expect("overflows");
+
+        // Grab 5px into the thumb, then move the cursor to a specific
+        // absolute position. The thumb's new top must sit exactly
+        // `grab_offset` above the cursor, not jump to be centred on it.
+        let grab_offset = 5.0;
+        let cursor_y = thumb.y + 40.0;
+        browser.scroll_to_drag(cursor_y, grab_offset, height);
+
+        let after = browser
+            .scrollbar_thumb_rect(width, height)
+            .expect("still overflows");
+        assert!(
+            (after.y - (cursor_y - grab_offset)).abs() < 1.0,
+            "the thumb's top must track cursor_y - grab_offset: thumb.y={} expected={}",
+            after.y,
+            cursor_y - grab_offset
+        );
+    }
+
+    #[test]
+    fn a_release_with_no_active_drag_is_harmless() {
+        let mut browser = windowless(&tall_page());
+        // No press ever happened, so `scrollbar_drag` is already `None`;
+        // `Option::take` on `None` must not panic or otherwise misbehave.
+        assert!(browser.scrollbar_drag.take().is_none());
     }
 }
