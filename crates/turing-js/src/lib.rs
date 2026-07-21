@@ -52,7 +52,8 @@
 //! Everything else returns a typed error rather than a partial evaluation:
 //! by-reference capture of mutable bindings, multi-level capture, named
 //! function expressions, `class`, `try`/`catch`, `async`/`await`, generators,
-//! regular expressions, modules, `eval`, array/object spread, and prototype
+//! regular expressions, modules, `eval`, array-literal and call-argument
+//! spread (object-literal spread, `{...x}`, is implemented), and prototype
 //! semantics.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
@@ -585,9 +586,9 @@ enum Expr {
         operator: String,
         right: Box<Expr>,
     },
-    /// `{ a: 1, "b": 2 }`, in source order.
+    /// `{ a: 1, ...rest, "b": 2 }`, in source order.
     ObjectLiteral {
-        entries: Vec<(String, Expr)>,
+        entries: Vec<ObjectEntry>,
     },
     /// `[a, b, c]`, in source order.
     ArrayLiteral {
@@ -626,6 +627,21 @@ enum Expr {
         name: String,
         arguments: Vec<Expr>,
     },
+}
+
+/// One entry of an object literal.
+#[derive(Clone, Debug, PartialEq)]
+enum ObjectEntry {
+    /// `key: value`.
+    Property(String, Expr),
+    /// `...expr` — copies every own property of the evaluated value onto
+    /// the object under construction. `null`/`undefined` spread nothing
+    /// (matching real JS); any other non-object/array value refuses rather
+    /// than silently spreading nothing, since that could hide a real
+    /// mistake (e.g. spreading a string, which real JS would spread as
+    /// per-index characters — a case this engine does not model) instead
+    /// of matching a genuine no-op case.
+    Spread(Expr),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1476,12 +1492,12 @@ impl<'a> Parser<'a> {
         }
     }
 
-    /// Parses `{ a: 1, "b": 2 }`.
+    /// Parses `{ a: 1, ...rest, "b": 2 }`.
     ///
     /// Keys are identifiers, strings, or numbers, which is what the object
     /// initialiser grammar allows without computed keys. Computed keys,
-    /// shorthand, methods, and spread are refused rather than partly handled:
-    /// each changes what the initialiser means, not merely how it is written.
+    /// shorthand, and methods are refused rather than partly handled: each
+    /// changes what the initialiser means, not merely how it is written.
     fn parse_object_literal(&mut self) -> Result<Expr, JsError> {
         self.expect_punct("{")?;
         let mut entries = Vec::new();
@@ -1491,10 +1507,12 @@ impl<'a> Parser<'a> {
                     feature: "computed property keys".to_string(),
                 });
             }
-            if self.check_punct("...") {
-                return Err(JsError::Unsupported {
-                    feature: "object spread".to_string(),
-                });
+            if self.eat_punct("...") {
+                entries.push(ObjectEntry::Spread(self.parse_assignment()?));
+                if !self.eat_punct(",") {
+                    break;
+                }
+                continue;
             }
             let key = match self.advance() {
                 Token::Ident(name) => name,
@@ -1512,7 +1530,7 @@ impl<'a> Parser<'a> {
                     feature: "shorthand and method properties".to_string(),
                 });
             }
-            entries.push((key, self.parse_assignment()?));
+            entries.push(ObjectEntry::Property(key, self.parse_assignment()?));
             if !self.eat_punct(",") {
                 break;
             }
@@ -2152,7 +2170,10 @@ impl<'a> Parser<'a> {
             Expr::Str(tag_name.clone())
         };
         let props_arg = Expr::ObjectLiteral {
-            entries: attributes,
+            entries: attributes
+                .into_iter()
+                .map(|(key, value)| ObjectEntry::Property(key, value))
+                .collect(),
         };
 
         if self.byte_at(after_attrs) == Some(b'/') {
@@ -2433,6 +2454,10 @@ pub enum Op {
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
     SetProperty,
+    /// Pop source, then target; copy every own property of `source` onto
+    /// `target` (spreading nothing for `null`/`undefined`) and push
+    /// `target` back. Used by object-literal spread (`{...source}`).
+    SpreadInto,
     Add,
     Sub,
     Mul,
@@ -3017,17 +3042,27 @@ impl Compiler {
             }
             Expr::ObjectLiteral { entries } => {
                 self.code.push(Op::NewObject);
-                for (key, value) in entries {
-                    // SetProperty consumes the object, so each entry works on a
-                    // copy and the original stays for the next one. Without the
-                    // duplicate the first property empties the stack and every
-                    // later access reads a property of `undefined`.
+                for entry in entries {
+                    // Both SetProperty and SpreadInto consume the object, so
+                    // each entry works on a copy and the original stays for
+                    // the next one. Without the duplicate the first entry
+                    // empties the stack and every later access reads a
+                    // property of `undefined`.
                     self.code.push(Op::Dup);
-                    self.code.push(Op::Const(Value::String(key.clone())));
-                    self.expression(value)?;
-                    self.code.push(Op::SetProperty);
-                    // SetProperty leaves the assigned value; drop it so only the
-                    // object remains.
+                    match entry {
+                        ObjectEntry::Property(key, value) => {
+                            self.code.push(Op::Const(Value::String(key.clone())));
+                            self.expression(value)?;
+                            self.code.push(Op::SetProperty);
+                        }
+                        ObjectEntry::Spread(source) => {
+                            self.expression(source)?;
+                            self.code.push(Op::SpreadInto);
+                        }
+                    }
+                    // Both ops leave a value (SetProperty the assigned value,
+                    // SpreadInto the object itself); drop it so only the
+                    // original object remains.
                     self.code.push(Op::Pop);
                 }
             }
@@ -3702,6 +3737,60 @@ impl Vm {
                     }
                     stack.push(value);
                 }
+                Op::SpreadInto => {
+                    let source = pop(&mut stack);
+                    let target = pop(&mut stack);
+                    // Matched on a reference, not moved, so `target` is
+                    // still whole afterward to push back below.
+                    let handle = match &target {
+                        Value::Object(handle) | Value::Array(handle) => *handle,
+                        _ => {
+                            return Err(JsError::TypeError {
+                                message: format!("cannot spread into {target}"),
+                            });
+                        }
+                    };
+                    // Real JS spreads own enumerable properties of an
+                    // object/array and treats null/undefined as spreading
+                    // nothing at all (`{...null}` is `{}`); anything else
+                    // refuses rather than silently spreading nothing, so a
+                    // real mistake (spreading a number, a function) is
+                    // never mistaken for a legitimate no-op.
+                    let source_entries: Vec<(String, Value)> = match &source {
+                        Value::Undefined | Value::Null => Vec::new(),
+                        Value::Object(source_handle) | Value::Array(source_handle) => runtime
+                            .heap
+                            .get(*source_handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?
+                            .entries
+                            .clone(),
+                        other => {
+                            return Err(JsError::TypeError {
+                                message: format!("cannot spread {other}"),
+                            });
+                        }
+                    };
+                    let object =
+                        runtime
+                            .heap
+                            .get_mut(handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    let mut charged = 0u64;
+                    for (key, value) in source_entries {
+                        charged += object.set(key, value) as u64;
+                    }
+                    runtime.bytes = runtime.bytes.saturating_add(charged);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    stack.push(target);
+                }
                 Op::Sub => binary_number(&mut stack, |a, b| a - b),
                 Op::Mul => binary_number(&mut stack, |a, b| a * b),
                 Op::Div => binary_number(&mut stack, |a, b| a / b),
@@ -3971,7 +4060,15 @@ impl Vm {
             });
         }
         if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+            // `elements` is about to be stored into the array this call is
+            // building, but it isn't reachable from stack/locals/outer/
+            // globals yet — without rooting it here, this exact collection
+            // pass would free it before it's installed, leaving the new
+            // array holding dangling handles.
+            let restore = runtime.outer.len();
+            runtime.outer.extend(elements.iter().cloned());
             collect_now(runtime, stack, locals);
+            runtime.outer.truncate(restore);
         }
         let mut data = ObjectData::default();
         for (index, element) in elements.into_iter().enumerate() {
@@ -4184,12 +4281,24 @@ impl Vm {
                     .ok_or_else(|| JsError::TypeError {
                         message: format!("{name} requires a callback argument"),
                     })?;
+                // `elements` and the Rust-side accumulator each method
+                // builds up (`mapped`/`kept`) live outside stack/locals for
+                // the whole loop — `collect_now` cannot see them on its
+                // own. Any one callback call below may allocate enough
+                // inside its own body to cross the collection threshold, so
+                // the not-yet-visited elements plus everything accumulated
+                // so far are rooted via `runtime.outer` around every call
+                // and un-rooted right after, mirroring how `call_callback`
+                // already roots its own frame.
                 match name {
                     "map" => {
-                        let mut mapped = Vec::with_capacity(elements.len());
-                        for (index, element) in elements.into_iter().enumerate() {
-                            let args = vec![element, Value::Number(index as f64)];
-                            mapped.push(self.call_callback(
+                        let mut mapped: Vec<Value> = Vec::with_capacity(elements.len());
+                        for index in 0..elements.len() {
+                            let args = vec![elements[index].clone(), Value::Number(index as f64)];
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            runtime.outer.extend(mapped.iter().cloned());
+                            let result = self.call_callback(
                                 program,
                                 callback.clone(),
                                 args,
@@ -4197,35 +4306,42 @@ impl Vm {
                                 locals,
                                 runtime,
                                 host,
-                            )?);
+                            );
+                            runtime.outer.truncate(restore);
+                            mapped.push(result?);
                         }
                         self.allocate_array(runtime, stack, locals, mapped)
                     }
                     "filter" => {
-                        let mut kept = Vec::new();
-                        for (index, element) in elements.into_iter().enumerate() {
+                        let mut kept: Vec<Value> = Vec::new();
+                        for index in 0..elements.len() {
+                            let element = elements[index].clone();
                             let args = vec![element.clone(), Value::Number(index as f64)];
-                            let keep = self
-                                .call_callback(
-                                    program,
-                                    callback.clone(),
-                                    args,
-                                    stack,
-                                    locals,
-                                    runtime,
-                                    host,
-                                )?
-                                .truthy();
-                            if keep {
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            runtime.outer.extend(kept.iter().cloned());
+                            let keep = self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            );
+                            runtime.outer.truncate(restore);
+                            if keep?.truthy() {
                                 kept.push(element);
                             }
                         }
                         self.allocate_array(runtime, stack, locals, kept)
                     }
                     "forEach" => {
-                        for (index, element) in elements.into_iter().enumerate() {
-                            let args = vec![element, Value::Number(index as f64)];
-                            self.call_callback(
+                        for index in 0..elements.len() {
+                            let args = vec![elements[index].clone(), Value::Number(index as f64)];
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            let result = self.call_callback(
                                 program,
                                 callback.clone(),
                                 args,
@@ -4233,65 +4349,71 @@ impl Vm {
                                 locals,
                                 runtime,
                                 host,
-                            )?;
+                            );
+                            runtime.outer.truncate(restore);
+                            result?;
                         }
                         Ok(Value::Undefined)
                     }
                     "find" => {
-                        for (index, element) in elements.into_iter().enumerate() {
+                        for index in 0..elements.len() {
+                            let element = elements[index].clone();
                             let args = vec![element.clone(), Value::Number(index as f64)];
-                            let matched = self
-                                .call_callback(
-                                    program,
-                                    callback.clone(),
-                                    args,
-                                    stack,
-                                    locals,
-                                    runtime,
-                                    host,
-                                )?
-                                .truthy();
-                            if matched {
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            let matched = self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            );
+                            runtime.outer.truncate(restore);
+                            if matched?.truthy() {
                                 return Ok(element);
                             }
                         }
                         Ok(Value::Undefined)
                     }
                     "findIndex" => {
-                        for (index, element) in elements.into_iter().enumerate() {
-                            let args = vec![element, Value::Number(index as f64)];
-                            let matched = self
-                                .call_callback(
-                                    program,
-                                    callback.clone(),
-                                    args,
-                                    stack,
-                                    locals,
-                                    runtime,
-                                    host,
-                                )?
-                                .truthy();
-                            if matched {
+                        for index in 0..elements.len() {
+                            let args = vec![elements[index].clone(), Value::Number(index as f64)];
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            let matched = self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            );
+                            runtime.outer.truncate(restore);
+                            if matched?.truthy() {
                                 return Ok(Value::Number(index as f64));
                             }
                         }
                         Ok(Value::Number(-1.0))
                     }
                     "some" => {
-                        for (index, element) in elements.into_iter().enumerate() {
-                            let args = vec![element, Value::Number(index as f64)];
-                            let matched = self
-                                .call_callback(
-                                    program,
-                                    callback.clone(),
-                                    args,
-                                    stack,
-                                    locals,
-                                    runtime,
-                                    host,
-                                )?
-                                .truthy();
-                            if matched {
+                        for index in 0..elements.len() {
+                            let args = vec![elements[index].clone(), Value::Number(index as f64)];
+                            let restore = runtime.outer.len();
+                            runtime.outer.extend(elements[index..].iter().cloned());
+                            let matched = self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            );
+                            runtime.outer.truncate(restore);
+                            if matched?.truthy() {
                                 return Ok(Value::Boolean(true));
                             }
                         }
@@ -4308,20 +4430,31 @@ impl Vm {
                     .ok_or_else(|| JsError::TypeError {
                         message: "reduce requires a callback argument".to_string(),
                     })?;
-                let mut iter = elements.into_iter().enumerate();
+                let mut index = 0usize;
                 let mut accumulator = if let Some(initial) = arguments.get(1) {
                     initial.clone()
                 } else {
-                    let Some((_, first)) = iter.next() else {
+                    let Some(first) = elements.first().cloned() else {
                         return Err(JsError::TypeError {
                             message: "reduce of empty array with no initial value".to_string(),
                         });
                     };
+                    index = 1;
                     first
                 };
-                for (index, element) in iter {
-                    let args = vec![accumulator, element, Value::Number(index as f64)];
-                    accumulator = self.call_callback(
+                while index < elements.len() {
+                    let args = vec![
+                        accumulator.clone(),
+                        elements[index].clone(),
+                        Value::Number(index as f64),
+                    ];
+                    // Roots both the not-yet-visited elements and the
+                    // in-flight accumulator — same reasoning as the
+                    // map/filter/etc. loop above.
+                    let restore = runtime.outer.len();
+                    runtime.outer.extend(elements[index..].iter().cloned());
+                    runtime.outer.push(accumulator.clone());
+                    let result = self.call_callback(
                         program,
                         callback.clone(),
                         args,
@@ -4329,7 +4462,10 @@ impl Vm {
                         locals,
                         runtime,
                         host,
-                    )?;
+                    );
+                    runtime.outer.truncate(restore);
+                    accumulator = result?;
+                    index += 1;
                 }
                 Ok(accumulator)
             }
@@ -6151,6 +6287,76 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn object_spread_copies_own_properties() {
+        assert_eq!(
+            eval_in_fn("let a = { x: 1, y: 2 }; let b = { ...a }; return b.x + b.y;"),
+            Value::Number(3.0)
+        );
+        // A later explicit property, spread, or repeated key always wins
+        // over an earlier one — spreading is just an ordinary sequence of
+        // property writes in source order, not a special merge rule.
+        assert_eq!(
+            eval_in_fn("let b = { x: 1, ...{ x: 2 } }; return b.x;"),
+            Value::Number(2.0),
+            "a spread after an explicit property overrides it"
+        );
+        assert_eq!(
+            eval_in_fn("let a = { x: 1 }; let b = { ...a, x: 3 }; return b.x;"),
+            Value::Number(3.0),
+            "an explicit property after a spread overrides it"
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let a = { x: 1, y: 2 }; let b = { ...a, y: 9, z: 3 }; \
+                 return b.x + b.y + b.z;"
+            ),
+            Value::Number(13.0),
+            "spread properties merge alongside explicit ones, not instead of them"
+        );
+    }
+
+    #[test]
+    fn object_spread_of_null_or_undefined_spreads_nothing() {
+        assert_eq!(
+            eval_in_fn("let b = { ...null, ...undefined, x: 1 }; return b.x;"),
+            Value::Number(1.0)
+        );
+    }
+
+    #[test]
+    fn object_spread_of_a_non_object_is_a_typed_refusal_not_a_panic() {
+        let program = compile("function main() { return { ...5 }; } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn object_spread_matches_the_real_nova_style_merge_pattern() {
+        // The exact shape Nova's real `Fav` component uses (turing-nova-
+        // design-source.jsx:1707-1711): a style object built by spreading a
+        // fallback-or-override object and then adding two more properties.
+        assert_eq!(
+            eval_in_fn(
+                "let ff = { style: { background: \"red\" } }; \
+                 let s = { ...(ff.style || { background: \"var(--c4)\" }), width: 15, height: 15 }; \
+                 return s.background;"
+            ),
+            Value::String("red".to_string())
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let ff = {}; \
+                 let s = { ...(ff.style || { background: \"var(--c4)\" }), width: 15, height: 15 }; \
+                 return s.background;"
+            ),
+            Value::String("var(--c4)".to_string()),
+            "no style on ff falls back to the default background"
+        );
+    }
     // -- collection ------------------------------------------------------
 
     /// Allocates well past the collection trigger, so any test using it is
@@ -6221,6 +6427,46 @@ mod tests {
             allocations_beyond_trigger()
         );
         assert_eq!(run_main_source(&source), Value::Number(11.0));
+    }
+
+    #[test]
+    fn array_methods_root_remaining_elements_and_accumulator_across_a_collection() {
+        // `map` reads the source array into a Rust-side `Vec<Value>` and
+        // builds a second one (`mapped`) as it goes — neither lives on
+        // stack/locals, so they are invisible to `collect_now` unless
+        // explicitly rooted. `build(n)` alone already pushes occupied heap
+        // slots past the collection trigger, so from the very first
+        // callback call onward almost every further allocation (each
+        // mapped `{v:...}` object, then the result array itself) runs with
+        // `occupied_slots() >= COLLECT_AFTER_ALLOCATIONS` and triggers a
+        // real collection — no separate junk-allocation loop needed. A
+        // rooting gap around either vector would free a not-yet-visited
+        // source element or an already-produced result mid-loop, and the
+        // later read-back would see a stale/reused slot instead of the
+        // real value.
+        let n = COLLECT_AFTER_ALLOCATIONS + 8;
+        let source = format!(
+            "function main() {{ \
+                 let source = build({n}); \
+                 let mapped = source.map(churn); \
+                 let total = 0; let i = 0; \
+                 while (i < mapped.length) {{ total = total + mapped[i].v; i = i + 1; }} \
+                 return total; \
+             }} \
+             function build(n) {{ \
+                 let a = []; let i = 0; \
+                 while (i < n) {{ a.push({{ v: i }}); i = i + 1; }} \
+                 return a; \
+             }} \
+             function churn(x) {{ \
+                 return {{ v: x.v + 1 }}; \
+             }} \
+             main();"
+        );
+        // source is [{{v:0}}..{{v:n-1}}], mapped is [{{v:1}}..{{v:n}}]: the
+        // sum telescopes to 1+2+...+n.
+        let expected: f64 = (1..=n).map(|v| v as f64).sum();
+        assert_eq!(run_main_source(&source), Value::Number(expected));
     }
 
     #[test]
