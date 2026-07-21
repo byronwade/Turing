@@ -24,23 +24,27 @@ use turing_js::compile;
 mod common;
 use common::PRELUDE;
 
-/// Nova lines 1707-1711. No hooks, no JSX children beyond a text
-/// expression — the smallest real leaf component in the file.
+/// Nova lines 1707-1711, verbatim (object destructuring, default
+/// parameters, and the object-spread merge in `style` all run as real
+/// engine features now — no simplification from the source).
 const FAV: &str = r#"
 function Fav({ f, size }) {
     const s = size || 15;
     const ff = f || {};
-    return <div className="fav" style={{ width: s, height: s }}>{ff.letter || ""}</div>;
+    return <div className="fav" style={{ ...(ff.style || { background: "var(--c4)" }), width: s, height: s }}>{ff.letter || ""}</div>;
 }
 "#;
 
-/// Nova lines 1713-1718. Ternary, string member access, nested JSX.
+/// Nova lines 1713-1718, verbatim (ternary, string member access, nested
+/// JSX, and both `style` props this time — the first extraction dropped
+/// them since object literals alone were enough to compile; keeping them
+/// now that nothing needs simplifying to pass).
 const URL_TEXT: &str = r#"
 function UrlText({ url }) {
     const i = url.indexOf("/");
     const dom = i === -1 ? url : url.slice(0, i);
     const path = i === -1 ? "" : url.slice(i);
-    return <span className="ttl mono">{dom}<span>{path}</span></span>;
+    return <span className="ttl mono" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dom}<span style={{ color: "var(--tx2)" }}>{path}</span></span>;
 }
 "#;
 
