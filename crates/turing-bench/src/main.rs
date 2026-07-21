@@ -24,24 +24,41 @@ fn main() {
     }
     println!();
     println!(
-        "{:<12} {:>12} {:>12} {:>12}",
-        "stage", "min", "median", "max"
+        "{:<12} {:>10} {:>10} {:>10} {:>18} {:>7}",
+        "stage", "min", "median", "max", "median 95% CI", "CoV"
     );
 
     for result in run() {
         // Formatted to owned strings first: a width applies to the whole
         // argument, and `format_args!` would be padded as one unit rather than
         // producing an aligned column.
+        let measurement = result.measurement;
+        let ci = format!(
+            "{:?}-{:?}",
+            measurement.median_ci_low, measurement.median_ci_high
+        );
+        #[allow(clippy::cast_precision_loss)]
+        let cov = format!("{:.1}%", measurement.cov_permille as f64 / 10.0);
         println!(
-            "{:<12} {:>12} {:>12} {:>12}",
+            "{:<12} {:>10} {:>10} {:>10} {:>18} {:>7}",
             result.stage,
-            format!("{:?}", result.measurement.min),
-            format!("{:?}", result.measurement.median),
-            format!("{:?}", result.measurement.max),
+            format!("{:?}", measurement.min),
+            format!("{:?}", measurement.median),
+            format!("{:?}", measurement.max),
+            ci,
+            cov,
         );
     }
 
     println!();
+    println!(
+        "median 95% CI: distribution-free interval from the order statistics; \n\
+         two runs whose intervals do not overlap differ beyond this run's noise."
+    );
+    println!(
+        "CoV: coefficient of variation (std dev / mean); a high value means the \n\
+         stage is measuring the machine as much as the code."
+    );
     println!("External dependencies: 0");
     println!("These are raw baselines for tracking this engine against itself.");
     println!("No comparison against another engine is implied or supported.");

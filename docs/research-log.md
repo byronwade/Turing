@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-20 - The benchmark grew a statistics layer
+
+The benchmark reported min, median, max — three order statistics with no notion of confidence or noise, which is an anecdote, not evidence. `Measurement` now carries the treatment the benchmark book's statistics chapter requires, all standard-library: interquartile range, a distribution-free 95% confidence interval for the median from the order statistics, and a coefficient of variation as the single-number noise indicator.
+
+Distribution-free is the load-bearing word. Timing distributions are right-skewed — a stage has a floor and a long tail of scheduling interruptions — so a normal-theory interval would be wrong in the direction that matters. The order-statistic interval assumes only that samples are independent, and two runs whose median intervals do not overlap differ for a reason beyond one run's noise.
+
+The coefficient of variation immediately earned itself: tokenize, the fastest stage by median, is the noisiest at ~21%, because it is short enough that a single scheduling slice is a large fraction of it. That is a fact about what the number can bear, surfaced by the metric rather than discovered by surprise later.
+
+`is_regression` is a practical threshold, not a bare comparison: a run regresses only when it is slower by more than a deliberate effect size *and* the confidence intervals are disjoint. Practical significance and statistical separation both gate it, which is what stops a control chart from firing on jitter. Tested against known sample sets so the statistics are checkable without a clock.
+
+The workspace is at 400 tests. This is one of the three prerequisites the competitive-claim lane named — the statistical protocol — built where it can be built without an owner decision; the corpus breadth and hardware control it still needs remain owner-gated.
+
 ## 2026-07-20 - border-radius reaches page content
 
 The compositing painter has had rounded-corner machinery since it was built; CSS could not reach it. Now it can. `border-radius` parses as a non-negative length, and a box with a non-zero radius emits a new `DisplayItem::RoundedColor` variant rather than `SolidColor`.
