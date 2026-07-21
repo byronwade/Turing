@@ -2074,6 +2074,14 @@ pub enum Op {
     LoadLocal(usize),
     /// Store the top of stack into local slot `n`, leaving it on the stack.
     StoreLocal(usize),
+    /// Push the value of global slot `n` — a top-level `const`/`let`/`var`
+    /// binding, reachable from a function body at any nesting depth. Unlike
+    /// [`Op::LoadUpvalue`] this is not a capture: the storage is the shared
+    /// global table, not a snapshot taken when a closure was created, so it
+    /// always reads whatever the binding currently holds.
+    LoadGlobal(usize),
+    /// Store the top of stack into global slot `n`, leaving it on the stack.
+    StoreGlobal(usize),
     /// Allocate an empty object and push a handle to it.
     NewObject,
     /// Pop `n` elements and push an array of them, element 0 deepest.
@@ -2182,6 +2190,12 @@ struct Compiler {
     functions: Vec<Function>,
     /// Function name to table index, resolved for calls.
     signatures: Vec<(String, usize, usize)>,
+    /// Top-level `const`/`let`/`var` bindings, name to global slot plus
+    /// whether reassignment is refused. Unlike `scopes`, this is never saved
+    /// or swapped by `fill_function` — a script-level binding is visible to a
+    /// function body at any nesting depth, not just the direct parent that
+    /// `resolve_upvalue`'s single-level capture allows.
+    globals: Vec<(String, bool)>,
     scopes: Vec<Scope>,
     code: Vec<Op>,
     next_slot: usize,
@@ -2201,6 +2215,7 @@ impl Compiler {
         Self {
             functions: Vec::new(),
             signatures: Vec::new(),
+            globals: Vec::new(),
             scopes: Vec::new(),
             code: Vec::new(),
             next_slot: 0,
@@ -2221,6 +2236,19 @@ impl Compiler {
                 let index = self.signatures.len() + 1;
                 self.signatures
                     .push((name.clone(), index, parameters.len()));
+            }
+        }
+        // Top-level `const`/`let`/`var` bindings are hoisted into the flat
+        // global table before any body is compiled, so a function declared
+        // earlier in source order can still reference one declared later —
+        // the same hoisting `signatures` already gets, for the same reason.
+        // A name already seen keeps its first slot: `var`'s redeclaration is
+        // not a compile error here.
+        for statement in statements {
+            if let Stmt::Declare { name, constant, .. } = statement
+                && !self.globals.iter().any(|(existing, _)| existing == name)
+            {
+                self.globals.push((name.clone(), *constant));
             }
         }
         // Reserve slot 0 for the top level and one slot per declared function,
@@ -2258,8 +2286,29 @@ impl Compiler {
 
         self.push_scope();
         for statement in statements {
-            if !matches!(statement, Stmt::Function { .. }) {
-                self.statement(statement)?;
+            match statement {
+                Stmt::Function { .. } => {}
+                // A direct top-level declaration was hoisted into `globals`
+                // above and stores there instead of a local scope slot, so
+                // it stays visible from a function body at any depth. A
+                // `Stmt::Declare` reached through the generic `statement`
+                // dispatch (nested in a top-level `if`/`for`/block) is
+                // unaffected — only the statements in this exact list are
+                // program-top-level.
+                Stmt::Declare { name, value, .. } => {
+                    match value {
+                        Some(expression) => self.expression(expression)?,
+                        None => self.code.push(Op::Const(Value::Undefined)),
+                    }
+                    let slot = self
+                        .globals
+                        .iter()
+                        .position(|(existing, _)| existing == name)
+                        .expect("every top-level declare was hoisted above");
+                    self.code.push(Op::StoreGlobal(slot));
+                    self.code.push(Op::Pop);
+                }
+                other => self.statement(other)?,
             }
         }
         self.pop_scope();
@@ -2393,6 +2442,17 @@ impl Compiler {
         }
     }
 
+    /// Resolves a name against the top-level global table: slot and whether
+    /// reassignment is refused. Unlike `resolve`/`resolve_upvalue`, this
+    /// check does not depend on nesting depth or which function is currently
+    /// being compiled — `globals` is never swapped by `fill_function`.
+    fn global_slot(&self, name: &str) -> Option<(usize, bool)> {
+        self.globals
+            .iter()
+            .position(|(candidate, _)| candidate == name)
+            .map(|slot| (slot, self.globals[slot].1))
+    }
+
     fn push_scope(&mut self) {
         self.scopes.push(Scope {
             names: Vec::new(),
@@ -2513,19 +2573,39 @@ impl Compiler {
                     self.code.push(Op::LoadLocal(slot));
                 } else if let Some(upvalue) = self.resolve_upvalue(name)? {
                     self.code.push(Op::LoadUpvalue(upvalue));
+                } else if let Some(&(_, index, _)) = self
+                    .signatures
+                    .iter()
+                    .find(|(candidate, _, _)| candidate == name)
+                {
+                    // A top-level `function` declaration referenced as a
+                    // plain value (stored, passed as a callback, used as a
+                    // JSX tag) rather than called directly. Its identity is
+                    // fixed at compile time, so this is a constant, not a
+                    // global slot read.
+                    self.code.push(Op::Const(Value::Function(index)));
+                } else if let Some((slot, _)) = self.global_slot(name) {
+                    self.code.push(Op::LoadGlobal(slot));
                 } else {
                     return Err(JsError::UndefinedVariable { name: name.clone() });
                 }
             }
             Expr::Assign { name, value } => {
-                let (slot, constant) = self
-                    .resolve(name)
-                    .ok_or_else(|| JsError::UndefinedVariable { name: name.clone() })?;
-                if constant {
-                    return Err(JsError::AssignmentToConstant { name: name.clone() });
+                if let Some((slot, constant)) = self.resolve(name) {
+                    if constant {
+                        return Err(JsError::AssignmentToConstant { name: name.clone() });
+                    }
+                    self.expression(value)?;
+                    self.code.push(Op::StoreLocal(slot));
+                } else if let Some((slot, constant)) = self.global_slot(name) {
+                    if constant {
+                        return Err(JsError::AssignmentToConstant { name: name.clone() });
+                    }
+                    self.expression(value)?;
+                    self.code.push(Op::StoreGlobal(slot));
+                } else {
+                    return Err(JsError::UndefinedVariable { name: name.clone() });
                 }
-                self.expression(value)?;
-                self.code.push(Op::StoreLocal(slot));
             }
             Expr::Unary { operator, operand } => {
                 self.expression(operand)?;
@@ -2656,6 +2736,18 @@ impl Compiler {
                     self.code.push(Op::CallValue {
                         argc: arguments.len(),
                     });
+                } else if let Some((slot, _)) = self.global_slot(callee) {
+                    // A top-level `const`/`let` holding a function value
+                    // (an arrow function or function expression, as opposed
+                    // to a `function` declaration, which took the fast path
+                    // above), called from any nesting depth.
+                    self.code.push(Op::LoadGlobal(slot));
+                    for argument in arguments {
+                        self.expression(argument)?;
+                    }
+                    self.code.push(Op::CallValue {
+                        argc: arguments.len(),
+                    });
                 } else if callee == "queueMicrotask" {
                     // A VM-native builtin, not a host operation: it must
                     // reach the interpreter's own microtask queue, which a
@@ -2708,21 +2800,31 @@ impl Compiler {
                 }
             }
             Expr::PostUpdate { name, delta } => {
-                let (slot, constant) = self
-                    .resolve(name)
-                    .ok_or_else(|| JsError::UndefinedVariable { name: name.clone() })?;
-                if constant {
-                    return Err(JsError::AssignmentToConstant { name: name.clone() });
-                }
                 // Old value stays for the expression's result; Dup computes
-                // the new value from a copy, StoreLocal writes it back (and
+                // the new value from a copy, Store writes it back (and
                 // re-pushes it per its own contract), and the trailing Pop
                 // discards that pushed copy so only the old value remains.
-                self.code.push(Op::LoadLocal(slot));
-                self.code.push(Op::Dup);
-                self.code.push(Op::Const(Value::Number(*delta)));
-                self.code.push(Op::Add);
-                self.code.push(Op::StoreLocal(slot));
+                if let Some((slot, constant)) = self.resolve(name) {
+                    if constant {
+                        return Err(JsError::AssignmentToConstant { name: name.clone() });
+                    }
+                    self.code.push(Op::LoadLocal(slot));
+                    self.code.push(Op::Dup);
+                    self.code.push(Op::Const(Value::Number(*delta)));
+                    self.code.push(Op::Add);
+                    self.code.push(Op::StoreLocal(slot));
+                } else if let Some((slot, constant)) = self.global_slot(name) {
+                    if constant {
+                        return Err(JsError::AssignmentToConstant { name: name.clone() });
+                    }
+                    self.code.push(Op::LoadGlobal(slot));
+                    self.code.push(Op::Dup);
+                    self.code.push(Op::Const(Value::Number(*delta)));
+                    self.code.push(Op::Add);
+                    self.code.push(Op::StoreGlobal(slot));
+                } else {
+                    return Err(JsError::UndefinedVariable { name: name.clone() });
+                }
                 self.code.push(Op::Pop);
             }
             Expr::CompoundMember {
@@ -3002,6 +3104,22 @@ impl Vm {
                         locals.resize(slot + 1, Value::Undefined);
                     }
                     locals[*slot] = value;
+                }
+                Op::LoadGlobal(slot) => {
+                    stack.push(
+                        runtime
+                            .globals
+                            .get(*slot)
+                            .cloned()
+                            .unwrap_or(Value::Undefined),
+                    );
+                }
+                Op::StoreGlobal(slot) => {
+                    let value = stack.last().cloned().unwrap_or(Value::Undefined);
+                    if *slot >= runtime.globals.len() {
+                        runtime.globals.resize(slot + 1, Value::Undefined);
+                    }
+                    runtime.globals[*slot] = value;
                 }
                 Op::Pop => {
                     stack.pop();
@@ -3454,6 +3572,7 @@ fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
         .iter()
         .chain(stack)
         .chain(locals)
+        .chain(&runtime.globals)
         .chain(&runtime.microtasks)
         .filter_map(|value| match value {
             Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
@@ -3549,6 +3668,12 @@ struct Runtime {
     heap: Heap<ObjectData>,
     /// Values held by call frames above the one currently executing.
     outer: Vec<Value>,
+    /// Top-level `const`/`let`/`var` bindings, addressed by
+    /// [`Op::LoadGlobal`]/[`Op::StoreGlobal`] and shared by every call frame
+    /// for the lifetime of one [`Vm::run_with_host`]/[`Vm::call`]. Grows
+    /// lazily to the highest slot stored so far, the same convention
+    /// `locals` in each frame already uses.
+    globals: Vec<Value>,
     steps: u64,
     bytes: u64,
     /// Functions and closures queued by `queueMicrotask`, FIFO. Drained after
@@ -4127,6 +4252,106 @@ mod tests {
             return f(); \
         } main();";
         assert!(matches!(compile(source), Err(JsError::Unsupported { .. })));
+    }
+
+    #[test]
+    fn a_deeply_nested_lambda_reads_a_top_level_const_beyond_the_single_upvalue_level() {
+        // `capturing_a_mutable_binding_is_refused_not_computed_wrong` above
+        // documents the single-level, const-only upvalue restriction for a
+        // *lexically enclosing* function. A top-level binding is a different
+        // thing entirely — real script scope, not a capture — so it must
+        // stay reachable no matter how many lambdas are nested in between.
+        // Before the global table existed, a top-level `Stmt::Function`
+        // body compiled with no enclosing scope at all, so even one level of
+        // reference from inside `main` was an `UndefinedVariable` refusal.
+        //
+        // `record(..)` observes the result rather than a `Vm::call` return
+        // value, because calling `main` directly by name (as most tests in
+        // this file do) skips the top-level statements entirely — and it is
+        // exactly those top-level statements that initialise `BASE`. Only
+        // `run_with_host`, which runs the whole program starting at the top
+        // level, exercises that initialisation.
+        let program = compile(
+            "const BASE = 10; \
+             function main() { \
+                let inner = function() { \
+                    let innermost = function() { return BASE + 5; }; \
+                    return innermost(); \
+                }; \
+                record(inner()); \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![15.0]);
+    }
+
+    #[test]
+    fn a_top_level_function_is_referenced_by_value_not_only_called_directly() {
+        // The pattern a JSX `<Component/>` desugar needs: the callee is
+        // `Expr::Variable("Greet")`, not `Expr::Call { callee: "Greet", .. }`
+        // — a plain reference to a sibling top-level declaration, stored and
+        // invoked indirectly rather than named at the call site.
+        let program = compile(
+            "function Greet(name) { return \"hi \" + name; } \
+             function main() { let g = Greet; return g(\"Ada\"); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::String("hi Ada".to_string())
+        );
+    }
+
+    #[test]
+    fn a_top_level_let_mutated_from_a_nested_function_call_is_visible_afterward() {
+        // Real global storage, not a snapshot: three separate calls into
+        // `bump`, each from `main`, each seeing the previous call's write.
+        let program = compile(
+            "let counter = 0; \
+             function bump() { counter = counter + 1; } \
+             function main() { bump(); bump(); bump(); record(counter); } \
+             main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![3.0]);
+    }
+
+    #[test]
+    fn a_top_level_let_is_post_incremented_from_a_nested_function() {
+        let program = compile(
+            "let n = 0; \
+             function inc() { n++; } \
+             function main() { inc(); inc(); record(n); } \
+             main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![2.0]);
+    }
+
+    #[test]
+    fn reassigning_a_top_level_const_from_a_nested_function_is_refused_at_compile_time() {
+        let source = "const LOCKED = 1; \
+             function tryMutate() { LOCKED = 2; } \
+             tryMutate();";
+        assert!(matches!(
+            compile(source),
+            Err(JsError::AssignmentToConstant { .. })
+        ));
     }
 
     #[test]
