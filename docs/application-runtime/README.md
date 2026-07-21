@@ -32,6 +32,33 @@ Two concrete ambitions define the target:
    produces — should load and run on Turing the way they load and run in a
    browser or an Electron shell.
 
+## This direction changes the charter, and says so
+
+Honesty first: the owner's direction here **extends and partly conflicts with
+the accepted architecture**, and pretending otherwise would make this book
+worthless.
+
+- The product charter
+  (`docs/blueprint-v1/01-charter-and-principles.md`) scopes Turing as "an
+  independent desktop browser." An application runtime for third-party
+  React/Next.js/TanStack apps is a larger product than that charter states.
+- **ADR-0008** (`docs/blueprint-v1/17-architecture-decisions.md`) — accepted
+  — keeps trusted browser chrome *independent from the web engine*, precisely
+  so product reliability and security prompts do not ride on
+  untrusted-content code paths. Rendering the system UI by *running its
+  React on the engine* is the opposite of that decision.
+
+Both are owner-held decisions, and @byronwade is the owner giving this
+direction — so this book does not overrule the charter quietly; it records
+that the direction **requires the charter and ADR-0008 to be revisited**, and
+notes that ADR-0008 already left the narrow door: its "Revisit when" clause
+admits the engine rendering *nonessential internal surfaces* once the engine
+is mature enough and a security review approves the boundary, with critical
+trusted controls still independent. The path this book lays out is meant to
+reach that review with evidence, not to skip it. Until the charter and
+ADR-0008 are formally amended, this is a **research direction**, not an
+accepted product scope, and the two must not be conflated.
+
 ## Why this is the same engine, widened — not a second project
 
 Electron is Chromium plus Node. Its power is that the app author writes
@@ -57,7 +84,10 @@ casing.
 This matters because it fixes the first rung: **server-rendered framework
 output is already in scope and already works.** A Next.js app that ships
 mostly static, server-rendered pages is closer to running on Turing than the
-distance from here to a full client runtime suggests.
+distance from here to a full client runtime suggests. The embedding book
+already anticipates a headless **server-render mode**
+(`docs/embedding/README.md`); rendering framework SSR output is that mode
+pointed at real framework HTML.
 
 ## The honest gap
 
@@ -81,11 +111,18 @@ runtime is built from:
 - **`try`/`catch`**, **`async`/`await`**, **generators**, **modules**,
   **regular expressions**.
 
-This is the largest gap, and it is the load-bearing one. The engine's
-governing principle here is a strength for this goal, not a weakness: a
-partially implemented language computes wrong values silently, so every
-unimplemented construct is refused visibly. The runtime can therefore grow
-one honest construct at a time, and everything that runs stays trustworthy.
+This is the largest gap, and it is the load-bearing one. It is also already
+a planned program, not a new one: `docs/blueprint-v1/06-javascript-runtime.md`
+and the `docs/javascript/` book scope a full from-scratch ECMAScript engine —
+parser, bytecode interpreter, generational GC, baseline and optimizing JIT,
+Web IDL bindings, WebAssembly, and an event loop — explicitly "capable enough
+to eventually run React's runtime as web content." What this book adds is a
+*reason to prioritise that program toward framework support*, and a rung
+order for it. The engine's governing principle is a strength for this goal,
+not a weakness: a partially implemented language computes wrong values
+silently, so every unimplemented construct is refused visibly. The runtime
+grows one honest construct at a time, and everything that runs stays
+trustworthy.
 
 ### DOM API surface
 
