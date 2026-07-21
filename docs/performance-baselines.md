@@ -68,6 +68,32 @@ to 8.3 µs has **no identified cause** — the styling crates did not change
 between the recordings — and is retained as an open observation rather than
 explained away; re-measure on a quiet machine before treating it as real.
 
+### Re-measured 2026-07-21, after adding `:hover`
+
+`matches`, `cascade`, and `layout` all gained an `Option<T::Node>` parameter
+and one extra match arm to support `:hover` — exactly the kind of change
+`PB-013` says to re-measure rather than assume is free.
+
+| Stage | Median (before) | Median (after) |
+| --- | --- | --- |
+| cascade | 8.3 µs | 7.9 µs |
+| layout | 16.5 µs | 15.8 µs |
+
+Both after-figures land inside the before-run's own min–max range, so this is
+noise, not a real change — an unused `Option` parameter and a `None` branch
+cost nothing measurable. Not a regression.
+
+**A separate question this raised, checked rather than assumed:** `:hover`'s
+relayout runs once per hovered-node change, so a pointer crossing several
+elements while moving triggers one relayout each time, not once per pixel of
+motion — but on a large enough page even that could matter. The honest bound
+available today comes from the existing scaling measurement further down
+this file: 200 rules over 200 elements do style-plus-layout in under a
+millisecond combined. A relayout on hover change is well inside a 16 ms frame
+budget at that scale. This is **not** a claim about documents with thousands
+of elements — that scale has not been measured, and extrapolating past
+measured data is exactly what these baselines exist to refuse.
+
 `paint` is the compositing painter (`turing-paint`) consuming the same
 display list through its opaque-square fast path; costing the same as the
 reference (within noise) is the design intent — compositing is paid only
