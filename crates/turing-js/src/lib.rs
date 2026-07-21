@@ -2514,8 +2514,15 @@ impl Vm {
                         collect_now(runtime, &stack, &locals);
                     }
                     // Elements are on the stack with element 0 deepest; take
-                    // them in order.
-                    let start = stack.len() - *count;
+                    // them in order. Same hazard `Op::Dup2` documents: a
+                    // well-formed program (the only kind this compiler
+                    // emits) always pushed exactly `count` elements right
+                    // before this op, so `stack.len() >= *count` always
+                    // holds in practice — but `saturating_sub` costs nothing
+                    // and keeps a malformed program a degraded read rather
+                    // than a `panic = "abort"` release build taking the
+                    // whole embedding process down with it.
+                    let start = stack.len().saturating_sub(*count);
                     let elements: Vec<Value> = stack.split_off(start);
                     let mut data = ObjectData::default();
                     for (index, element) in elements.into_iter().enumerate() {
@@ -2718,7 +2725,12 @@ impl Vm {
                             limit: self.byte_limit,
                         });
                     }
-                    let start = stack.len() - *upvalues;
+                    // Same hazard as `Op::NewArray` just above, same fix:
+                    // `saturating_sub` rather than a subtraction that could
+                    // underflow if a malformed program ever desynced the
+                    // captured-upvalue count from what's actually on the
+                    // stack.
+                    let start = stack.len().saturating_sub(*upvalues);
                     let captured = stack.split_off(start);
                     if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
                         collect_now(runtime, &stack, &locals);
@@ -4232,6 +4244,55 @@ mod tests {
             runtime.heap.roots().is_empty(),
             "{} roots left registered after the run",
             runtime.heap.roots().len()
+        );
+    }
+
+    /// A hand-built, deliberately malformed program: no compiler emits this,
+    /// but nothing here proves the interpreter can never receive a program
+    /// it did not compile itself, and `panic = "abort"` in the release
+    /// profile means any panic reachable from bytecode takes the whole
+    /// embedding process down with it, not just this one call.
+    fn malformed_program(op: Op) -> Program {
+        Program {
+            functions: vec![Function {
+                name: "main".to_owned(),
+                arity: 0,
+                locals: 0,
+                code: vec![op, Op::Return],
+            }],
+        }
+    }
+
+    #[test]
+    fn new_array_with_no_operands_on_the_stack_does_not_panic() {
+        // `Op::NewArray(5)` with nothing pushed first: `stack.len() - 5`
+        // would underflow. Before the fix this panicked (in the dev profile,
+        // where overflow-checks = true) or wrapped to a huge index and
+        // panicked inside `split_off` (release) — either way, a crash rather
+        // than the refusal this codebase's own rule requires.
+        let program = malformed_program(Op::NewArray(5));
+        let result = Vm::default().run_with_host(&program, &mut NoHost::default());
+        assert!(
+            result.is_ok(),
+            "a malformed NewArray operand count must not panic, got {result:?}"
+        );
+    }
+
+    #[test]
+    fn make_closure_with_no_operands_on_the_stack_does_not_panic() {
+        // Same hazard, `Op::MakeClosure`'s own operand count: claiming 3
+        // captured upvalues with an empty stack. `index: 0` names the
+        // top-level function itself, which is not meaningful as a captured
+        // closure body, but the point of this test is that building one
+        // does not crash the process — not that the result is useful.
+        let program = malformed_program(Op::MakeClosure {
+            index: 0,
+            upvalues: 3,
+        });
+        let result = Vm::default().run_with_host(&program, &mut NoHost::default());
+        assert!(
+            result.is_ok(),
+            "a malformed MakeClosure operand count must not panic, got {result:?}"
         );
     }
 }
