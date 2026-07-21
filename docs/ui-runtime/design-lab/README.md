@@ -50,6 +50,14 @@ Before native implementation begins, the design lab must extract the source into
 
 No React, Node, DOM, CSSOM, runtime CSS parser, or webview may enter trusted browser chrome because this source is adopted as the visual reference.
 
+## 2026-07-21 amendment: native React-compatible runtime, owner-authorized
+
+The extraction path above was the governing near-term plan for most of 2026-07-21. Later the same day, the owner explicitly reversed that near-term choice: `turing-js`/`turing-browser` are now being extended with a **native, from-scratch, engine-integrated implementation of React's public API surface** (hooks, `memo`, JSX-shaped component composition), built the same way every other subsystem in this repository is (turing-css is not WebKit's CSSOM; turing-layout is not Blink's layout engine) — specifically so this file executes and paints, unmodified, inside `turing-browser` itself.
+
+This does not contradict the line above: the banned technologies are the actual external ones — the real npm `react`/`react-dom`/`lucide-react` packages, Node, another engine's DOM/CSSOM, a webview — none of which enter the engine under this plan. It is a native reimplementation of a compatible API surface, not an import of the real thing. The file itself remains permanently unedited (hash `7A85933F7C794F29A5F0B8FBB55DD53C28C0834A3FEF0ECDC73184BB8782148B`, never modified) — only the engine's own capability to execute it changes.
+
+See the `turing-nova-source-real-scope` and `turing-app-runtime-goal` project memory records for the full decision history and the milestone ladder (static first paint before interactivity). The "Required extraction path" section above is not deleted — extraction remains the correct approach for anything the native runtime cannot yet execute, and its verification method (compare against this file rendered in real React as ground truth) is unchanged and still load-bearing.
+
 ## Current claim boundary
 
 This artifact does not select a UI toolkit, establish a native browser shell, prove accessibility, authorize React in a release build, establish page-surface composition, or support a production, Chrome-class, performance, compatibility, or daily-driver claim.
