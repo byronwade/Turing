@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-20 - border-radius reaches page content
+
+The compositing painter has had rounded-corner machinery since it was built; CSS could not reach it. Now it can. `border-radius` parses as a non-negative length, and a box with a non-zero radius emits a new `DisplayItem::RoundedColor` variant rather than `SolidColor`.
+
+The variant is the interesting decision. Adding a radius field to `SolidColor` would have made every square fill carry a zero it never uses and, worse, blurred the line the two painters are built around. A separate variant keeps that line sharp: the reference rasterizer draws `RoundedColor` as a hard rectangle — its honest "this painter cannot express a radius" behaviour, and exactly what a compositing painter is diffed against — while `turing-paint` lifts it to a rounded `Fill`. The parity contract is untouched, because rounding was never in the reference's domain to begin with; a page that asks for a radius simply gets square corners from the reference and rounded ones from the compositor, and both are correct for what they are.
+
+Layout geometry does not change: `border-radius` is a paint property, so it rides on the padding box the background already used. Two tests pin it — layout emits the rounded variant only for a non-zero radius, and the lifted fill actually clears its corner.
+
+The workspace is at 398 tests.
+
+Not done: `border-radius` rounds the background but not the border ring (the four edge fills are still square-cornered), no per-corner radii, no elliptical corners, and the reference's square rendering of a rounded box means a headless reference render and a windowed compositor render of the same rounded page differ at the corners — stated, because it is the visible edge of the two-painter design.
+
 ## 2026-07-20 - hsl() and borders that are borders
 
 Two more steps of CSS depth, both ungated.

@@ -78,6 +78,16 @@ impl PaintList {
                     alpha: 1.0,
                     radius: 0.0,
                 },
+                DisplayItem::RoundedColor {
+                    rect,
+                    color,
+                    radius,
+                } => PaintItem::Fill {
+                    rect: *rect,
+                    color: *color,
+                    alpha: 1.0,
+                    radius: *radius,
+                },
                 DisplayItem::Text { rect, text, color } => PaintItem::Text {
                     rect: *rect,
                     text: text.clone(),
@@ -321,6 +331,30 @@ mod tests {
         let lifted = PaintList::from_display_list(&display);
         let painted = paint(&lifted, 24, 24, color("white")).expect("paints");
         assert_eq!(painted, reference, "parity with the reference broke");
+    }
+
+    #[test]
+    fn a_rounded_display_item_lifts_into_a_rounded_fill() {
+        let display = DisplayList {
+            items: vec![DisplayItem::RoundedColor {
+                rect: rect(0.0, 0.0, 20.0, 20.0),
+                color: color("black"),
+                radius: 8.0,
+            }],
+        };
+        let lifted = PaintList::from_display_list(&display);
+        assert_eq!(
+            lifted.items,
+            vec![PaintItem::Fill {
+                rect: rect(0.0, 0.0, 20.0, 20.0),
+                color: color("black"),
+                alpha: 1.0,
+                radius: 8.0,
+            }]
+        );
+        // And it actually rounds: the corner clears.
+        let canvas = paint(&lifted, 20, 20, color("white")).expect("paints");
+        assert_eq!(canvas.pixel(0, 0), Some(color("white")), "corner cleared");
     }
 
     #[test]

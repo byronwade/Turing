@@ -439,7 +439,9 @@ impl Browser {
         let mut page_items = tab.page.display_list();
         for item in &mut page_items.items {
             match item {
-                DisplayItem::SolidColor { rect, .. } | DisplayItem::Text { rect, .. } => {
+                DisplayItem::SolidColor { rect, .. }
+                | DisplayItem::RoundedColor { rect, .. }
+                | DisplayItem::Text { rect, .. } => {
                     rect.y += offset;
                 }
             }
