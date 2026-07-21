@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-21 - outline: a ring that paints without moving anything
+
+A new CSS property rather than another gap in an existing one: `outline-width` and `outline-color`. Real CSS's defining fact about outline is that it never affects layout — it paints outside the border box without changing the box's size, which is exactly why it exists as a separate property from `border` rather than a border variant, and exactly what a focus ring needs (indicate without reflowing).
+
+The implementation reuses the border ring's four-rect technique almost exactly, with the two ways outline actually differs from border kept honest rather than smoothed over: outline is always uniform (CSS gives it no per-side longhands at all, unlike border, so there was no shorthand-vs-longhand question to inherit this time), and its outer edge is computed by `expand`ing the *border* box outward by the outline width, rather than being geometry layout itself ever produces — nothing about an element's own size changes when an outline appears or grows. `currentColor` fallback matches border's own rule for the same reason border already established it: an outline colour that silently defaulted to black would be a wrong colour nobody notices.
+
+Four tests: the layout-geometry guarantee itself (a sibling after an outlined box lands exactly where it would without the outline — the property that matters most, since getting this wrong is the one way an "outline" quietly becomes a border with a different name), the ring painting on all four sides, the `currentColor` default, and that a colour with zero width paints nothing. The workspace is at 449 tests.
+
 ## 2026-07-21 - The cascade ordering gap, actually fixed — for the case it could be
 
 The border feature two entries ago found a real cascade limitation and deliberately scoped a fix out as separate work. That work turned out smaller than expected, so it landed today instead of staying deferred.

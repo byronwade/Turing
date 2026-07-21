@@ -316,6 +316,13 @@ pub struct LayoutBox {
     pub border_colors: BorderColors,
     /// Corner radius in CSS pixels; zero is a square box.
     pub border_radius: f32,
+    /// Outline width in CSS pixels. Unlike a border, an outline never
+    /// affects box size — it paints outside the border box without shifting
+    /// where anything else lands, which is exactly why CSS gives it a
+    /// separate property rather than folding it into `border`.
+    pub outline_width: f32,
+    /// Outline colour, falling back to `currentColor` like a border side.
+    pub outline_color: Option<Color>,
     /// How inline children of this box are aligned. Inherited, like `color`.
     pub text_align: TextAlign,
     /// Child boxes.
@@ -367,6 +374,8 @@ struct Style {
     color: Option<Color>,
     border_colors: BorderColors,
     border_radius: f32,
+    outline_width: f32,
+    outline_color: Option<Color>,
     text_align: Option<TextAlign>,
 }
 
@@ -467,6 +476,50 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
             }
         }
     }
+    // Outline: a ring outside the border box, at a uniform width and colour
+    // — CSS gives outline no per-side variant, so this is the same
+    // four-rect ring technique as the border above but with one width and
+    // one colour throughout, drawn against `outer` (the outline's own outer
+    // edge) and `dimensions.border_box()` (its inner edge, which is the
+    // element's ordinary outer edge — outline paints beyond it without
+    // moving it). It cannot overlap the border ring, since the two occupy
+    // disjoint bands, so paint order between them does not matter.
+    if layout_box.outline_width > 0.0 {
+        let currentcolor = layout_box.color.unwrap_or_default();
+        let color = layout_box.outline_color.unwrap_or(currentcolor);
+        let inner = dimensions.border_box();
+        let outer = expand(inner, uniform(layout_box.outline_width));
+        for rect in [
+            Rect {
+                x: outer.x,
+                y: outer.y,
+                width: outer.width,
+                height: inner.y - outer.y,
+            },
+            Rect {
+                x: outer.x,
+                y: inner.y + inner.height,
+                width: outer.width,
+                height: (outer.y + outer.height) - (inner.y + inner.height),
+            },
+            Rect {
+                x: outer.x,
+                y: inner.y,
+                width: inner.x - outer.x,
+                height: inner.height,
+            },
+            Rect {
+                x: inner.x + inner.width,
+                y: inner.y,
+                width: (outer.x + outer.width) - (inner.x + inner.width),
+                height: inner.height,
+            },
+        ] {
+            if rect.width > 0.0 && rect.height > 0.0 {
+                list.items.push(DisplayItem::SolidColor { rect, color });
+            }
+        }
+    }
     // Backgrounds paint before content, and a parent paints before its
     // children, which is the document-order approximation of paint order.
     if let Some(color) = &layout_box.background {
@@ -533,6 +586,8 @@ fn build_box<T: LayoutTree>(
             color: inherited_color,
             border_colors: BorderColors::default(),
             border_radius: 0.0,
+            outline_width: 0.0,
+            outline_color: None,
             text_align: inherited_align,
             children: Vec::new(),
         }));
@@ -594,6 +649,8 @@ fn build_box<T: LayoutTree>(
         color: own_color,
         border_colors: style.border_colors,
         border_radius: style.border_radius,
+        outline_width: style.outline_width,
+        outline_color: style.outline_color,
         text_align: own_align,
         children,
     }))
@@ -642,6 +699,8 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         color: None,
         border_colors: BorderColors::default(),
         border_radius: 0.0,
+        outline_width: 0.0,
+        outline_color: None,
         text_align,
         children,
     }
@@ -757,6 +816,13 @@ fn resolve_style<T: LayoutTree>(
                 Color::parse(value)?;
             }
             "border-radius" => style.border_radius = non_negative(property, value)?,
+            // `outline` never affects layout — unlike `border`, it paints
+            // outside the border box without moving anything else, which is
+            // why it has no per-side variant and no shorthand-vs-longhand
+            // question to resolve: there is exactly one width and one
+            // colour, always.
+            "outline-width" => style.outline_width = non_negative(property, value)?,
+            "outline-color" => style.outline_color = Some(Color::parse(value)?),
             "text-align" => {
                 style.text_align = Some(match value.trim().to_ascii_lowercase().as_str() {
                     "left" | "start" => TextAlign::Start,
@@ -1752,6 +1818,26 @@ mod tests {
         walk(root, document, tag).expect("box exists")
     }
 
+    fn find_by_id<'tree>(
+        root: &'tree LayoutBox,
+        document: &Document,
+        id: &str,
+    ) -> &'tree LayoutBox {
+        fn walk<'tree>(
+            node: &'tree LayoutBox,
+            document: &Document,
+            id: &str,
+        ) -> Option<&'tree LayoutBox> {
+            if let Some(index) = node.node
+                && document.attribute_of(NodeId::from_index(index), "id") == Some(id)
+            {
+                return Some(node);
+            }
+            node.children.iter().find_map(|c| walk(c, document, id))
+        }
+        walk(root, document, id).expect("box exists")
+    }
+
     fn document_of(html: &str) -> Document {
         let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
         TreeBuilder::new().build(&tokens).expect("builds")
@@ -2294,6 +2380,96 @@ mod tests {
                 .iter()
                 .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
             "the longhand wins even though it is not later in this one rule"
+        );
+    }
+
+    #[test]
+    fn outline_never_changes_box_geometry() {
+        // The defining property outline has and border does not: it never
+        // affects layout. A sibling after an outlined box must land exactly
+        // where it would if the outline were absent.
+        let with_outline = run(
+            "<body><div class='first'>a</div><div id='after'>b</div></body>",
+            "div { display: block; height: 10px; } \
+             .first { outline-width: 20px; outline-color: red; }",
+            100.0,
+        )
+        .expect("lays out");
+        let without_outline = run(
+            "<body><div class='first'>a</div><div id='after'>b</div></body>",
+            "div { display: block; height: 10px; }",
+            100.0,
+        )
+        .expect("lays out");
+        let html = "<body><div class='first'>a</div><div id='after'>b</div></body>";
+        let with_document = document_of(html);
+        let without_document = document_of(html);
+        let after_outlined = find_by_id(&with_outline, &with_document, "after");
+        let after_plain = find_by_id(&without_outline, &without_document, "after");
+        assert_eq!(
+            after_outlined.dimensions.content.y, after_plain.dimensions.content.y,
+            "a 20px outline on the first box must not push the second one down"
+        );
+    }
+
+    #[test]
+    fn outline_paints_as_a_ring_outside_the_border_box_with_its_own_colour() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 2px; border-color: navy; outline-width: 3px; \
+             outline-color: orange; padding: 4px; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let orange = Color::parse("orange").expect("named colour");
+        let outline_edges = list
+            .items
+            .iter()
+            .filter(
+                |item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == orange),
+            )
+            .count();
+        assert_eq!(outline_edges, 4, "the outline paints all four sides");
+    }
+
+    #[test]
+    fn an_outline_with_no_colour_falls_back_to_currentcolor() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { outline-width: 2px; color: teal; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let teal = Color::parse("teal").expect("named colour");
+        let edges = list
+            .items
+            .iter()
+            .filter(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == teal))
+            .count();
+        assert_eq!(
+            edges, 4,
+            "currentColor is the outline default, same as border"
+        );
+    }
+
+    #[test]
+    fn zero_width_outline_paints_nothing() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { outline-color: red; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let red = Color::parse("red").expect("named colour");
+        assert!(
+            !list
+                .items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
+            "a colour with no width paints nothing, same as a border would"
         );
     }
 
