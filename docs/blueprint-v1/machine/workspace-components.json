@@ -433,9 +433,7 @@
         "turing-paint",
         "turing-raster",
         "turing-types",
-        "turing-ui-model",
-        "winit (external)",
-        "softbuffer (external)"
+        "turing-ui-model"
       ],
       "failure_boundary": "report-refusals-and-keep-the-last-good-page"
     },
