@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-21 - The scrollbar thumb can be dragged, and the presenter has tests for the first time
+
+Another named gap: the scrollbar thumb painted, and the wheel scrolled, but the thumb itself was inert — a scroll indicator wearing a scrollbar's clothes. It can be grabbed and dragged now.
+
+The thumb's geometry — position, height, the viewport/content math — existed twice before this: once in `compose`'s paint code, once nowhere, because hit testing didn't exist yet. Adding a second consumer without first removing the duplication would have been the exact mistake that lets paint and hit-test silently disagree about where the thumb is, so `scrollbar_thumb_rect` is now the one function both call. A press inside that rect starts a drag and records the *grab offset* — where within the thumb the press landed — rather than jumping to recentre the thumb under the cursor; `scroll_to_drag` then keeps the thumb's top at `cursor_y - grab_offset` for the rest of the drag, which is what makes a drag feel anchored to the point you grabbed rather than snapping. The thumb also gets a small opacity bump while dragging — the one piece of feedback that says it is yours to move right now.
+
+`apps/turing-browser` had no tests before this — a windowed presenter binary is awkward to test in the usual sense, but `window_size()` already had a windowless fallback (`INITIAL_WIDTH`/`INITIAL_HEIGHT`, used when `self.window` is `None`), which turns out to make the scrollbar geometry entirely testable without an OS window: build a `Browser`, replace its tab's page with one tall enough to overflow, and call `scrollbar_thumb_rect`/`scroll_to_drag` directly. Five tests: no thumb when content fits, the thumb starts at the top before any scroll, dragging past the end clamps rather than overshoots, the grab-offset invariant holds exactly, and a release with no active drag is harmless. The workspace is at 444 tests.
+
 ## 2026-07-21 - Per-side border widths and colours, and a cascade quirk they exposed
 
 Another named gap closed: `border-top-width`/`-right-width`/`-bottom-width`/`-left-width` and the matching `-color` longhands, alongside the existing uniform shorthands. The geometry needed nothing new — `EdgeSizes` already carried independent per-side floats for margin and padding, so border widths only needed the same four longhand properties parsed into the same fields. Colour needed a new `BorderColors` struct (four `Option<Color>`, one per side, each falling back to the element's own `currentColor` independently) and the paint function's four-rect border ring, which already existed from the earlier border work, now resolving one colour per rect instead of one shared colour for all four.
