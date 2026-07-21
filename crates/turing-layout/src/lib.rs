@@ -255,6 +255,9 @@ pub struct LayoutBox {
     /// Resolved declarations that painting needs.
     pub background: Option<Color>,
     pub color: Option<Color>,
+    /// Border colour; used only where border widths are non-zero. `None`
+    /// falls back to the text colour, which is CSS's `currentColor` default.
+    pub border_color: Option<Color>,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -290,6 +293,7 @@ struct Style {
     border: EdgeSizes,
     background: Option<Color>,
     color: Option<Color>,
+    border_color: Option<Color>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -327,11 +331,62 @@ pub fn build_display_list(root: &LayoutBox) -> DisplayList {
 }
 
 fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
+    // Borders paint first, as a ring of four edge fills between the border
+    // box and the padding box; the background then covers the padding box.
+    // Painting the ring as fills rather than one covered rectangle means a
+    // box with a border and no background does not invent an interior.
+    let dimensions = layout_box.dimensions;
+    let has_border = dimensions.border.left > 0.0
+        || dimensions.border.right > 0.0
+        || dimensions.border.top > 0.0
+        || dimensions.border.bottom > 0.0;
+    if has_border {
+        // `border-color` defaults to the element's own text colour, which
+        // is CSS's `currentColor` initial value.
+        let color = layout_box
+            .border_color
+            .or(layout_box.color)
+            .unwrap_or_default();
+        let outer = dimensions.border_box();
+        let inner = dimensions.padding_box();
+        for rect in [
+            // Top and bottom span the full border box; left and right fill
+            // between them.
+            Rect {
+                x: outer.x,
+                y: outer.y,
+                width: outer.width,
+                height: inner.y - outer.y,
+            },
+            Rect {
+                x: outer.x,
+                y: inner.y + inner.height,
+                width: outer.width,
+                height: (outer.y + outer.height) - (inner.y + inner.height),
+            },
+            Rect {
+                x: outer.x,
+                y: inner.y,
+                width: inner.x - outer.x,
+                height: inner.height,
+            },
+            Rect {
+                x: inner.x + inner.width,
+                y: inner.y,
+                width: (outer.x + outer.width) - (inner.x + inner.width),
+                height: inner.height,
+            },
+        ] {
+            if rect.width > 0.0 && rect.height > 0.0 {
+                list.items.push(DisplayItem::SolidColor { rect, color });
+            }
+        }
+    }
     // Backgrounds paint before content, and a parent paints before its
     // children, which is the document-order approximation of paint order.
     if let Some(color) = &layout_box.background {
         list.items.push(DisplayItem::SolidColor {
-            rect: layout_box.dimensions.border_box(),
+            rect: layout_box.dimensions.padding_box(),
             color: *color,
         });
     }
@@ -381,6 +436,7 @@ fn build_box<T: LayoutTree>(
             // `color` is inherited, so a text run paints in the colour of
             // the nearest ancestor that set one.
             color: inherited_color,
+            border_color: None,
             children: Vec::new(),
         }));
     }
@@ -438,6 +494,7 @@ fn build_box<T: LayoutTree>(
         text: None,
         background: style.background,
         color: own_color,
+        border_color: style.border_color,
         children,
     }))
 }
@@ -477,6 +534,7 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         text: None,
         background: None,
         color: None,
+        border_color: None,
         children,
     }
 }
@@ -535,6 +593,7 @@ fn resolve_style<T: LayoutTree>(
             "border-width" => style.border = uniform(non_negative(property, value)?),
             "background" | "background-color" => style.background = Some(Color::parse(value)?),
             "color" => style.color = Some(Color::parse(value)?),
+            "border-color" => style.border_color = Some(Color::parse(value)?),
             _ => {}
         }
     }
@@ -1715,6 +1774,60 @@ mod tests {
             (runs[1].x - 0.0).abs() < f32::EPSILON,
             "the wrapped element starts at the line's origin"
         );
+    }
+
+    #[test]
+    fn borders_paint_as_a_ring_around_the_padding_box() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 2px; border-color: navy; background: silver; padding: 4px; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let navy = Color::parse("navy").expect("named colour");
+        let silver = Color::parse("silver").expect("named colour");
+        let border_rects: Vec<&Rect> = list
+            .items
+            .iter()
+            .filter_map(|item| match item {
+                DisplayItem::SolidColor { rect, color } if *color == navy => Some(rect),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(border_rects.len(), 4, "four border edges");
+        // The top edge is 2px tall and spans the border box.
+        assert_eq!(border_rects[0].height, 2.0);
+        let background = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::SolidColor { rect, color } if *color == silver => Some(rect),
+                _ => None,
+            })
+            .expect("background paints");
+        // The background starts inside the border ring.
+        assert_eq!(background.y, border_rects[0].y + 2.0);
+    }
+
+    #[test]
+    fn a_border_with_no_border_color_uses_the_text_colour() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 1px; color: maroon; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let maroon = Color::parse("maroon").expect("named colour");
+        let edges = list
+            .items
+            .iter()
+            .filter(
+                |item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == maroon),
+            )
+            .count();
+        assert_eq!(edges, 4, "currentColor is the border default");
     }
 
     #[test]

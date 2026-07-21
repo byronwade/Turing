@@ -108,13 +108,13 @@ pub struct Color {
 impl Color {
     /// Parses a CSS colour value.
     ///
-    /// Accepts `#rgb`, `#rrggbb`, `rgb()`/`rgba()` with numeric or
-    /// percentage channels, and the complete CSS Color 4 named set.
+    /// Accepts `#rgb`, `#rrggbb`, `rgb()`/`rgba()`, `hsl()`/`hsla()`, and
+    /// the complete CSS Color 4 named set.
     ///
     /// # Errors
     ///
-    /// Returns [`CssError::ColorUnsupported`] for any other notation — `hsl()`,
-    /// `lab()`, eight-digit hex, `currentColor` — and for any alpha below 1:
+    /// Returns [`CssError::ColorUnsupported`] for any other notation — `lab()`,
+    /// `oklch()`, eight-digit hex, `currentColor` — and for any alpha below 1:
     /// this value layer is opaque, translucency is the compositing painter's
     /// domain, and a translucent colour silently flattened to opaque is a
     /// plausible wrong colour that no one notices.
@@ -139,6 +139,57 @@ impl Color {
                 red: channel(0..2)?,
                 green: channel(2..4)?,
                 blue: channel(4..6)?,
+            });
+        }
+
+        if let Some(rest) = value
+            .strip_prefix("hsl(")
+            .or_else(|| value.strip_prefix("hsla("))
+        {
+            let inner = rest.strip_suffix(')').ok_or_else(unsupported)?;
+            let normalized = inner.replace([',', '/'], " ");
+            let parts: Vec<&str> = normalized.split_whitespace().collect();
+            let (channels, alpha) = match parts.len() {
+                3 => (&parts[..3], None),
+                4 => (&parts[..3], Some(parts[3])),
+                _ => return Err(unsupported()),
+            };
+            if let Some(alpha) = alpha
+                && !matches!(alpha, "1" | "1.0" | "100%")
+            {
+                return Err(unsupported());
+            }
+            let hue: f32 = channels[0]
+                .strip_suffix("deg")
+                .unwrap_or(channels[0])
+                .parse()
+                .map_err(|_| unsupported())?;
+            let percent = |raw: &str| -> Result<f32, CssError> {
+                let raw = raw.strip_suffix('%').ok_or_else(unsupported)?;
+                let parsed: f32 = raw.parse().map_err(|_| unsupported())?;
+                Ok((parsed / 100.0).clamp(0.0, 1.0))
+            };
+            let saturation = percent(channels[1])?;
+            let lightness = percent(channels[2])?;
+            // The specification's HSL-to-RGB algorithm, verbatim.
+            let chroma = (1.0 - 2.0f32.mul_add(lightness, -1.0).abs()) * saturation;
+            let hue_prime = hue.rem_euclid(360.0) / 60.0;
+            let secondary = chroma * (1.0 - (hue_prime % 2.0 - 1.0).abs());
+            let (red, green, blue) = match hue_prime {
+                h if h < 1.0 => (chroma, secondary, 0.0),
+                h if h < 2.0 => (secondary, chroma, 0.0),
+                h if h < 3.0 => (0.0, chroma, secondary),
+                h if h < 4.0 => (0.0, secondary, chroma),
+                h if h < 5.0 => (secondary, 0.0, chroma),
+                _ => (chroma, 0.0, secondary),
+            };
+            let lightness_match = lightness - chroma / 2.0;
+            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let channel = |v: f32| ((v + lightness_match) * 255.0).round().clamp(0.0, 255.0) as u8;
+            return Ok(Self {
+                red: channel(red),
+                green: channel(green),
+                blue: channel(blue),
             });
         }
 
@@ -1279,11 +1330,27 @@ mod tests {
     }
 
     #[test]
+    fn hsl_notation_matches_the_specification_conversion() {
+        for (value, expected) in [
+            ("hsl(0, 100%, 50%)", (255, 0, 0)),
+            ("hsl(120, 100%, 25%)", (0, 128, 0)),
+            ("hsl(240 100% 50%)", (0, 0, 255)),
+            ("hsl(0, 0%, 50%)", (128, 128, 128)),
+            ("hsla(300, 100%, 50%, 1)", (255, 0, 255)),
+            ("hsl(480deg, 100%, 50%)", (0, 255, 0)),
+        ] {
+            let color = Color::parse(value).expect(value);
+            assert_eq!((color.red, color.green, color.blue), expected, "{value}");
+        }
+    }
+
+    #[test]
     fn translucency_and_other_notations_are_still_refused() {
         for value in [
             "rgba(1, 2, 3, 0.5)",
             "rgb(1 2 3 / 20%)",
-            "hsl(120, 50%, 50%)",
+            "hsla(120, 50%, 50%, 0.5)",
+            "lab(50% 40 59.5)",
             "#11223344",
             "currentColor",
             "conflowerblue",

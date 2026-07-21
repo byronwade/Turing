@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-20 - hsl() and borders that are borders
+
+Two more steps of CSS depth, both ungated.
+
+`hsl()` and `hsla()` parse through the specification's own conversion algorithm, with degree suffixes, all three separator forms, hue wrapping (480deg is 120deg), and the same opaque-only rule as every other notation: alpha below 1 refuses. Six conversion tests pin spec-exact channel values. The canonical unsupported-notation example in the tests moved for the second time today — rgb() to hsl() to lab() — which is the healthy version of a boundary test: it outlives the boundary by moving with it.
+
+Borders now paint as borders. `border-color` resolves (defaulting to the element's text colour, which is CSS's `currentColor` initial value), and paint emits a ring of four edge fills between the border box and the padding box, with the background moving inward to the padding box. Four fills rather than a covered rectangle, so a box with a border and no background does not invent an interior. Layout geometry is untouched — border widths always occupied space; they were just invisible.
+
+The workspace is at 396 tests.
+
+Not done: border shorthand and `border-style` (every border paints solid; a dashed or dotted request is currently indistinguishable from solid rather than refused, which is a known softness to fix when border-style parses), per-side border widths and colours, and rounded borders on page content — the radius machinery exists in the compositing painter and is not yet reachable from CSS.
+
 ## 2026-07-20 - The named-colour boundary moved to the other principled edge
 
 The value layer's named-colour set was the sixteen original HTML colours, chosen because a subset needs a defensible edge. The other defensible edge is the whole table, and the engine now sits on it: all one hundred and forty-eight CSS Color 4 names, generated mechanically from the specification's own table into the match — transcribing hex triplets by hand is how a plausible wrong colour enters, so no hand touched them. `rgb()` and `rgba()` parse too, in comma, space, and slash forms, with out-of-range channels clamped as the specification requires.
