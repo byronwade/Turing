@@ -52,9 +52,11 @@
 //! Everything else returns a typed error rather than a partial evaluation:
 //! by-reference capture of mutable bindings, multi-level capture, named
 //! function expressions, `class`, `try`/`catch`, `async`/`await`, generators,
-//! regular expressions, modules, `eval`, array-literal and call-argument
-//! spread (object-literal spread, `{...x}`, is implemented), and prototype
-//! semantics.
+//! regular expressions, `eval`, array-literal and call-argument spread
+//! (object-literal spread, `{...x}`, is implemented), and prototype
+//! semantics. Modules are not a general feature either — `import`/
+//! `export` parse only the two narrow forms real usage needs (see
+//! `parse_import_statement`), everything else about them still refuses.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
 //! implemented language does not fail visibly; it computes a wrong value and
@@ -405,10 +407,13 @@ const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("delete", "delete"),
     ("instanceof", "instanceof"),
     ("switch", "switch"),
-    ("import", "modules"),
-    ("export", "modules"),
     ("do", "do/while"),
 ];
+
+/// Native modules this engine provides bindings for, via whatever prelude
+/// the embedder supplies as ordinary top-level declarations — not a real
+/// module resolver. See `Parser::parse_import_statement`.
+const NATIVE_MODULES: &[&str] = &["react", "lucide-react"];
 
 /// Lexes `source`, returning each token alongside the byte offset its first
 /// character starts at (`Token::Eof`'s offset is `source.len()`).
@@ -1020,6 +1025,12 @@ impl<'a> Parser<'a> {
     fn parse_statement_inner(&mut self) -> Result<Stmt, JsError> {
         self.refuse_unsupported_keyword()?;
 
+        if self.check_keyword("import") {
+            return self.parse_import_statement();
+        }
+        if self.check_keyword("export") {
+            return self.parse_export_statement();
+        }
         if self.check_keyword("function") {
             return self.parse_function();
         }
@@ -1124,6 +1135,148 @@ impl<'a> Parser<'a> {
             parameters,
             body,
         })
+    }
+
+    /// Parses `import Default, { Name (as Alias)?, ... } from "module";` —
+    /// either half of the binding list may be absent, but at least one
+    /// must be present. Two other forms are recognized only to refuse
+    /// them explicitly (`import * as ns from "..."` and a bare
+    /// `import "...";` for side effects) rather than falling through to a
+    /// confusing later error. Real ES modules resolve arbitrary paths to
+    /// arbitrary exports; this only recognizes a fixed whitelist of
+    /// module names this engine itself provides native bindings for (see
+    /// `NATIVE_MODULES`) — anything else refuses immediately, a far
+    /// clearer error than letting an unresolved name fail later at first
+    /// use.
+    ///
+    /// Compiles to nothing for a non-aliased named import: the embedder's
+    /// prelude already declares that exact top-level name as an ordinary
+    /// global (the same mechanism `memo`/`__jsxCreateElement` already use
+    /// in `turing-engine`'s examples), so there is nothing left to bind.
+    /// An aliased import (`Original as Alias`) is the one case that needs
+    /// a *new* binding, and desugars to `const Alias = Original;` —
+    /// referencing the prelude's existing `Original` global to create the
+    /// distinct `Alias` name the importing code actually uses. The
+    /// default binding (`import React from "react"`) is parsed but never
+    /// bound to anything: no real Nova usage references it as a value
+    /// (confirmed by direct grep against the pinned source), so binding
+    /// it to a real namespace object is deferred until something actually
+    /// needs it — a real, visible gap (a future reference fails as
+    /// `UndefinedVariable`), not a value silently routed around.
+    fn parse_import_statement(&mut self) -> Result<Stmt, JsError> {
+        self.position += 1; // `import`
+        if self.check_punct("*") {
+            return Err(JsError::Unsupported {
+                feature: "`import * as name` namespace imports".to_string(),
+            });
+        }
+        if matches!(self.peek(), Token::Str(_)) {
+            return Err(JsError::Unsupported {
+                feature: "side-effect-only imports (`import \"module\";`)".to_string(),
+            });
+        }
+        let mut has_default = false;
+        if let Token::Ident(_) = self.peek() {
+            self.advance(); // the default binding name — parsed, never bound
+            has_default = true;
+            self.eat_punct(",");
+        }
+        let mut aliases: Vec<(String, String)> = Vec::new();
+        if self.eat_punct("{") {
+            while !self.check_punct("}") {
+                let original = match self.advance() {
+                    Token::Ident(name) => name,
+                    other => {
+                        return Err(JsError::UnexpectedToken {
+                            found: other.describe(),
+                            expected: "an imported name".to_string(),
+                        });
+                    }
+                };
+                let local = if matches!(self.peek(), Token::Ident(word) if word == "as") {
+                    self.advance();
+                    match self.advance() {
+                        Token::Ident(name) => name,
+                        other => {
+                            return Err(JsError::UnexpectedToken {
+                                found: other.describe(),
+                                expected: "a local binding name after `as`".to_string(),
+                            });
+                        }
+                    }
+                } else {
+                    original.clone()
+                };
+                if local != original {
+                    aliases.push((original, local));
+                }
+                if !self.eat_punct(",") {
+                    break;
+                }
+            }
+            self.expect_punct("}")?;
+        } else if !has_default {
+            return Err(JsError::UnexpectedToken {
+                found: self.peek().describe(),
+                expected: "a default binding, a `{ ... }` named-import list, or both".to_string(),
+            });
+        }
+        if !matches!(self.peek(), Token::Ident(word) if word == "from") {
+            return Err(JsError::UnexpectedToken {
+                found: self.peek().describe(),
+                expected: "`from`".to_string(),
+            });
+        }
+        self.advance();
+        let module = match self.advance() {
+            Token::Str(text) => text,
+            other => {
+                return Err(JsError::UnexpectedToken {
+                    found: other.describe(),
+                    expected: "a module name string".to_string(),
+                });
+            }
+        };
+        if !NATIVE_MODULES.contains(&module.as_str()) {
+            return Err(JsError::Unsupported {
+                feature: format!("importing from \"{module}\" (no native binding for this module)"),
+            });
+        }
+        self.eat_punct(";");
+        let statements = aliases
+            .into_iter()
+            .map(|(original, local)| Stmt::Declare {
+                name: local,
+                value: Some(Expr::Variable(original)),
+                constant: true,
+            })
+            .collect();
+        Ok(Stmt::Sequence(statements))
+    }
+
+    /// Parses `export default function Name(...) { ... }` — the only
+    /// export form real Nova usage needs (confirmed by direct grep: it is
+    /// the file's sole `export`). `export`/`default` carry no meaning
+    /// without a real module system to export *to*; they are consumed
+    /// and discarded, and the function declaration underneath compiles
+    /// exactly as an ordinary top-level `function` would. Any other
+    /// export form (named exports, `export const`, `export default` of a
+    /// non-function expression) refuses rather than guessing what it
+    /// should do.
+    fn parse_export_statement(&mut self) -> Result<Stmt, JsError> {
+        self.position += 1; // `export`
+        if !matches!(self.peek(), Token::Ident(word) if word == "default") {
+            return Err(JsError::Unsupported {
+                feature: "named exports (`export { ... }`, `export const ...`)".to_string(),
+            });
+        }
+        self.advance(); // `default`
+        if !self.check_keyword("function") {
+            return Err(JsError::Unsupported {
+                feature: "`export default` of anything but a function declaration".to_string(),
+            });
+        }
+        self.parse_function()
     }
 
     fn parse_expression(&mut self) -> Result<Expr, JsError> {
@@ -2731,13 +2884,30 @@ impl Compiler {
         // the same hoisting `signatures` already gets, for the same reason.
         // A name already seen keeps its first slot: `var`'s redeclaration is
         // not a compile error here.
-        for statement in statements {
-            if let Stmt::Declare { name, constant, .. } = statement
-                && !self.globals.iter().any(|(existing, _)| existing == name)
-            {
-                self.globals.push((name.clone(), *constant));
+        //
+        // Recurses into `Stmt::Sequence` (a destructuring declaration or an
+        // import statement's desugar, both of which produce their bindings
+        // this way): a top-level `const [a, b] = x;` or `import { X as Y }
+        // from "...";` runs in the *current* scope — the global scope, at
+        // this level — exactly like a bare `Stmt::Declare` would, and must
+        // hoist the same way or a forward reference to it resolves through
+        // no fallback at all (fails as an unbound host operation, not as
+        // the clearer "not defined yet" an ordinary missing declaration
+        // gives).
+        fn hoist_declares(statements: &[Stmt], globals: &mut Vec<(String, bool)>) {
+            for statement in statements {
+                match statement {
+                    Stmt::Declare { name, constant, .. } => {
+                        if !globals.iter().any(|(existing, _)| existing == name) {
+                            globals.push((name.clone(), *constant));
+                        }
+                    }
+                    Stmt::Sequence(inner) => hoist_declares(inner, globals),
+                    _ => {}
+                }
             }
         }
+        hoist_declares(statements, &mut self.globals);
         // Reserve slot 0 for the top level and one slot per declared function,
         // so a nested function *expression* pushed while compiling a body
         // lands after them rather than displacing a declared index.
@@ -2773,30 +2943,7 @@ impl Compiler {
 
         self.push_scope();
         for statement in statements {
-            match statement {
-                Stmt::Function { .. } => {}
-                // A direct top-level declaration was hoisted into `globals`
-                // above and stores there instead of a local scope slot, so
-                // it stays visible from a function body at any depth. A
-                // `Stmt::Declare` reached through the generic `statement`
-                // dispatch (nested in a top-level `if`/`for`/block) is
-                // unaffected — only the statements in this exact list are
-                // program-top-level.
-                Stmt::Declare { name, value, .. } => {
-                    match value {
-                        Some(expression) => self.expression(expression)?,
-                        None => self.code.push(Op::Const(Value::Undefined)),
-                    }
-                    let slot = self
-                        .globals
-                        .iter()
-                        .position(|(existing, _)| existing == name)
-                        .expect("every top-level declare was hoisted above");
-                    self.code.push(Op::StoreGlobal(slot));
-                    self.code.push(Op::Pop);
-                }
-                other => self.statement(other)?,
-            }
+            self.compile_top_level_statement(statement)?;
         }
         self.pop_scope();
         self.code.push(Op::Const(Value::Undefined));
@@ -2813,6 +2960,53 @@ impl Compiler {
         Ok(Program {
             functions: self.functions,
         })
+    }
+
+    /// Compiles one program-top-level statement, the way the top-level
+    /// script body needs — not the way a statement nested inside a
+    /// function body would (see `Self::statement` for that).
+    ///
+    /// A direct `Stmt::Declare` here stores into its hoisted global slot
+    /// rather than a local scope slot, so it stays visible from a function
+    /// body at any depth. `Stmt::Sequence` (a destructuring declaration or
+    /// an import statement's desugar, both of which produce their bindings
+    /// this way) recurses through this same method for each inner
+    /// statement — it runs in the *current* scope, which at this level
+    /// *is* top-level, so its own `Stmt::Declare`s need the identical
+    /// global-slot treatment, not the generic per-scope-local compiling
+    /// `Self::statement` would give them (that mismatch was a real,
+    /// previously-latent bug: the slot was reserved by hoisting but never
+    /// written, so a global reached this way silently read back
+    /// `undefined` — caught because an import-created alias binding was
+    /// the first top-level use of `Stmt::Sequence` this engine had ever
+    /// compiled; a nested-inside-a-function-body destructuring statement
+    /// takes the ordinary local-scope path from `Self::statement` and was
+    /// never affected).
+    fn compile_top_level_statement(&mut self, statement: &Stmt) -> Result<(), JsError> {
+        match statement {
+            Stmt::Function { .. } => Ok(()),
+            Stmt::Declare { name, value, .. } => {
+                match value {
+                    Some(expression) => self.expression(expression)?,
+                    None => self.code.push(Op::Const(Value::Undefined)),
+                }
+                let slot = self
+                    .globals
+                    .iter()
+                    .position(|(existing, _)| existing == name)
+                    .expect("every top-level declare was hoisted above");
+                self.code.push(Op::StoreGlobal(slot));
+                self.code.push(Op::Pop);
+                Ok(())
+            }
+            Stmt::Sequence(inner) => {
+                for statement in inner {
+                    self.compile_top_level_statement(statement)?;
+                }
+                Ok(())
+            }
+            other => self.statement(other),
+        }
     }
 
     /// Compiles a function body into the already-reserved slot `index`.
@@ -5645,6 +5839,33 @@ mod tests {
     }
 
     #[test]
+    fn top_level_destructuring_creates_real_global_bindings() {
+        // Destructuring at the very top level (outside any function body)
+        // desugars to `Stmt::Sequence` the same way it does inside one —
+        // but the top-level compile pass has its own separate handling for
+        // turning a `Stmt::Declare` into a *global* store (so it stays
+        // visible from any function, at any depth), and that handling did
+        // not originally know to look inside a `Stmt::Sequence` at all:
+        // the binding fell through to the ordinary per-scope-local
+        // compiler instead, silently leaving its (correctly reserved)
+        // global slot permanently `undefined`. A function reading the
+        // binding by name — the only way a real program would ever
+        // observe it — is what catches that; reading it back in the same
+        // top-level scope the declaration ran in would not, since the
+        // stray local slot happens to hold the right value there too.
+        let program = compile(
+            "const [a, b] = [10, 20]; \
+             function main() { record(a + b); } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![30.0]);
+    }
+
+    #[test]
     fn array_destructuring_skips_elided_slots() {
         // A real observed Nova shape: `const [, n, from] = c;` and
         // `const [g, t, s, , dest] = c;` — a hole binds nothing at that
@@ -6609,6 +6830,82 @@ mod tests {
             ),
             "an unterminated interpolation refuses the same way"
         );
+    }
+
+    #[test]
+    fn import_default_and_named_bindings_resolve_through_an_existing_global() {
+        // The import itself never creates a binding for a non-aliased
+        // name — it compiles to nothing — so this only proves `useState`
+        // (standing in for a prelude-provided global) was already
+        // reachable the whole time, exactly the way a real prelude
+        // function like `memo` already is.
+        let source = "import React, { useState } from \"react\"; \
+             function main() { return useState(4); } \
+             function useState(x) { return x + 1; } main();";
+        assert_eq!(run_main_source(source), Value::Number(5.0));
+    }
+
+    #[test]
+    fn import_with_an_alias_creates_a_new_binding() {
+        // `run_main_source` calls `main` directly, bypassing the top-level
+        // script body — but the alias binding this test exercises is a
+        // top-level `const`, whose initializer only runs as part of that
+        // top-level body (a `function` declaration needs no such run, since
+        // it compiles to a compile-time-constant reference instead — that
+        // is why the *other* import test above can use `run_main_source`
+        // safely and this one cannot). Using the full `run_with_host` path
+        // instead runs the import's initializer for real, the way any
+        // actual script execution already does.
+        let program = compile(
+            "import { History as HistoryIcon } from \"lucide-react\"; \
+             function History() { return 7; } \
+             function main() { record(HistoryIcon()); } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![7.0]);
+    }
+
+    #[test]
+    fn import_from_an_unlisted_module_is_refused() {
+        assert!(matches!(
+            compile("import { x } from \"some-random-npm-package\";"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn import_namespace_and_side_effect_forms_are_refused() {
+        assert!(matches!(
+            compile("import * as React from \"react\";"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("import \"react\";"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn export_default_function_compiles_as_an_ordinary_top_level_function() {
+        let source = "function main() { return Widget(); } \
+             export default function Widget() { return 9; } main();";
+        assert_eq!(run_main_source(source), Value::Number(9.0));
+    }
+
+    #[test]
+    fn other_export_forms_are_refused() {
+        assert!(matches!(
+            compile("export const x = 1;"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("export default 5;"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
     // -- collection ------------------------------------------------------
 
