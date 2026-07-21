@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-20 - Arrays, and the runtime target that made them the priority
+
+The owner redirected the goal: the engine should render the Nova React source as the real system UI and run real React/Next.js/TanStack apps — Electron-class, on the from-scratch engine. `docs/application-runtime/` states that target honestly, including that it extends the browser-only charter and conflicts with ADR-0008 (trusted chrome independent of the engine), and so requires those owner decisions to be revisited rather than assumed. The first rung is already standing: the engine renders framework *server-rendered output* today, proven by a Next.js-style dashboard fixture that goes through the normal pipeline untouched.
+
+The first client-runtime rung is arrays, because everything React does with children is arrays, and `turing-js` refused them. They exist now: literals, indexing, `length`, index-write growth, nesting with objects, spec-correct truthiness (an empty array is truthy — the classic trap), with holes and spread refused rather than guessed.
+
+The representation is the interesting decision. An array in this language *is* an object — a `length` property and integer-keyed elements — which is precisely the specification's model, not a shortcut. So arrays reuse the entire object machinery: the same heap, the same exact-tracing collector (taught to follow array references), the same property get/set opcodes (taught to accept the array tag and to grow `length` on an out-of-range write). A distinct `Value::Array` tag carries only what genuinely differs — array semantics and, later, `Array.isArray`. The one honest limit stated at the code: array-to-string coercion needs heap access the infallible `Display` cannot reach, so it renders a marker rather than a wrong joined value; a caller that needs the join uses element access, which has the heap.
+
+The workspace is at 403 tests. Next rung is closures and function expressions — event handlers and hook bodies — which need real upvalue capture and are a larger step than arrays were.
+
 ## 2026-07-20 - The benchmark grew a statistics layer
 
 The benchmark reported min, median, max — three order statistics with no notion of confidence or noise, which is an anecdote, not evidence. `Measurement` now carries the treatment the benchmark book's statistics chapter requires, all standard-library: interquartile range, a distribution-free 95% confidence interval for the median from the order statistics, and a coefficient of variation as the single-number noise indicator.

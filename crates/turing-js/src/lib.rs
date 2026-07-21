@@ -24,12 +24,13 @@
 //! Implemented: numbers, strings, booleans, `null`, `undefined`, `var`/`let`/
 //! `const` bindings, arithmetic and comparison, logical operators with
 //! short-circuit evaluation, `if`/`else`, `while`, blocks with lexical
-//! scoping, function declarations, calls, recursion, and `return`.
+//! scoping, function declarations, calls, recursion, `return`, objects with
+//! property access, and arrays with indexing and `length`.
 //!
 //! Everything else returns a typed error rather than a partial evaluation:
-//! objects and property access, arrays, closures over enclosing scope,
+//! closures over enclosing scope, function expressions and arrow functions,
 //! `class`, `try`/`catch`, `async`/`await`, generators, regular expressions,
-//! modules, `eval`, and prototype semantics.
+//! modules, `eval`, array/object spread, and prototype semantics.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
 //! implemented language does not fail visibly; it computes a wrong value and
@@ -152,6 +153,12 @@ pub enum Value {
     /// collected is refused rather than silently reading whatever now occupies
     /// the slot.
     Object(GcRef),
+    /// An array. In this language an array *is* an object — a `length`
+    /// property and integer-keyed elements — which is exactly the
+    /// specification's model, so it shares the object heap and machinery and
+    /// differs only in this tag, which selects array semantics for `length`
+    /// maintenance and stringification.
+    Array(GcRef),
 }
 
 impl Value {
@@ -164,9 +171,9 @@ impl Value {
             // NaN and both zeroes are falsy; this is easy to get wrong.
             Self::Number(value) => *value != 0.0 && !value.is_nan(),
             Self::String(value) => !value.is_empty(),
-            // Every object is truthy, including an empty one. This is the case
-            // people expect to behave like an empty string and it does not.
-            Self::Function(_) | Self::Object(_) => true,
+            // Every object is truthy, including an empty one, and an array is
+            // an object — even an empty array is truthy, the classic trap.
+            Self::Function(_) | Self::Object(_) | Self::Array(_) => true,
         }
     }
 }
@@ -190,6 +197,11 @@ impl fmt::Display for Value {
             // cycle detection, and `String(o)` in the language is "[object
             // Object]" rather than a dump.
             Self::Object(_) => write!(formatter, "[object Object]"),
+            // Array-to-string joins elements with commas, which needs to read
+            // the heap this infallible formatter cannot reach. Rather than
+            // print a wrong value, it prints a marker; a caller that needs the
+            // joined form uses the element access that does have the heap.
+            Self::Array(_) => write!(formatter, "[object Array]"),
         }
     }
 }
@@ -405,6 +417,10 @@ enum Expr {
     /// `{ a: 1, "b": 2 }`, in source order.
     ObjectLiteral {
         entries: Vec<(String, Expr)>,
+    },
+    /// `[a, b, c]`, in source order.
+    ArrayLiteral {
+        elements: Vec<Expr>,
     },
     /// `object.name` or `object[key]`.
     Member {
@@ -878,6 +894,9 @@ impl Parser {
         if self.check_punct("{") {
             return self.parse_object_literal();
         }
+        if self.check_punct("[") {
+            return self.parse_array_literal();
+        }
         match self.advance() {
             Token::Number(text) => Ok(Expr::Number(text.parse::<f64>().unwrap_or(f64::NAN))),
             Token::Str(text) => Ok(Expr::Str(text)),
@@ -966,6 +985,33 @@ impl Parser {
         self.expect_punct("}")?;
         Ok(Expr::ObjectLiteral { entries })
     }
+
+    /// `[a, b, c]`. A trailing comma is allowed; elision (`[a, , c]`) is
+    /// refused rather than silently filled with `undefined`, because a hole
+    /// and an explicit `undefined` differ in the specification and this
+    /// implementation does not model the difference.
+    fn parse_array_literal(&mut self) -> Result<Expr, JsError> {
+        self.expect_punct("[")?;
+        let mut elements = Vec::new();
+        while !self.check_punct("]") {
+            if self.check_punct(",") {
+                return Err(JsError::Unsupported {
+                    feature: "array elision (holes)".to_string(),
+                });
+            }
+            if self.check_punct("...") {
+                return Err(JsError::Unsupported {
+                    feature: "array spread".to_string(),
+                });
+            }
+            elements.push(self.parse_assignment()?);
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct("]")?;
+        Ok(Expr::ArrayLiteral { elements })
+    }
 }
 
 /// Normalises a property key to its string form.
@@ -990,7 +1036,10 @@ fn canonical_key(text: &str) -> String {
 /// `for...in` and no `Object.keys`. What ships is the *storage* order that
 /// enumeration will read, not enumeration itself, and the distinction is worth
 /// keeping visible rather than implying a feature that is not reachable.
-#[cfg(test)]
+/// The array index a property key denotes, if it is a canonical non-negative
+/// integer index. `"0"`, `"42"` are indices; `"length"`, `"01"`, `"-1"` are
+/// ordinary keys and return `None`. Canonical form only, so `"01"` parses but
+/// is not index 1.
 fn array_index(key: &str) -> Option<u32> {
     key.parse::<u32>()
         .ok()
@@ -1018,8 +1067,11 @@ impl Trace for ObjectData {
     /// than any subset it believes to be interesting.
     fn trace(&self, out: &mut Vec<GcRef>) {
         for (_, value) in &self.entries {
-            if let Value::Object(reference) = value {
-                out.push(*reference);
+            // Both object and array values are heap references this data
+            // keeps alive; missing either collects a live value.
+            match value {
+                Value::Object(reference) | Value::Array(reference) => out.push(*reference),
+                _ => {}
             }
         }
     }
@@ -1092,6 +1144,8 @@ pub enum Op {
     StoreLocal(usize),
     /// Allocate an empty object and push a handle to it.
     NewObject,
+    /// Pop `n` elements and push an array of them, element 0 deepest.
+    NewArray(usize),
     /// Push a copy of the top of stack.
     Dup,
     /// Call a bound operation by name with `n` arguments from the stack.
@@ -1475,6 +1529,15 @@ impl Compiler {
                     self.code.push(Op::Pop);
                 }
             }
+            Expr::ArrayLiteral { elements } => {
+                // Elements are pushed in source order, element 0 deepest, and
+                // NewArray gathers them; keeping the count on the op means the
+                // VM does not scan for a marker.
+                for element in elements {
+                    self.expression(element)?;
+                }
+                self.code.push(Op::NewArray(elements.len()));
+            }
             Expr::Member { object, key } => {
                 self.expression(object)?;
                 self.expression(key)?;
@@ -1801,10 +1864,42 @@ impl Vm {
                             })?;
                     stack.push(Value::Object(reference));
                 }
+                Op::NewArray(count) => {
+                    // Charged like an object plus one property per element, so
+                    // a large literal cannot allocate unbilled.
+                    let charge = OBJECT_OVERHEAD_BYTES
+                        .saturating_add((*count as u64).saturating_mul(ELEMENT_OVERHEAD_BYTES));
+                    runtime.bytes = runtime.bytes.saturating_add(charge);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+                        collect_now(runtime, &stack, &locals);
+                    }
+                    // Elements are on the stack with element 0 deepest; take
+                    // them in order.
+                    let start = stack.len() - *count;
+                    let elements: Vec<Value> = stack.split_off(start);
+                    let mut data = ObjectData::default();
+                    for (index, element) in elements.into_iter().enumerate() {
+                        data.set(index.to_string(), element);
+                    }
+                    data.set("length".to_owned(), Value::Number(*count as f64));
+                    let reference =
+                        runtime
+                            .heap
+                            .allocate(data)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    stack.push(Value::Array(reference));
+                }
                 Op::GetProperty => {
                     let key = pop(&mut stack);
                     let object = pop(&mut stack);
-                    let Value::Object(handle) = object else {
+                    let (Value::Object(handle) | Value::Array(handle)) = object else {
                         return Err(JsError::TypeError {
                             message: format!("cannot access a property of {object}"),
                         });
@@ -1829,10 +1924,19 @@ impl Vm {
                     let value = pop(&mut stack);
                     let key = pop(&mut stack);
                     let object = pop(&mut stack);
-                    let Value::Object(handle) = object else {
+                    let is_array = matches!(object, Value::Array(_));
+                    let (Value::Object(handle) | Value::Array(handle)) = object else {
                         return Err(JsError::TypeError {
                             message: format!("cannot access a property of {object}"),
                         });
+                    };
+                    let stored_key = property_key(&key);
+                    // Writing `arr[i]` at or past the end grows `length`, which
+                    // is the array behaviour a plain object does not have.
+                    let grow_length = if is_array {
+                        array_index(&stored_key).map(|index| u64::from(index) + 1)
+                    } else {
+                        None
                     };
                     let object =
                         runtime
@@ -1841,7 +1945,15 @@ impl Vm {
                             .map_err(|error| JsError::TypeError {
                                 message: error.to_string(),
                             })?;
-                    let charged = object.set(property_key(&key), value.clone());
+                    let mut charged = object.set(stored_key, value.clone());
+                    if let Some(new_length) = grow_length {
+                        let current = object.get("length").map(to_number).unwrap_or(0.0);
+                        #[allow(clippy::cast_precision_loss)]
+                        if (new_length as f64) > current {
+                            charged +=
+                                object.set("length".to_owned(), Value::Number(new_length as f64));
+                        }
+                    }
                     runtime.bytes = runtime.bytes.saturating_add(charged as u64);
                     if runtime.bytes > self.byte_limit {
                         return Err(JsError::ByteLimitExceeded {
@@ -1968,7 +2080,7 @@ fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
         .chain(stack)
         .chain(locals)
         .filter_map(|value| match value {
-            Value::Object(reference) => Some(*reference),
+            Value::Object(reference) | Value::Array(reference) => Some(*reference),
             _ => None,
         })
         .collect::<Vec<_>>();
@@ -2077,6 +2189,9 @@ const COLLECT_AFTER_ALLOCATIONS: usize = 64;
 /// not that the number is accurate.
 const OBJECT_OVERHEAD_BYTES: u64 = 64;
 
+/// The charge per array element, on top of the array's object overhead.
+const ELEMENT_OVERHEAD_BYTES: u64 = 16;
+
 /// Converts a value used as a property key into its string form.
 ///
 /// `o[1]` and `o["1"]` name the same property, so a numeric key becomes its
@@ -2091,10 +2206,10 @@ fn to_number(value: &Value) -> f64 {
         Value::Boolean(true) => 1.0,
         Value::Boolean(false) | Value::Null => 0.0,
         Value::String(text) => text.trim().parse::<f64>().unwrap_or(f64::NAN),
-        // An object would coerce through `valueOf`/`toString`, which needs a
-        // prototype chain this implementation does not model, so it is NaN
-        // rather than a guessed conversion.
-        Value::Undefined | Value::Function(_) | Value::Object(_) => f64::NAN,
+        // An object or array would coerce through `valueOf`/`toString`, which
+        // needs a prototype chain this implementation does not model, so it is
+        // NaN rather than a guessed conversion.
+        Value::Undefined | Value::Function(_) | Value::Object(_) | Value::Array(_) => f64::NAN,
     }
 }
 
@@ -2143,6 +2258,16 @@ mod tests {
 
     fn run(source: &str) -> Value {
         evaluate(source).expect("evaluates")
+    }
+
+    /// Evaluates `body` (statements ending in a `return`) inside a function
+    /// and returns its value. The top level discards completion values, so a
+    /// value test needs a call frame.
+    fn eval_in_fn(body: &str) -> Value {
+        let program = compile(&format!("function main() {{ {body} }} main();")).expect("compiles");
+        Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect("runs")
     }
 
     /// Compiles and runs `source`, calling `main` directly.
@@ -2464,10 +2589,57 @@ mod tests {
     }
 
     #[test]
-    fn property_access_and_arrays_are_refused() {
-        // `.` and `[` are not lexed, so these fail rather than misparsing.
-        assert!(compile("let a = b.c;").is_err());
-        assert!(compile("let a = [1, 2];").is_err());
+    fn arrays_index_and_carry_length() {
+        // Literal, index access, and length.
+        assert_eq!(
+            eval_in_fn("let a = [10, 20, 30]; return a[1];"),
+            Value::Number(20.0)
+        );
+        assert_eq!(
+            eval_in_fn("let a = [10, 20, 30]; return a.length;"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn("let a = []; return a.length;"),
+            Value::Number(0.0)
+        );
+        // Out-of-range read is undefined, per the specification.
+        assert_eq!(eval_in_fn("let a = [1]; return a[5];"), Value::Undefined);
+        // Writing past the end grows length.
+        assert_eq!(
+            eval_in_fn("let a = [1]; a[3] = 9; return a.length;"),
+            Value::Number(4.0)
+        );
+        assert_eq!(
+            eval_in_fn("let a = [1]; a[3] = 9; return a[3];"),
+            Value::Number(9.0)
+        );
+        // Nested arrays and objects interoperate.
+        assert_eq!(
+            eval_in_fn("let a = [[1, 2], {v: 7}]; return a[0][1];"),
+            Value::Number(2.0)
+        );
+        assert_eq!(
+            eval_in_fn("let a = [[1, 2], {v: 7}]; return a[1].v;"),
+            Value::Number(7.0)
+        );
+        // An array is truthy even when empty.
+        assert_eq!(
+            eval_in_fn("let a = []; if (a) { return 1; } else { return 0; }"),
+            Value::Number(1.0)
+        );
+    }
+
+    #[test]
+    fn array_holes_and_spread_are_refused() {
+        assert!(matches!(
+            compile("let a = [1, , 3];"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("let a = [...b];"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]
