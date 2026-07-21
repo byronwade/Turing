@@ -52,11 +52,15 @@
 //! Everything else returns a typed error rather than a partial evaluation:
 //! by-reference capture of mutable bindings, multi-level capture, named
 //! function expressions, `class`, `try`/`catch`, `async`/`await`, generators,
-//! regular expressions, `eval`, array-literal and call-argument spread
-//! (object-literal spread, `{...x}`, is implemented), and prototype
-//! semantics. Modules are not a general feature either — `import`/
-//! `export` parse only the two narrow forms real usage needs (see
-//! `parse_import_statement`), everything else about them still refuses.
+//! `eval`, array-literal and call-argument spread (object-literal spread,
+//! `{...x}`, is implemented), and prototype semantics. Modules are not a
+//! general feature either — `import`/`export` parse only the two narrow
+//! forms real usage needs (see `parse_import_statement`), everything else
+//! about them still refuses.
+//!
+//! Regular expressions are implemented, scoped to what real usage needs
+//! rather than full ECMAScript regex syntax — see the [`regex`] module doc
+//! comment for exactly what compiles and what is refused.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
 //! implemented language does not fail visibly; it computes a wrong value and
@@ -143,7 +147,11 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
+use std::rc::Rc;
 use turing_gc::{Bindings, GcRef, Heap, Trace};
+
+mod regex;
+pub use regex::CompiledRegex;
 
 /// A construct this implementation does not model, or a program error.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -267,6 +275,18 @@ pub enum Value {
     /// captured values; see `mod closure`. Only `const` bindings are
     /// captured, so the values are immutable snapshots.
     Closure(GcRef),
+    /// A compiled regular expression.
+    ///
+    /// Reference-counted, not a `GcRef` into the collected heap: a
+    /// `CompiledRegex` never refers to another `Value` (it is pure pattern
+    /// data), so it cannot participate in a reference cycle, and never
+    /// needs the tracing collector to find it — plain `Rc` counting is
+    /// exact all by itself. A regex literal compiles its pattern exactly
+    /// once, at `compile()` time; every execution of that literal (however
+    /// many times it runs — inside a loop, inside a repeatedly-called
+    /// function) clones this `Rc`, which is a pointer copy and a refcount
+    /// bump, not a recompile. See `mod regex`.
+    Regex(Rc<regex::CompiledRegex>),
 }
 
 impl Value {
@@ -281,7 +301,9 @@ impl Value {
             Self::String(value) => !value.is_empty(),
             // Every object is truthy, including an empty one, and an array is
             // an object — even an empty array is truthy, the classic trap.
+            // A regex value is likewise always truthy, real JS's own rule.
             Self::Function(_) | Self::Object(_) | Self::Array(_) | Self::Closure(_) => true,
+            Self::Regex(_) => true,
         }
     }
 }
@@ -312,6 +334,7 @@ impl fmt::Display for Value {
             Self::Array(_) => write!(formatter, "[object Array]"),
             // A closure stringifies like any function.
             Self::Closure(_) => write!(formatter, "[function]"),
+            Self::Regex(regex) => write!(formatter, "/{}/{}", regex.source, regex.flags),
         }
     }
 }
@@ -331,6 +354,11 @@ enum Token {
     /// them into — that happens in `parse_primary`, by recursively lexing
     /// and parsing each one as an ordinary expression.
     TemplateLiteral(Vec<TemplatePart>),
+    /// A `/pattern/flags` regular-expression literal, pattern and flags
+    /// already split apart. See `regex_may_start_here` for how the lexer
+    /// tells this apart from the division operator, and `mod regex` for
+    /// what patterns this engine actually compiles.
+    Regex(String, String),
     Eof,
 }
 
@@ -355,6 +383,7 @@ impl Token {
             | Self::Keyword(text)
             | Self::Punct(text) => format!("`{text}`"),
             Self::TemplateLiteral(_) => "a template literal".to_string(),
+            Self::Regex(pattern, flags) => format!("`/{pattern}/{flags}`"),
             Self::Eof => "end of input".to_string(),
         }
     }
@@ -497,6 +526,20 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
             }
             continue;
         }
+        // A `/` starts a regex literal rather than the division operator
+        // when the previous token could not itself have ended an
+        // expression — see `regex_may_start_here`. Checked ahead of the
+        // two-/three-character operator matches below so `/=` inside a
+        // regex body (e.g. `/=foo/`) is scanned as pattern text, not
+        // mis-lexed as the compound-assignment operator.
+        if byte == b'/' && regex_may_start_here(tokens.last()) {
+            let token_start = index;
+            let (pattern, flags, next) = scan_regex_literal(source, index + 1)?;
+            starts.push(token_start);
+            tokens.push(Token::Regex(pattern, flags));
+            index = next;
+            continue;
+        }
         // Multi-character operators are matched longest-first so that `===`
         // does not lex as `==` followed by `=`.
         let three = source.get(index..index + 3).unwrap_or("");
@@ -564,7 +607,6 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
             index += 1;
             continue;
         }
-        // Regular expressions begin here.
         return Err(JsError::UnexpectedCharacter {
             character: byte as char,
             offset: index,
@@ -573,6 +615,121 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
     starts.push(bytes.len());
     tokens.push(Token::Eof);
     Ok((tokens, starts))
+}
+
+/// Whether a `/` at the current lex position opens a regex literal rather
+/// than meaning division or compound-assignment-by-division.
+///
+/// The standard rule real JS lexers use, and the one this one follows: `/`
+/// is division only when the previous token could itself have been the
+/// end of a value-producing expression (a literal, an identifier, `)`
+/// closing a call/parenthesised expression, `]` closing an index, or
+/// `++`/`--` as a postfix operator). After anything else — an operator, an
+/// opening bracket, `return`, a keyword like `typeof` that is always
+/// followed by an operand, or the very start of input — a `/` can only be
+/// opening a new expression, so it starts a regex.
+///
+/// This is genuinely ambiguous in general JS grammar only after `)`, which
+/// closes either a parenthesised *expression* (`(a) / b`, division) or an
+/// `if`/`while`/`for` *header* (`if (x) /re/.test(y)`, division is not
+/// even meaningful there) — a real engine disambiguates by tracking
+/// grammatical context, not just the previous token. This lexer does not:
+/// it treats `)` as always ending an expression, i.e. always division.
+/// Nova's own 25 real regex literals never follow `)` (confirmed by
+/// inspection before this was written; see the
+/// `turing-nova-source-real-scope` project memory), so this simpler rule
+/// is correct for every pattern that actually needs to compile, and the
+/// gap is a known, accepted limitation rather than a silent one.
+///
+/// `<` and `}` get the same "always division" treatment for a different,
+/// JSX-specific reason: this whole-file eager lex pass runs before any
+/// JSX-aware re-scanning (see the module-level JSX doc comment), so it
+/// tokenizes JSX syntax as if it were plain JS, with no idea it is inside
+/// a tag. That makes two JSX constructs land here as `/` right after one
+/// of these punctuators, indistinguishable at this point from ordinary JS:
+/// a closing tag's `</` (`Punct("<")` then `/`), and a self-closing tag's
+/// `/>` right after an attribute expression brace or spread —
+/// `<Foo prop={expr} />` and `<Foo {...props} />` both tokenize their `/>`
+/// as `Punct("}")` then `/`. Real JS regex literals essentially never
+/// follow `<` or `}` (comparing a value to a regex object, or a regex
+/// statement bare after a block, are not meaningful patterns), while both
+/// JSX shapes above are common, so treating `<`/`}` as always ending an
+/// expression — division, never a regex start — is correct for real usage
+/// and avoids the eager pass mis-scanning a tag as an unterminated regex.
+fn regex_may_start_here(previous: Option<&Token>) -> bool {
+    match previous {
+        None => true,
+        Some(
+            Token::Number(_)
+            | Token::Str(_)
+            | Token::Ident(_)
+            | Token::TemplateLiteral(_)
+            | Token::Regex(_, _),
+        ) => false,
+        // `this`/`true`/`false`/`null`/`undefined` are values, ending an
+        // expression like any other literal; every other keyword (`return`,
+        // `typeof`, `new`, etc.) is always followed by an operand.
+        Some(Token::Keyword(word)) => !matches!(
+            word.as_str(),
+            "this" | "true" | "false" | "null" | "undefined"
+        ),
+        // `)` and `]` close a value-producing expression (division); `++`/
+        // `--` here are the postfix form, also closing one; `<`/`}` are the
+        // JSX-tag cases explained above. Every other punctuator —
+        // including `(`, `[`, `{`, `,`, `;`, `:`, `?`, and every other
+        // binary/logical/assignment operator — is always followed by an
+        // operand.
+        Some(Token::Punct(text)) => !matches!(text.as_str(), ")" | "]" | "++" | "--" | "<" | "}"),
+        Some(Token::Eof) => true,
+    }
+}
+
+/// Scans a regex literal's body, `index` positioned just past the opening
+/// `/`. Returns the pattern text, the flag letters, and the index just
+/// past the last flag letter.
+///
+/// A `\` escapes the next character (including `/`), and an unescaped `[`
+/// opens a character class inside which an unescaped `/` does not close
+/// the literal — both mirror how `/` is actually allowed to appear inside
+/// a pattern's own body. A `]` that would close a class immediately after
+/// `[` or `[^` (a literal `]` by the ECMAScript grammar) is not treated
+/// specially, since no real usage relies on it.
+fn scan_regex_literal(source: &str, mut index: usize) -> Result<(String, String, usize), JsError> {
+    let opening_slash = index - 1;
+    let bytes = source.as_bytes();
+    let pattern_start = index;
+    let mut in_class = false;
+    loop {
+        if index >= bytes.len() || bytes[index] == b'\n' {
+            return Err(JsError::UnexpectedToken {
+                found: "end of input".to_string(),
+                expected: format!(
+                    "a closing `/` for the regular-expression literal starting at byte {opening_slash}"
+                ),
+            });
+        }
+        match bytes[index] {
+            b'\\' => index += 2,
+            b'[' => {
+                in_class = true;
+                index += 1;
+            }
+            b']' => {
+                in_class = false;
+                index += 1;
+            }
+            b'/' if !in_class => break,
+            _ => index += 1,
+        }
+    }
+    let pattern = source[pattern_start..index].to_string();
+    index += 1; // closing '/'
+    let flags_start = index;
+    while index < bytes.len() && bytes[index].is_ascii_alphabetic() {
+        index += 1;
+    }
+    let flags = source[flags_start..index].to_string();
+    Ok((pattern, flags, index))
 }
 
 /// Scans a template literal's body, `index` positioned just past the
@@ -662,6 +819,21 @@ enum Expr {
     Boolean(bool),
     Null,
     Undefined,
+    /// A `/pattern/flags` literal. Compiled to a matcher once, at compile
+    /// time — see `Compiler::expression`'s `Expr::Regex` arm and `mod
+    /// regex`.
+    Regex {
+        pattern: String,
+        flags: String,
+    },
+    /// `new RegExp(pattern)` / `new RegExp(pattern, flags)`, the one
+    /// `new`-expression this engine implements (see `Parser::parse_new`).
+    /// Unlike `Expr::Regex`, the pattern is an arbitrary runtime
+    /// expression, not fixed source text, so it compiles the pattern at
+    /// runtime rather than once here.
+    NewRegExp {
+        arguments: Vec<Expr>,
+    },
     Variable(String),
     Unary {
         operator: String,
@@ -1725,6 +1897,16 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_primary_base(&mut self) -> Result<Expr, JsError> {
+        // `new` is refused outright by `refuse_unsupported_keyword` below —
+        // real constructors need a prototype chain this engine does not
+        // model — except for the one case real usage needs: `new
+        // RegExp(pattern[, flags])`, whose "instance" is just a `Value::
+        // Regex` like a literal produces. Checked ahead of the blanket
+        // refusal rather than added as an exception inside it, so every
+        // other `new X(...)` still refuses exactly as before.
+        if self.check_keyword("new") {
+            return self.parse_new_expression();
+        }
         self.refuse_unsupported_keyword()?;
         if self.jsx_ahead() {
             return self.parse_jsx_expression();
@@ -1739,6 +1921,7 @@ impl<'a> Parser<'a> {
             Token::Number(text) => Ok(Expr::Number(text.parse::<f64>().unwrap_or(f64::NAN))),
             Token::Str(text) => Ok(Expr::Str(text)),
             Token::TemplateLiteral(parts) => self.desugar_template_literal(parts),
+            Token::Regex(pattern, flags) => Ok(Expr::Regex { pattern, flags }),
             Token::Keyword(word) => match word.as_str() {
                 "true" => Ok(Expr::Boolean(true)),
                 "false" => Ok(Expr::Boolean(false)),
@@ -1772,6 +1955,29 @@ impl<'a> Parser<'a> {
                 expected: "an expression".to_string(),
             }),
         }
+    }
+
+    /// Parses a `new` expression, `new` already peeked but not consumed.
+    ///
+    /// Refuses everything except `new RegExp(...)` — see
+    /// `parse_primary_base`'s call site for why that one case is carved
+    /// out of the blanket `new` refusal.
+    fn parse_new_expression(&mut self) -> Result<Expr, JsError> {
+        self.position += 1; // `new`
+        if !matches!(self.peek(), Token::Ident(name) if name == "RegExp") {
+            return Err(JsError::Unsupported {
+                feature: "constructors".to_string(),
+            });
+        }
+        self.position += 1; // `RegExp`
+        let arguments = self.parse_argument_list()?;
+        if arguments.is_empty() || arguments.len() > 2 {
+            return Err(JsError::Unsupported {
+                feature: "`new RegExp` with anything but a pattern and an optional flags string"
+                    .to_string(),
+            });
+        }
+        Ok(Expr::NewRegExp { arguments })
     }
 
     /// Desugars a template literal into a chain of `+` concatenations —
@@ -2779,6 +2985,14 @@ pub enum Op {
     /// `target` (spreading nothing for `null`/`undefined`) and push
     /// `target` back. Used by object-literal spread (`{...source}`).
     SpreadInto,
+    /// Pop `argc` arguments (a pattern string, then an optional flags
+    /// string) and push the `Value::Regex` `new RegExp(...)` compiles them
+    /// into. Unlike a regex literal's `Op::Const`, this compiles the
+    /// pattern at run time, since the pattern is an arbitrary runtime
+    /// string here rather than fixed source text.
+    ConstructRegex {
+        argc: usize,
+    },
     Add,
     Sub,
     Mul,
@@ -3282,6 +3496,26 @@ impl Compiler {
             Expr::Boolean(value) => self.code.push(Op::Const(Value::Boolean(*value))),
             Expr::Null => self.code.push(Op::Const(Value::Null)),
             Expr::Undefined => self.code.push(Op::Const(Value::Undefined)),
+            // Compiled to a matcher exactly once, here — every execution of
+            // this literal (in a loop, in a repeatedly-called function)
+            // just clones the `Rc`, not the pattern. See `Value::Regex`'s
+            // own doc comment.
+            Expr::Regex { pattern, flags } => {
+                let compiled = regex::compile_pattern(pattern, flags).map_err(|error| {
+                    JsError::Unsupported {
+                        feature: format!("the regular expression /{pattern}/{flags}: {error}"),
+                    }
+                })?;
+                self.code.push(Op::Const(Value::Regex(Rc::new(compiled))));
+            }
+            Expr::NewRegExp { arguments } => {
+                for argument in arguments {
+                    self.expression(argument)?;
+                }
+                self.code.push(Op::ConstructRegex {
+                    argc: arguments.len(),
+                });
+            }
             Expr::Variable(name) => {
                 if let Some((slot, _)) = self.resolve(name) {
                     self.code.push(Op::LoadLocal(slot));
@@ -4180,6 +4414,39 @@ impl Vm {
                     }
                     stack.push(target);
                 }
+                Op::ConstructRegex { argc } => {
+                    let split = stack.len().saturating_sub(*argc);
+                    let arguments = stack.split_off(split);
+                    let pattern = match arguments.first() {
+                        Some(Value::String(text)) => text.clone(),
+                        other => {
+                            return Err(JsError::TypeError {
+                                message: format!(
+                                    "new RegExp expects a string pattern, got {}",
+                                    other
+                                        .map_or_else(|| "nothing".to_string(), ToString::to_string)
+                                ),
+                            });
+                        }
+                    };
+                    let flags = match arguments.get(1) {
+                        Some(Value::String(text)) => text.clone(),
+                        Some(other) => {
+                            return Err(JsError::TypeError {
+                                message: format!(
+                                    "new RegExp expects a string flags argument, got {other}"
+                                ),
+                            });
+                        }
+                        None => String::new(),
+                    };
+                    let compiled = regex::compile_pattern(&pattern, &flags).map_err(|error| {
+                        JsError::Unsupported {
+                            feature: format!("the regular expression /{pattern}/{flags}: {error}"),
+                        }
+                    })?;
+                    stack.push(Value::Regex(Rc::new(compiled)));
+                }
                 Op::Sub => binary_number(&mut stack, |a, b| a - b),
                 Op::Mul => binary_number(&mut stack, |a, b| a * b),
                 Op::Div => binary_number(&mut stack, |a, b| a / b),
@@ -4497,6 +4764,7 @@ impl Vm {
             Value::Array(handle) => self.call_array_method(
                 program, handle, name, arguments, stack, locals, runtime, host,
             ),
+            Value::Regex(regex) => call_regex_method(&regex, name, &arguments),
             other => Err(JsError::TypeError {
                 message: format!("{other} has no method `{name}`"),
             }),
@@ -4512,6 +4780,20 @@ impl Vm {
         locals: &[Value],
         runtime: &mut Runtime,
     ) -> Result<Value, JsError> {
+        // Real `String.prototype.replace` takes a regex or a plain string
+        // search. A regex search is refused here rather than silently
+        // stringified into a literal substring match (which `arg_string`'s
+        // `Display` fallback would otherwise do, matching `/pattern/flags`
+        // as literal text — wrong, and silently so): every real use of
+        // `.replace()` with a regex in Nova is the `g`-flag,
+        // `$&`-backreference search-highlighter, whose statefulness this
+        // milestone does not implement (see `mod regex`'s module doc
+        // comment on what is deferred).
+        if name == "replace" && matches!(arguments.first(), Some(Value::Regex(_))) {
+            return Err(JsError::Unsupported {
+                feature: "String.prototype.replace with a regular expression".to_string(),
+            });
+        }
         let arg_string = |i: usize| {
             arguments
                 .get(i)
@@ -4532,9 +4814,10 @@ impl Vm {
             "toLowerCase" => Ok(Value::String(text.to_lowercase())),
             "toUpperCase" => Ok(Value::String(text.to_uppercase())),
             "trim" => Ok(Value::String(text.trim().to_string())),
-            // Real `String.prototype.replace` with a plain string search
-            // replaces only the first occurrence — a global replace needs a
-            // `/g` regex, which this interpreter does not have.
+            // A plain-string search replaces only the first occurrence —
+            // real JS's own behavior when the search argument is a string
+            // rather than a `/g`-flagged regex (refused above, before this
+            // match, rather than reaching here).
             "replace" => Ok(Value::String(text.replacen(
                 arg_string(0).as_str(),
                 arg_string(1).as_str(),
@@ -4865,6 +5148,32 @@ impl Vm {
     }
 }
 
+/// Dispatches a method call to a `Value::Regex` receiver.
+///
+/// Only `.test()` is implemented. `.exec()` and the stateful `lastIndex`/
+/// global-iteration protocol real usage also needs (see the
+/// `turing-nova-source-real-scope` project memory) are Milestone 2+ work —
+/// they matter once a script actually iterates, which a static first paint
+/// never does — and are refused here rather than approximated.
+fn call_regex_method(
+    regex: &regex::CompiledRegex,
+    name: &str,
+    arguments: &[Value],
+) -> Result<Value, JsError> {
+    match name {
+        "test" => {
+            let haystack = arguments
+                .first()
+                .map(ToString::to_string)
+                .unwrap_or_default();
+            Ok(Value::Boolean(regex::test(regex, &haystack)))
+        }
+        _ => Err(JsError::TypeError {
+            message: format!("a regular expression has no method `{name}`"),
+        }),
+    }
+}
+
 /// Reads an array's elements in index order, `0..length`.
 fn array_elements(runtime: &Runtime, handle: GcRef) -> Result<Vec<Value>, JsError> {
     let object = runtime
@@ -5134,12 +5443,14 @@ fn to_number(value: &Value) -> f64 {
         Value::String(text) => text.trim().parse::<f64>().unwrap_or(f64::NAN),
         // An object or array would coerce through `valueOf`/`toString`, which
         // needs a prototype chain this implementation does not model, so it is
-        // NaN rather than a guessed conversion.
+        // NaN rather than a guessed conversion. A regex has no numeric
+        // coercion in real JS either.
         Value::Undefined
         | Value::Function(_)
         | Value::Object(_)
         | Value::Array(_)
-        | Value::Closure(_) => f64::NAN,
+        | Value::Closure(_)
+        | Value::Regex(_) => f64::NAN,
     }
 }
 
@@ -5155,6 +5466,11 @@ fn strict_equal(left: &Value, right: &Value) -> bool {
         // properties are different objects. Comparing contents would also not
         // terminate on a self-referential one.
         (Value::Object(a), Value::Object(b)) => a == b,
+        // Two regex values are `===` only when they are the very same
+        // literal's/`new RegExp` call's result, matching real JS (two
+        // regexes with identical source/flags but different identities are
+        // not `===`).
+        (Value::Regex(a), Value::Regex(b)) => Rc::ptr_eq(a, b),
         _ => false,
     }
 }
@@ -6423,6 +6739,81 @@ mod tests {
             Value::Number(2.0),
             "an empty separator splits into individual characters"
         );
+    }
+
+    #[test]
+    fn regex_literal_test_matches_and_respects_anchors_and_flags() {
+        assert_eq!(
+            expr("/^(input|textarea)$/i.test(\"INPUT\")"),
+            Value::Boolean(true)
+        );
+        assert_eq!(
+            expr("/^(input|textarea)$/i.test(\"my input\")"),
+            Value::Boolean(false)
+        );
+        assert_eq!(expr("/[a-z]+/.test(\"42\")"), Value::Boolean(false));
+        assert_eq!(expr("/[a-z]+/.test(\"ok\")"), Value::Boolean(true));
+    }
+
+    #[test]
+    fn regex_literal_stored_and_called_later_still_works() {
+        // The real Nova shape: a regex literal held in an array, called
+        // through a later-bound variable's `.test()` — see the `RULES`
+        // array use case in the `turing-nova-source-real-scope` project
+        // memory's regex audit.
+        assert_eq!(
+            eval_in_fn(
+                "let rules = [/^http:/, /^https:/]; let re = rules[1]; \
+                 return re.test(\"https://example.com\");"
+            ),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn new_regexp_compiles_a_runtime_pattern() {
+        assert_eq!(
+            eval_in_fn("let re = new RegExp(\"^ab+c$\", \"i\"); return re.test(\"ABBC\");"),
+            Value::Boolean(true)
+        );
+        assert_eq!(
+            eval_in_fn("let re = new RegExp(\"^ab+c$\"); return re.test(\"xyz\");"),
+            Value::Boolean(false)
+        );
+    }
+
+    #[test]
+    fn new_with_any_other_constructor_still_refuses() {
+        let result = compile("function main() { return new Thing(); } main();");
+        assert!(matches!(result, Err(JsError::Unsupported { .. })));
+    }
+
+    #[test]
+    fn division_still_lexes_correctly_after_identifiers_and_closing_parens() {
+        // The real Nova shape this disambiguation must not break:
+        // `w / DESIGN_W, (h - 56) / DESIGN_H` — division following both a
+        // bare identifier and a closing paren, never a regex start.
+        assert_eq!(
+            eval_in_fn(
+                "let w = 10; let designW = 5; let h = 106; let designH = 25; \
+                 return (w / designW) + ((h - 56) / designH);"
+            ),
+            Value::Number(4.0)
+        );
+    }
+
+    #[test]
+    fn replace_with_a_regex_is_a_typed_refusal_not_a_panic() {
+        // The literal itself compiles fine — the refusal is specifically
+        // for calling `.replace()` with it, deferred stateful/interactive-
+        // only behavior (see `mod regex`'s module doc comment).
+        let program =
+            compile("function main() { return \"a.b.c\".replace(/\\./g, \"-\"); } main();")
+                .expect("the regex literal itself compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("regex .replace() is refused, not silently wrong");
+        assert!(matches!(error, JsError::Unsupported { .. }));
     }
 
     #[test]

@@ -416,6 +416,12 @@ impl Host for DomHost<'_> {
 /// "call this to resolve a component", never which kind of callable it is),
 /// and `"undefined"`/`"null"`/`"boolean"` are the falsy sentinels real JSX
 /// drops rather than renders (`{condition && <X/>}`).
+///
+/// A regex value has no JSX meaning at all — it is truthy but not text,
+/// data, or callable — so it gets its own tag rather than being folded
+/// into one of the above; `__mount`'s `kind != "object"` fallback already
+/// drops any unrecognised tag the same way real JSX drops an unrenderable
+/// child, so this is a correct no-op for it, not an unhandled case.
 fn value_kind(value: &Value) -> &'static str {
     match value {
         Value::Undefined => "undefined",
@@ -426,6 +432,7 @@ fn value_kind(value: &Value) -> &'static str {
         Value::Function(_) | Value::Closure(_) => "function",
         Value::Object(_) => "object",
         Value::Array(_) => "array",
+        Value::Regex(_) => "regex",
     }
 }
 
