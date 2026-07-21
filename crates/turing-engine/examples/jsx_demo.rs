@@ -2,12 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! First real, verified JSX-to-pixels walkthrough: a hand-authored JSX
-//! component (not the 7,727-line Nova design source, which needs
-//! substantially more JS-language surface this engine does not have yet —
-//! see `docs/research-log.md`) compiled by `turing-js`'s real JSX parser,
-//! resolved by a JS-authored reconciler (`__jsxCreateElement` + `__mount`,
-//! prepended as a prelude) into real DOM nodes via the existing
+//! First real, verified JSX-to-pixels walkthrough: hand-authored JSX
+//! components — not the 7,727-line Nova design source, which
+//! `docs/ui-runtime/design-lab/README.md` documents as a visual reference to
+//! be *extracted* from (tokens, layout, component states), never executed
+//! directly (it imports the real `react`/`lucide-react` npm packages, and
+//! its own README forbids React/webview in trusted chrome) — compiled by
+//! `turing-js`'s real JSX parser, resolved by a JS-authored reconciler
+//! (`__jsxCreateElement` + `__mount`, prepended as a prelude) into real DOM
+//! nodes via the existing
 //! `createElement`/`createText`/`appendChild`/`setNodeAttribute` host
 //! operations, laid out and painted by the real engine pipeline.
 //!
@@ -101,29 +104,31 @@ function __unmountChildren(parentHandle) {
 /// the whole bridge (JSX parse → `__jsxCreateElement` → `__mount` → real DOM
 /// → layout → paint) with nothing hook-related in the way yet.
 ///
-/// `Badge` and `App` are declared *inside* `__turingRenderRoot`, not as
-/// top-level siblings of it, because this interpreter has no true global
-/// scope for bare-value name references: `Expr::Variable` (what a JSX
-/// uppercase tag desugars to) only resolves a local or a captured upvalue,
-/// never a sibling top-level declaration — only an actual *call* to a named
-/// top-level `function` resolves across function boundaries (compiled
-/// through a separate, call-site-only lookup). Nesting them here makes `App`
-/// an ordinary local of this scope and `Badge` an ordinary upvalue `App`
-/// captures, both already-proven-working paths, rather than depending on a
-/// cross-function reference this interpreter does not support.
+/// `Badge` and `App` are real top-level sibling declarations, referenced
+/// from JSX (`<Badge .../>`, `<App />`) exactly the way idiomatic
+/// component code is written. A JSX uppercase tag desugars to
+/// `Expr::Variable`, and that now falls through — after the usual local and
+/// captured-upvalue checks fail — to a global table every top-level
+/// `function`/`const`/`let` is hoisted into, reachable from a function body
+/// at any nesting depth. Earlier this had to be worked around by nesting
+/// both components as locals of `__turingRenderRoot`, since a bare
+/// reference to a sibling top-level declaration had nowhere to resolve to;
+/// that workaround is gone now that the global table exists.
 const STATELESS_DEMO: &str = r#"
+function Badge(props) {
+    return <span className="badge">{props.label}</span>;
+}
+
+function App(props) {
+    return (
+        <div className="card">
+            <span className="title">Turing renders JSX</span>
+            <Badge label="real pipeline" />
+        </div>
+    );
+}
+
 function __turingRenderRoot() {
-    const Badge = function(props) {
-        return <span className="badge">{props.label}</span>;
-    };
-    const App = function(props) {
-        return (
-            <div className="card">
-                <span className="title">Turing renders JSX</span>
-                <Badge label="real pipeline" />
-            </div>
-        );
-    };
     __unmountChildren(documentBody());
     __mount(<App />, documentBody());
 }
@@ -143,16 +148,17 @@ __turingRenderRoot();
 /// value would be a dangling heap reference by the next call, so storing
 /// one is refused rather than silently corrupted.
 const STATEFUL_DEMO: &str = r#"
+function Counter(props) {
+    var count = __hookState(0, 0);
+    return (
+        <div className="card">
+            <span className="title">Count: {count}</span>
+            <button className="button" onClick="handleIncrement">+1</button>
+        </div>
+    );
+}
+
 function __turingRenderRoot() {
-    const Counter = function(props) {
-        var count = __hookState(0, 0);
-        return (
-            <div className="card">
-                <span className="title">Count: {count}</span>
-                <button className="button" onClick="handleIncrement">+1</button>
-            </div>
-        );
-    };
     __unmountChildren(documentBody());
     __mount(<Counter />, documentBody());
 }
