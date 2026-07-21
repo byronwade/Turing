@@ -96,6 +96,8 @@ pub enum LayoutError {
     DisplayModeUnsupported { value: String },
     /// Vertical or right-to-left flow.
     WritingModeUnsupported { value: String },
+    /// A `text-align` value with no implemented placement.
+    TextAlignUnsupported { value: String },
     /// A negative length on a box edge.
     NegativeEdgeUnsupported { property: String, value: String },
     /// The document nests deeper than this implementation will recurse.
@@ -126,6 +128,13 @@ impl fmt::Display for LayoutError {
             ),
             Self::WritingModeUnsupported { value } => {
                 write!(formatter, "writing mode {value} is not implemented")
+            }
+            Self::TextAlignUnsupported { value } => {
+                write!(
+                    formatter,
+                    "text-align: {value} is not implemented; only left, right, \
+                     center, start, and end place content here"
+                )
             }
             Self::NestingTooDeep { limit } => write!(
                 formatter,
@@ -241,6 +250,18 @@ impl Default for TextMetrics {
     }
 }
 
+/// Horizontal alignment of inline content within a block, from `text-align`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum TextAlign {
+    /// `left`/`start`: the initial value. Lines begin at the content origin.
+    #[default]
+    Start,
+    /// `center`: each line is centred in the content width.
+    Center,
+    /// `right`/`end`: each line ends at the content edge.
+    End,
+}
+
 /// A positioned box in the layout tree.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LayoutBox {
@@ -260,6 +281,8 @@ pub struct LayoutBox {
     pub border_color: Option<Color>,
     /// Corner radius in CSS pixels; zero is a square box.
     pub border_radius: f32,
+    /// How inline children of this box are aligned. Inherited, like `color`.
+    pub text_align: TextAlign,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -309,6 +332,7 @@ struct Style {
     color: Option<Color>,
     border_color: Option<Color>,
     border_radius: f32,
+    text_align: Option<TextAlign>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -326,7 +350,7 @@ pub fn layout<T: LayoutTree>(
     // Built once per layout rather than once per element. Rebuilding it inside
     // box generation would leave the quadratic behaviour it exists to remove.
     let index = SelectorIndex::build(stylesheet);
-    let root = build_box(tree, &index, tree.root(), None, 0)?
+    let root = build_box(tree, &index, tree.root(), None, TextAlign::default(), 0)?
         .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
@@ -435,6 +459,7 @@ fn build_box<T: LayoutTree>(
     index: &SelectorIndex,
     node: T::Node,
     inherited_color: Option<Color>,
+    inherited_align: TextAlign,
     depth: usize,
 ) -> Result<Option<LayoutBox>, LayoutError> {
     // Box generation recurses, and so do layout, painting, and hit testing over
@@ -462,6 +487,7 @@ fn build_box<T: LayoutTree>(
             color: inherited_color,
             border_color: None,
             border_radius: 0.0,
+            text_align: inherited_align,
             children: Vec::new(),
         }));
     }
@@ -476,9 +502,10 @@ fn build_box<T: LayoutTree>(
     }
 
     let own_color = style.color.or(inherited_color);
+    let own_align = style.text_align.unwrap_or(inherited_align);
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(tree, index, child, own_color, depth + 1)? {
+        if let Some(built) = build_box(tree, index, child, own_color, own_align, depth + 1)? {
             children.push(built);
         }
     }
@@ -521,6 +548,7 @@ fn build_box<T: LayoutTree>(
         color: own_color,
         border_color: style.border_color,
         border_radius: style.border_radius,
+        text_align: own_align,
         children,
     }))
 }
@@ -553,6 +581,12 @@ fn wrap_inline_runs(children: Vec<LayoutBox>) -> Vec<LayoutBox> {
 }
 
 fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
+    // An anonymous block inherits alignment from the inline content it wraps:
+    // every child inherited the real parent's `text-align`, so the first
+    // child carries the value this box must align by.
+    let text_align = children
+        .first()
+        .map_or(TextAlign::default(), |c| c.text_align);
     LayoutBox {
         dimensions: Dimensions::default(),
         kind: BoxKind::AnonymousBlock,
@@ -562,6 +596,7 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         color: None,
         border_color: None,
         border_radius: 0.0,
+        text_align,
         children,
     }
 }
@@ -622,6 +657,21 @@ fn resolve_style<T: LayoutTree>(
             "color" => style.color = Some(Color::parse(value)?),
             "border-color" => style.border_color = Some(Color::parse(value)?),
             "border-radius" => style.border_radius = non_negative(property, value)?,
+            "text-align" => {
+                style.text_align = Some(match value.trim().to_ascii_lowercase().as_str() {
+                    "left" | "start" => TextAlign::Start,
+                    "center" => TextAlign::Center,
+                    "right" | "end" => TextAlign::End,
+                    // justify and match-parent are not implemented; refusing
+                    // keeps an unhandled alignment from silently reading as
+                    // left, which looks correct until the line is long.
+                    other => {
+                        return Err(LayoutError::TextAlignUnsupported {
+                            value: other.to_string(),
+                        });
+                    }
+                });
+            }
             _ => {}
         }
     }
@@ -867,8 +917,52 @@ fn layout_inline_children(layout_box: &mut LayoutBox, metrics: TextMetrics) {
             placed.push(child);
         }
     }
+    // `text-align` other than the initial start value shifts each line by its
+    // slack — the space between where the line ends and the content edge.
+    // Start needs no work; the greedy placement above already left-aligns.
+    if layout_box.text_align != TextAlign::Start {
+        align_lines(&mut placed, origin_x, available, layout_box.text_align);
+    }
+
     layout_box.children = placed;
     layout_box.dimensions.content.height = (line + 1.0) * metrics.line_height;
+}
+
+/// Shifts each line of placed fragments horizontally for a non-start
+/// `text-align`. Fragments are grouped by their `y`, and every fragment on a
+/// line moves by the same offset, so words keep their spacing.
+fn align_lines(placed: &mut [LayoutBox], origin_x: f32, available: f32, align: TextAlign) {
+    let mut start = 0;
+    while start < placed.len() {
+        let line_y = placed[start].dimensions.content.y;
+        let mut end = start;
+        let mut line_right = origin_x;
+        while end < placed.len() && placed[end].dimensions.content.y == line_y {
+            let rect = placed[end].dimensions.content;
+            line_right = line_right.max(rect.x + rect.width);
+            end += 1;
+        }
+        let slack = (origin_x + available) - line_right;
+        let offset = match align {
+            TextAlign::Center => slack / 2.0,
+            TextAlign::End => slack,
+            TextAlign::Start => 0.0,
+        };
+        if offset > 0.0 {
+            for fragment in &mut placed[start..end] {
+                shift_x(fragment, offset);
+            }
+        }
+        start = end;
+    }
+}
+
+/// Moves a box and all its descendants right by `offset`.
+fn shift_x(layout_box: &mut LayoutBox, offset: f32) {
+    layout_box.dimensions.content.x += offset;
+    for child in &mut layout_box.children {
+        shift_x(child, offset);
+    }
 }
 
 // -- hit testing ---------------------------------------------------------
@@ -1802,6 +1896,43 @@ mod tests {
             (runs[1].x - 0.0).abs() < f32::EPSILON,
             "the wrapped element starts at the line's origin"
         );
+    }
+
+    #[test]
+    fn text_align_center_and_right_shift_each_line_by_its_slack() {
+        // One short word in a wide block: centre puts slack/2 on the left,
+        // right puts all the slack there.
+        let left =
+            run("<body><p>hi</p></body>", "p { text-align: left }", 100.0).expect("lays out");
+        let centered =
+            run("<body><p>hi</p></body>", "p { text-align: center }", 100.0).expect("lays out");
+        let right =
+            run("<body><p>hi</p></body>", "p { text-align: right }", 100.0).expect("lays out");
+        let word_x = |root: &LayoutBox| {
+            build_display_list(root)
+                .items
+                .iter()
+                .find_map(|item| match item {
+                    DisplayItem::Text { rect, text, .. } if text == "hi" => Some(rect.x),
+                    _ => None,
+                })
+                .expect("word painted")
+        };
+        let (l, c, r) = (word_x(&left), word_x(&centered), word_x(&right));
+        assert!(l < c && c < r, "left {l} < center {c} < right {r}");
+        // "hi" is 16px wide; the block content is ~100px minus body margin.
+        // Right places the word's right edge at the content edge.
+        assert!(
+            r > l + 50.0,
+            "right alignment moved the word most of the width"
+        );
+    }
+
+    #[test]
+    fn an_unimplemented_text_align_is_refused() {
+        let error =
+            run("<body><p>x</p></body>", "p { text-align: justify }", 100.0).expect_err("refused");
+        assert!(matches!(error, LayoutError::TextAlignUnsupported { .. }));
     }
 
     #[test]
