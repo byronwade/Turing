@@ -184,6 +184,52 @@ fn a_script_builds_a_dom_subtree_that_lays_out_and_paints() {
 }
 
 #[test]
+fn a_script_removes_and_reorders_nodes_the_way_a_reconciler_patches() {
+    // Mount two rows, then patch: remove the first, read parentNode and
+    // firstChild to navigate, and insert a new row before what is now first.
+    // The final order is what a reconciler would produce, and it renders.
+    let html = "<html><head><style>\
+        .a { background: red; } .b { background: lime; } .c { background: blue; }\
+        </style></head><body></body>\
+        <script>\
+        function main() {\
+          let root = documentBody();\
+          let first = createElement('div');\
+          setNodeAttribute(first, 'class', 'a');\
+          appendChild(first, createText('first'));\
+          appendChild(root, first);\
+          let second = createElement('div');\
+          setNodeAttribute(second, 'class', 'b');\
+          appendChild(second, createText('second'));\
+          appendChild(root, second);\
+          removeChild(first);\
+          let fresh = createElement('div');\
+          setNodeAttribute(fresh, 'class', 'c');\
+          appendChild(fresh, createText('fresh'));\
+          insertBefore(root, fresh, firstChild(root));\
+        }\
+        main();\
+        </script></body></html>";
+    let page = Page::load(html, 200.0).expect("loads");
+
+    // Order is now [fresh (blue), second (lime)] — 'first' (red) is gone.
+    let canvas = page.render(200, 48).expect("renders");
+    assert_eq!(
+        canvas.pixel(100, 8),
+        Some(color("blue")),
+        "fresh row is first"
+    );
+    assert_eq!(
+        canvas.pixel(100, 24),
+        Some(color("lime")),
+        "second row follows"
+    );
+    // No red anywhere: the removed node does not paint.
+    let has_red = (0..48).any(|y| canvas.pixel(100, y) == Some(color("red")));
+    assert!(!has_red, "the removed node is gone");
+}
+
+#[test]
 fn a_click_runs_the_script_listener_and_repaints() {
     // The full interactive loop: script registers a listener at load, a
     // dispatched click reports the invocation, the engine calls the named

@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-20 - The reconciler's patch vocabulary, and why closures waited
+
+A reconciler mounts and then *patches* — it removes, inserts, reorders, and reads the current tree to decide what to change. APP-3 gave script the mount calls; this adds the patch calls: `insertBefore`, `removeChild`, `parentNode`, and `firstChild`, over the same opaque numeric handles. A test proves the full shape: a script mounts two rows, removes the first, navigates with `parentNode`/`firstChild`, and `insertBefore`s a new row, and the engine repaints the reconciled order with the removed node gone.
+
+The more important decision this iteration was what *not* to do. The next ladder rung is closures (APP-2), and it is the keystone for real component code — but the VM calls functions by static index with flat local slots and no environment chain, so first-class function values with by-reference upvalue capture is a large, invasive change. A half-implementation — capturing by value, say — computes silently-wrong values for every closure-over-mutation pattern, which is precisely the failure this engine refuses in the language everywhere else (a partial language computes a wrong value and carries on). So closures wait for a correct whole rather than shipping a subset that looks right until it doesn't. The DOM rungs went first because they are completable correctly today, and they make the renderer's *calls* exist; APP-2 will supply the language to express the renderer.
+
+The workspace is at 405 tests. The renderer vocabulary — create, append, insert, remove, navigate, set attributes, listen — is now essentially complete; the remaining gap to running real React is squarely the language (closures, then an event loop), stated plainly so the ladder is not mistaken for nearly-done.
+
 ## 2026-07-20 - Script builds the DOM: the renderer's vocabulary, bound
 
 The application runtime needs script to *build* UI, not only mutate it. React's host configuration is a handful of operations — createElement, createTextNode, appendChild, setAttribute — over opaque host handles. Those five are now bound (`documentBody`, `createElement`, `createText`, `appendChild`, `setNodeAttribute`), and a script can construct a subtree the engine then lays out and paints.

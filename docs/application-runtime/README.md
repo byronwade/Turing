@@ -161,8 +161,16 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   with a `length` property, which is the specification's own model, so they
   reuse the entire object heap and collector. The smallest self-contained
   step toward `createElement(type, props, ...children)` and children arrays.
-- **APP-2 — Closures and function expressions.** Upvalue capture, arrow
-  functions. Unlocks event handlers and hook bodies.
+- **APP-2 — Closures and function expressions.** *The next and hardest
+  rung, deliberately not rushed.* Arrow functions and function expressions
+  as first-class values need indirect calls and by-reference upvalue
+  capture — a large, invasive VM change. Doing it half-correctly (for
+  example capturing by value) computes silently-wrong values for the
+  closure-over-mutation patterns React relies on, which is the exact
+  failure this engine refuses everywhere else. It will land as a correct
+  whole or not at all, which is why the DOM rungs went first: they are
+  completable correctly today, and they make the renderer's *calls* exist
+  while APP-2 supplies the language to express the renderer.
 - **APP-3 — DOM construction bindings.** *Done.* `documentBody`,
   `createElement`, `createText`, `appendChild`, and `setNodeAttribute` bound
   to script, with nodes crossing the boundary as opaque numeric handles (arena
@@ -170,7 +178,10 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   pointers). A script now builds a subtree the way a framework renderer does,
   and the engine lays it out and paints it — proven by
   `benchmarks/corpus/framework-output/script-built-ui.html`, whose entire UI
-  is constructed by a loop calling these operations.
+  is constructed by a loop calling these operations. The *patch* half a
+  reconciler also needs — `insertBefore`, `removeChild`, `parentNode`,
+  `firstChild` — is bound too, so a script can move, replace, and remove
+  nodes and read the tree to decide, not only mount.
 - **APP-4 — A microtask queue and a minimal scheduler.** Enough of an event
   loop for a runtime to flush work after an event.
 - **APP-5 — A tiny reconciler on the engine.** Prove the shape end to end

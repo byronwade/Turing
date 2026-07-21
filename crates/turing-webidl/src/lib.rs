@@ -83,6 +83,8 @@ const MUTATING_OPERATIONS: &[&str] = &[
     "createText",
     "appendChild",
     "setNodeAttribute",
+    "insertBefore",
+    "removeChild",
 ];
 
 /// A [`Host`] exposing read-only document operations to script.
@@ -114,6 +116,13 @@ impl<'dom> DomHost<'dom> {
         bindings.register(INTERFACE, "createText", 1);
         bindings.register(INTERFACE, "appendChild", 2);
         bindings.register(INTERFACE, "setNodeAttribute", 3);
+        // Update and navigation operations: a reconciler does not only mount,
+        // it moves, replaces, and removes, and it reads the current tree to
+        // decide. These are the patch half of the renderer's vocabulary.
+        bindings.register(INTERFACE, "insertBefore", 3);
+        bindings.register(INTERFACE, "removeChild", 1);
+        bindings.register(INTERFACE, "parentNode", 1);
+        bindings.register(INTERFACE, "firstChild", 1);
         Self { dom, bindings }
     }
 
@@ -223,6 +232,46 @@ impl Host for DomHost<'_> {
                     .set_attribute(node, &name, &value)
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
+            }
+            "insertBefore" => {
+                // insertBefore(parent, child, reference): place `child` before
+                // `reference` among `parent`'s children.
+                let parent = self.dom.handle(node_handle(&arguments[0])?);
+                let child = self.dom.handle(node_handle(&arguments[1])?);
+                let reference = self.dom.handle(node_handle(&arguments[2])?);
+                self.dom
+                    .insert_before(parent, child, reference)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
+            "removeChild" => {
+                let child = self.dom.handle(node_handle(&arguments[0])?);
+                self.dom
+                    .remove_child(child)
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
+            "parentNode" => {
+                let node = node_handle(&arguments[0])?;
+                // `null` for a node with no parent, which is what the DOM
+                // returns and is distinguishable from a handle.
+                Ok(self
+                    .dom
+                    .document()
+                    .node(node)
+                    .parent
+                    .map_or(Value::Null, node_value))
+            }
+            "firstChild" => {
+                let node = node_handle(&arguments[0])?;
+                Ok(self
+                    .dom
+                    .document()
+                    .node(node)
+                    .children
+                    .first()
+                    .copied()
+                    .map_or(Value::Null, node_value))
             }
             "hasElement" => Ok(Value::Boolean(
                 self.dom.document().element_by_id(&first()).is_some(),
