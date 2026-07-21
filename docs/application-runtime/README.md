@@ -155,9 +155,12 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
 
 - **APP-0 — Framework SSR output.** *Done.* Static server-rendered HTML/CSS
   renders through the normal pipeline. Proven by the dashboard fixture.
-- **APP-1 — Arrays in `turing-js`.** Array literals, indexing, length. The
-  smallest self-contained step toward `createElement(type, props,
-  ...children)` and children arrays. Next up.
+- **APP-1 — Arrays in `turing-js`.** *Done.* Array literals, indexing,
+  `length`, index-write growth, nesting with objects, spec-correct
+  truthiness; holes and spread refused. Arrays are represented as objects
+  with a `length` property, which is the specification's own model, so they
+  reuse the entire object heap and collector. The smallest self-contained
+  step toward `createElement(type, props, ...children)` and children arrays.
 - **APP-2 — Closures and function expressions.** Upvalue capture, arrow
   functions. Unlocks event handlers and hook bodies.
 - **APP-3 — Live DOM bindings.** `createElement`/`appendChild`/etc. bound to
