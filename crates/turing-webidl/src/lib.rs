@@ -84,6 +84,7 @@ const MUTATING_OPERATIONS: &[&str] = &[
     "setAttribute",
     "removeAttribute",
     "addEventListener",
+    "removeEventListener",
     "createElement",
     "createText",
     "appendChild",
@@ -111,6 +112,7 @@ impl<'dom> DomHost<'dom> {
         bindings.register(INTERFACE, "setAttribute", 3);
         bindings.register(INTERFACE, "removeAttribute", 2);
         bindings.register(INTERFACE, "addEventListener", 3);
+        bindings.register(INTERFACE, "removeEventListener", 3);
         // Construction operations. A node created or located by these crosses
         // into script as an opaque numeric handle — its arena index — which is
         // stable because construction only appends. This is the renderer's
@@ -354,6 +356,23 @@ impl Host for DomHost<'_> {
                 let function = arguments[2].to_string();
                 self.dom
                     .add_listener(handle, &kind, &function, false, &[])
+                    .map_err(|error| error.to_string())?;
+                Ok(Value::Undefined)
+            }
+            "removeEventListener" => {
+                // removeEventListener(id, kind, functionName) — the same
+                // three-argument shape as addEventListener, since removal
+                // names the same registration by the same identity. Always
+                // `capture: false`, matching the one form addEventListener
+                // here ever registers; a script's own mismatched removal
+                // (wrong kind, wrong name) is a no-op, not a refusal, exactly
+                // as the DOM specifies.
+                let node = self.element(&first())?;
+                let handle = self.dom.handle(node);
+                let kind = arguments[1].to_string();
+                let function = arguments[2].to_string();
+                self.dom
+                    .remove_listener(handle, &kind, &function, false)
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
