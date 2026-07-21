@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-21 - The cascade ordering gap, actually fixed — for the case it could be
+
+The border feature two entries ago found a real cascade limitation and deliberately scoped a fix out as separate work. That work turned out smaller than expected, so it landed today instead of staying deferred.
+
+`turing-css`'s `cascade()` already tracks, per winning declaration, exactly the two facts a shorthand/longhand tie-break needs — `specificity` and `source_order` — and both fields on `ComputedDeclaration` are public. That means the fix does not belong in `turing-css` at all: that crate is deliberately property-agnostic, and teaching it that `border-color` means four other properties would be the wrong crate learning the wrong fact. `turing-layout` already owns every other fact about what a CSS property means, so it can settle shorthand-versus-longhand itself, using the identical specificity-then-source-order comparison `cascade()` uses internally, mirrored into a small `wins_over_shorthand` helper rather than exported and shared — the two crates should not need to agree on a shared type for a three-line comparison.
+
+Each border longhand's match arm now only applies when it actually outranks the matching shorthand's own declaration; when it does not, the shorthand's earlier-applied value for that side stands, and the longhand's value still gets validated (so a malformed longhand a page author never sees the effect of still surfaces its own error, rather than being silently ignored alongside being outranked).
+
+This fixes the case that matters most in practice: two separate rules — a base class supplying a shorthand, a modifier class supplying a longhand override, the ordinary shape a real stylesheet is written in. It does not fix the narrower case of both declarations sitting in the *same* rule: `source_order` in this cascade tracks which *rule* supplied a declaration, not a declaration's position within that rule's own body, so two declarations from one rule are indistinguishable to this tie-break and the longhand still wins regardless of which the source lists last. That is real, and stated in its own test with its own reasoning — a finer-grained position than `source_order` currently is would be the actual fix, and it is smaller and more contained than today's, but it is not today's.
+
+The workspace is at 445 tests.
+
 ## 2026-07-21 - The scrollbar thumb can be dragged, and the presenter has tests for the first time
 
 Another named gap: the scrollbar thumb painted, and the wheel scrolled, but the thumb itself was inert — a scroll indicator wearing a scrollbar's clothes. It can be grabbed and dragged now.

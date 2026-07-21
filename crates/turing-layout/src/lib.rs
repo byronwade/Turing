@@ -54,7 +54,9 @@
 #![forbid(unsafe_code)]
 
 use core::fmt;
-use turing_css::{Color, CssError, ElementTree, SelectorIndex, Stylesheet, cascade};
+use turing_css::{
+    Color, ComputedDeclaration, CssError, ElementTree, SelectorIndex, Stylesheet, cascade,
+};
 
 /// What layout needs from a tree beyond selector matching.
 ///
@@ -195,9 +197,9 @@ pub struct BorderColors {
 impl BorderColors {
     /// The shorthand form: the same colour on every side. `border-color: X`
     /// sets all four sides. Whether this wins over a per-side longhand on the
-    /// same element depends on the cascade's property-name ordering, not on
-    /// which one the source lists last — see the note on the `"border-color"`
-    /// match arm that calls this.
+    /// same element follows the cascade's specificity/source-order rule
+    /// between rules — see `wins_over_shorthand` — but not within one rule's
+    /// own declaration order, which the cascade cannot currently see.
     #[must_use]
     fn uniform(color: Color) -> Self {
         Self {
@@ -697,22 +699,63 @@ fn resolve_style<T: LayoutTree>(
             "margin" => style.margin = uniform(non_negative(property, value)?),
             "padding" => style.padding = uniform(non_negative(property, value)?),
             "border-width" => style.border = uniform(non_negative(property, value)?),
-            "border-top-width" => style.border.top = non_negative(property, value)?,
-            "border-right-width" => style.border.right = non_negative(property, value)?,
-            "border-bottom-width" => style.border.bottom = non_negative(property, value)?,
-            "border-left-width" => style.border.left = non_negative(property, value)?,
+            // A longhand only overrides the shorthand's side when it
+            // actually outranks it by the cascade's own rule — specificity,
+            // then source order — rather than unconditionally, which is what
+            // made the shorthand's position in the rule irrelevant before
+            // this. See `wins_over_shorthand` for the shared check every
+            // border longhand below uses.
+            "border-top-width" if wins_over_shorthand(&declarations, "border-width", computed) => {
+                style.border.top = non_negative(property, value)?;
+            }
+            "border-right-width"
+                if wins_over_shorthand(&declarations, "border-width", computed) =>
+            {
+                style.border.right = non_negative(property, value)?;
+            }
+            "border-bottom-width"
+                if wins_over_shorthand(&declarations, "border-width", computed) =>
+            {
+                style.border.bottom = non_negative(property, value)?;
+            }
+            "border-left-width" if wins_over_shorthand(&declarations, "border-width", computed) => {
+                style.border.left = non_negative(property, value)?;
+            }
+            // A longhand that loses to the shorthand still has to be
+            // validated — a page author who wrote a malformed value should
+            // see that error, not have it hidden by a shorthand that happens
+            // to win. `non_negative` runs for its `?` alone here.
+            "border-top-width"
+            | "border-right-width"
+            | "border-bottom-width"
+            | "border-left-width" => {
+                non_negative(property, value)?;
+            }
             "background" | "background-color" => style.background = Some(Color::parse(value)?),
             "color" => style.color = Some(Color::parse(value)?),
-            // The shorthand sets every side. Whether a per-side longhand for
-            // the same side beats it or loses to it does not depend on which
-            // one this rule lists last — see
-            // `a_longhand_wins_over_the_shorthand_regardless_of_source_order`
-            // for why, and what would need to change to fix that.
             "border-color" => style.border_colors = BorderColors::uniform(Color::parse(value)?),
-            "border-top-color" => style.border_colors.top = Some(Color::parse(value)?),
-            "border-right-color" => style.border_colors.right = Some(Color::parse(value)?),
-            "border-bottom-color" => style.border_colors.bottom = Some(Color::parse(value)?),
-            "border-left-color" => style.border_colors.left = Some(Color::parse(value)?),
+            "border-top-color" if wins_over_shorthand(&declarations, "border-color", computed) => {
+                style.border_colors.top = Some(Color::parse(value)?);
+            }
+            "border-right-color"
+                if wins_over_shorthand(&declarations, "border-color", computed) =>
+            {
+                style.border_colors.right = Some(Color::parse(value)?);
+            }
+            "border-bottom-color"
+                if wins_over_shorthand(&declarations, "border-color", computed) =>
+            {
+                style.border_colors.bottom = Some(Color::parse(value)?);
+            }
+            "border-left-color" if wins_over_shorthand(&declarations, "border-color", computed) => {
+                style.border_colors.left = Some(Color::parse(value)?);
+            }
+            "border-top-color"
+            | "border-right-color"
+            | "border-bottom-color"
+            | "border-left-color" => {
+                Color::parse(value)?;
+            }
             "border-radius" => style.border_radius = non_negative(property, value)?,
             "text-align" => {
                 style.text_align = Some(match value.trim().to_ascii_lowercase().as_str() {
@@ -753,6 +796,41 @@ fn default_display(tag: &str) -> &'static str {
         | "select" | "textarea" | "button" => "inline",
         "head" | "title" | "meta" | "link" | "style" | "script" | "base" => "none",
         _ => "block",
+    }
+}
+
+/// Whether `longhand`'s own declaration outranks `shorthand`'s declaration
+/// among `declarations`, by the identical specificity-then-source-order rule
+/// `turing_css::cascade` already uses to pick a winner for one property
+/// name — mirrored here rather than exported from that crate, because
+/// `turing-css` is deliberately property-agnostic: it does not and should
+/// not know that `border-color` is short for `border-top-color` and three
+/// others. That knowledge belongs to this crate, which already owns every
+/// other fact about what a CSS property means.
+///
+/// If `shorthand` was not declared on this element at all, there is nothing
+/// to outrank, and the longhand always applies — the ordinary case, since
+/// most rules never declare a shorthand and a longhand for the same
+/// property together.
+fn wins_over_shorthand(
+    declarations: &[(String, ComputedDeclaration)],
+    shorthand: &str,
+    longhand: &ComputedDeclaration,
+) -> bool {
+    let Some((_, shorthand_declaration)) = declarations.iter().find(|(name, _)| name == shorthand)
+    else {
+        return true;
+    };
+    match (longhand.important, shorthand_declaration.important) {
+        (true, false) => true,
+        (false, true) => false,
+        _ => match longhand.specificity.cmp(&shorthand_declaration.specificity) {
+            core::cmp::Ordering::Greater => true,
+            core::cmp::Ordering::Less => false,
+            core::cmp::Ordering::Equal => {
+                longhand.source_order >= shorthand_declaration.source_order
+            }
+        },
     }
 }
 
@@ -2143,25 +2221,66 @@ mod tests {
     }
 
     #[test]
-    fn a_longhand_wins_over_the_shorthand_regardless_of_source_order() {
-        // Real CSS's rule is declaration order within equal specificity: a
-        // shorthand appearing after a longhand resets that longhand's side.
-        // This engine's cascade does not implement that — `cascade()` keys
-        // winners by literal property-name string and applies them in
-        // alphabetical name order (`winners.sort_by(|l, r| l.0.cmp(&r.0))`),
-        // not source position. "border-color" and "border-top-color" are
-        // unrelated strings to that mechanism, and "top" sorts after
-        // "color", so the longhand is applied second and wins — every time,
-        // regardless of which one the source lists last.
-        //
-        // This is a pre-existing property of the cascade, not something this
-        // border feature introduced or could fix in scope: no earlier
-        // shorthand/longhand pair existed for it to be visible on. Fixing it
-        // properly means expanding a shorthand into its longhands at parse
-        // time so they compete as the same property name would, which is
-        // its own change. Stated here rather than silently relied upon,
-        // because a page author reordering these declarations and seeing no
-        // effect would otherwise have no explanation.
+    fn a_later_rules_longhand_beats_an_earlier_rules_shorthand() {
+        // The common real case: two separate rules, one with the shorthand,
+        // one with a per-side override, matched by different classes on the
+        // same element. `turing_css::cascade` already tracks which *rule*
+        // supplied a winning declaration and uses that to break specificity
+        // ties; `wins_over_shorthand` reuses exactly that fact rather than
+        // reimplementing it, so a longhand from a later rule correctly beats
+        // an earlier rule's shorthand, and — reversed — an earlier
+        // longhand correctly loses to a later shorthand that resets it.
+        let root = run(
+            "<body><div class='base override'>x</div></body>",
+            "div { border-width: 2px; } \
+             .base { border-color: lime; } \
+             .override { border-top-color: red; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let red = Color::parse("red").expect("named colour");
+        assert!(
+            list.items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
+            "the later rule's longhand wins"
+        );
+
+        // Reversed: the shorthand now comes from the later rule, and resets
+        // the top side the earlier rule's longhand set.
+        let reset = run(
+            "<body><div class='base override'>x</div></body>",
+            "div { border-width: 2px; } \
+             .base { border-top-color: red; } \
+             .override { border-color: lime; }",
+            100.0,
+        )
+        .expect("lays out");
+        let reset_list = build_display_list(&reset);
+        assert!(
+            !reset_list
+                .items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
+            "the later rule's shorthand resets the earlier longhand's side"
+        );
+    }
+
+    #[test]
+    fn a_longhand_still_wins_over_a_shorthand_in_the_same_rule() {
+        // The narrower, real, remaining limitation: `ComputedDeclaration`
+        // tracks which *rule* a winning declaration came from
+        // (`source_order`), not a declaration's own position within one
+        // rule's body — two declarations from the same rule share the same
+        // `source_order` by construction, so `wins_over_shorthand`'s tie
+        // break (`longhand.source_order >= shorthand.source_order`) always
+        // resolves in the longhand's favour when they are literally the same
+        // rule. This is real CSS's declaration-order rule only for the
+        // across-rule case above; within one rule it still cannot see which
+        // one the source lists last. Fixing that needs a finer-grained
+        // position than `source_order` currently is — a real, separate,
+        // smaller change from the cross-rule fix this test's sibling proves.
         let root = run(
             "<body><div>x</div></body>",
             "div { border-width: 2px; border-color: lime; border-top-color: red; }",
@@ -2174,24 +2293,7 @@ mod tests {
             list.items
                 .iter()
                 .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
-            "the longhand wins here, as documented"
-        );
-
-        // Reversing the source order changes nothing: the longhand still
-        // wins, which is the behaviour this test exists to pin down.
-        let reordered = run(
-            "<body><div>x</div></body>",
-            "div { border-width: 2px; border-top-color: red; border-color: lime; }",
-            100.0,
-        )
-        .expect("lays out");
-        let reordered_list = build_display_list(&reordered);
-        assert!(
-            reordered_list
-                .items
-                .iter()
-                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
-            "source order does not change the outcome"
+            "the longhand wins even though it is not later in this one rule"
         );
     }
 
