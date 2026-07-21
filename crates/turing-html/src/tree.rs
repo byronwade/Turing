@@ -258,12 +258,35 @@ impl Document {
         let NodeData::Element { attributes, .. } = &mut self.nodes[element.0].data else {
             return Err(MutationError::NotAnElement);
         };
+        // Read before writing: the previous "id" value (if this attribute is
+        // "id" and one was already present) is what `self.ids` must forget,
+        // and it is only available before this same assignment overwrites
+        // it below.
+        let previous_id = (name == "id")
+            .then(|| attributes.iter().find(|a| a.name == "id"))
+            .flatten()
+            .map(|attribute| attribute.value.clone());
         match attributes.iter_mut().find(|a| a.name == name) {
             Some(existing) => existing.value = value.to_string(),
             None => attributes.push(Attribute {
-                name,
+                name: name.clone(),
                 value: value.to_string(),
             }),
+        }
+        // `self.ids` is a cache built once at construction (see
+        // `IdIndex::build`'s own doc comment); nothing kept it in sync with
+        // later mutations until now, so `element_by_id` — and everything
+        // built on it, `getAttribute`/`setAttribute`/`addEventListener`
+        // among them — could not find an element whose "id" was set or
+        // changed by script after the document was built. A script that
+        // creates an element and immediately gives it an id (the ordinary
+        // way to make a freshly constructed node addressable at all) is
+        // exactly this case, not a corner of it.
+        if name == "id" {
+            if let Some(previous) = previous_id {
+                self.ids.remove(&previous, element);
+            }
+            self.ids.insert(value.to_string(), element);
         }
         Ok(())
     }
@@ -278,6 +301,17 @@ impl Document {
         let NodeData::Element { attributes, .. } = &mut self.nodes[element.0].data else {
             return Err(MutationError::NotAnElement);
         };
+        // Same reasoning as `set_attribute`: `self.ids` is a cache that
+        // nothing else keeps in sync, so removing "id" here must also
+        // retract this element's own claim on it.
+        if name == "id"
+            && let Some(previous) = attributes
+                .iter()
+                .find(|attribute| attribute.name == "id")
+                .map(|attribute| attribute.value.clone())
+        {
+            self.ids.remove(&previous, element);
+        }
         attributes.retain(|a| a.name != name);
         Ok(())
     }
@@ -1178,5 +1212,29 @@ impl IdIndex {
     #[must_use]
     pub fn get(&self, id: &str) -> Option<NodeId> {
         self.entries.get(id).copied()
+    }
+
+    /// Registers `id` for `node`, so a later `get(id)` finds it.
+    ///
+    /// If another node already claims `id`, that claim wins and this is a
+    /// no-op — the same "first in document order wins" rule [`Self::build`]
+    /// applies to a duplicate id met while parsing, so a document does not
+    /// behave differently depending on whether a duplicate arose from
+    /// parsing or from a later mutation.
+    pub(crate) fn insert(&mut self, id: String, node: NodeId) {
+        self.entries.entry(id).or_insert(node);
+    }
+
+    /// Removes `id`'s claim, but only when `node` is the one currently
+    /// holding it.
+    ///
+    /// Checking ownership first means a stale removal (the node that used
+    /// to hold `id` losing it, arriving after some other node has since
+    /// taken the same id back) can never evict whichever node is actually
+    /// using it now.
+    pub(crate) fn remove(&mut self, id: &str, node: NodeId) {
+        if self.entries.get(id) == Some(&node) {
+            self.entries.remove(id);
+        }
     }
 }

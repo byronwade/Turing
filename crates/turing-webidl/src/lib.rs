@@ -130,6 +130,16 @@ impl<'dom> DomHost<'dom> {
         bindings.register(INTERFACE, "removeChild", 1);
         bindings.register(INTERFACE, "parentNode", 1);
         bindings.register(INTERFACE, "firstChild", 1);
+        // Pure value introspection, not a DOM operation at all — but a
+        // minimal JS-authored reconciler (walking a `createElement`-built
+        // tree to mount it) needs some way to tell a host element (a plain
+        // object) from a text/number leaf from a component function from a
+        // nullish/falsy child, and this interpreter has no `typeof` or
+        // exhaustive `===` support proven yet to build that distinction out
+        // of script alone. One read-only host op standing in for `typeof`
+        // is simpler and more certain than betting the reconciler's
+        // correctness on unverified language surface.
+        bindings.register("Value", "valueKind", 1);
         Self { dom, bindings }
     }
 
@@ -151,6 +161,22 @@ impl<'dom> DomHost<'dom> {
     #[must_use]
     pub fn dom(&self) -> &Dom {
         self.dom
+    }
+
+    /// Registers an additional operation, on top of this host's own default
+    /// set, under `interface`.
+    ///
+    /// For an embedder composing this host with operations of its own (a
+    /// component-runtime's hook-state store, say) into one [`Host`]
+    /// implementation that wraps this one: the wrapper's own `invoke` can
+    /// intercept its extra names before delegating everything else here, but
+    /// [`Host::bindings`] must report one registry covering *all* of it, or
+    /// an operation this crate does not know about would resolve to nothing
+    /// — this is how the wrapper adds its names to the one registry
+    /// `resolve_global` actually consults, without this crate needing to
+    /// know what those names are for.
+    pub fn register_extra(&mut self, interface: &str, name: &str, arity: usize) {
+        self.bindings.register(interface, name, arity);
     }
 
     /// Removes an operation, returning whether one was removed.
@@ -376,8 +402,30 @@ impl Host for DomHost<'_> {
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
+            "valueKind" => Ok(Value::String(value_kind(&arguments[0]).to_string())),
             other => Err(format!("{other} is registered but not implemented here")),
         }
+    }
+}
+
+/// The tag a minimal JS-authored reconciler needs to dispatch a
+/// `createElement`-built value: `"string"`/`"number"` are leaf text,
+/// `"object"`/`"array"` are plain data (a host element's own shape, or its
+/// children list), `"function"` covers anything callable (`Value::Function`
+/// and `Value::Closure` alike — the reconciler only ever needs to know
+/// "call this to resolve a component", never which kind of callable it is),
+/// and `"undefined"`/`"null"`/`"boolean"` are the falsy sentinels real JSX
+/// drops rather than renders (`{condition && <X/>}`).
+fn value_kind(value: &Value) -> &'static str {
+    match value {
+        Value::Undefined => "undefined",
+        Value::Null => "null",
+        Value::Boolean(_) => "boolean",
+        Value::Number(_) => "number",
+        Value::String(_) => "string",
+        Value::Function(_) | Value::Closure(_) => "function",
+        Value::Object(_) => "object",
+        Value::Array(_) => "array",
     }
 }
 

@@ -13,6 +13,7 @@ publish = false
 [dependencies]
 turing-css = { path = "../turing-css" }
 turing-dom = { path = "../turing-dom" }
+turing-gc = { path = "../turing-gc" }
 turing-html = { path = "../turing-html" }
 turing-input = { path = "../turing-input" }
 turing-js = { path = "../turing-js" }

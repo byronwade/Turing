@@ -34,15 +34,125 @@ use core::fmt;
 
 use turing_css::{CssError, Stylesheet};
 use turing_dom::{Dispatch, Dom, DomError, Event};
+use turing_gc::Bindings;
 use turing_html::tree::{Document, NodeData, NodeId, TreeBuilder, TreeError};
 use turing_html::{Tokenizer, TokenizerError};
 use turing_input::{HitRouter, InputError};
-use turing_js::{JsError, Program, Vm, compile};
+use turing_js::{Host, JsError, Program, Value, Vm, compile};
 use turing_layout::{
     DisplayList, LayoutBox, LayoutError, Point, TextMetrics, build_display_list, layout,
 };
 use turing_raster::{Canvas, RasterError, rasterize};
 use turing_webidl::DomHost;
+
+/// Wraps a [`DomHost`] with a small, host-persisted store for a minimal
+/// component runtime's hook state (`__hookState`/`__hookSet`), on top of
+/// the DOM operations `DomHost` already provides.
+///
+/// # Why this lives outside the VM's own heap
+///
+/// [`Vm::call`] and [`Vm::run_with_host`] each start a fresh heap; a value a
+/// script allocates during one call (an object, array, or closure) does not
+/// survive into the next separate call. A component's state, though, must
+/// survive from the render that creates it to a later click's handler and
+/// the re-render that follows — so it cannot live in anything the VM
+/// allocates. It lives here instead, in a plain `Vec` owned by [`Page`]
+/// across every call, addressed by an explicit slot index the script
+/// itself provides (rather than an auto-incrementing per-render cursor,
+/// which this minimal runtime does not implement).
+///
+/// # Why only primitive values are accepted
+///
+/// [`Value::Object`], [`Value::Array`], and [`Value::Closure`] are handles
+/// into that same short-lived per-call heap. Persisting one here would let
+/// a later call read a handle whose heap no longer exists — exactly the
+/// dangling-reference hazard this workspace's collector design otherwise
+/// prevents by construction. Refused with a typed host-operation failure
+/// rather than stored, so a component that tries to hold richer state in a
+/// hook finds out immediately, not from a future call reading corrupt data.
+struct HookHost<'a, 'dom> {
+    dom_host: DomHost<'dom>,
+    hook_state: &'a mut Vec<Value>,
+}
+
+impl<'a, 'dom> HookHost<'a, 'dom> {
+    fn new(dom_host: DomHost<'dom>, hook_state: &'a mut Vec<Value>) -> Self {
+        let mut dom_host = dom_host;
+        dom_host.register_extra("Hooks", "__hookState", 2);
+        dom_host.register_extra("Hooks", "__hookSet", 2);
+        Self {
+            dom_host,
+            hook_state,
+        }
+    }
+
+    /// Reads `index` as a non-negative slot number.
+    fn slot(value: &Value) -> Result<usize, String> {
+        let Value::Number(index) = value else {
+            return Err(format!("expected a hook slot index, got {value}"));
+        };
+        if *index < 0.0 || index.fract() != 0.0 {
+            return Err(format!("{index} is not a hook slot index"));
+        }
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        Ok(*index as usize)
+    }
+
+    /// Refuses a value that would dangle once this call's heap is gone —
+    /// see this type's own doc comment for why only primitives are safe to
+    /// persist here.
+    fn primitive_or_refuse(value: &Value) -> Result<Value, String> {
+        match value {
+            Value::Object(_) | Value::Array(_) | Value::Closure(_) | Value::Function(_) => {
+                Err(format!(
+                    "hook state can only hold a primitive value (a number, string, boolean, \
+                     null, or undefined); {value} references this call's own heap, which will \
+                     no longer exist by the next call that reads it"
+                ))
+            }
+            primitive => Ok(primitive.clone()),
+        }
+    }
+}
+
+impl Host for HookHost<'_, '_> {
+    fn bindings(&self) -> &Bindings {
+        self.dom_host.bindings()
+    }
+
+    fn invoke(
+        &mut self,
+        interface: &str,
+        name: &str,
+        arguments: &[Value],
+    ) -> Result<Value, String> {
+        match name {
+            "__hookState" => {
+                let slot = Self::slot(&arguments[0])?;
+                let initial = Self::primitive_or_refuse(&arguments[1])?;
+                if slot >= self.hook_state.len() {
+                    self.hook_state.resize(slot + 1, Value::Undefined);
+                }
+                if self.hook_state[slot] == Value::Undefined {
+                    self.hook_state[slot] = initial.clone();
+                    Ok(initial)
+                } else {
+                    Ok(self.hook_state[slot].clone())
+                }
+            }
+            "__hookSet" => {
+                let slot = Self::slot(&arguments[0])?;
+                let value = Self::primitive_or_refuse(&arguments[1])?;
+                if slot >= self.hook_state.len() {
+                    self.hook_state.resize(slot + 1, Value::Undefined);
+                }
+                self.hook_state[slot] = value;
+                Ok(Value::Undefined)
+            }
+            _ => self.dom_host.invoke(interface, name, arguments),
+        }
+    }
+}
 
 /// A stage refusal, passed through from the crate that owns the contract.
 #[derive(Clone, Debug, PartialEq)]
@@ -113,6 +223,10 @@ pub struct Page {
     /// what paints, so it has to survive from `set_hovered` through to the
     /// next `relayout` rather than being a paint-time parameter.
     hovered: Option<NodeId>,
+    /// A minimal component runtime's hook state (`__hookState`/`__hookSet`),
+    /// addressed by an explicit slot index — see `HookHost` for why this
+    /// cannot live in anything the script's own VM heap allocates.
+    hook_state: Vec<Value>,
 }
 
 impl Page {
@@ -138,9 +252,10 @@ impl Page {
 
         let mut dom = Dom::new(document);
         let mut programs = Vec::new();
+        let mut hook_state = Vec::new();
         for source in &scripts {
             let program = compile(source)?;
-            let mut host = DomHost::new(&mut dom);
+            let mut host = HookHost::new(DomHost::new(&mut dom), &mut hook_state);
             Vm::default().run_with_host(&program, &mut host)?;
             programs.push(program);
         }
@@ -156,6 +271,7 @@ impl Page {
             viewport_width,
             metrics,
             programs,
+            hook_state,
             hovered: None,
         })
     }
@@ -367,7 +483,7 @@ impl Page {
                 ),
             }));
         };
-        let mut host = DomHost::new(&mut self.dom);
+        let mut host = HookHost::new(DomHost::new(&mut self.dom), &mut self.hook_state);
         Vm::default().call(&self.programs[index], name, arguments.to_vec(), &mut host)?;
         Ok(())
     }
@@ -385,7 +501,7 @@ impl Page {
     pub fn run_script(&mut self, source: &str) -> Result<turing_js::Value, EngineError> {
         let program = compile(source)?;
         let before = self.dom.epoch();
-        let mut host = DomHost::new(&mut self.dom);
+        let mut host = HookHost::new(DomHost::new(&mut self.dom), &mut self.hook_state);
         let value = Vm::default().run_with_host(&program, &mut host)?;
         self.programs.push(program);
         if self.dom.epoch() != before {

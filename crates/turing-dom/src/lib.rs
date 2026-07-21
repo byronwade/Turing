@@ -1003,6 +1003,52 @@ mod tests {
         dom.set_attribute(handle, "class", "x").expect("sets");
         assert!(dom.epoch() > before);
     }
+
+    #[test]
+    fn setting_an_id_attribute_makes_the_element_findable_by_it() {
+        // Regression test: the id index `element_by_id` reads is built once,
+        // at document construction (see `IdIndex::build`'s own doc comment),
+        // and nothing kept it in sync with a later mutation — so an element
+        // newly given an "id" attribute by script, the ordinary way to make
+        // a freshly created node addressable at all, was invisible to
+        // `element_by_id` even though the attribute itself was set
+        // correctly. Found via real use: a JSX-rendering demo creating a
+        // button and giving it an id so `addEventListener` could find it.
+        let mut dom = dom("<html><body></body></html>");
+        let handle = dom.create_element("button").expect("creates");
+        dom.set_attribute(handle, "id", "fresh").expect("sets");
+
+        assert_eq!(
+            dom.document().element_by_id("fresh"),
+            Some(handle.node()),
+            "the freshly id'd element must be findable by that id"
+        );
+    }
+
+    #[test]
+    fn changing_an_id_attribute_forgets_the_old_one() {
+        let mut dom = dom("<html><body><p id='old'>x</p></body></html>");
+        let node = dom.document().element_by_id("old").expect("exists");
+        let handle = dom.handle(node);
+        dom.set_attribute(handle, "id", "new").expect("sets");
+
+        assert_eq!(
+            dom.document().element_by_id("old"),
+            None,
+            "the old id must no longer resolve"
+        );
+        assert_eq!(dom.document().element_by_id("new"), Some(node));
+    }
+
+    #[test]
+    fn removing_an_id_attribute_forgets_it() {
+        let mut dom = dom("<html><body><p id='gone'>x</p></body></html>");
+        let node = dom.document().element_by_id("gone").expect("exists");
+        let handle = dom.handle(node);
+        dom.remove_attribute(handle, "id").expect("removes");
+
+        assert_eq!(dom.document().element_by_id("gone"), None);
+    }
     // -- the change log --------------------------------------------------
 
     #[test]
