@@ -89,6 +89,38 @@ already anticipates a headless **server-render mode**
 (`docs/embedding/README.md`); rendering framework SSR output is that mode
 pointed at real framework HTML.
 
+The engine also already renders **the browser's own chrome** — the surface
+this book's two ambitions are ultimately about — as ordinary HTML/CSS/JS
+rather than hand-written Rust widgets:
+`crates/turing-engine/examples/nova_chrome_demo.rs` and its companion
+`.html` fixture describe a tab strip and an address/search pill using
+colours and dimensions taken directly from `design/tokens.json` (the
+machine-readable extraction of the hash-pinned Nova design source, not
+approximated), load it through `Page::load` the same way any embedder would,
+click a tab through `Page::dispatch_at`, and confirm the active tab's
+background genuinely changed — through real `setAttribute` + relayout +
+repaint, not a mock. This is **not** a claim that this replaces
+`turing-chrome` as the browser's actual trusted chrome: that specific
+substitution is exactly what `ADR-0008` and the charter conflict (above)
+gate behind a security review, because an address bar rendered by the same
+engine that renders untrusted page content is a real trust-boundary
+question, not only an implementation detail. What it does show is that
+`Page`'s existing, ordinary API is already capable of painting and driving
+this UI from markup — the destination this book describes is a matter of
+*deciding* to reach it, at APP-6/APP-7, not of proving the render path could
+ever work at all.
+
+The fixture also surfaced a real, previously undocumented layout gap while
+being built: nothing in `turing-layout` currently threads an inline child's
+own `margin` into how far the next sibling's pen position advances in
+`layout_inline_children` — only content width and padding do. A `margin` on
+a `display: inline` element therefore creates no gap before the next inline
+sibling; only a genuine, non-whitespace-only text run between them does (a
+purely-whitespace text node between two elements is discarded at
+box-generation before layout ever sees it, so an empty `<span> </span>`
+spacer does not work either). The fixture works around this with a literal
+separator character; the gap itself is unfixed.
+
 ## The honest gap
 
 Running a framework's *client* runtime — hydration, hooks, reconciliation,
