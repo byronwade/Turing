@@ -15,6 +15,14 @@ This book expands the threat model into subsystem contracts, platform evidence, 
 5. [Update, supply chain, and vulnerability response](05-update-supply-chain-and-vulnerability-response.md)
 6. [Security verification and release gates](06-security-verification-and-release-gates.md)
 
+## External reference
+
+[Chromium as a security reference](reference-chromium-security.md) establishes
+[`chromium/chromium`](https://github.com/chromium/chromium) as the primary
+external reference for threat modeling, exploit-class enumeration, mitigation
+design, and vulnerability-response calibration — a learning source, never a
+code dependency, per the independent-engine boundary in `AGENTS.md`.
+
 ## Security thesis
 
 Turing must assume that every parser, renderer, decoder, runtime, extension, developer tool, model adapter, storage file, and network response can become malicious or compromised. Safety comes from reducing bug classes, minimizing privileged code, separating mutually hostile principals, validating every boundary, limiting available capabilities, preserving trusted user decisions, and maintaining a credible patch pipeline.
