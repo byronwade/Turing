@@ -388,6 +388,17 @@ pub struct LayoutBox {
     pub text_decoration: TextDecoration,
     /// Whether this box paints. See [`Visibility`].
     pub visibility: Visibility,
+    /// This box's own resolved alpha, in `[0, 1]`: its own declared
+    /// `opacity` (default fully opaque) multiplied by the ambient opacity
+    /// its ancestors already resolved to. Multiplying approximates a real
+    /// stacking context's group flattening — exactly right for a
+    /// translucent box whose descendants do not overlap each other, and
+    /// only wrong in the narrower case of two overlapping translucent boxes
+    /// inside the same translucent ancestor, where a real browser's
+    /// flattened group would show through no further than the ancestor's
+    /// own opacity and this engine's product of independent alphas goes
+    /// more transparent than that.
+    pub opacity: f32,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -395,9 +406,20 @@ pub struct LayoutBox {
 /// One paint command.
 #[derive(Clone, Debug, PartialEq)]
 pub enum DisplayItem {
-    /// Fill `rect` with `color`.
-    SolidColor { rect: Rect, color: Color },
-    /// Fill `rect` with `color`, rounding the corners by `radius` CSS pixels.
+    /// Fill `rect` with `color` at `alpha`.
+    ///
+    /// `alpha` carries a box's own resolved `opacity` (`1.0` when
+    /// undeclared). The reference rasterizer does not composite — it draws
+    /// every fill fully opaque, the same way it draws [`Self::RoundedColor`]
+    /// as a hard square — so `alpha` below `1.0` is a compositing painter's
+    /// enhancement, not something both painters are diffed against.
+    SolidColor {
+        rect: Rect,
+        color: Color,
+        alpha: f32,
+    },
+    /// Fill `rect` with `color`, rounding the corners by `radius` CSS pixels,
+    /// at `alpha`.
     ///
     /// A separate variant rather than a radius on [`Self::SolidColor`] so that
     /// the common square fill stays a square fill: the reference rasterizer
@@ -408,12 +430,14 @@ pub enum DisplayItem {
         rect: Rect,
         color: Color,
         radius: f32,
+        alpha: f32,
     },
-    /// Draw `text` at `rect` in `color`.
+    /// Draw `text` at `rect` in `color` at `alpha`.
     Text {
         rect: Rect,
         text: String,
         color: Color,
+        alpha: f32,
     },
 }
 
@@ -442,6 +466,10 @@ struct Style {
     text_align: Option<TextAlign>,
     text_decoration: Option<TextDecoration>,
     visibility: Option<Visibility>,
+    /// `None` means undeclared; resolved to the CSS initial value (fully
+    /// opaque) at the same point every other undeclared-defaults-to-initial
+    /// property is.
+    opacity: Option<f32>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -552,7 +580,11 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
                 ),
             ] {
                 if rect.width > 0.0 && rect.height > 0.0 {
-                    list.items.push(DisplayItem::SolidColor { rect, color });
+                    list.items.push(DisplayItem::SolidColor {
+                        rect,
+                        color,
+                        alpha: layout_box.opacity,
+                    });
                 }
             }
         }
@@ -596,7 +628,11 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
                 },
             ] {
                 if rect.width > 0.0 && rect.height > 0.0 {
-                    list.items.push(DisplayItem::SolidColor { rect, color });
+                    list.items.push(DisplayItem::SolidColor {
+                        rect,
+                        color,
+                        alpha: layout_box.opacity,
+                    });
                 }
             }
         }
@@ -609,11 +645,13 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
                     rect,
                     color: *color,
                     radius: layout_box.border_radius,
+                    alpha: layout_box.opacity,
                 }
             } else {
                 DisplayItem::SolidColor {
                     rect,
                     color: *color,
+                    alpha: layout_box.opacity,
                 }
             });
         }
@@ -626,6 +664,7 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
                 rect,
                 text: text.clone(),
                 color,
+                alpha: layout_box.opacity,
             });
             // The decoration line's position is a fraction of the line box's own
             // height rather than any specific font's glyph metrics — this crate
@@ -649,6 +688,7 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
                         height: 1.0,
                     },
                     color,
+                    alpha: layout_box.opacity,
                 });
             }
         }
@@ -665,12 +705,39 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
 /// than growing a new positional parameter for every property that turns
 /// out to inherit — which is exactly the shape that made the function trip
 /// `clippy::too_many_arguments` the day a fourth one arrived.
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 struct Inherited {
     color: Option<Color>,
     align: TextAlign,
     decoration: TextDecoration,
     visibility: Visibility,
+    /// The ambient opacity every descendant's own paint multiplies into its
+    /// resolved alpha. Not CSS inheritance in the strict sense — the
+    /// `opacity` *property* does not cascade to a child's own computed value
+    /// — but the *visual* effect does reach descendants in real CSS,
+    /// because an opacity box forms a stacking context that composites its
+    /// whole subtree as one flattened group. This engine has no offscreen
+    /// layer to flatten a group through, so multiplying each descendant's
+    /// own alpha by the ambient value is the approximation: exactly right
+    /// for a translucent box whose descendants do not overlap each other,
+    /// and only wrong in the narrower case of two overlapping translucent
+    /// boxes inside the same translucent ancestor, where a real browser's
+    /// flattened group would show through no further than the ancestor's
+    /// own opacity and this engine's product of independent alphas goes
+    /// more transparent than that.
+    opacity: f32,
+}
+
+impl Default for Inherited {
+    fn default() -> Self {
+        Self {
+            color: None,
+            align: TextAlign::default(),
+            decoration: TextDecoration::default(),
+            visibility: Visibility::default(),
+            opacity: 1.0,
+        }
+    }
 }
 
 fn build_box<T: LayoutTree>(
@@ -711,6 +778,10 @@ fn build_box<T: LayoutTree>(
             text_align: inherited.align,
             text_decoration: inherited.decoration,
             visibility: inherited.visibility,
+            // A text run has no `opacity` of its own to declare; it paints
+            // at whatever ambient opacity its nearest ancestors resolved to,
+            // the same way it reads `inherited.color`.
+            opacity: inherited.opacity,
             children: Vec::new(),
         }));
     }
@@ -724,11 +795,18 @@ fn build_box<T: LayoutTree>(
         return Ok(None);
     }
 
+    // This box's own resolved alpha: its own declared opacity (default
+    // fully opaque) multiplied by whatever ambient opacity its ancestors
+    // already resolved to. The same value is what gets passed to children
+    // as their new ambient — see `Inherited::opacity`'s own doc comment for
+    // why multiplying is the chosen approximation of group flattening.
+    let resolved_opacity = style.opacity.unwrap_or(1.0) * inherited.opacity;
     let own = Inherited {
         color: style.color.or(inherited.color),
         align: style.text_align.unwrap_or(inherited.align),
         decoration: style.text_decoration.unwrap_or(inherited.decoration),
         visibility: style.visibility.unwrap_or(inherited.visibility),
+        opacity: resolved_opacity,
     };
     let mut children = Vec::new();
     for child in tree.children(node) {
@@ -780,6 +858,7 @@ fn build_box<T: LayoutTree>(
         text_align: own.align,
         text_decoration: own.decoration,
         visibility: own.visibility,
+        opacity: resolved_opacity,
         children,
     }))
 }
@@ -841,6 +920,9 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         // visibility — each child already carries its own correctly
         // inherited value from the real element that produced it.
         visibility: Visibility::default(),
+        // Inert for the same reason `text_decoration` is just above: an
+        // anonymous block never paints anything of its own.
+        opacity: 1.0,
         children,
     }
 }
@@ -963,6 +1045,7 @@ fn resolve_style<T: LayoutTree>(
             // colour, always.
             "outline-width" => style.outline_width = non_negative(property, value)?,
             "outline-color" => style.outline_color = Some(Color::parse(value)?),
+            "opacity" => style.opacity = Some(parse_opacity(value)),
             "text-align" => {
                 style.text_align = Some(match value.trim().to_ascii_lowercase().as_str() {
                     "left" | "start" => TextAlign::Start,
@@ -1103,6 +1186,25 @@ fn parse_length(value: &str) -> Option<f32> {
     let trimmed = value.trim();
     let number = trimmed.strip_suffix("px").unwrap_or(trimmed);
     number.trim().parse::<f32>().ok()
+}
+
+/// Parses `opacity`'s value — a bare number or a percentage — and clamps it
+/// to the `[0, 1]` range CSS defines for it (an author-supplied `150%` is a
+/// real, specified case CSS resolves by clamping, not an error to refuse).
+///
+/// A value this cannot parse at all keeps the initial value, fully opaque,
+/// rather than refusing the whole declaration block: unlike an unsupported
+/// `display` mode, where guessing risks silently placing content in the
+/// wrong formatting model, an un-parseable `opacity` failing open to "paint
+/// normally" is the same outcome CSS itself defines for any other property a
+/// browser does not recognise.
+fn parse_opacity(value: &str) -> f32 {
+    let trimmed = value.trim();
+    let parsed = trimmed.strip_suffix('%').map_or_else(
+        || trimmed.parse::<f32>().ok(),
+        |percent| percent.trim().parse::<f32>().ok().map(|p| p / 100.0),
+    );
+    parsed.unwrap_or(1.0).clamp(0.0, 1.0)
 }
 
 // -- layout --------------------------------------------------------------
@@ -2474,7 +2576,7 @@ mod tests {
             .items
             .iter()
             .filter_map(|item| match item {
-                DisplayItem::SolidColor { rect, color } if *color == navy => Some(rect),
+                DisplayItem::SolidColor { rect, color, .. } if *color == navy => Some(rect),
                 _ => None,
             })
             .collect();
@@ -2485,7 +2587,7 @@ mod tests {
             .items
             .iter()
             .find_map(|item| match item {
-                DisplayItem::SolidColor { rect, color } if *color == silver => Some(rect),
+                DisplayItem::SolidColor { rect, color, .. } if *color == silver => Some(rect),
                 _ => None,
             })
             .expect("background paints");
@@ -2739,6 +2841,191 @@ mod tests {
                 .iter()
                 .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
             "a colour with no width paints nothing, same as a border would"
+        );
+    }
+
+    #[test]
+    fn opacity_applies_to_everything_a_box_paints_of_its_own() {
+        let root = run(
+            "<body><div id='box'>x</div></body>",
+            "#box { background: navy; border-width: 1px; border-color: red; \
+             opacity: 0.5; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        assert!(
+            !list.items.is_empty(),
+            "the fixture must actually emit something to check"
+        );
+        for item in &list.items {
+            let alpha = match item {
+                DisplayItem::SolidColor { alpha, .. }
+                | DisplayItem::RoundedColor { alpha, .. }
+                | DisplayItem::Text { alpha, .. } => *alpha,
+            };
+            assert_eq!(
+                alpha, 0.5,
+                "every one of the box's own paint items must carry its opacity: {item:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn undeclared_child_opacity_still_fades_under_a_translucent_ancestor() {
+        // The property `opacity` does not cascade the way `color` does, but
+        // its *visual* effect reaches descendants in real CSS regardless —
+        // an opacity box forms a stacking context that composites its whole
+        // subtree as one group. A child declaring no opacity of its own must
+        // still visibly fade under a translucent ancestor, not stay fully
+        // opaque; this is the common "fade this whole block" use of the
+        // property. See `Inherited::opacity`'s own doc comment for exactly
+        // what this engine's ambient-multiplication approximates and where
+        // it diverges from a true flattened group.
+        let root = run(
+            "<body><div id='parent'><p id='child'>x</p></div></body>",
+            "#parent { opacity: 0.3; background: navy; } #child { color: white; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let child_text_alpha = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::Text { alpha, .. } => Some(*alpha),
+                _ => None,
+            })
+            .expect("the child's text paints");
+        assert_eq!(
+            child_text_alpha, 0.3,
+            "a child declaring no opacity of its own still inherits the ambient value"
+        );
+    }
+
+    #[test]
+    fn nested_opacity_multiplies_with_the_ambient_value() {
+        // A child's own declared opacity does not replace the ambient value
+        // an opacity-bearing ancestor already established — it multiplies
+        // with it, which is what actually approximates a flattened group's
+        // visual result without this engine needing an offscreen layer to
+        // composite one through.
+        let root = run(
+            "<body><div id='parent'><p id='child'>x</p></div></body>",
+            "#parent { opacity: 0.5; background: navy; } \
+             #child { opacity: 0.4; color: white; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let child_text_alpha = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::Text { alpha, .. } => Some(*alpha),
+                _ => None,
+            })
+            .expect("the child's text paints");
+        assert!(
+            (child_text_alpha - 0.2).abs() < 0.001,
+            "child opacity (0.4) must multiply with the ambient parent opacity \
+             (0.5), not replace it: got {child_text_alpha}"
+        );
+    }
+
+    #[test]
+    fn opacity_values_outside_zero_to_one_are_clamped_not_refused() {
+        // CSS defines out-of-range opacity as clamped, not invalid — the
+        // same "this is the specified behaviour, not a guess" reasoning
+        // that already governs every refusal in this file applies in
+        // reverse here: refusing `opacity: 2` would be wrong, not careful.
+        let over = run(
+            "<body><div>x</div></body>",
+            "div { opacity: 2; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+        let under = run(
+            "<body><div>x</div></body>",
+            "div { opacity: -1; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+        let percent = run(
+            "<body><div>x</div></body>",
+            "div { opacity: 50%; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+
+        let alpha_of = |root: &LayoutBox| {
+            build_display_list(root)
+                .items
+                .iter()
+                .find_map(|item| match item {
+                    DisplayItem::SolidColor { alpha, .. } => Some(*alpha),
+                    _ => None,
+                })
+                .expect("the background paints")
+        };
+        assert_eq!(alpha_of(&over), 1.0, "opacity: 2 clamps to fully opaque");
+        assert_eq!(
+            alpha_of(&under),
+            0.0,
+            "opacity: -1 clamps to fully transparent"
+        );
+        assert_eq!(alpha_of(&percent), 0.5, "opacity: 50% is the same as 0.5");
+    }
+
+    #[test]
+    fn undeclared_opacity_is_fully_opaque() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+        let alpha = build_display_list(&root)
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::SolidColor { alpha, .. } => Some(*alpha),
+                _ => None,
+            })
+            .expect("the background paints");
+        assert_eq!(alpha, 1.0, "opacity's initial value is fully opaque");
+    }
+
+    #[test]
+    fn opacity_never_changes_box_geometry() {
+        // Same proof outline's own layout-neutrality test uses: a sibling
+        // after the translucent box must land exactly where it would land
+        // without any opacity declared, since opacity is purely a paint-time
+        // property in real CSS.
+        let with_opacity = run(
+            "<body><div>a</div><p id='after'>b</p></body>",
+            "div { display: block; height: 20px; opacity: 0.3; } \
+             p { display: block; }",
+            100.0,
+        )
+        .expect("lays out");
+        let without_opacity = run(
+            "<body><div>a</div><p id='after'>b</p></body>",
+            "div { display: block; height: 20px; } p { display: block; }",
+            100.0,
+        )
+        .expect("lays out");
+        let document = document_of("<body><div>a</div><p id='after'>b</p></body>");
+        assert_eq!(
+            find_by_id(&with_opacity, &document, "after")
+                .dimensions
+                .content
+                .y,
+            find_by_id(&without_opacity, &document, "after")
+                .dimensions
+                .content
+                .y,
+            "opacity must not shift where a sibling lands"
         );
     }
 

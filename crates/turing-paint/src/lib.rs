@@ -65,34 +65,43 @@ pub struct PaintList {
 
 impl PaintList {
     /// Lifts an engine display list into the compositing vocabulary:
-    /// everything opaque, everything square.
+    /// everything square except a resolved `border-radius`, everything
+    /// opaque except a resolved `opacity` — the two respects in which this
+    /// painter is a real compositor rather than the reference it is diffed
+    /// against.
     #[must_use]
     pub fn from_display_list(list: &DisplayList) -> Self {
         let items = list
             .items
             .iter()
             .map(|item| match item {
-                DisplayItem::SolidColor { rect, color } => PaintItem::Fill {
+                DisplayItem::SolidColor { rect, color, alpha } => PaintItem::Fill {
                     rect: *rect,
                     color: *color,
-                    alpha: 1.0,
+                    alpha: *alpha,
                     radius: 0.0,
                 },
                 DisplayItem::RoundedColor {
                     rect,
                     color,
                     radius,
+                    alpha,
                 } => PaintItem::Fill {
                     rect: *rect,
                     color: *color,
-                    alpha: 1.0,
+                    alpha: *alpha,
                     radius: *radius,
                 },
-                DisplayItem::Text { rect, text, color } => PaintItem::Text {
+                DisplayItem::Text {
+                    rect,
+                    text,
+                    color,
+                    alpha,
+                } => PaintItem::Text {
                     rect: *rect,
                     text: text.clone(),
                     color: *color,
-                    alpha: 1.0,
+                    alpha: *alpha,
                 },
             })
             .collect();
@@ -315,15 +324,18 @@ mod tests {
                 DisplayItem::SolidColor {
                     rect: rect(-3.0, -3.0, 10.0, 10.0),
                     color: color("red"),
+                    alpha: 1.0,
                 },
                 DisplayItem::SolidColor {
                     rect: rect(4.6, 2.0, 7.9, 5.5),
                     color: color("navy"),
+                    alpha: 1.0,
                 },
                 DisplayItem::Text {
                     rect: rect(1.0, 6.0, 24.0, 16.0),
                     text: "abc".to_owned(),
                     color: color("black"),
+                    alpha: 1.0,
                 },
             ],
         };
@@ -340,6 +352,7 @@ mod tests {
                 rect: rect(0.0, 0.0, 20.0, 20.0),
                 color: color("black"),
                 radius: 8.0,
+                alpha: 1.0,
             }],
         };
         let lifted = PaintList::from_display_list(&display);

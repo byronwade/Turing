@@ -310,12 +310,15 @@ pub fn rasterize(
     let mut canvas = Canvas::new(width, height, background)?;
     for item in &list.items {
         match item {
-            DisplayItem::SolidColor { rect, color } => canvas.fill(*rect, *color),
-            // The reference does not round: it fills the rectangle squarely,
-            // which is the honest "this painter cannot express a radius"
-            // behaviour a compositing painter is diffed against.
+            // The reference does not composite: every fill paints fully
+            // opaque regardless of `alpha`, the same "this painter cannot
+            // express it" honesty already established for `RoundedColor`'s
+            // `radius` just below.
+            DisplayItem::SolidColor { rect, color, .. } => canvas.fill(*rect, *color),
             DisplayItem::RoundedColor { rect, color, .. } => canvas.fill(*rect, *color),
-            DisplayItem::Text { rect, text, color } => canvas.draw_text(*rect, text, *color),
+            DisplayItem::Text {
+                rect, text, color, ..
+            } => canvas.draw_text(*rect, text, *color),
         }
     }
     Ok(canvas)

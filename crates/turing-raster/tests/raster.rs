@@ -34,6 +34,7 @@ fn fill(x: f32, y: f32, width: f32, height: f32, name: &str) -> DisplayItem {
     DisplayItem::SolidColor {
         rect: rect(x, y, width, height),
         color: color(name),
+        alpha: 1.0,
     }
 }
 
@@ -228,6 +229,7 @@ fn a_text_run_draws_glyphs_at_the_advance_recovered_from_its_rect() {
             rect: rect(0.0, 0.0, 16.0, 16.0),
             text: "HI".to_string(),
             color: color("black"),
+            alpha: 1.0,
         }]),
         16,
         16,
@@ -258,6 +260,7 @@ fn a_character_outside_printable_ascii_draws_the_replacement_box() {
             rect: rect(0.0, 0.0, 8.0, 8.0),
             text: "\u{e9}".to_string(),
             color: color("black"),
+            alpha: 1.0,
         }]),
         8,
         8,
@@ -287,6 +290,7 @@ fn text_clips_to_the_canvas_like_every_other_draw() {
             rect: rect(-8.0, -4.0, 24.0, 16.0),
             text: "###".to_string(),
             color: color("black"),
+            alpha: 1.0,
         }]),
         8,
         8,
@@ -311,6 +315,7 @@ fn an_empty_text_run_draws_nothing() {
             rect: rect(0.0, 0.0, 0.0, 16.0),
             text: String::new(),
             color: color("black"),
+            alpha: 1.0,
         }]),
         8,
         8,
