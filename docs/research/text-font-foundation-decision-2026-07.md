@@ -1,6 +1,7 @@
 # Text-font foundation decision — reference glyph set (2026-07)
 
-Status: accepted for the CPU reference rasterizer only. Owner: @byronwade.
+Status: accepted for the CPU reference rasterizer only.
+Owner: @byronwade.
 Recorded from the owner's 2026-07-20 direction to produce a working, visible
 browser application; that direction is what resolves the previously open
 `text-font-foundation-review` gate on `WP-009` for this bounded scope.

@@ -6,6 +6,8 @@ Last researched: 2026-07-16
 
 Turing must be usable as a secure browser engine/platform without becoming a monolith. A host should create a safe profile and view in a few lines while advanced authority remains explicit.
 
+Everything on this page is the design target described below — the `Engine`/`Profile`/`View` contract does not exist yet. For what a Rust program can actually depend on and call today, see [Using `turing-engine` today](using-turing-engine-today.md), the companion document this page's own "minimal design target" is a target *for*.
+
 ## Contract layers
 
 1. Canonical idiomatic Rust API: Engine, Profile, View, Surface, Navigation, EventStream, CapabilitySet, ResourceBudget, PluginHost, CancellationToken, and typed IDs.

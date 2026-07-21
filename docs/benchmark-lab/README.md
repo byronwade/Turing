@@ -61,6 +61,7 @@ Leadership requires a public evidence package combining conformance, adversarial
 - [Security model](../blueprint-v1/08-security-and-sandbox.md)
 - [Performance contract](../blueprint-v1/09-performance-memory.md)
 - [Performance benchmark readiness packet](../research/performance-benchmark-readiness-packet-2026-07.md)
+- [First controlled cross-engine measurement](first-cross-engine-measurement-2026-07.md)
 - [Benchmark Evidence and Claim Closure Preparation](../research/benchmark-evidence-and-claim-closure-preparation-2026-07.md)
 - [Benchmark corpus expansion](../research/benchmark-corpus-expansion-2026-07.md)
 - [Chrome-class performance runbook](../research/chrome-class-performance-runbook-2026-07.md)
