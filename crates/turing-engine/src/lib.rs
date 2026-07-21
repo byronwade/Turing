@@ -220,6 +220,7 @@ impl Page {
             for item in &mut list.items {
                 match item {
                     turing_layout::DisplayItem::SolidColor { rect, .. }
+                    | turing_layout::DisplayItem::RoundedColor { rect, .. }
                     | turing_layout::DisplayItem::Text { rect, .. } => rect.y -= scroll_y,
                 }
             }

@@ -258,6 +258,8 @@ pub struct LayoutBox {
     /// Border colour; used only where border widths are non-zero. `None`
     /// falls back to the text colour, which is CSS's `currentColor` default.
     pub border_color: Option<Color>,
+    /// Corner radius in CSS pixels; zero is a square box.
+    pub border_radius: f32,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -267,6 +269,18 @@ pub struct LayoutBox {
 pub enum DisplayItem {
     /// Fill `rect` with `color`.
     SolidColor { rect: Rect, color: Color },
+    /// Fill `rect` with `color`, rounding the corners by `radius` CSS pixels.
+    ///
+    /// A separate variant rather than a radius on [`Self::SolidColor`] so that
+    /// the common square fill stays a square fill: the reference rasterizer
+    /// draws this as a hard rectangle (it does not round), and only a
+    /// compositing painter honours the radius. Layout emits this only when a
+    /// non-zero `border-radius` is resolved.
+    RoundedColor {
+        rect: Rect,
+        color: Color,
+        radius: f32,
+    },
     /// Draw `text` at `rect` in `color`.
     Text {
         rect: Rect,
@@ -294,6 +308,7 @@ struct Style {
     background: Option<Color>,
     color: Option<Color>,
     border_color: Option<Color>,
+    border_radius: f32,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -385,9 +400,18 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
     // Backgrounds paint before content, and a parent paints before its
     // children, which is the document-order approximation of paint order.
     if let Some(color) = &layout_box.background {
-        list.items.push(DisplayItem::SolidColor {
-            rect: layout_box.dimensions.padding_box(),
-            color: *color,
+        let rect = layout_box.dimensions.padding_box();
+        list.items.push(if layout_box.border_radius > 0.0 {
+            DisplayItem::RoundedColor {
+                rect,
+                color: *color,
+                radius: layout_box.border_radius,
+            }
+        } else {
+            DisplayItem::SolidColor {
+                rect,
+                color: *color,
+            }
         });
     }
     if let (BoxKind::Text, Some(text)) = (layout_box.kind, &layout_box.text) {
@@ -437,6 +461,7 @@ fn build_box<T: LayoutTree>(
             // the nearest ancestor that set one.
             color: inherited_color,
             border_color: None,
+            border_radius: 0.0,
             children: Vec::new(),
         }));
     }
@@ -495,6 +520,7 @@ fn build_box<T: LayoutTree>(
         background: style.background,
         color: own_color,
         border_color: style.border_color,
+        border_radius: style.border_radius,
         children,
     }))
 }
@@ -535,6 +561,7 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         background: None,
         color: None,
         border_color: None,
+        border_radius: 0.0,
         children,
     }
 }
@@ -594,6 +621,7 @@ fn resolve_style<T: LayoutTree>(
             "background" | "background-color" => style.background = Some(Color::parse(value)?),
             "color" => style.color = Some(Color::parse(value)?),
             "border-color" => style.border_color = Some(Color::parse(value)?),
+            "border-radius" => style.border_radius = non_negative(property, value)?,
             _ => {}
         }
     }
@@ -1684,7 +1712,7 @@ mod tests {
             .iter()
             .filter_map(|item| match item {
                 DisplayItem::Text { text, rect, .. } => Some((text.as_str(), rect)),
-                DisplayItem::SolidColor { .. } => None,
+                DisplayItem::SolidColor { .. } | DisplayItem::RoundedColor { .. } => None,
             })
             .collect();
         let words: Vec<&str> = runs.iter().map(|(word, _)| *word).collect();
@@ -1711,7 +1739,7 @@ mod tests {
             .iter()
             .filter_map(|item| match item {
                 DisplayItem::Text { rect, .. } => Some(rect),
-                DisplayItem::SolidColor { .. } => None,
+                DisplayItem::SolidColor { .. } | DisplayItem::RoundedColor { .. } => None,
             })
             .collect();
         assert_eq!(rects.len(), 2);
@@ -1733,7 +1761,7 @@ mod tests {
             .iter()
             .filter_map(|item| match item {
                 DisplayItem::Text { rect, .. } => Some(rect),
-                DisplayItem::SolidColor { .. } => None,
+                DisplayItem::SolidColor { .. } | DisplayItem::RoundedColor { .. } => None,
             })
             .collect();
         assert_eq!(runs.len(), 2);
@@ -1760,7 +1788,7 @@ mod tests {
             .iter()
             .filter_map(|item| match item {
                 DisplayItem::Text { rect, .. } => Some(rect),
-                DisplayItem::SolidColor { .. } => None,
+                DisplayItem::SolidColor { .. } | DisplayItem::RoundedColor { .. } => None,
             })
             .collect();
         assert_eq!(runs.len(), 2);
@@ -1773,6 +1801,40 @@ mod tests {
         assert!(
             (runs[1].x - 0.0).abs() < f32::EPSILON,
             "the wrapped element starts at the line's origin"
+        );
+    }
+
+    #[test]
+    fn border_radius_emits_a_rounded_fill_the_reference_draws_square() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { background: teal; border-radius: 8px; padding: 6px; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let teal = Color::parse("teal").expect("named colour");
+        let rounded = list.items.iter().find_map(|item| match item {
+            DisplayItem::RoundedColor { radius, color, .. } if *color == teal => Some(*radius),
+            _ => None,
+        });
+        assert_eq!(rounded, Some(8.0), "a non-zero radius emits a rounded fill");
+        // With no radius the same box emits a square fill.
+        let square = run(
+            "<body><div>x</div></body>",
+            "div { background: teal; padding: 6px; }",
+            100.0,
+        )
+        .expect("lays out");
+        assert!(
+            build_display_list(&square)
+                .items
+                .iter()
+                .any(|item| matches!(
+                    item,
+                    DisplayItem::SolidColor { color, .. } if *color == teal
+                )),
+            "no radius stays a square fill"
         );
     }
 
@@ -1854,7 +1916,9 @@ mod tests {
         let list = build_display_list(&root);
         for item in &list.items {
             let rect = match item {
-                DisplayItem::SolidColor { rect, .. } | DisplayItem::Text { rect, .. } => rect,
+                DisplayItem::SolidColor { rect, .. }
+                | DisplayItem::RoundedColor { rect, .. }
+                | DisplayItem::Text { rect, .. } => rect,
             };
             assert!(
                 rect.x >= 0.0 && rect.x + rect.width <= 400.0 + f32::EPSILON,

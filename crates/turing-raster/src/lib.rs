@@ -311,6 +311,10 @@ pub fn rasterize(
     for item in &list.items {
         match item {
             DisplayItem::SolidColor { rect, color } => canvas.fill(*rect, *color),
+            // The reference does not round: it fills the rectangle squarely,
+            // which is the honest "this painter cannot express a radius"
+            // behaviour a compositing painter is diffed against.
+            DisplayItem::RoundedColor { rect, color, .. } => canvas.fill(*rect, *color),
             DisplayItem::Text { rect, text, color } => canvas.draw_text(*rect, text, *color),
         }
     }
