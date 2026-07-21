@@ -32,8 +32,13 @@
 //! The index is stable because construction only appends to the arena; nodes
 //! are never removed or reindexed here, so a handle cannot come to denote a
 //! different node. A handle to a node that does not exist fails on use rather
-//! than reading a neighbour, because [`turing_html::NodeId`] access is bounds
-//! checked.
+//! than reading a neighbour — but not because `turing_html` checks; its
+//! `NodeId`-indexed access is raw and panics out of range, which is a
+//! reasonable closed-world contract for an id the engine minted itself. The
+//! check belongs to, and lives entirely in, [`node_handle`] below: it is the
+//! one seam an arbitrary script number becomes a `NodeId`, so it is the one
+//! place that validates the number is actually in range before that
+//! conversion happens.
 //!
 //! This is the renderer's vocabulary. React's host configuration is exactly
 //! `createElement` / `createTextNode` / `appendChild` / `setAttribute` over
