@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - visibility: hidden, and the refactor it forced
+
+`visibility: visible | hidden`. The defining difference from `display: none` is the whole feature: a hidden box is still measured, sized, and positioned — it still occupies exactly the space its geometry claims — only *painting* it is suppressed. `display: none` removes a box from the tree entirely at `build_box`; `visibility: hidden` leaves the tree and every layout computation over it completely alone and only gates what `paint` emits for that one box's own border, outline, background, text, and decoration.
+
+Unlike `text-decoration`'s stated simplification two entries ago, `visibility` got the full treatment: it is a real CSS inherited property where a descendant can declare `visibility: visible` and genuinely repaint under a hidden ancestor — exactly the nearest-ancestor-wins propagation `color` already threads through the tree, so implementing it properly cost nothing beyond what the pattern already does. `paint`'s recursion into children is deliberately outside the visibility guard: each child already resolved its own visibility independently when it was built, so a child that reads `visible` paints regardless of what its parent chose.
+
+This was the fourth inherited property threaded through `build_box`'s parameter list, and `clippy::too_many_arguments` said so — eight positional parameters, four of them `inherited_*` values doing the identical job of "what did this subtree inherit." Rather than silence the lint, the four collapsed into one `Inherited` struct, which is the fix that stops a fifth inherited property from repeating the same growth. This is exactly the kind of debt this engine's discipline says not to leave sitting once it's visible, and it was visible today because visibility made it visible.
+
+Five tests: a hidden box paints nothing of its own, a hidden box still occupies its layout space (the property that distinguishes this from `display: none`, proven the same way outline's layout-neutrality was — a sibling lands where it would anyway), a descendant's override back to `visible` actually repaints, that override reaching all the way to a re-enabled paragraph's own text, and the unimplemented-value refusal (`collapse`, a table-row behaviour this engine's table-less layout has no meaning to give it). The workspace is at 459 tests.
+
 ## 2026-07-21 - text-decoration: underline and line-through
 
 `text-decoration: underline | line-through | none`. The position choice matters more than it looks: the line is placed as a fraction of the text run's own line-box height (`0.85` for underline, `0.5` for line-through) rather than against any specific font's glyph metrics, because this crate only knows `TextMetrics` — advance and line height — not what a painter's glyphs actually look like. A line tied to the reference font's 8px bitmap would be wrong the instant a different painter injected different metrics, which is exactly the abstraction `TextMetrics` exists to keep honest.

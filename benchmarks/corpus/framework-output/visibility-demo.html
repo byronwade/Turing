@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><style>
+body { background: white; margin: 20px; }
+.card { border-width: 2px; border-color: navy; background: lightyellow; padding: 8px; margin: 0 0 6px 0; }
+.gone { visibility: hidden; }
+.reenabled { visibility: visible; background: teal; color: white; }
+.after { background: silver; padding: 8px; }
+</style></head>
+<body>
+<div class='card'>Card one, visible</div>
+<div class='card gone'>Card two — hidden, but still takes space</div>
+<div class='card gone'><span class='reenabled'>This span re-enables visibility under a hidden parent</span></div>
+<div class='after'>Card four, right after — nothing shifted</div>
+</body>
+</html>
