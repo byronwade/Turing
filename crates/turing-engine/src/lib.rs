@@ -105,6 +105,14 @@ pub struct Page {
     /// Compiled scripts, retained so listener functions registered through
     /// `addEventListener` stay callable after load.
     programs: Vec<Program>,
+    /// The one node `:hover` rules currently match, if any. Lives on `Page`
+    /// rather than being passed into each render call because it is a fact
+    /// about the document's current state — the same role `scroll_y` plays
+    /// for the caller-owned presenter, except hover changes what layout
+    /// itself computes (a `:hover` rule can change a box's size), not only
+    /// what paints, so it has to survive from `set_hovered` through to the
+    /// next `relayout` rather than being a paint-time parameter.
+    hovered: Option<NodeId>,
 }
 
 impl Page {
@@ -138,7 +146,7 @@ impl Page {
         }
 
         let metrics = TextMetrics::default();
-        let layout = layout(dom.document(), &sheet, viewport_width, metrics)?;
+        let layout = layout(dom.document(), &sheet, viewport_width, metrics, None)?;
         let router = HitRouter::new(&dom, layout.clone());
         Ok(Self {
             dom,
@@ -148,6 +156,7 @@ impl Page {
             viewport_width,
             metrics,
             programs,
+            hovered: None,
         })
     }
 
@@ -254,6 +263,28 @@ impl Page {
     /// staleness error here is a bug in this crate, not a caller mistake.
     pub fn target_at(&self, point: Point) -> Result<Option<NodeId>, EngineError> {
         Ok(self.router.target_at(&self.dom, point)?)
+    }
+
+    /// Sets which element, if any, `:hover` rules should currently match,
+    /// and re-lays out to apply it.
+    ///
+    /// A caller with a pointer typically calls `target_at` on every pointer
+    /// move and passes the result straight here — this method does not call
+    /// `target_at` itself, so a caller with its own idea of "hovered" (touch,
+    /// keyboard focus standing in for hover, a synthetic test) can drive it
+    /// directly. Relaying out even when the node is unchanged from before
+    /// would be wasted work, so this is a no-op when `node` already matches
+    /// the current hovered node.
+    ///
+    /// # Errors
+    ///
+    /// Returns the layout stage's refusal, unchanged.
+    pub fn set_hovered(&mut self, node: Option<NodeId>) -> Result<(), EngineError> {
+        if node == self.hovered {
+            return Ok(());
+        }
+        self.hovered = node;
+        self.relayout()
     }
 
     /// Dispatches `event` to the element at `point`, runs any script
@@ -370,6 +401,7 @@ impl Page {
             &self.sheet,
             self.viewport_width,
             self.metrics,
+            self.hovered,
         )?;
         self.router = HitRouter::new(&self.dom, self.layout.clone());
         Ok(())

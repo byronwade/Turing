@@ -275,7 +275,7 @@ pub fn run() -> Vec<StageResult> {
                 // than reflecting whichever single node was picked.
                 let mut matched = 0;
                 for &element in &elements {
-                    matched += cascade(&document, element, &index).len();
+                    matched += cascade(&document, element, &index, None).len();
                 }
                 matched
             }),
@@ -283,13 +283,14 @@ pub fn run() -> Vec<StageResult> {
         StageResult {
             stage: "layout",
             measurement: Measurement::of(|| {
-                layout(&document, &stylesheet, 1280.0, TextMetrics::default()).expect("lays out")
+                layout(&document, &stylesheet, 1280.0, TextMetrics::default(), None)
+                    .expect("lays out")
             }),
         },
         StageResult {
             stage: "display-list",
             measurement: Measurement::of(|| {
-                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default(), None)
                     .expect("lays out");
                 build_display_list(&root)
             }),
@@ -297,7 +298,7 @@ pub fn run() -> Vec<StageResult> {
         StageResult {
             stage: "paint",
             measurement: Measurement::of(|| {
-                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default(), None)
                     .expect("lays out");
                 let list = PaintList::from_display_list(&build_display_list(&root));
                 paint(
@@ -316,7 +317,7 @@ pub fn run() -> Vec<StageResult> {
         StageResult {
             stage: "raster",
             measurement: Measurement::of(|| {
-                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default())
+                let root = layout(&document, &stylesheet, 1280.0, TextMetrics::default(), None)
                     .expect("lays out");
                 let list = build_display_list(&root);
                 rasterize(
@@ -448,6 +449,6 @@ mod tests {
             .tokens;
         let document = TreeBuilder::new().build(&tokens).expect("builds");
         let stylesheet = Stylesheet::parse(STYLESHEET).expect("parses");
-        assert!(layout(&document, &stylesheet, 1280.0, TextMetrics::default()).is_ok());
+        assert!(layout(&document, &stylesheet, 1280.0, TextMetrics::default(), None).is_ok());
     }
 }

@@ -444,6 +444,10 @@ pub enum SimpleSelector {
     AttributePresent(String),
     /// `[name="value"]`
     AttributeEquals { name: String, value: String },
+    /// `:hover` — matches when the caller-supplied hovered node is this
+    /// element. The only pseudo-class this crate evaluates; every other one
+    /// is refused at parse time rather than silently ignored.
+    Hover,
 }
 
 /// Conditions that must all hold for one element.
@@ -484,7 +488,8 @@ impl Selector {
                     SimpleSelector::Id(_) => total.ids += 1,
                     SimpleSelector::Class(_)
                     | SimpleSelector::AttributePresent(_)
-                    | SimpleSelector::AttributeEquals { .. } => total.classes += 1,
+                    | SimpleSelector::AttributeEquals { .. }
+                    | SimpleSelector::Hover => total.classes += 1,
                     SimpleSelector::Type(_) => total.types += 1,
                     SimpleSelector::Universal => {}
                 }
@@ -766,10 +771,16 @@ fn parse_compound(text: &str) -> Result<Compound, CssError> {
             }
             b':' => {
                 // `::x` is a pseudo-element; `:x` is a pseudo-class. Both change
-                // matching, so both are refused rather than dropped.
+                // matching, so every one but `:hover` is refused rather than
+                // dropped.
                 let double = bytes.get(index + 1) == Some(&b':');
                 let start = if double { index + 2 } else { index + 1 };
-                let (name, _) = read_ident(bytes, start);
+                let (name, next) = read_ident(bytes, start);
+                if !double && name == "hover" {
+                    parts.push(SimpleSelector::Hover);
+                    index = next;
+                    continue;
+                }
                 return Err(if double {
                     CssError::PseudoElementUnsupported { name }
                 } else {
@@ -868,15 +879,24 @@ fn parse_declarations(block: &str) -> Vec<Declaration> {
 // -- matching ------------------------------------------------------------
 
 /// Returns whether `selector` matches `element` in `tree`.
+///
+/// `hovered` names the one element currently under the pointer, if any — the
+/// only fact `:hover` needs. `None` means nothing is hovered, so no `:hover`
+/// condition anywhere in the selector can be satisfied.
 #[must_use]
-pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) -> bool {
-    if !compound_matches(tree, element, &selector.subject) {
+pub fn matches<T: ElementTree>(
+    tree: &T,
+    element: T::Node,
+    selector: &Selector,
+    hovered: Option<T::Node>,
+) -> bool {
+    if !compound_matches(tree, element, &selector.subject, hovered) {
         return false;
     }
     let mut current = element;
     for (combinator, compound) in &selector.ancestors {
         match combinator {
-            Combinator::Descendant => match find_ancestor(tree, current, compound) {
+            Combinator::Descendant => match find_ancestor(tree, current, compound, hovered) {
                 Some(found) => current = found,
                 None => return false,
             },
@@ -884,7 +904,7 @@ pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) 
                 let Some(parent) = tree.parent(current) else {
                     return false;
                 };
-                if !compound_matches(tree, parent, compound) {
+                if !compound_matches(tree, parent, compound, hovered) {
                     return false;
                 }
                 current = parent;
@@ -893,7 +913,7 @@ pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) 
                 let Some(previous) = tree.previous_element_sibling(current) else {
                     return false;
                 };
-                if !compound_matches(tree, previous, compound) {
+                if !compound_matches(tree, previous, compound, hovered) {
                     return false;
                 }
                 current = previous;
@@ -902,7 +922,7 @@ pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) 
                 let mut cursor = tree.previous_element_sibling(current);
                 let mut found = None;
                 while let Some(candidate) = cursor {
-                    if compound_matches(tree, candidate, compound) {
+                    if compound_matches(tree, candidate, compound, hovered) {
                         found = Some(candidate);
                         break;
                     }
@@ -918,10 +938,15 @@ pub fn matches<T: ElementTree>(tree: &T, element: T::Node, selector: &Selector) 
     true
 }
 
-fn find_ancestor<T: ElementTree>(tree: &T, from: T::Node, compound: &Compound) -> Option<T::Node> {
+fn find_ancestor<T: ElementTree>(
+    tree: &T,
+    from: T::Node,
+    compound: &Compound,
+    hovered: Option<T::Node>,
+) -> Option<T::Node> {
     let mut cursor = tree.parent(from);
     while let Some(candidate) = cursor {
-        if compound_matches(tree, candidate, compound) {
+        if compound_matches(tree, candidate, compound, hovered) {
             return Some(candidate);
         }
         cursor = tree.parent(candidate);
@@ -929,7 +954,12 @@ fn find_ancestor<T: ElementTree>(tree: &T, from: T::Node, compound: &Compound) -
     None
 }
 
-fn compound_matches<T: ElementTree>(tree: &T, element: T::Node, compound: &Compound) -> bool {
+fn compound_matches<T: ElementTree>(
+    tree: &T,
+    element: T::Node,
+    compound: &Compound,
+    hovered: Option<T::Node>,
+) -> bool {
     if !tree.is_element(element) {
         return false;
     }
@@ -946,6 +976,7 @@ fn compound_matches<T: ElementTree>(tree: &T, element: T::Node, compound: &Compo
         SimpleSelector::AttributeEquals { name: key, value } => {
             tree.attribute(element, key) == Some(value.as_str())
         }
+        SimpleSelector::Hover => hovered == Some(element),
     })
 }
 
@@ -1103,11 +1134,15 @@ fn subject_key(compound: &Compound) -> Option<Key> {
 /// candidate carries its `source_order` explicitly rather than inheriting it
 /// from iteration, so visiting rules in bucket order cannot change which
 /// declaration wins — the failure this optimisation would otherwise invite.
+///
+/// `hovered` is forwarded to [`matches`] for every candidate rule; pass
+/// `None` when nothing is under the pointer.
 #[must_use]
 pub fn cascade<T: ElementTree>(
     tree: &T,
     element: T::Node,
     index: &SelectorIndex,
+    hovered: Option<T::Node>,
 ) -> Vec<(String, ComputedDeclaration)> {
     let mut winners: Vec<(String, ComputedDeclaration)> = Vec::new();
 
@@ -1116,7 +1151,7 @@ pub fn cascade<T: ElementTree>(
         let Some(specificity) = rule
             .selectors
             .iter()
-            .filter(|selector| matches(tree, element, selector))
+            .filter(|selector| matches(tree, element, selector, hovered))
             .map(Selector::specificity)
             .max()
         else {
@@ -1172,6 +1207,7 @@ pub fn cascade_reference<T: ElementTree>(
     tree: &T,
     element: T::Node,
     stylesheet: &Stylesheet,
+    hovered: Option<T::Node>,
 ) -> Vec<(String, ComputedDeclaration)> {
     let mut winners: Vec<(String, ComputedDeclaration)> = Vec::new();
 
@@ -1179,7 +1215,7 @@ pub fn cascade_reference<T: ElementTree>(
         let Some(specificity) = rule
             .selectors
             .iter()
-            .filter(|selector| matches(tree, element, selector))
+            .filter(|selector| matches(tree, element, selector, hovered))
             .map(Selector::specificity)
             .max()
         else {
@@ -1281,8 +1317,8 @@ mod tests {
         // Every cascade test below is also a differential test: the indexed and
         // reference paths must agree, or the index has changed a result rather
         // than only skipping work that could not have matched.
-        let indexed = cascade(&doc, node, &SelectorIndex::build(&sheet));
-        let reference = cascade_reference(&doc, node, &sheet);
+        let indexed = cascade(&doc, node, &SelectorIndex::build(&sheet), None);
+        let reference = cascade_reference(&doc, node, &sheet, None);
         assert_eq!(
             indexed, reference,
             "selector index disagreed with the reference cascade"
@@ -1541,6 +1577,84 @@ mod tests {
     fn pseudo_classes_are_reported_not_ignored() {
         let error = Stylesheet::parse("p:nth-child(2) { color: red }").expect_err("refused");
         assert!(matches!(error, CssError::PseudoClassUnsupported { .. }));
+    }
+
+    #[test]
+    fn hover_matches_only_the_hovered_element() {
+        let doc = document("<p>t</p>");
+        let sheet = Stylesheet::parse("p:hover { color: red }").expect("parses");
+        let index = SelectorIndex::build(&sheet);
+        let p = find(&doc, "p");
+
+        assert!(
+            cascade(&doc, p, &index, None).is_empty(),
+            "nothing is hovered, so :hover must not match"
+        );
+        assert_eq!(
+            cascade(&doc, p, &index, Some(p)),
+            cascade_reference(&doc, p, &sheet, Some(p)),
+            "indexed and reference cascades must agree once hover is involved too"
+        );
+        assert_eq!(
+            cascade(&doc, p, &index, Some(p)),
+            vec![(
+                "color".to_string(),
+                ComputedDeclaration {
+                    value: "red".to_string(),
+                    important: false,
+                    specificity: Specificity {
+                        ids: 0,
+                        classes: 1,
+                        types: 1,
+                    },
+                    source_order: 0,
+                }
+            )]
+        );
+    }
+
+    #[test]
+    fn hover_on_an_ancestor_compound_still_matches() {
+        // `.parent:hover .child` — the hovered element is the ancestor, not
+        // the subject, so the hover check has to run for every compound in
+        // the selector, not only the rightmost one.
+        let doc = document("<div class=\"parent\"><p>t</p></div>");
+        let sheet = Stylesheet::parse(".parent:hover p { color: red }").expect("parses");
+        let index = SelectorIndex::build(&sheet);
+        let p = find(&doc, "p");
+        let div = find(&doc, "div");
+
+        assert!(cascade(&doc, p, &index, None).is_empty());
+        assert!(
+            cascade(&doc, p, &index, Some(p)).is_empty(),
+            "the paragraph itself being hovered does not satisfy .parent:hover"
+        );
+        assert_eq!(
+            cascade(&doc, p, &index, Some(div)),
+            vec![(
+                "color".to_string(),
+                ComputedDeclaration {
+                    value: "red".to_string(),
+                    important: false,
+                    // `.parent` and `:hover` both count as class-level
+                    // (classes: 2), plus the `p` type compound (types: 1).
+                    specificity: Specificity {
+                        ids: 0,
+                        classes: 2,
+                        types: 1,
+                    },
+                    source_order: 0,
+                }
+            )]
+        );
+    }
+
+    #[test]
+    fn hover_pseudo_class_is_not_reported_as_unsupported() {
+        // Every other single-colon pseudo-class is refused (see
+        // `pseudo_classes_are_reported_not_ignored`); `:hover` is the one
+        // exception, so parsing it must succeed rather than error.
+        Stylesheet::parse("a:hover { color: red }").expect("hover is a supported pseudo-class");
     }
 
     #[test]

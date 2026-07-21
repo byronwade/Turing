@@ -563,6 +563,7 @@ pub fn run_seed(seed: u64) -> Vec<Outcome> {
                     &stylesheet,
                     800.0,
                     turing_layout::TextMetrics::default(),
+                    None,
                 )
             }),
             &mut findings,
