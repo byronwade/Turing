@@ -48,6 +48,7 @@ fn sheet() -> DisplayList {
                 green: 0,
                 blue: 0,
             },
+            alpha: 1.0,
         });
     }
     list
