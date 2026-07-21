@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-07-21 - Per-side border widths and colours, and a cascade quirk they exposed
+
+Another named gap closed: `border-top-width`/`-right-width`/`-bottom-width`/`-left-width` and the matching `-color` longhands, alongside the existing uniform shorthands. The geometry needed nothing new — `EdgeSizes` already carried independent per-side floats for margin and padding, so border widths only needed the same four longhand properties parsed into the same fields. Colour needed a new `BorderColors` struct (four `Option<Color>`, one per side, each falling back to the element's own `currentColor` independently) and the paint function's four-rect border ring, which already existed from the earlier border work, now resolving one colour per rect instead of one shared colour for all four.
+
+Writing the shorthand-then-longhand interaction test surfaced something worth stating plainly rather than working around: this cascade does not implement CSS's declaration-order tie-break. `cascade()` keys winning declarations by literal property-name string and applies them in alphabetical name order, not source position — so `border-color` and `border-top-color` are entirely unrelated strings to that mechanism, and the longhand wins every time regardless of which one a rule lists last, because "top" sorts after "color" and nothing else about the source matters. This is not new — it is a pre-existing property of the cascade that had no shorthand/longhand pair to be visible on until this feature added one. Fixing it properly means expanding a shorthand into its longhands at parse time so they compete under the same property-name key the cascade already understands; that is real, separate work, not something this feature should quietly paper over. The test now pins the actual behaviour, with the reasoning in its own comment, rather than asserting the spec-correct behaviour the code does not have.
+
+The workspace is at 439 tests.
+
 ## 2026-07-21 - removeEventListener: a listener can now leave the way it arrived
 
 A named gap since the event-listener work landed: script could register a listener and never take it back. `Dom::remove_listener` matches `addEventListener`'s own identity rule — target, kind, name, and capture flag together, since a listener has no identity beyond that four-tuple — and removes at most one matching registration. A mismatched removal (wrong kind, wrong name, nothing registered at all) is a no-op rather than a refusal, which is what the specification asks for and what a page racing its own setup/teardown order needs: `removeEventListener` is not supposed to be able to fail.
