@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - Compound assignment to a property ran its own side effect twice
+
+The owner asked for a careful engineering review of this session's new code, specifically for violations of the engine's own rule: never compute a silently-wrong value. The review found one, in the compound-assignment desugaring added earlier today. `object.key += right` was built at parse time by cloning the `object` and `key` sub-expressions into both the write target and a `Binary` read embedded inside the new value — which compiles each of them twice. For a bare property access that costs nothing extra to evaluate; for `getTarget().n += 10`, it calls `getTarget()` twice. Confirmed by reproduction, not inferred: a closure over a const-captured array recorded a call each time a synthetic `getTarget` ran, and one `+=` statement left two records.
+
+The specification's answer is that a compound assignment evaluates the base reference once, reads through it, computes, and writes back through the same reference — not by re-evaluating the base expression. The fix is a dedicated `Expr::CompoundMember` node instead of AST-level cloning, and a new `Op::Dup2` (duplicates the top two stack values in order) so the bytecode reaches `[obj, key, obj, key]` from one compilation of `object` and one of `key`: the first pair feeds `GetProperty` for the current value, the second feeds `SetProperty` for the write. Object and key are each compiled exactly once; nothing about them runs twice regardless of what they contain.
+
+The plain-variable case (`x += right`) was never affected — resolving a variable name to a slot is compile-time metadata with no runtime evaluation to duplicate, so it keeps its simpler desugaring to `x = x + right`.
+
+Two regression tests reproduce the exact bug shape — a call as the object, a call as a computed array index — and assert the call count is 1, not 2. The workspace is at 421 tests.
+
 ## 2026-07-21 - A confirmed process-crashing bug in the DOM handles, found and fixed
 
 The owner asked for the security orchestrator to review this session's work carefully. The right find was here: the DOM construction bindings added for APP-3 (`createElement`/`appendChild`/`insertBefore`/`removeChild`/`parentNode`/`firstChild`) read a script-supplied number back into a `NodeId` and hand it straight to `turing-dom`, which hands it straight to `turing-html`'s arena — raw `self.nodes[id.0]` indexing, unchecked, throughout. That indexing is a reasonable closed-world contract for a `NodeId` the engine minted itself; it is exactly wrong for one reconstructed from a number script wrote. `appendChild(999999999, 0)` is not exploitation, it is an ordinary line of script text, and it crashed the process: confirmed by reproduction, not inferred — `catch_unwind` around `Page::load` on that one line aborted with `index out of bounds: the len is 6 but the index is 999999999` from deep in `turing-html`'s tree module.
