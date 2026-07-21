@@ -32,6 +32,49 @@ function memo(component) {
     return component;
 }
 
+// Milestone 1 of the React-runtime plan (see the turing-nova-source-real-
+// scope project memory): a single, non-interactive static first paint.
+// Every VM call gets a fresh heap, so nothing here needs to persist a
+// render's state to the next one yet -- these hooks are correct for a
+// *first* render only, by construction, not an approximation:
+//   - useState returns the initial value and a setter that does nothing.
+//     Real React's setter schedules a re-render; there is no re-render
+//     loop yet for it to schedule into, so a no-op is the honest behavior
+//     for this milestone, not a wrong one.
+//   - useRef returns a plain, real {current} object -- genuinely correct,
+//     not a stand-in, since a ref's identity persisting across renders
+//     only matters once there are multiple renders.
+//   - useCallback/useMemo return their function/computed value directly:
+//     memoization across renders is meaningless when there is only one.
+//   - useEffect/useLayoutEffect do not run their callback at all. Real
+//     effects fire after paint and exist to wire up interactivity
+//     (subscriptions, measurements, event listeners) -- none of that is
+//     first-paint content, so skipping them is correct for this
+//     milestone's output, not a gap in it.
+function useState(initial) {
+    return [initial, function (next) {}];
+}
+function useRef(initial) {
+    return { current: initial };
+}
+function useCallback(fn, deps) {
+    return fn;
+}
+function useMemo(fn, deps) {
+    return fn();
+}
+function useEffect(fn, deps) {}
+function useLayoutEffect(fn, deps) {}
+
+// What `<>...</>` desugars to referencing by name (see the module-level
+// JSX doc comment in turing-js). A real Fragment's job is "render my
+// children with no wrapping element at all" -- `__mount` below is what
+// actually needs to know how to do that when it meets a Fragment-typed
+// vnode, not this function itself.
+function Fragment(props) {
+    return props.children;
+}
+
 function __jsxCreateElement(type, props, children) {
     return { type: type, props: props, children: children };
 }
@@ -52,6 +95,18 @@ function __mount(vnode, parentHandle) {
     var kind = valueKind(vnode);
     if (kind == "string" || kind == "number") {
         appendChild(parentHandle, createText(vnode));
+        return;
+    }
+    if (kind == "array") {
+        // A component (Fragment, or any other returning a bare list) that
+        // rendered to a list of children rather than one wrapping element
+        // -- mount each in turn under the same parent, exactly the way
+        // real React flattens a Fragment's children into its parent.
+        var i = 0;
+        while (i < vnode.length) {
+            __mount(vnode[i], parentHandle);
+            i = i + 1;
+        }
         return;
     }
     if (kind != "object") {

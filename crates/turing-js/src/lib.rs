@@ -541,6 +541,29 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
             index += 1;
             continue;
         }
+        // A non-ASCII byte reaching here is never inside a string/template
+        // literal or a comment — both already scan raw bytes to their own
+        // closing delimiter above, with no interest in what those bytes
+        // are — so it can only be one of two things: a Unicode character
+        // written directly as JSX text (Nova does this constantly — curly
+        // quotes, emoji, ⌘, Japanese titles in its own fixture data — all
+        // outside any quote), or genuine ordinary-JS-position stray
+        // Unicode whitespace. Neither needs a real token here: this whole
+        // *eager* lex pass exists only so JSX's own raw-byte scan (see the
+        // module-level JSX doc comment and `Parser::resume_at`) has some
+        // token stream to resynchronize with afterward — whatever this
+        // pass tokenizes across a JSX region is already discarded once
+        // that direct scan runs, the same way it already discards this
+        // pass's tokenization of ordinary JSX tags and attributes written
+        // in ASCII. So a lone non-ASCII byte is skipped, byte at a time
+        // (safe regardless of a multi-byte sequence's length, since every
+        // continuation byte is also >= 0x80 and takes the same path) —
+        // never erroring, and never landing in a token some later
+        // resolution step could read as if it were meaningful.
+        if byte >= 0x80 {
+            index += 1;
+            continue;
+        }
         // Regular expressions begin here.
         return Err(JsError::UnexpectedCharacter {
             character: byte as char,
@@ -7268,6 +7291,17 @@ mod tests {
                 name: "__jsxCreateElement".to_string()
             }
         );
+    }
+
+    #[test]
+    fn jsx_text_may_contain_non_ascii_characters_unquoted() {
+        // Real Nova text: curly quotes, a ⌘ glyph, and (in its own fixture
+        // data) full Japanese titles and emoji, all written directly as
+        // JSX text with no surrounding quotes at all. The *eager* lexer
+        // that runs before JSX's own raw-byte scan takes over must not
+        // choke on any of that — it previously errored on the very first
+        // multi-byte character reached outside a string/comment.
+        assert!(compile("function main() { return <span>⌘T \u{201c}quoted\u{201d} 日本語 🚀</span>; } main();").is_ok());
     }
 
     #[test]
