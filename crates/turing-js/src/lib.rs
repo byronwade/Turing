@@ -25,10 +25,16 @@
 //! `const` bindings, arithmetic and comparison, logical operators with
 //! short-circuit evaluation, `if`/`else`, `while`, blocks with lexical
 //! scoping, function declarations, calls, recursion, `return`, objects with
-//! property access, and arrays with indexing and `length`.
+//! property access, arrays with indexing and `length`, and anonymous function
+//! *expressions* as first-class values with indirect calls.
+//!
+//! A function expression is a value but not yet a closure: it does not capture
+//! enclosing locals. A reference to one is refused as undefined at compile
+//! time rather than captured, so a program that runs is never computing a
+//! wrong value from a variable it only appears to see.
 //!
 //! Everything else returns a typed error rather than a partial evaluation:
-//! closures over enclosing scope, function expressions and arrow functions,
+//! closures over enclosing scope, named function expressions, arrow functions,
 //! `class`, `try`/`catch`, `async`/`await`, generators, regular expressions,
 //! modules, `eval`, array/object spread, and prototype semantics.
 //!
@@ -413,6 +419,20 @@ enum Expr {
     Call {
         callee: String,
         arguments: Vec<Expr>,
+    },
+    /// A call whose callee is an arbitrary expression evaluating to a function
+    /// value: `arr[0]()`, `(f)()`, `obj.m()` once methods exist.
+    CallValue {
+        callee: Box<Expr>,
+        arguments: Vec<Expr>,
+    },
+    /// An anonymous function expression, `function(params) { body }`. It
+    /// evaluates to a function value. It does not capture enclosing locals —
+    /// a reference to one is refused at compile time as undefined rather than
+    /// captured — so it is a first-class value, not yet a closure.
+    Lambda {
+        parameters: Vec<String>,
+        body: Vec<Stmt>,
     },
     /// `{ a: 1, "b": 2 }`, in source order.
     ObjectLiteral {
@@ -883,6 +903,14 @@ impl Parser {
                     object: Box::new(object),
                     key: Box::new(key),
                 };
+            } else if self.check_punct("(") {
+                // A call applied to an expression rather than a bare name: an
+                // indirect call through whatever function value it produced.
+                let arguments = self.parse_argument_list()?;
+                object = Expr::CallValue {
+                    callee: Box::new(object),
+                    arguments,
+                };
             } else {
                 return Ok(object);
             }
@@ -905,23 +933,17 @@ impl Parser {
                 "false" => Ok(Expr::Boolean(false)),
                 "null" => Ok(Expr::Null),
                 "undefined" => Ok(Expr::Undefined),
-                "function" => Err(JsError::Unsupported {
-                    feature: "function expressions and closures".to_string(),
-                }),
+                "function" => {
+                    // `function` was already consumed by `advance()`.
+                    self.parse_function_expression_body()
+                }
                 other => Err(JsError::Unsupported {
                     feature: other.to_string(),
                 }),
             },
             Token::Ident(name) => {
-                if self.eat_punct("(") {
-                    let mut arguments = Vec::new();
-                    while !self.check_punct(")") {
-                        arguments.push(self.parse_expression()?);
-                        if !self.eat_punct(",") {
-                            break;
-                        }
-                    }
-                    self.expect_punct(")")?;
+                if self.check_punct("(") {
+                    let arguments = self.parse_argument_list()?;
                     return Ok(Expr::Call {
                         callee: name,
                         arguments,
@@ -1011,6 +1033,60 @@ impl Parser {
         }
         self.expect_punct("]")?;
         Ok(Expr::ArrayLiteral { elements })
+    }
+
+    /// Parses a function expression after the `function` keyword is consumed:
+    /// `(params) { body }`. A *named* function expression is refused, because
+    /// the name is only visible inside for self-reference, which is capture —
+    /// the feature this first-class-function step deliberately does not add.
+    fn parse_function_expression_body(&mut self) -> Result<Expr, JsError> {
+        if matches!(self.peek(), Token::Ident(_)) {
+            return Err(JsError::Unsupported {
+                feature: "named function expressions (self-reference is capture)".to_string(),
+            });
+        }
+        let parameters = self.parse_parameter_list()?;
+        self.expect_punct("{")?;
+        let mut body = Vec::new();
+        while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
+            body.push(self.parse_statement()?);
+        }
+        self.expect_punct("}")?;
+        Ok(Expr::Lambda { parameters, body })
+    }
+
+    /// Parses `(a, b, c)` call arguments, the `(` still ahead.
+    fn parse_argument_list(&mut self) -> Result<Vec<Expr>, JsError> {
+        self.expect_punct("(")?;
+        let mut arguments = Vec::new();
+        while !self.check_punct(")") {
+            arguments.push(self.parse_expression()?);
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct(")")?;
+        Ok(arguments)
+    }
+
+    /// Parses `(a, b, c)` parameter names, the `(` still ahead.
+    fn parse_parameter_list(&mut self) -> Result<Vec<String>, JsError> {
+        self.expect_punct("(")?;
+        let mut parameters = Vec::new();
+        while !self.check_punct(")") {
+            let Token::Ident(parameter) = self.advance() else {
+                return Err(JsError::UnexpectedToken {
+                    found: "token".to_string(),
+                    expected: "a parameter name".to_string(),
+                });
+            };
+            parameters.push(parameter);
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct(")")?;
+        Ok(parameters)
     }
 }
 
@@ -1150,6 +1226,11 @@ pub enum Op {
     Dup,
     /// Call a bound operation by name with `n` arguments from the stack.
     HostCall(String, usize),
+    /// Indirect call: pop `argc` arguments then the callee (a function value)
+    /// and run it, pushing the result.
+    CallValue {
+        argc: usize,
+    },
     /// Pop key then object; push the property value, or `undefined`.
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
@@ -1251,13 +1332,24 @@ impl Compiler {
                     .push((name.clone(), index, parameters.len()));
             }
         }
-        // Reserve slot 0 for the top level; function bodies fill 1..n.
-        self.functions.push(Function {
-            name: "<top>".to_string(),
+        // Reserve slot 0 for the top level and one slot per declared function,
+        // so a nested function *expression* pushed while compiling a body
+        // lands after them rather than displacing a declared index.
+        let placeholder = || Function {
+            name: "<reserved>".to_string(),
             arity: 0,
             locals: 0,
             code: Vec::new(),
-        });
+        };
+        self.functions.push(placeholder());
+        let declared = statements
+            .iter()
+            .filter(|s| matches!(s, Stmt::Function { .. }))
+            .count();
+        for _ in 0..declared {
+            self.functions.push(placeholder());
+        }
+        let mut index = 1;
         for statement in statements {
             if let Stmt::Function {
                 name,
@@ -1265,7 +1357,8 @@ impl Compiler {
                 body,
             } = statement
             {
-                self.compile_function(name, parameters, body)?;
+                self.fill_function(index, name, parameters, body)?;
+                index += 1;
             }
         }
 
@@ -1292,8 +1385,16 @@ impl Compiler {
         })
     }
 
-    fn compile_function(
+    /// Compiles a function body into the already-reserved slot `index`.
+    ///
+    /// The scope stack is swapped out entirely, not chained, so the body sees
+    /// its own parameters and locals and the global function table, but not an
+    /// enclosing function's locals. A reference to one therefore resolves to
+    /// nothing and is refused as undefined — which is why a function value
+    /// here is not yet a closure: capture is refused, not computed wrong.
+    fn fill_function(
         &mut self,
+        index: usize,
         name: &str,
         parameters: &[String],
         body: &[Stmt],
@@ -1317,19 +1418,36 @@ impl Compiler {
         self.code.push(Op::Const(Value::Undefined));
         self.code.push(Op::Return);
 
-        let function = Function {
+        self.functions[index] = Function {
             name: name.to_string(),
             arity: parameters.len(),
             locals: self.max_slot,
             code: core::mem::take(&mut self.code),
         };
-        self.functions.push(function);
 
         self.code = outer_code;
         self.scopes = outer_scopes;
         self.next_slot = outer_next;
         self.max_slot = outer_max;
         Ok(())
+    }
+
+    /// Reserves a slot, compiles an anonymous function body into it, and
+    /// returns the slot index for a `Value::Function`.
+    fn compile_anonymous(
+        &mut self,
+        parameters: &[String],
+        body: &[Stmt],
+    ) -> Result<usize, JsError> {
+        let index = self.functions.len();
+        self.functions.push(Function {
+            name: "<anonymous>".to_string(),
+            arity: 0,
+            locals: 0,
+            code: Vec::new(),
+        });
+        self.fill_function(index, "<anonymous>", parameters, body)?;
+        Ok(index)
     }
 
     fn push_scope(&mut self) {
@@ -1550,38 +1668,59 @@ impl Compiler {
                 self.code.push(Op::SetProperty);
             }
             Expr::Call { callee, arguments } => {
-                let Some(&(_, index, arity)) =
+                // Resolution order: a declared function wins a name collision
+                // (a program's own declaration is not shadowed by the host);
+                // then a local variable holding a function value (an indirect
+                // call); then a host-bound operation, checked at the call
+                // because the compiler does not hold the host's table.
+                if let Some(&(_, index, arity)) =
                     self.signatures.iter().find(|(name, _, _)| name == callee)
-                else {
-                    // Not a declared function, so it may be a bound operation.
-                    // Script functions are resolved first and therefore win a
-                    // name collision: a program's own declaration must not be
-                    // shadowed by whatever the embedder happens to expose.
-                    //
-                    // Whether the name is bound is a property of the host, which
-                    // the compiler does not have, so it is checked at the call.
+                {
+                    if arguments.len() != arity {
+                        return Err(JsError::TypeError {
+                            message: format!(
+                                "{callee} expects {arity} argument(s), got {}",
+                                arguments.len()
+                            ),
+                        });
+                    }
+                    for argument in arguments {
+                        self.expression(argument)?;
+                    }
+                    self.code.push(Op::Call {
+                        index,
+                        argc: arguments.len(),
+                    });
+                } else if let Some((slot, _)) = self.resolve(callee) {
+                    // A local holds a function value: load it, then the args,
+                    // then call indirectly.
+                    self.code.push(Op::LoadLocal(slot));
+                    for argument in arguments {
+                        self.expression(argument)?;
+                    }
+                    self.code.push(Op::CallValue {
+                        argc: arguments.len(),
+                    });
+                } else {
                     for argument in arguments {
                         self.expression(argument)?;
                     }
                     self.code
                         .push(Op::HostCall(callee.clone(), arguments.len()));
-                    return Ok(());
-                };
-                if arguments.len() != arity {
-                    return Err(JsError::TypeError {
-                        message: format!(
-                            "{callee} expects {arity} argument(s), got {}",
-                            arguments.len()
-                        ),
-                    });
                 }
+            }
+            Expr::CallValue { callee, arguments } => {
+                self.expression(callee)?;
                 for argument in arguments {
                     self.expression(argument)?;
                 }
-                self.code.push(Op::Call {
-                    index,
+                self.code.push(Op::CallValue {
                     argc: arguments.len(),
                 });
+            }
+            Expr::Lambda { parameters, body } => {
+                let index = self.compile_anonymous(parameters, body)?;
+                self.code.push(Op::Const(Value::Function(index)));
             }
         }
         Ok(())
@@ -2022,6 +2161,41 @@ impl Vm {
                         runtime.outer.extend(stack.iter().cloned());
                         runtime.outer.extend(locals.iter().cloned());
                         let outcome = self.run_function(program, *index, arguments, runtime, host);
+                        runtime.outer.truncate(restore);
+                        outcome
+                    }?;
+                    stack.push(result);
+                }
+                Op::CallValue { argc } => {
+                    let split = stack.len().saturating_sub(*argc);
+                    let arguments = stack.split_off(split);
+                    let callee = pop(&mut stack);
+                    let Value::Function(index) = callee else {
+                        return Err(JsError::TypeError {
+                            message: format!("{callee} is not a function"),
+                        });
+                    };
+                    let function =
+                        program
+                            .functions
+                            .get(index)
+                            .ok_or_else(|| JsError::TypeError {
+                                message: "call to an unknown function value".to_owned(),
+                            })?;
+                    if function.arity != arguments.len() {
+                        return Err(JsError::TypeError {
+                            message: format!(
+                                "a function value expects {} argument(s), got {}",
+                                function.arity,
+                                arguments.len()
+                            ),
+                        });
+                    }
+                    let result = {
+                        let restore = runtime.outer.len();
+                        runtime.outer.extend(stack.iter().cloned());
+                        runtime.outer.extend(locals.iter().cloned());
+                        let outcome = self.run_function(program, index, arguments, runtime, host);
                         runtime.outer.truncate(restore);
                         outcome
                     }?;
@@ -2628,6 +2802,90 @@ mod tests {
             eval_in_fn("let a = []; if (a) { return 1; } else { return 0; }"),
             Value::Number(1.0)
         );
+    }
+
+    #[test]
+    fn function_expressions_are_first_class_values() {
+        // Stored in a local and called indirectly.
+        assert_eq!(
+            eval_in_fn("let f = function(x) { return x + 1; }; return f(41);"),
+            Value::Number(42.0)
+        );
+        // Stored in an array and called through an index.
+        assert_eq!(
+            eval_in_fn("let fs = [function() { return 7; }]; return fs[0]();"),
+            Value::Number(7.0)
+        );
+        // Passed to a declared higher-order function and invoked there.
+        let program = compile(
+            "function apply(g, v) { return g(v); } \
+             function main() { let double = function(n) { return n + n; }; return apply(double, 21); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(42.0)
+        );
+        // Returned from a function and then called.
+        let program = compile(
+            "function make() { return function() { return 99; }; } \
+             function main() { let g = make(); return g(); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(99.0)
+        );
+    }
+
+    #[test]
+    fn a_function_value_carries_the_right_arity_and_type_checks() {
+        // Wrong argument count is a type error, like a named call.
+        let program = compile(
+            "function main() { let f = function(x) { return x; }; return f(1, 2); } main();",
+        );
+        // Arity mismatch on an indirect call is caught at runtime.
+        if let Ok(program) = program {
+            let result = Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default());
+            assert!(matches!(result, Err(JsError::TypeError { .. })));
+        }
+        // Calling a non-function is a type error.
+        let program =
+            compile("function main() { let x = 5; return x(); } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn capturing_an_enclosing_local_is_refused_not_computed_wrong() {
+        // The inner function references `n` from the enclosing scope. Capture
+        // is not implemented, and the engine refuses it (as undefined) rather
+        // than computing a wrong value — the whole point of the boundary.
+        let source = "function main() { \
+            let n = 10; \
+            let f = function() { return n; }; \
+            return f(); \
+        } main();";
+        assert!(matches!(
+            compile(source),
+            Err(JsError::UndefinedVariable { .. })
+        ));
+    }
+
+    #[test]
+    fn a_named_function_expression_is_refused() {
+        assert!(matches!(
+            compile("let f = function named() { return 1; };"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]

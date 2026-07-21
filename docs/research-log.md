@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - Function values: first-class, and honestly not yet closures
+
+The application-runtime ladder's hard rung is closures, and the honest way up it is in two correct steps rather than one incorrect leap. This is the first step: anonymous function *expressions* are now first-class values. `let f = function(x) { return x + 1; }` produces a value; it can be stored in a local, put in an array, passed to a higher-order function, returned from one, and called indirectly — `f()`, `fs[0]()`, `apply(g, v)` — with arity and non-function-callee checks.
+
+Two pieces of VM surgery made it correct. Calls are no longer only by name: a `CallValue` opcode pops a function value and its arguments and runs it, and the compiler routes a call to a local variable through it while keeping the named fast path for declared functions and host operations. And the function table is now reserved-then-filled: declared functions get their slots in the hoisting pass, so an anonymous function compiled midway through a body lands *after* them instead of displacing a declared index — the bug that a naive push would have introduced, invisible until a program mixed the two.
+
+What this deliberately is not is a closure. The compiler swaps the scope stack out on entry to a function body rather than chaining it, so a function expression cannot see an enclosing local — and a reference to one is refused as undefined at compile time. That refusal is the point. By-value capture would compute a silently-wrong value the moment the captured variable is mutated, which is the failure this engine refuses in its language everywhere; by-reference capture needs a shared-cell environment that is a larger change. So function values land as a correct whole, and the closure — capture by reference — is the next increment on exactly this machinery, not a rewrite of it. Named function expressions and arrow syntax are refused for now too; arrows are sugar over this and come next.
+
+The workspace is at 409 tests. The gap to real React narrows to capture, then an event loop.
+
 ## 2026-07-20 - The reconciler's patch vocabulary, and why closures waited
 
 A reconciler mounts and then *patches* — it removes, inserts, reorders, and reads the current tree to decide what to change. APP-3 gave script the mount calls; this adds the patch calls: `insertBefore`, `removeChild`, `parentNode`, and `firstChild`, over the same opaque numeric handles. A test proves the full shape: a script mounts two rows, removes the first, navigates with `parentNode`/`firstChild`, and `insertBefore`s a new row, and the engine repaints the reconciled order with the removed node gone.

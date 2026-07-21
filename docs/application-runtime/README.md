@@ -161,16 +161,18 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   with a `length` property, which is the specification's own model, so they
   reuse the entire object heap and collector. The smallest self-contained
   step toward `createElement(type, props, ...children)` and children arrays.
-- **APP-2 — Closures and function expressions.** *The next and hardest
-  rung, deliberately not rushed.* Arrow functions and function expressions
-  as first-class values need indirect calls and by-reference upvalue
-  capture — a large, invasive VM change. Doing it half-correctly (for
-  example capturing by value) computes silently-wrong values for the
-  closure-over-mutation patterns React relies on, which is the exact
-  failure this engine refuses everywhere else. It will land as a correct
-  whole or not at all, which is why the DOM rungs went first: they are
-  completable correctly today, and they make the renderer's *calls* exist
-  while APP-2 supplies the language to express the renderer.
+- **APP-2 — Function values, then closures.** *First-class function values
+  done; capture pending.* Anonymous function expressions are now values —
+  stored, passed, returned, and called indirectly (`f()`, `fs[0]()`,
+  `apply(g, v)`), with arity and type checks. What they do **not** yet do is
+  capture an enclosing local: a reference to one is refused as undefined at
+  compile time rather than captured, because by-value capture would compute
+  silently-wrong values for the closure-over-mutation patterns React relies
+  on, and by-reference capture is a larger VM change (indirect calls exist
+  now; a shared-cell environment does not). So function values landed as a
+  correct whole, and true capture — the closure — is the next increment on
+  the same machinery. Arrow-function syntax is sugar over this and is also
+  pending.
 - **APP-3 — DOM construction bindings.** *Done.* `documentBody`,
   `createElement`, `createText`, `appendChild`, and `setNodeAttribute` bound
   to script, with nodes crossing the boundary as opaque numeric handles (arena
