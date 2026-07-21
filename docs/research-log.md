@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - Arrow functions, the callback form the target apps are written in
+
+Arrow functions now parse in every common form — `x => x + 1`, `(a, b) => a + b`, `() => 42`, and block bodies `x => { ... }` — and desugar to the function-value machinery from the previous entry, so they are values that pass, store, return, and call the same way. The single-parameter expression form is the shape React, Next, and TanStack code is saturated with (`onClick={() => ...}`, `items.map(x => ...)`), so this is the syntax that makes the target apps readable to the engine even before capture.
+
+The only real work was detection without backtracking a hand-written parser cannot easily do: an arrow begins at `ident =>` or at a parenthesised list whose matching `)` is followed by `=>`, decided by pure lookahead so an ordinary grouped expression `(a + b) * 2` is never mistaken for a parameter list. A test pins exactly that non-ambiguity.
+
+Arrows inherit the function-value boundary unchanged: an arrow that references an enclosing local is refused as undefined, not captured. Capture stays the one remaining piece of this rung, and it is deliberately still a separate, larger change rather than a rushed subset.
+
+The workspace is at 412 tests.
+
 ## 2026-07-21 - Function values: first-class, and honestly not yet closures
 
 The application-runtime ladder's hard rung is closures, and the honest way up it is in two correct steps rather than one incorrect leap. This is the first step: anonymous function *expressions* are now first-class values. `let f = function(x) { return x + 1; }` produces a value; it can be stored in a local, put in an array, passed to a higher-order function, returned from one, and called indirectly — `f()`, `fs[0]()`, `apply(g, v)` — with arity and non-function-callee checks.

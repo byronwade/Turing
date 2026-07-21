@@ -33,10 +33,14 @@
 //! time rather than captured, so a program that runs is never computing a
 //! wrong value from a variable it only appears to see.
 //!
+//! Arrow functions — `x => x + 1`, `(a, b) => ...`, `() => { ... }` — are sugar
+//! over the same function-value machinery and obey the same refuse-capture
+//! boundary.
+//!
 //! Everything else returns a typed error rather than a partial evaluation:
-//! closures over enclosing scope, named function expressions, arrow functions,
-//! `class`, `try`/`catch`, `async`/`await`, generators, regular expressions,
-//! modules, `eval`, array/object spread, and prototype semantics.
+//! closures over enclosing scope, named function expressions, `class`,
+//! `try`/`catch`, `async`/`await`, generators, regular expressions, modules,
+//! `eval`, array/object spread, and prototype semantics.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
 //! implemented language does not fail visibly; it computes a wrong value and
@@ -368,7 +372,7 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
             index += 3;
             continue;
         }
-        if matches!(two, "==" | "!=" | "<=" | ">=" | "&&" | "||") {
+        if matches!(two, "==" | "!=" | "<=" | ">=" | "&&" | "||" | "=>") {
             tokens.push(Token::Punct(two.to_string()));
             index += 2;
             continue;
@@ -730,6 +734,9 @@ impl Parser {
     }
 
     fn parse_assignment(&mut self) -> Result<Expr, JsError> {
+        if self.arrow_ahead() {
+            return self.parse_arrow();
+        }
         let target = self.parse_logical_or()?;
         if self.check_punct("=") {
             self.position += 1;
@@ -744,6 +751,76 @@ impl Parser {
             };
         }
         Ok(target)
+    }
+
+    /// The token `offset` positions ahead of the cursor.
+    fn peek_at(&self, offset: usize) -> &Token {
+        self.tokens
+            .get(self.position + offset)
+            .unwrap_or(&Token::Eof)
+    }
+
+    /// Whether an arrow function begins at the cursor: `ident =>` or a
+    /// parenthesised parameter list followed by `=>`. Pure lookahead, no
+    /// consumption, so an ordinary parenthesised expression is unaffected.
+    fn arrow_ahead(&self) -> bool {
+        if matches!(self.peek(), Token::Ident(_))
+            && matches!(self.peek_at(1), Token::Punct(p) if p == "=>")
+        {
+            return true;
+        }
+        if !self.check_punct("(") {
+            return false;
+        }
+        // Walk to the matching `)` and see whether `=>` follows it.
+        let mut depth = 0;
+        let mut offset = 0;
+        loop {
+            match self.peek_at(offset) {
+                Token::Punct(p) if p == "(" => depth += 1,
+                Token::Punct(p) if p == ")" => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return matches!(self.peek_at(offset + 1), Token::Punct(p) if p == "=>");
+                    }
+                }
+                Token::Eof => return false,
+                _ => {}
+            }
+            offset += 1;
+        }
+    }
+
+    /// Parses an arrow function into the same [`Expr::Lambda`] a `function`
+    /// expression produces — arrows are sugar over that machinery, so they
+    /// inherit its rule that capturing an enclosing local is refused, not
+    /// silently captured.
+    fn parse_arrow(&mut self) -> Result<Expr, JsError> {
+        let parameters = if self.check_punct("(") {
+            self.parse_parameter_list()?
+        } else {
+            let Token::Ident(name) = self.advance() else {
+                return Err(JsError::UnexpectedToken {
+                    found: "token".to_string(),
+                    expected: "an arrow parameter".to_string(),
+                });
+            };
+            vec![name]
+        };
+        self.expect_punct("=>")?;
+        let body = if self.check_punct("{") {
+            self.position += 1;
+            let mut statements = Vec::new();
+            while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
+                statements.push(self.parse_statement()?);
+            }
+            self.expect_punct("}")?;
+            statements
+        } else {
+            // `x => expr` is `x => { return expr; }`.
+            vec![Stmt::Return(Some(self.parse_assignment()?))]
+        };
+        Ok(Expr::Lambda { parameters, body })
     }
 
     fn parse_logical_or(&mut self) -> Result<Expr, JsError> {
@@ -2876,6 +2953,61 @@ mod tests {
         } main();";
         assert!(matches!(
             compile(source),
+            Err(JsError::UndefinedVariable { .. })
+        ));
+    }
+
+    #[test]
+    fn arrow_functions_are_sugar_for_function_values() {
+        // Single param, expression body.
+        assert_eq!(
+            eval_in_fn("let inc = x => x + 1; return inc(41);"),
+            Value::Number(42.0)
+        );
+        // Parenthesised params, expression body.
+        assert_eq!(
+            eval_in_fn("let add = (a, b) => a + b; return add(40, 2);"),
+            Value::Number(42.0)
+        );
+        // No params.
+        assert_eq!(
+            eval_in_fn("let answer = () => 42; return answer();"),
+            Value::Number(42.0)
+        );
+        // Block body with an explicit return.
+        assert_eq!(
+            eval_in_fn("let f = x => { let y = x * 2; return y; }; return f(21);"),
+            Value::Number(42.0)
+        );
+        // Passed inline to a higher-order function.
+        let program = compile(
+            "function apply(g, v) { return g(v); } \
+             function main() { return apply(n => n + n, 21); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(42.0)
+        );
+    }
+
+    #[test]
+    fn a_parenthesised_expression_is_not_mistaken_for_an_arrow() {
+        // `(a + b)` is an ordinary grouped expression, not a parameter list.
+        assert_eq!(
+            eval_in_fn("let a = 2; let b = 3; return (a + b) * 2;"),
+            Value::Number(10.0)
+        );
+    }
+
+    #[test]
+    fn an_arrow_capturing_an_enclosing_local_is_refused() {
+        // Same boundary as function expressions: capture is refused, not wrong.
+        assert!(matches!(
+            compile("function main() { let n = 5; let f = () => n; return f(); } main();"),
             Err(JsError::UndefinedVariable { .. })
         ));
     }

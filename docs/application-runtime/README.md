@@ -171,8 +171,10 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   on, and by-reference capture is a larger VM change (indirect calls exist
   now; a shared-cell environment does not). So function values landed as a
   correct whole, and true capture — the closure — is the next increment on
-  the same machinery. Arrow-function syntax is sugar over this and is also
-  pending.
+  the same machinery. Arrow-function syntax — `x => x + 1`, `(a, b) => ...`, `() => {...}` — is
+  now sugar over this same machinery, so the ubiquitous callback form works
+  (it inherits the same refuse-capture boundary). True capture is the one
+  remaining piece of this rung.
 - **APP-3 — DOM construction bindings.** *Done.* `documentBody`,
   `createElement`, `createText`, `appendChild`, and `setNodeAttribute` bound
   to script, with nodes crossing the boundary as opaque numeric handles (arena
