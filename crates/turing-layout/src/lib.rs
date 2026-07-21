@@ -177,6 +177,38 @@ pub struct EdgeSizes {
     pub bottom: f32,
 }
 
+/// Per-side border colours.
+///
+/// A side left `None` is not "no border colour" — it is "resolve
+/// `currentColor` for this side", which paint does against the element's own
+/// text colour. Separate from [`EdgeSizes`] because a colour is optional
+/// per side (falling back to `currentColor`) where a width is not (it
+/// defaults to zero, a real value, not an unresolved one).
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct BorderColors {
+    pub top: Option<Color>,
+    pub right: Option<Color>,
+    pub bottom: Option<Color>,
+    pub left: Option<Color>,
+}
+
+impl BorderColors {
+    /// The shorthand form: the same colour on every side. `border-color: X`
+    /// sets all four sides. Whether this wins over a per-side longhand on the
+    /// same element depends on the cascade's property-name ordering, not on
+    /// which one the source lists last — see the note on the `"border-color"`
+    /// match arm that calls this.
+    #[must_use]
+    fn uniform(color: Color) -> Self {
+        Self {
+            top: Some(color),
+            right: Some(color),
+            bottom: Some(color),
+            left: Some(color),
+        }
+    }
+}
+
 /// The four boxes of the CSS box model for one element.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Dimensions {
@@ -276,9 +308,10 @@ pub struct LayoutBox {
     /// Resolved declarations that painting needs.
     pub background: Option<Color>,
     pub color: Option<Color>,
-    /// Border colour; used only where border widths are non-zero. `None`
-    /// falls back to the text colour, which is CSS's `currentColor` default.
-    pub border_color: Option<Color>,
+    /// Per-side border colours; used only where the matching side's border
+    /// width is non-zero. A side left `None` falls back to the text colour,
+    /// which is CSS's `currentColor` default for `border-color`.
+    pub border_colors: BorderColors,
     /// Corner radius in CSS pixels; zero is a square box.
     pub border_radius: f32,
     /// How inline children of this box are aligned. Inherited, like `color`.
@@ -330,7 +363,7 @@ struct Style {
     border: EdgeSizes,
     background: Option<Color>,
     color: Option<Color>,
-    border_color: Option<Color>,
+    border_colors: BorderColors,
     border_radius: f32,
     text_align: Option<TextAlign>,
 }
@@ -380,41 +413,52 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
         || dimensions.border.top > 0.0
         || dimensions.border.bottom > 0.0;
     if has_border {
-        // `border-color` defaults to the element's own text colour, which
-        // is CSS's `currentColor` initial value.
-        let color = layout_box
-            .border_color
-            .or(layout_box.color)
-            .unwrap_or_default();
+        // Each side's own colour, defaulting to the element's text colour —
+        // CSS's `currentColor` initial value for `border-color` — one side
+        // at a time, since two adjacent sides may legitimately differ.
+        let currentcolor = layout_box.color.unwrap_or_default();
+        let colors = layout_box.border_colors;
         let outer = dimensions.border_box();
         let inner = dimensions.padding_box();
-        for rect in [
+        for (rect, color) in [
             // Top and bottom span the full border box; left and right fill
             // between them.
-            Rect {
-                x: outer.x,
-                y: outer.y,
-                width: outer.width,
-                height: inner.y - outer.y,
-            },
-            Rect {
-                x: outer.x,
-                y: inner.y + inner.height,
-                width: outer.width,
-                height: (outer.y + outer.height) - (inner.y + inner.height),
-            },
-            Rect {
-                x: outer.x,
-                y: inner.y,
-                width: inner.x - outer.x,
-                height: inner.height,
-            },
-            Rect {
-                x: inner.x + inner.width,
-                y: inner.y,
-                width: (outer.x + outer.width) - (inner.x + inner.width),
-                height: inner.height,
-            },
+            (
+                Rect {
+                    x: outer.x,
+                    y: outer.y,
+                    width: outer.width,
+                    height: inner.y - outer.y,
+                },
+                colors.top.unwrap_or(currentcolor),
+            ),
+            (
+                Rect {
+                    x: outer.x,
+                    y: inner.y + inner.height,
+                    width: outer.width,
+                    height: (outer.y + outer.height) - (inner.y + inner.height),
+                },
+                colors.bottom.unwrap_or(currentcolor),
+            ),
+            (
+                Rect {
+                    x: outer.x,
+                    y: inner.y,
+                    width: inner.x - outer.x,
+                    height: inner.height,
+                },
+                colors.left.unwrap_or(currentcolor),
+            ),
+            (
+                Rect {
+                    x: inner.x + inner.width,
+                    y: inner.y,
+                    width: (outer.x + outer.width) - (inner.x + inner.width),
+                    height: inner.height,
+                },
+                colors.right.unwrap_or(currentcolor),
+            ),
         ] {
             if rect.width > 0.0 && rect.height > 0.0 {
                 list.items.push(DisplayItem::SolidColor { rect, color });
@@ -485,7 +529,7 @@ fn build_box<T: LayoutTree>(
             // `color` is inherited, so a text run paints in the colour of
             // the nearest ancestor that set one.
             color: inherited_color,
-            border_color: None,
+            border_colors: BorderColors::default(),
             border_radius: 0.0,
             text_align: inherited_align,
             children: Vec::new(),
@@ -546,7 +590,7 @@ fn build_box<T: LayoutTree>(
         text: None,
         background: style.background,
         color: own_color,
-        border_color: style.border_color,
+        border_colors: style.border_colors,
         border_radius: style.border_radius,
         text_align: own_align,
         children,
@@ -594,7 +638,7 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         text: None,
         background: None,
         color: None,
-        border_color: None,
+        border_colors: BorderColors::default(),
         border_radius: 0.0,
         text_align,
         children,
@@ -653,9 +697,22 @@ fn resolve_style<T: LayoutTree>(
             "margin" => style.margin = uniform(non_negative(property, value)?),
             "padding" => style.padding = uniform(non_negative(property, value)?),
             "border-width" => style.border = uniform(non_negative(property, value)?),
+            "border-top-width" => style.border.top = non_negative(property, value)?,
+            "border-right-width" => style.border.right = non_negative(property, value)?,
+            "border-bottom-width" => style.border.bottom = non_negative(property, value)?,
+            "border-left-width" => style.border.left = non_negative(property, value)?,
             "background" | "background-color" => style.background = Some(Color::parse(value)?),
             "color" => style.color = Some(Color::parse(value)?),
-            "border-color" => style.border_color = Some(Color::parse(value)?),
+            // The shorthand sets every side. Whether a per-side longhand for
+            // the same side beats it or loses to it does not depend on which
+            // one this rule lists last — see
+            // `a_longhand_wins_over_the_shorthand_regardless_of_source_order`
+            // for why, and what would need to change to fix that.
+            "border-color" => style.border_colors = BorderColors::uniform(Color::parse(value)?),
+            "border-top-color" => style.border_colors.top = Some(Color::parse(value)?),
+            "border-right-color" => style.border_colors.right = Some(Color::parse(value)?),
+            "border-bottom-color" => style.border_colors.bottom = Some(Color::parse(value)?),
+            "border-left-color" => style.border_colors.left = Some(Color::parse(value)?),
             "border-radius" => style.border_radius = non_negative(property, value)?,
             "text-align" => {
                 style.text_align = Some(match value.trim().to_ascii_lowercase().as_str() {
@@ -2021,6 +2078,121 @@ mod tests {
             )
             .count();
         assert_eq!(edges, 4, "currentColor is the border default");
+    }
+
+    #[test]
+    fn per_side_border_widths_produce_asymmetric_geometry() {
+        let html = "<body><div>x</div></body>";
+        let root = run(
+            html,
+            "div { border-top-width: 2px; border-right-width: 4px; \
+             border-bottom-width: 6px; border-left-width: 8px; padding: 10px; }",
+            100.0,
+        )
+        .expect("lays out");
+        let document = document_of(html);
+        let div = find(&root, &document, "div");
+        let border = div.dimensions.border;
+        assert_eq!(border.top, 2.0);
+        assert_eq!(border.right, 4.0);
+        assert_eq!(border.bottom, 6.0);
+        assert_eq!(border.left, 8.0);
+    }
+
+    #[test]
+    fn the_border_width_shorthand_still_sets_every_side() {
+        let html = "<body><div>x</div></body>";
+        let root = run(html, "div { border-width: 3px; }", 100.0).expect("lays out");
+        let document = document_of(html);
+        let div = find(&root, &document, "div");
+        let border = div.dimensions.border;
+        assert_eq!(border.top, 3.0);
+        assert_eq!(border.right, 3.0);
+        assert_eq!(border.bottom, 3.0);
+        assert_eq!(border.left, 3.0);
+    }
+
+    #[test]
+    fn per_side_border_colours_paint_independently() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 2px; border-top-color: red; \
+             border-right-color: lime; border-bottom-color: blue; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        for name in ["red", "lime", "blue"] {
+            let color = Color::parse(name).expect("named colour");
+            assert!(
+                list.items.iter().any(
+                    |item| matches!(item, DisplayItem::SolidColor { color: c, .. } if *c == color)
+                ),
+                "the {name} side must paint its own colour"
+            );
+        }
+        // The left side declared no colour and has no text colour set
+        // either, so it falls back to the initial `color`, black.
+        let black = Color::parse("black").expect("named colour");
+        assert!(
+            list.items.iter().any(
+                |item| matches!(item, DisplayItem::SolidColor { color: c, .. } if *c == black)
+            ),
+            "an undeclared side falls back to currentColor"
+        );
+    }
+
+    #[test]
+    fn a_longhand_wins_over_the_shorthand_regardless_of_source_order() {
+        // Real CSS's rule is declaration order within equal specificity: a
+        // shorthand appearing after a longhand resets that longhand's side.
+        // This engine's cascade does not implement that — `cascade()` keys
+        // winners by literal property-name string and applies them in
+        // alphabetical name order (`winners.sort_by(|l, r| l.0.cmp(&r.0))`),
+        // not source position. "border-color" and "border-top-color" are
+        // unrelated strings to that mechanism, and "top" sorts after
+        // "color", so the longhand is applied second and wins — every time,
+        // regardless of which one the source lists last.
+        //
+        // This is a pre-existing property of the cascade, not something this
+        // border feature introduced or could fix in scope: no earlier
+        // shorthand/longhand pair existed for it to be visible on. Fixing it
+        // properly means expanding a shorthand into its longhands at parse
+        // time so they compete as the same property name would, which is
+        // its own change. Stated here rather than silently relied upon,
+        // because a page author reordering these declarations and seeing no
+        // effect would otherwise have no explanation.
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 2px; border-color: lime; border-top-color: red; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let red = Color::parse("red").expect("named colour");
+        assert!(
+            list.items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
+            "the longhand wins here, as documented"
+        );
+
+        // Reversing the source order changes nothing: the longhand still
+        // wins, which is the behaviour this test exists to pin down.
+        let reordered = run(
+            "<body><div>x</div></body>",
+            "div { border-width: 2px; border-top-color: red; border-color: lime; }",
+            100.0,
+        )
+        .expect("lays out");
+        let reordered_list = build_display_list(&reordered);
+        assert!(
+            reordered_list
+                .items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
+            "source order does not change the outcome"
+        );
     }
 
     #[test]
