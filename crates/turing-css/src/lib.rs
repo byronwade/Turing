@@ -159,14 +159,31 @@ impl Color {
             {
                 return Err(unsupported());
             }
-            let hue: f32 = channels[0]
+            // `"NaN"` and `"inf"` are both syntax `f32::from_str` accepts, so
+            // either would otherwise count as *parsed*, not *unparseable* —
+            // exactly the gap that let `hsl(NaN, 50%, 50%)` and
+            // `hsl(0, NaN%, 50%)` silently resolve to a plausible-but-wrong
+            // colour instead of refusing, the same failure mode this
+            // parser's other refusals exist to prevent. `NaN` bypasses
+            // `clamp` (which returns `NaN` unchanged for a `NaN` input) and
+            // an infinite hue is not guaranteed correct through
+            // `rem_euclid`, so both channels below are checked with
+            // `is_finite` before being trusted for arithmetic.
+            let hue_raw: f32 = channels[0]
                 .strip_suffix("deg")
                 .unwrap_or(channels[0])
                 .parse()
                 .map_err(|_| unsupported())?;
+            if !hue_raw.is_finite() {
+                return Err(unsupported());
+            }
+            let hue = hue_raw;
             let percent = |raw: &str| -> Result<f32, CssError> {
                 let raw = raw.strip_suffix('%').ok_or_else(unsupported)?;
                 let parsed: f32 = raw.parse().map_err(|_| unsupported())?;
+                if !parsed.is_finite() {
+                    return Err(unsupported());
+                }
                 Ok((parsed / 100.0).clamp(0.0, 1.0))
             };
             let saturation = percent(channels[1])?;
@@ -218,6 +235,16 @@ impl Color {
                 } else {
                     raw.parse::<f32>().map_err(|_| unsupported())?
                 };
+                // `"NaN"` is syntax `f32::from_str` accepts, so it counts as
+                // parsed, not unparseable — and `NaN` bypasses `clamp`
+                // (which returns `NaN` unchanged for a `NaN` input) rather
+                // than being brought into range by it. Without this check,
+                // `rgb(NaN, 0, 0)` silently resolved to `rgb(0, 0, 0)` via
+                // the saturating float-to-`u8` cast below, rather than being
+                // refused the way any other unparseable channel already is.
+                if !scaled.is_finite() {
+                    return Err(unsupported());
+                }
                 // The specification clamps out-of-range channels rather than
                 // refusing them.
                 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
@@ -1394,6 +1421,29 @@ mod tests {
             assert!(
                 Color::parse(value).is_err(),
                 "{value} must be refused, not approximated"
+            );
+        }
+    }
+
+    #[test]
+    fn non_finite_channels_are_refused_not_silently_wrong() {
+        // "NaN" and "inf" are both syntax f32::from_str accepts, so each
+        // counts as parsed, not unparseable, unless checked explicitly.
+        // Without that check, a NaN channel bypasses `clamp` (which returns
+        // NaN unchanged for a NaN input) and, cast to a pixel channel,
+        // silently resolves to 0 rather than being refused the way any
+        // other unparseable channel already is.
+        for value in [
+            "rgb(NaN, 0, 0)",
+            "rgb(NaN%, 0, 0)",
+            "rgb(inf, 0, 0)",
+            "hsl(NaN, 50%, 50%)",
+            "hsl(0, NaN%, 50%)",
+            "hsl(inf, 50%, 50%)",
+        ] {
+            assert!(
+                Color::parse(value).is_err(),
+                "{value} must be refused, not silently resolved to a plausible-but-wrong colour"
             );
         }
     }
