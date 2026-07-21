@@ -1,5 +1,15 @@
 # Research Log
 
+## # 2026-07-21 - Closures, for the case that is correct by construction
+
+Capture is the keystone rung, and there is a version of it that is correct without the machinery a general one needs: a closure over a `const`. A const binding cannot be reassigned, so capturing its value by copy is indistinguishable from capturing it by reference — there is nothing to observe changing. So closures now capture enclosing `const` bindings by value, and that is a real closure for the dominant real pattern: a callback closing over const props, const state, a const handler. `const base = 100; let add = function(x) { return base + x; }; add(23)` is 123; a returned closure carries its captured const out of the frame that made it; arrows capture the same way.
+
+What is refused, and refused rather than computed wrong: capturing a mutable `let`/`var`, because a by-value snapshot could then disagree with a later reassignment — that needs by-reference cells this step does not build. And capturing more than one function level out, kept to a single level for now. Both are `Unsupported`, never a wrong value.
+
+The mechanism, kept deliberately small: a captured const is loaded from the enclosing frame at closure creation and stored in a closure object beside the function index; the body reads it through a new upvalue opcode. The closure object lives in the ordinary heap, so the collector already traces the captured values through it. A lambda with no captures stays a plain `Value::Function`, unchanged and allocation-free. The compiler grew a single enclosing-scope reference and an upvalue list; the VM grew `MakeClosure`, `LoadUpvalue`, and a closure branch in the indirect call.
+
+Proven end to end: a closure capturing a const drives `createElement`/`appendChild`, and the engine lays out and paints the result. The workspace is at 414 tests. The remaining language gaps to real React are mutable/by-reference capture, then an event loop.
+
 ## 2026-07-21 - Arrow functions, the callback form the target apps are written in
 
 Arrow functions now parse in every common form — `x => x + 1`, `(a, b) => a + b`, `() => 42`, and block bodies `x => { ... }` — and desugar to the function-value machinery from the previous entry, so they are values that pass, store, return, and call the same way. The single-parameter expression form is the shape React, Next, and TanStack code is saturated with (`onClick={() => ...}`, `items.map(x => ...)`), so this is the syntax that makes the target apps readable to the engine even before capture.

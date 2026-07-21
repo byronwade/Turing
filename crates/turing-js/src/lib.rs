@@ -28,19 +28,22 @@
 //! property access, arrays with indexing and `length`, and anonymous function
 //! *expressions* as first-class values with indirect calls.
 //!
-//! A function expression is a value but not yet a closure: it does not capture
-//! enclosing locals. A reference to one is refused as undefined at compile
-//! time rather than captured, so a program that runs is never computing a
-//! wrong value from a variable it only appears to see.
+//! A function expression captures enclosing **`const`** bindings by value —
+//! a real closure for the safe case. Because a const cannot change, the
+//! captured snapshot can never be observed to be wrong. Capturing a mutable
+//! `let`/`var` is refused (by-reference cells are not built yet), as is
+//! reaching more than one function level out; both are refusals, never a
+//! silently-wrong captured value.
 //!
 //! Arrow functions — `x => x + 1`, `(a, b) => ...`, `() => { ... }` — are sugar
 //! over the same function-value machinery and obey the same refuse-capture
 //! boundary.
 //!
 //! Everything else returns a typed error rather than a partial evaluation:
-//! closures over enclosing scope, named function expressions, `class`,
-//! `try`/`catch`, `async`/`await`, generators, regular expressions, modules,
-//! `eval`, array/object spread, and prototype semantics.
+//! by-reference capture of mutable bindings, multi-level capture, named
+//! function expressions, `class`, `try`/`catch`, `async`/`await`, generators,
+//! regular expressions, modules, `eval`, array/object spread, and prototype
+//! semantics.
 //!
 //! The reason is sharper here than elsewhere in the engine. A partially
 //! implemented language does not fail visibly; it computes a wrong value and
@@ -169,6 +172,11 @@ pub enum Value {
     /// differs only in this tag, which selects array semantics for `length`
     /// maintenance and stringification.
     Array(GcRef),
+    /// A closure: a function paired with the values it captured from an
+    /// enclosing scope. The heap object holds the function index and the
+    /// captured values; see `mod closure`. Only `const` bindings are
+    /// captured, so the values are immutable snapshots.
+    Closure(GcRef),
 }
 
 impl Value {
@@ -183,7 +191,7 @@ impl Value {
             Self::String(value) => !value.is_empty(),
             // Every object is truthy, including an empty one, and an array is
             // an object — even an empty array is truthy, the classic trap.
-            Self::Function(_) | Self::Object(_) | Self::Array(_) => true,
+            Self::Function(_) | Self::Object(_) | Self::Array(_) | Self::Closure(_) => true,
         }
     }
 }
@@ -212,6 +220,8 @@ impl fmt::Display for Value {
             // print a wrong value, it prints a marker; a caller that needs the
             // joined form uses the element access that does have the heap.
             Self::Array(_) => write!(formatter, "[object Array]"),
+            // A closure stringifies like any function.
+            Self::Closure(_) => write!(formatter, "[function]"),
         }
     }
 }
@@ -1223,7 +1233,9 @@ impl Trace for ObjectData {
             // Both object and array values are heap references this data
             // keeps alive; missing either collects a live value.
             match value {
-                Value::Object(reference) | Value::Array(reference) => out.push(*reference),
+                Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
+                    out.push(*reference);
+                }
                 _ => {}
             }
         }
@@ -1308,6 +1320,14 @@ pub enum Op {
     CallValue {
         argc: usize,
     },
+    /// Pop `upvalues` captured values and push a closure over function
+    /// `index`. The values were pushed in upvalue order, index 0 deepest.
+    MakeClosure {
+        index: usize,
+        upvalues: usize,
+    },
+    /// Push the current frame's captured upvalue at `0`-based index.
+    LoadUpvalue(usize),
     /// Pop key then object; push the property value, or `undefined`.
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
@@ -1368,10 +1388,18 @@ pub struct Program {
 
 // -- compiler ------------------------------------------------------------
 
+#[derive(Clone)]
 struct Scope {
     names: Vec<(String, bool)>,
     /// Slot index where this scope's names begin.
     base: usize,
+}
+
+/// One captured variable of the function currently being compiled: the name,
+/// and the slot it occupies in the immediately enclosing function's frame.
+struct Upvalue {
+    name: String,
+    parent_slot: usize,
 }
 
 struct Compiler {
@@ -1382,6 +1410,14 @@ struct Compiler {
     code: Vec<Op>,
     next_slot: usize,
     max_slot: usize,
+    /// The immediately enclosing function's scopes, present while a nested
+    /// function body is being compiled, so a free variable can be resolved as
+    /// a capture from the parent. Single level: only the direct parent is
+    /// visible, and a reference reaching further is refused.
+    enclosing_scopes: Option<Vec<Scope>>,
+    /// The upvalues the function currently being compiled captures, in the
+    /// order it will read them.
+    upvalues: Vec<Upvalue>,
 }
 
 impl Compiler {
@@ -1393,6 +1429,8 @@ impl Compiler {
             code: Vec::new(),
             next_slot: 0,
             max_slot: 0,
+            enclosing_scopes: None,
+            upvalues: Vec::new(),
         }
     }
 
@@ -1434,7 +1472,10 @@ impl Compiler {
                 body,
             } = statement
             {
-                self.fill_function(index, name, parameters, body)?;
+                // A top-level declaration has no enclosing function to
+                // capture from; any upvalues would be a compiler bug.
+                let captured = self.fill_function(index, name, parameters, body, None)?;
+                debug_assert!(captured.is_empty());
                 index += 1;
             }
         }
@@ -1464,20 +1505,25 @@ impl Compiler {
 
     /// Compiles a function body into the already-reserved slot `index`.
     ///
-    /// The scope stack is swapped out entirely, not chained, so the body sees
-    /// its own parameters and locals and the global function table, but not an
-    /// enclosing function's locals. A reference to one therefore resolves to
-    /// nothing and is refused as undefined — which is why a function value
-    /// here is not yet a closure: capture is refused, not computed wrong.
+    /// `enclosing` is the scope set of the directly-enclosing function, present
+    /// for a nested lambda and absent for a top-level declaration. A free
+    /// variable resolving to a `const` in `enclosing` is captured as an
+    /// upvalue; a `let`/`var` there is refused (capture of a mutable binding
+    /// would need by-reference cells this step does not build); a name reaching
+    /// further than one level, or nowhere, is refused as undefined. Returns the
+    /// upvalues captured, in the order the body reads them.
     fn fill_function(
         &mut self,
         index: usize,
         name: &str,
         parameters: &[String],
         body: &[Stmt],
-    ) -> Result<(), JsError> {
+        enclosing: Option<Vec<Scope>>,
+    ) -> Result<Vec<Upvalue>, JsError> {
         let outer_code = core::mem::take(&mut self.code);
         let outer_scopes = core::mem::take(&mut self.scopes);
+        let outer_enclosing = core::mem::replace(&mut self.enclosing_scopes, enclosing);
+        let outer_upvalues = core::mem::take(&mut self.upvalues);
         let outer_next = self.next_slot;
         let outer_max = self.max_slot;
         self.next_slot = 0;
@@ -1502,20 +1548,22 @@ impl Compiler {
             code: core::mem::take(&mut self.code),
         };
 
+        let captured = core::mem::replace(&mut self.upvalues, outer_upvalues);
+        self.enclosing_scopes = outer_enclosing;
         self.code = outer_code;
         self.scopes = outer_scopes;
         self.next_slot = outer_next;
         self.max_slot = outer_max;
-        Ok(())
+        Ok(captured)
     }
 
-    /// Reserves a slot, compiles an anonymous function body into it, and
-    /// returns the slot index for a `Value::Function`.
-    fn compile_anonymous(
+    /// Reserves a slot, compiles a lambda body capturing from the current
+    /// (enclosing) scopes, and returns its index and captured upvalues.
+    fn compile_lambda(
         &mut self,
         parameters: &[String],
         body: &[Stmt],
-    ) -> Result<usize, JsError> {
+    ) -> Result<(usize, Vec<Upvalue>), JsError> {
         let index = self.functions.len();
         self.functions.push(Function {
             name: "<anonymous>".to_string(),
@@ -1523,8 +1571,50 @@ impl Compiler {
             locals: 0,
             code: Vec::new(),
         });
-        self.fill_function(index, "<anonymous>", parameters, body)?;
-        Ok(index)
+        // The lambda captures from wherever it is defined: the current scopes.
+        let enclosing = self.scopes.clone();
+        let captured =
+            self.fill_function(index, "<anonymous>", parameters, body, Some(enclosing))?;
+        Ok((index, captured))
+    }
+
+    /// Resolves a free variable as a capture from the enclosing function.
+    ///
+    /// Returns the upvalue index if the name is a `const` in the enclosing
+    /// scopes (registering it on first use). A mutable enclosing binding is
+    /// refused. A name not in the single enclosing level returns `None`, so the
+    /// caller falls through to the undefined refusal.
+    fn resolve_upvalue(&mut self, name: &str) -> Result<Option<usize>, JsError> {
+        if let Some(existing) = self.upvalues.iter().position(|u| u.name == name) {
+            return Ok(Some(existing));
+        }
+        let Some(enclosing) = &self.enclosing_scopes else {
+            return Ok(None);
+        };
+        let mut found = None;
+        for scope in enclosing {
+            for (offset, (candidate, constant)) in scope.names.iter().enumerate() {
+                if candidate == name {
+                    found = Some((scope.base + offset, *constant));
+                }
+            }
+        }
+        match found {
+            Some((slot, true)) => {
+                self.upvalues.push(Upvalue {
+                    name: name.to_string(),
+                    parent_slot: slot,
+                });
+                Ok(Some(self.upvalues.len() - 1))
+            }
+            Some((_, false)) => Err(JsError::Unsupported {
+                feature: format!(
+                    "capturing the mutable binding `{name}`; capture a const, \
+                     or by-reference capture is not yet implemented"
+                ),
+            }),
+            None => Ok(None),
+        }
     }
 
     fn push_scope(&mut self) {
@@ -1643,10 +1733,13 @@ impl Compiler {
             Expr::Null => self.code.push(Op::Const(Value::Null)),
             Expr::Undefined => self.code.push(Op::Const(Value::Undefined)),
             Expr::Variable(name) => {
-                let (slot, _) = self
-                    .resolve(name)
-                    .ok_or_else(|| JsError::UndefinedVariable { name: name.clone() })?;
-                self.code.push(Op::LoadLocal(slot));
+                if let Some((slot, _)) = self.resolve(name) {
+                    self.code.push(Op::LoadLocal(slot));
+                } else if let Some(upvalue) = self.resolve_upvalue(name)? {
+                    self.code.push(Op::LoadUpvalue(upvalue));
+                } else {
+                    return Err(JsError::UndefinedVariable { name: name.clone() });
+                }
             }
             Expr::Assign { name, value } => {
                 let (slot, constant) = self
@@ -1778,6 +1871,15 @@ impl Compiler {
                     self.code.push(Op::CallValue {
                         argc: arguments.len(),
                     });
+                } else if let Some(upvalue) = self.resolve_upvalue(callee)? {
+                    // A captured function value.
+                    self.code.push(Op::LoadUpvalue(upvalue));
+                    for argument in arguments {
+                        self.expression(argument)?;
+                    }
+                    self.code.push(Op::CallValue {
+                        argc: arguments.len(),
+                    });
                 } else {
                     for argument in arguments {
                         self.expression(argument)?;
@@ -1796,8 +1898,22 @@ impl Compiler {
                 });
             }
             Expr::Lambda { parameters, body } => {
-                let index = self.compile_anonymous(parameters, body)?;
-                self.code.push(Op::Const(Value::Function(index)));
+                let (index, upvalues) = self.compile_lambda(parameters, body)?;
+                if upvalues.is_empty() {
+                    // No captures: a plain function value, cheaper than a
+                    // closure and identical in behaviour.
+                    self.code.push(Op::Const(Value::Function(index)));
+                } else {
+                    // Load each captured value from the enclosing frame in
+                    // upvalue order, then build the closure over them.
+                    for upvalue in &upvalues {
+                        self.code.push(Op::LoadLocal(upvalue.parent_slot));
+                    }
+                    self.code.push(Op::MakeClosure {
+                        index,
+                        upvalues: upvalues.len(),
+                    });
+                }
             }
         }
         Ok(())
@@ -1963,6 +2079,24 @@ impl Vm {
         program: &Program,
         index: usize,
         arguments: Vec<Value>,
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        self.run_function_with_upvalues(program, index, arguments, &[], runtime, host)
+    }
+
+    /// Runs a function with a set of captured upvalue values.
+    ///
+    /// A plain function is called with no upvalues; a closure is called with
+    /// the values it captured at creation. Because only `const` bindings are
+    /// captured, these values are snapshots that cannot have gone stale — the
+    /// binding they came from cannot have changed.
+    fn run_function_with_upvalues(
+        &self,
+        program: &Program,
+        index: usize,
+        arguments: Vec<Value>,
+        upvalues: &[Value],
         runtime: &mut Runtime,
         host: &mut dyn Host,
     ) -> Result<Value, JsError> {
@@ -2247,10 +2381,16 @@ impl Vm {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
                     let callee = pop(&mut stack);
-                    let Value::Function(index) = callee else {
-                        return Err(JsError::TypeError {
-                            message: format!("{callee} is not a function"),
-                        });
+                    // A plain function has no captures; a closure carries the
+                    // values it captured. Both resolve to a function index.
+                    let (index, captured) = match callee {
+                        Value::Function(index) => (index, Vec::new()),
+                        Value::Closure(handle) => closure_parts(runtime, handle)?,
+                        other => {
+                            return Err(JsError::TypeError {
+                                message: format!("{other} is not a function"),
+                            });
+                        }
                     };
                     let function =
                         program
@@ -2272,11 +2412,37 @@ impl Vm {
                         let restore = runtime.outer.len();
                         runtime.outer.extend(stack.iter().cloned());
                         runtime.outer.extend(locals.iter().cloned());
-                        let outcome = self.run_function(program, index, arguments, runtime, host);
+                        runtime.outer.extend(captured.iter().cloned());
+                        let outcome = self.run_function_with_upvalues(
+                            program, index, arguments, &captured, runtime, host,
+                        );
                         runtime.outer.truncate(restore);
                         outcome
                     }?;
                     stack.push(result);
+                }
+                Op::MakeClosure { index, upvalues } => {
+                    runtime.bytes =
+                        runtime
+                            .bytes
+                            .saturating_add(OBJECT_OVERHEAD_BYTES.saturating_add(
+                                (*upvalues as u64).saturating_mul(ELEMENT_OVERHEAD_BYTES),
+                            ));
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    let start = stack.len() - *upvalues;
+                    let captured = stack.split_off(start);
+                    if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+                        collect_now(runtime, &stack, &locals);
+                    }
+                    let handle = make_closure(runtime, *index, &captured)?;
+                    stack.push(Value::Closure(handle));
+                }
+                Op::LoadUpvalue(slot) => {
+                    stack.push(upvalues.get(*slot).cloned().unwrap_or(Value::Undefined));
                 }
                 Op::Return => return Ok(pop(&mut stack)),
             }
@@ -2288,6 +2454,50 @@ impl Vm {
 
 fn pop(stack: &mut Vec<Value>) -> Value {
     stack.pop().unwrap_or(Value::Undefined)
+}
+
+/// Allocates a closure object: the function index plus the captured values.
+///
+/// Stored in the ordinary object heap so the collector already traces the
+/// captured values through it. The bookkeeping keys `"fn"` and `"n"` cannot
+/// collide with the numeric element keys.
+fn make_closure(runtime: &mut Runtime, index: usize, captured: &[Value]) -> Result<GcRef, JsError> {
+    let mut data = ObjectData::default();
+    #[allow(clippy::cast_precision_loss)]
+    data.set("fn".to_owned(), Value::Number(index as f64));
+    #[allow(clippy::cast_precision_loss)]
+    data.set("n".to_owned(), Value::Number(captured.len() as f64));
+    for (slot, value) in captured.iter().enumerate() {
+        data.set(slot.to_string(), value.clone());
+    }
+    runtime
+        .heap
+        .allocate(data)
+        .map_err(|error| JsError::TypeError {
+            message: error.to_string(),
+        })
+}
+
+/// Reads a closure object back into a function index and its captured values.
+fn closure_parts(runtime: &Runtime, handle: GcRef) -> Result<(usize, Vec<Value>), JsError> {
+    let data = runtime
+        .heap
+        .get(handle)
+        .map_err(|error| JsError::TypeError {
+            message: error.to_string(),
+        })?;
+    let index = data.get("fn").map(to_number).unwrap_or(f64::NAN);
+    let count = data.get("n").map(to_number).unwrap_or(0.0);
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let (index, count) = (index as usize, count as usize);
+    let captured = (0..count)
+        .map(|slot| {
+            data.get(&slot.to_string())
+                .cloned()
+                .unwrap_or(Value::Undefined)
+        })
+        .collect();
+    Ok((index, captured))
 }
 
 fn binary_number(stack: &mut Vec<Value>, operation: fn(f64, f64) -> f64) {
@@ -2331,7 +2541,9 @@ fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
         .chain(stack)
         .chain(locals)
         .filter_map(|value| match value {
-            Value::Object(reference) | Value::Array(reference) => Some(*reference),
+            Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
+                Some(*reference)
+            }
             _ => None,
         })
         .collect::<Vec<_>>();
@@ -2460,7 +2672,11 @@ fn to_number(value: &Value) -> f64 {
         // An object or array would coerce through `valueOf`/`toString`, which
         // needs a prototype chain this implementation does not model, so it is
         // NaN rather than a guessed conversion.
-        Value::Undefined | Value::Function(_) | Value::Object(_) | Value::Array(_) => f64::NAN,
+        Value::Undefined
+        | Value::Function(_)
+        | Value::Object(_)
+        | Value::Array(_)
+        | Value::Closure(_) => f64::NAN,
     }
 }
 
@@ -2942,19 +3158,55 @@ mod tests {
     }
 
     #[test]
-    fn capturing_an_enclosing_local_is_refused_not_computed_wrong() {
-        // The inner function references `n` from the enclosing scope. Capture
-        // is not implemented, and the engine refuses it (as undefined) rather
-        // than computing a wrong value — the whole point of the boundary.
+    fn a_closure_captures_an_enclosing_const_by_value() {
+        // The inner function reads a `const` from the enclosing scope. Because
+        // a const cannot change, the captured snapshot is correct for all time
+        // — this is a real closure for the safe case.
+        let program = compile(
+            "function main() { \
+                const base = 100; \
+                let add = function(x) { return base + x; }; \
+                return add(23); \
+             } main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(123.0)
+        );
+    }
+
+    #[test]
+    fn a_returned_closure_still_sees_its_captured_const() {
+        // The closure outlives the frame that created it; its captured const
+        // is carried with it.
+        let program = compile(
+            "function adder(n) { const captured = n; return function(x) { return captured + x; }; } \
+             function main() { let add10 = adder(10); return add10(5); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(15.0)
+        );
+    }
+
+    #[test]
+    fn capturing_a_mutable_binding_is_refused_not_computed_wrong() {
+        // A `let` can be reassigned, so a by-value snapshot could be wrong.
+        // Rather than capture it incorrectly, the engine refuses — the whole
+        // point of the const-only boundary.
         let source = "function main() { \
             let n = 10; \
             let f = function() { return n; }; \
             return f(); \
         } main();";
-        assert!(matches!(
-            compile(source),
-            Err(JsError::UndefinedVariable { .. })
-        ));
+        assert!(matches!(compile(source), Err(JsError::Unsupported { .. })));
     }
 
     #[test]
@@ -3004,11 +3256,21 @@ mod tests {
     }
 
     #[test]
-    fn an_arrow_capturing_an_enclosing_local_is_refused() {
-        // Same boundary as function expressions: capture is refused, not wrong.
+    fn an_arrow_captures_a_const_and_refuses_a_mutable() {
+        // Arrows use the same capture path: a const is captured, a let refused.
+        let program = compile(
+            "function main() { const step = 3; let f = x => x + step; return f(39); } main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(42.0)
+        );
         assert!(matches!(
             compile("function main() { let n = 5; let f = () => n; return f(); } main();"),
-            Err(JsError::UndefinedVariable { .. })
+            Err(JsError::Unsupported { .. })
         ));
     }
 
