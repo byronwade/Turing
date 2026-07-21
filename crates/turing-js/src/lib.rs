@@ -67,14 +67,23 @@
 //! knows how to compile — the same discipline the `for`-loop desugaring
 //! above follows, applied to a syntax extension instead of a statement form.
 //! This is **syntax only**: the desugared call names a function,
-//! `createElement`, that this crate does not implement. Calling it produces
-//! [`JsError::UnboundOperation`], exactly like calling any other undeclared
-//! name — the correct, honest state until a later phase (a real
-//! component/DOM runtime) binds that name to something. Parsing JSX and
-//! running it are different milestones, and this is only the first.
+//! `__jsxCreateElement`, that this crate does not implement by default.
+//! Calling it produces [`JsError::UnboundOperation`], exactly like calling
+//! any other undeclared name — the correct, honest state until a host or
+//! prelude binds that name to something (a real component/DOM runtime).
+//! Parsing JSX and running it are different milestones, and this is only the
+//! first.
+//!
+//! The name is `__jsxCreateElement`, not the more familiar `createElement`,
+//! because this crate's own DOM host bindings already use the bare global
+//! name `createElement` for a different, established operation (real DOM
+//! node construction — see `turing-webidl`); giving JSX's desugar target a
+//! distinct name avoids that collision entirely rather than depending on
+//! call-site arity to disambiguate two unrelated operations sharing one name.
 //!
 //! `<Tag prop1="a" prop2={b}>child1{child2}</Tag>` desugars to
-//! `createElement(Tag, {prop1: "a", prop2: b}, child1, child2)`, where:
+//! `__jsxCreateElement(Tag, {prop1: "a", prop2: b}, [child1, child2])`,
+//! where:
 //!
 //! - The tag becomes the first argument. A lowercase-leading name (`<div>`)
 //!   is a host/intrinsic element and passes as a **string**, `"div"`; an
@@ -88,13 +97,17 @@
 //!   them in source order (`{}` when there are none — always an object,
 //!   never `null`, so the next phase never needs to null-check it).
 //! - Children — text runs, `{expression}` children, and nested elements —
-//!   become the remaining, variadic arguments, in source order, mirroring
-//!   `createElement`'s own real multi-argument convention rather than
-//!   collecting them into an array.
+//!   become the third argument, an array literal built from them in source
+//!   order (`[]` when there are none). Collected into one array, rather than
+//!   passed as further variadic positional arguments, so every call site has
+//!   the same fixed arity of three regardless of how many children a tag
+//!   has — this compiler's calls (both to declared functions and to bound
+//!   host operations) are checked against one fixed arity per name, which a
+//!   variadic call site could not satisfy.
 //! - A fragment, `<>child1<Foo /></>`, desugars the same way but names
 //!   `Fragment` — a variable reference, the same convention a component
-//!   uses — as the tag, with no attributes: `createElement(Fragment, {},
-//!   child1, createElement(Foo, {}))`.
+//!   uses — as the tag, with no attributes: `__jsxCreateElement(Fragment,
+//!   {}, [child1, __jsxCreateElement(Foo, {}, [])])`.
 //!
 //! Supported: self-closing tags, tags with children, string (`x="a"`) and
 //! `{expression}` attribute values (including an arrow function value, since
@@ -1797,17 +1810,16 @@ impl<'a> Parser<'a> {
             // it being a real (if special) value in scope rather than a
             // host/intrinsic tag name. It carries no attributes.
             let (children, end) = self.jsx_children(after_angle + 1, None)?;
-            let mut arguments = vec![
-                Expr::Variable("Fragment".to_string()),
-                Expr::ObjectLiteral {
-                    entries: Vec::new(),
-                },
-            ];
-            arguments.extend(children);
             return Ok((
                 Expr::Call {
-                    callee: "createElement".to_string(),
-                    arguments,
+                    callee: "__jsxCreateElement".to_string(),
+                    arguments: vec![
+                        Expr::Variable("Fragment".to_string()),
+                        Expr::ObjectLiteral {
+                            entries: Vec::new(),
+                        },
+                        Expr::ArrayLiteral { elements: children },
+                    ],
                 },
                 end,
             ));
@@ -1844,8 +1856,14 @@ impl<'a> Parser<'a> {
             }
             return Ok((
                 Expr::Call {
-                    callee: "createElement".to_string(),
-                    arguments: vec![tag_arg, props_arg],
+                    callee: "__jsxCreateElement".to_string(),
+                    arguments: vec![
+                        tag_arg,
+                        props_arg,
+                        Expr::ArrayLiteral {
+                            elements: Vec::new(),
+                        },
+                    ],
                 },
                 after_attrs + 2,
             ));
@@ -1857,12 +1875,14 @@ impl<'a> Parser<'a> {
             });
         }
         let (children, end) = self.jsx_children(after_attrs + 1, Some(&tag_name))?;
-        let mut arguments = vec![tag_arg, props_arg];
-        arguments.extend(children);
         Ok((
             Expr::Call {
-                callee: "createElement".to_string(),
-                arguments,
+                callee: "__jsxCreateElement".to_string(),
+                arguments: vec![
+                    tag_arg,
+                    props_arg,
+                    Expr::ArrayLiteral { elements: children },
+                ],
             },
             end,
         ))
@@ -1886,19 +1906,33 @@ impl<'a> Parser<'a> {
     /// quotes) is also individually tokenized by the plain lexer no matter
     /// what precedes it, so as long as JSX text and attribute content stay
     /// within the plain lexer's own supported character set, `byte_offset`
-    /// always lands exactly on a pre-lexed token's start — checked here
-    /// rather than assumed. JSX content that desynchronises the eager
-    /// whole-file lex (most plausibly an unescaped quote inside text, since
-    /// this lexer has no escape sequences) is refused here rather than
-    /// silently resuming from whatever token happens to follow. Fixing that
-    /// case outright would need the tokenizer to be JSX-context-aware —
-    /// lexing on demand as the parser asks for tokens, rather than the
-    /// whole file eagerly up front — which is a larger change than this
-    /// syntax-layer step makes; this is the honest boundary of what it does
-    /// instead.
+    /// lands at the next pre-lexed token's start — modulo ordinary
+    /// insignificant whitespace between the two, which this skips over
+    /// exactly as the plain lexer itself does everywhere else in the file
+    /// (`<div>hi</div>\n)` is not meaningfully different from
+    /// `<div>hi</div>)`, and treating trailing whitespace after a JSX
+    /// expression as a desync would refuse ordinarily-formatted, multi-line
+    /// JSX wrapped in parentheses — a real gap this exact case caught,
+    /// since no earlier test happened to leave whitespace there. What is
+    /// still checked, and still refused, is any *non-whitespace* gap: JSX
+    /// content that desynchronises the eager whole-file lex (most plausibly
+    /// an unescaped quote inside text, since this lexer has no escape
+    /// sequences) leaves a real, consumed token behind that this alignment
+    /// check would otherwise silently skip past. Fixing that case outright
+    /// would need the tokenizer to be JSX-context-aware — lexing on demand
+    /// as the parser asks for tokens, rather than the whole file eagerly up
+    /// front — which is a larger change than this syntax-layer step makes;
+    /// this is the honest boundary of what it does instead.
     fn resume_at(&mut self, byte_offset: usize) -> Result<(), JsError> {
         self.position = self.starts.partition_point(|&start| start < byte_offset);
-        if self.starts.get(self.position) != Some(&byte_offset) {
+        let after_whitespace = self.skip_jsx_space(byte_offset);
+        let aligned = match self.starts.get(self.position) {
+            Some(&start) => start == after_whitespace,
+            // No further token: alignment only holds if nothing but
+            // whitespace remains before the true end of the source.
+            None => after_whitespace == self.source.len(),
+        };
+        if !aligned {
             return Err(JsError::Unsupported {
                 feature: "a JSX text or attribute value using a character (most likely a quote) \
                           that the plain lexer would read differently, desynchronising the \
@@ -4873,7 +4907,7 @@ mod tests {
     // declared (it became a string), an uppercase one does not (it became a
     // variable reference — the calling-convention claim these tests exist to
     // pin down), and every construct that does compile calls the
-    // well-known, deliberately unbound `createElement`, which running
+    // well-known, deliberately unbound `__jsxCreateElement`, which running
     // confirms fails as `JsError::UnboundOperation` — neither a panic nor a
     // silent no-op, exactly like calling any other undeclared name.
 
@@ -4882,11 +4916,11 @@ mod tests {
         let program = compile("function main() { return <div />; } main();").expect("compiles");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is not bound");
+            .expect_err("__jsxCreateElement is not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -4916,16 +4950,16 @@ mod tests {
         );
 
         // Declaring it resolves the reference; the only remaining failure
-        // is the createElement call itself, at run time.
+        // is the __jsxCreateElement call itself, at run time.
         let program = compile("function main() { let Header = 0; return <Header />; } main();")
             .expect("compiles once Header is declared");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is still not bound");
+            .expect_err("__jsxCreateElement is still not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -4939,11 +4973,11 @@ mod tests {
         .expect("compiles");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is not bound");
+            .expect_err("__jsxCreateElement is not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -4970,11 +5004,11 @@ mod tests {
             compile("function main() { return <div>hello</div>; } main();").expect("compiles");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is not bound");
+            .expect_err("__jsxCreateElement is not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -4986,11 +5020,11 @@ mod tests {
                 .expect("compiles");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is not bound");
+            .expect_err("__jsxCreateElement is not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -5007,11 +5041,11 @@ mod tests {
         .expect("compiles");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is not bound");
+            .expect_err("__jsxCreateElement is not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -5036,11 +5070,11 @@ mod tests {
                 .expect("compiles once Fragment is declared");
         let error = Vm::default()
             .call(&program, "main", Vec::new(), &mut NoHost::default())
-            .expect_err("createElement is still not bound");
+            .expect_err("__jsxCreateElement is still not bound");
         assert_eq!(
             error,
             JsError::UnboundOperation {
-                name: "createElement".to_string()
+                name: "__jsxCreateElement".to_string()
             }
         );
     }
@@ -5084,21 +5118,29 @@ mod tests {
     #[test]
     fn jsx_whitespace_only_between_siblings_produces_no_stray_text_child() {
         // Ordinarily-indented multi-line JSX: the whitespace runs before and
-        // after `<span />` must not become extra string-argument children.
+        // after `<span />` must not become extra entries in the children
+        // array. Every `__jsxCreateElement` call now has a fixed arity of
+        // three (tag, props, children array) regardless of child count, so
+        // the count that matters is the *children array's own* length, not
+        // the call's argument count — checked via the `Op::NewArray` that
+        // builds it.
         let program = compile("function main() { return <div>\n  <span />\n</div>; } main();")
             .expect("compiles");
-        let Op::HostCall(_, argc) = program.functions[1]
+        let outer_call_position = program.functions[1]
             .code
             .iter()
-            .rfind(|op| matches!(op, Op::HostCall(name, _) if name == "createElement"))
-            .expect("an outer createElement call")
+            .rposition(|op| matches!(op, Op::HostCall(name, _) if name == "__jsxCreateElement"))
+            .expect("an outer __jsxCreateElement call");
+        let Some(Op::NewArray(count)) = program.functions[1].code[..outer_call_position]
+            .iter()
+            .rfind(|op| matches!(op, Op::NewArray(_)))
         else {
-            unreachable!("matched above");
+            panic!("expected a NewArray building the outer call's children argument");
         };
-        // tag + props + exactly one child (the nested `<span />`'s own
-        // createElement result) — not three, which is what stray
+        // Exactly one child (the nested `<span />`'s own
+        // `__jsxCreateElement` result) — not more, which is what stray
         // whitespace-only text children would add.
-        assert_eq!(*argc, 3);
+        assert_eq!(*count, 1);
     }
 
     #[test]
@@ -5141,5 +5183,28 @@ mod tests {
         // that into an honest, named refusal.
         let result = compile("function main() { return <div>Don't</div>; } main();");
         assert!(matches!(result, Err(JsError::Unsupported { .. })));
+    }
+
+    #[test]
+    fn jsx_wrapped_in_parens_with_surrounding_whitespace_still_compiles() {
+        // Regression test: real, ordinarily-formatted multi-line JSX —
+        // `return (\n  <div>...</div>\n);`, the common style for wrapping a
+        // JSX expression across several lines — used to be refused by
+        // `resume_at` as a desync, purely because of the insignificant
+        // whitespace between the JSX's closing tag and the following `)`.
+        // No earlier JSX test happened to leave whitespace in that specific
+        // gap, so nothing had caught it until real, hand-written JSX (not a
+        // synthetic single-line test string) exercised it.
+        let cases = [
+            "function main() { return (\n<div className=\"x\">hi</div>\n); } main();",
+            "function main() { return ( <div className=\"x\">hi</div> ); } main();",
+            "function main() { return (<div className=\"x\">hi</div>\n); } main();",
+        ];
+        for source in cases {
+            assert!(
+                compile(source).is_ok(),
+                "whitespace around a parenthesised JSX expression must not be a desync: {source:?}"
+            );
+        }
     }
 }
