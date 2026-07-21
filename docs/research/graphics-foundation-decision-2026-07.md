@@ -1,6 +1,7 @@
 # Graphics foundation decision — lab presenter and its dependencies (2026-07)
 
-Status: accepted for the laboratory presenter only. Owner: @byronwade.
+Status: accepted for the laboratory presenter only.
+Owner: @byronwade.
 Recorded from the owner's 2026-07-20 direction to produce a working, visible
 browser application; that direction resolves the previously open
 `graphics-foundation-review` gate on `WP-009` for this bounded scope, the
@@ -62,3 +63,10 @@ Deleting `apps/turing-browser` and the two dependency lines restores a
 dependency-free workspace; nothing else references them. If the `WP-004`
 bake-off later selects a real toolkit, this presenter is superseded and
 should be deleted rather than maintained in parallel.
+
+## Primary sources
+
+- `winit` — https://crates.io/crates/winit, https://github.com/rust-windowing/winit
+- `softbuffer` — https://crates.io/crates/softbuffer, https://github.com/rust-windowing/softbuffer
+- Transitive dependency count and `windows-sys` binding weight: this
+  workspace's own `Cargo.lock`, resolved for `apps/turing-browser`.
