@@ -323,7 +323,25 @@ enum Token {
     Ident(String),
     Keyword(String),
     Punct(String),
+    /// A backtick template literal, already split into its literal text
+    /// runs and the raw source text of each `${...}` interpolation. The
+    /// interpolations are not parsed here — the lexer has no AST to build
+    /// them into — that happens in `parse_primary`, by recursively lexing
+    /// and parsing each one as an ordinary expression.
+    TemplateLiteral(Vec<TemplatePart>),
     Eof,
+}
+
+/// One piece of a template literal.
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum TemplatePart {
+    /// A literal text run, exactly as written (no escape processing — this
+    /// codebase's plain string literals do not process escapes either, so
+    /// this matches, not falls short of, that existing precedent).
+    Str(String),
+    /// The raw, unparsed source text of a `${...}` interpolation's
+    /// expression, not including the `${`/`}` delimiters.
+    Expr(String),
 }
 
 impl Token {
@@ -334,6 +352,7 @@ impl Token {
             | Self::Ident(text)
             | Self::Keyword(text)
             | Self::Punct(text) => format!("`{text}`"),
+            Self::TemplateLiteral(_) => "a template literal".to_string(),
             Self::Eof => "end of input".to_string(),
         }
     }
@@ -447,6 +466,14 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
             index += 1;
             continue;
         }
+        if byte == b'`' {
+            let token_start = index;
+            let (parts, next) = scan_template_literal(source, index + 1)?;
+            starts.push(token_start);
+            tokens.push(Token::TemplateLiteral(parts));
+            index = next;
+            continue;
+        }
         if byte.is_ascii_alphabetic() || byte == b'_' || byte == b'$' {
             let start = index;
             while index < bytes.len()
@@ -509,7 +536,7 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
             index += 1;
             continue;
         }
-        // Regular expressions and template literals begin here.
+        // Regular expressions begin here.
         return Err(JsError::UnexpectedCharacter {
             character: byte as char,
             offset: index,
@@ -518,6 +545,84 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
     starts.push(bytes.len());
     tokens.push(Token::Eof);
     Ok((tokens, starts))
+}
+
+/// Scans a template literal's body, `index` positioned just past the
+/// opening backtick. Returns the parts and the index just past the
+/// closing backtick.
+///
+/// Interpolations are found by brace-depth counting, skipping over nested
+/// `"`/`'` string literals so a `}` inside one does not end the
+/// interpolation early — mirroring the plain-string scan above, which
+/// likewise does no escape processing (neither needs to, since this
+/// language's string literals have none). A nested template literal
+/// inside an interpolation is refused rather than handled, to avoid the
+/// much harder problem of properly nested recursive scanning; no real
+/// Nova usage needs it.
+fn scan_template_literal(
+    source: &str,
+    mut index: usize,
+) -> Result<(Vec<TemplatePart>, usize), JsError> {
+    let opening_backtick = index - 1;
+    let bytes = source.as_bytes();
+    let mut parts = Vec::new();
+    let mut text_start = index;
+    loop {
+        if index >= bytes.len() {
+            return Err(JsError::UnexpectedToken {
+                found: "end of input".to_string(),
+                expected: format!(
+                    "a closing backtick for the template literal starting at byte {opening_backtick}"
+                ),
+            });
+        }
+        match bytes[index] {
+            b'`' => {
+                parts.push(TemplatePart::Str(source[text_start..index].to_string()));
+                return Ok((parts, index + 1));
+            }
+            b'$' if bytes.get(index + 1) == Some(&b'{') => {
+                parts.push(TemplatePart::Str(source[text_start..index].to_string()));
+                index += 2;
+                let expr_start = index;
+                let mut depth = 1usize;
+                while depth > 0 {
+                    if index >= bytes.len() {
+                        return Err(JsError::UnexpectedToken {
+                            found: "end of input".to_string(),
+                            expected: format!(
+                                "a closing `}}` for the template interpolation starting at byte {expr_start}"
+                            ),
+                        });
+                    }
+                    match bytes[index] {
+                        b'`' => {
+                            return Err(JsError::Unsupported {
+                                feature: "nested template literals".to_string(),
+                            });
+                        }
+                        b'"' | b'\'' => {
+                            let quote = bytes[index];
+                            index += 1;
+                            while index < bytes.len() && bytes[index] != quote {
+                                index += 1;
+                            }
+                        }
+                        b'{' => depth += 1,
+                        b'}' => depth -= 1,
+                        _ => {}
+                    }
+                    if depth > 0 {
+                        index += 1;
+                    }
+                }
+                parts.push(TemplatePart::Expr(source[expr_start..index].to_string()));
+                index += 1;
+                text_start = index;
+            }
+            _ => index += 1,
+        }
+    }
 }
 
 // -- ast -----------------------------------------------------------------
@@ -1457,6 +1562,7 @@ impl<'a> Parser<'a> {
         match self.advance() {
             Token::Number(text) => Ok(Expr::Number(text.parse::<f64>().unwrap_or(f64::NAN))),
             Token::Str(text) => Ok(Expr::Str(text)),
+            Token::TemplateLiteral(parts) => self.desugar_template_literal(parts),
             Token::Keyword(word) => match word.as_str() {
                 "true" => Ok(Expr::Boolean(true)),
                 "false" => Ok(Expr::Boolean(false)),
@@ -1490,6 +1596,45 @@ impl<'a> Parser<'a> {
                 expected: "an expression".to_string(),
             }),
         }
+    }
+
+    /// Desugars a template literal into a chain of `+` concatenations —
+    /// no dedicated AST node or opcode, since `+` here already concatenates
+    /// whenever either side is a string (see `Op::Add`'s VM handling), and
+    /// every template literal has at least one literal text run (possibly
+    /// empty) ahead of its first interpolation, so the chain always starts
+    /// from a string and every subsequent `+` stays a concatenation rather
+    /// than falling through to numeric addition — the same result real
+    /// template-literal semantics specify for plain (non-`toString`-
+    /// overriding) values.
+    ///
+    /// Each interpolation's raw source text is lexed and parsed as its own
+    /// standalone expression here, not inlined into this parser's own
+    /// token stream — the interpolation was scanned as opaque text at the
+    /// lexer level (see `scan_template_literal`) precisely because it can
+    /// itself be an arbitrary expression, which only the parser knows how
+    /// to read.
+    fn desugar_template_literal(&mut self, parts: Vec<TemplatePart>) -> Result<Expr, JsError> {
+        let mut result: Option<Expr> = None;
+        for part in parts {
+            let piece = match part {
+                TemplatePart::Str(text) => Expr::Str(text),
+                TemplatePart::Expr(source) => parse_expression_from_source(&source)?,
+            };
+            result = Some(match result {
+                None => piece,
+                Some(accumulated) => Expr::Binary {
+                    operator: "+".to_string(),
+                    left: Box::new(accumulated),
+                    right: Box::new(piece),
+                },
+            });
+        }
+        // Unreachable in practice — `scan_template_literal` always emits at
+        // least one `Str` part, even for `` ` ` `` — but a defensive
+        // fallback costs nothing and keeps this total rather than panicking
+        // if that invariant is ever violated.
+        Ok(result.unwrap_or(Expr::Str(String::new())))
     }
 
     /// Parses `{ a: 1, ...rest, "b": 2 }`.
@@ -3281,6 +3426,25 @@ impl Compiler {
     }
 }
 
+/// Parses `source` as a single, standalone expression — used to turn a
+/// template literal interpolation's raw text (captured whole by
+/// `scan_template_literal`, since the lexer has no AST to build it into)
+/// into a real `Expr`. Refuses trailing content after the expression
+/// rather than silently ignoring it, the same as `compile` refusing
+/// anything `parse_program` cannot fully consume.
+fn parse_expression_from_source(source: &str) -> Result<Expr, JsError> {
+    let (tokens, starts) = lex(source)?;
+    let mut parser = Parser::new(source, tokens, starts);
+    let expression = parser.parse_expression()?;
+    if !matches!(parser.peek(), Token::Eof) {
+        return Err(JsError::UnexpectedToken {
+            found: parser.peek().describe(),
+            expected: "the end of the interpolation expression".to_string(),
+        });
+    }
+    Ok(expression)
+}
+
 /// Compiles `source` into bytecode.
 ///
 /// # Errors
@@ -3756,6 +3920,14 @@ impl Vm {
                     // refuses rather than silently spreading nothing, so a
                     // real mistake (spreading a number, a function) is
                     // never mistaken for a legitimate no-op.
+                    // A known, narrow divergence from real JS: an array's
+                    // "length" is an ordinary entry in this engine's object
+                    // model (no non-enumerable distinction exists), so
+                    // spreading an array here also copies "length" onto the
+                    // result, where real JS's non-enumerable length would
+                    // not. Only reachable by spreading an array as an
+                    // object source (`{...arr}`), which nothing in Nova
+                    // does — flagged here rather than silently shipped.
                     let source_entries: Vec<(String, Value)> = match &source {
                         Value::Undefined | Value::Null => Vec::new(),
                         Value::Object(source_handle) | Value::Array(source_handle) => runtime
@@ -6355,6 +6527,87 @@ mod tests {
             ),
             Value::String("var(--c4)".to_string()),
             "no style on ff falls back to the default background"
+        );
+    }
+
+    #[test]
+    fn template_literals_interpolate_expressions() {
+        assert_eq!(expr("`a${1 + 1}b`"), Value::String("a2b".to_string()));
+        assert_eq!(
+            expr("`no interpolation`"),
+            Value::String("no interpolation".to_string())
+        );
+        assert_eq!(expr("``"), Value::String(String::new()));
+        assert_eq!(
+            eval_in_fn("let x = 1; let y = 2; return `${x}:${y}`;"),
+            Value::String("1:2".to_string()),
+            "back-to-back interpolations with no literal text between them"
+        );
+        assert_eq!(expr("`${1}${2}${3}`"), Value::String("123".to_string()));
+    }
+
+    #[test]
+    fn template_literal_interpolation_can_be_an_arbitrary_expression() {
+        // Not just a bare variable — the interpolation is parsed as a real
+        // expression, method calls and ternaries included.
+        assert_eq!(
+            eval_in_fn("let s = \"hello\"; return `${s.slice(0, 2)}!`;"),
+            Value::String("he!".to_string())
+        );
+        assert_eq!(
+            expr("`${1 > 0 ? \"yes\" : \"no\"}`"),
+            Value::String("yes".to_string())
+        );
+    }
+
+    #[test]
+    fn template_literal_matches_the_real_nova_translate_pattern() {
+        // Nova line 1815 (`turing-nova-design-source.jsx`): a CSS
+        // transform built from a single numeric interpolation, the most
+        // common template-literal shape in the real file.
+        let source = "function main() { let s = styleFor(42); return s.transform; } \
+             function styleFor(y) { return { transform: `translateY(${y}px)` }; } \
+             main();";
+        assert_eq!(
+            run_main_source(source),
+            Value::String("translateY(42px)".to_string())
+        );
+    }
+
+    #[test]
+    fn template_literal_preserves_non_ascii_text_around_an_interpolation() {
+        // Nova line 2402 uses curly quotes around an interpolation — a
+        // direct check that the byte-level scan (ASCII delimiters only)
+        // does not corrupt surrounding multi-byte UTF-8 text.
+        assert_eq!(
+            eval_in_fn(
+                "let seedText = \"why is the sky blue\"; \
+                 return `\u{201c}${seedText.slice(0, 3)}\u{201d} \u{2014} what does this mean?`;"
+            ),
+            Value::String("\u{201c}why\u{201d} \u{2014} what does this mean?".to_string())
+        );
+    }
+
+    #[test]
+    fn nested_template_literals_are_refused_not_partially_evaluated() {
+        assert!(matches!(
+            compile("let x = `a${`b`}c`;"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn an_unterminated_template_literal_is_a_typed_refusal_not_a_panic() {
+        assert!(matches!(
+            compile("let x = `unterminated;"),
+            Err(JsError::UnexpectedToken { .. })
+        ));
+        assert!(
+            matches!(
+                compile("let x = `unterminated ${1 + 1;"),
+                Err(JsError::UnexpectedToken { .. })
+            ),
+            "an unterminated interpolation refuses the same way"
         );
     }
     // -- collection ------------------------------------------------------

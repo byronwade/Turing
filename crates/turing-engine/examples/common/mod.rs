@@ -21,6 +21,17 @@ use turing_raster::Canvas;
 /// that entirely: nested component calls are just JS calling JS in the
 /// still-live heap.
 pub(crate) const PRELUDE: &str = r#"
+// Real React's `memo()` only changes whether a re-render is *skipped* when
+// props are unchanged — it never changes what a first render produces,
+// and this reconciler does not memoize renders at all yet (every call to
+// `__mount` walks the whole tree). An identity shim is therefore
+// output-preserving, not a simplification: it keeps `memo(fn)`-wrapped
+// Nova components extractable verbatim instead of needing `memo(...)`
+// stripped out of the cited source at each one.
+function memo(component) {
+    return component;
+}
+
 function __jsxCreateElement(type, props, children) {
     return { type: type, props: props, children: children };
 }
