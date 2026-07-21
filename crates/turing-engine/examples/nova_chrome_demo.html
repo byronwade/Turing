@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>Nova chrome, rendered by the engine</title>
+<style>
+body { background: #141416; }
+.bar { display: block; background: #141416; padding: 10px; }
+.tab { display: inline; color: #9a9a9f; padding: 6px 14px; margin: 4px; }
+.tabactive { display: inline; background: #1b1b1e; color: #ededed; padding: 6px 14px; margin: 4px; border-radius: 10px; }
+.gap { display: inline; color: #616166; }
+.pill { display: block; background: #1b1b1e; color: #616166; margin: 10px; padding: 8px 12px; border-radius: 10px; }
+</style>
+</head>
+<body>
+<div class="bar">
+<span id="tab0" class="tabactive">Turing Docs</span>
+<span class="gap"> . </span>
+<span id="tab1" class="tab">Nova Design</span>
+<span class="gap"> . </span>
+<span id="tab2" class="tab">Blank Tab</span>
+</div>
+<div class="pill">Search or enter address</div>
+<script>
+function activate(clicked) {
+  var ids = ['tab0', 'tab1', 'tab2'];
+  var i = 0;
+  while (i < 3) {
+    if (ids[i] == clicked) {
+      setAttribute(ids[i], 'class', 'tabactive');
+    } else {
+      setAttribute(ids[i], 'class', 'tab');
+    }
+    i = i + 1;
+  }
+}
+function onTab0() { activate('tab0'); }
+function onTab1() { activate('tab1'); }
+function onTab2() { activate('tab2'); }
+addEventListener('tab0', 'click', 'onTab0');
+addEventListener('tab1', 'click', 'onTab1');
+addEventListener('tab2', 'click', 'onTab2');
+</script>
+</body>
+</html>
