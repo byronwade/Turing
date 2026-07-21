@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - A confirmed process-crashing bug in the DOM handles, found and fixed
+
+The owner asked for the security orchestrator to review this session's work carefully. The right find was here: the DOM construction bindings added for APP-3 (`createElement`/`appendChild`/`insertBefore`/`removeChild`/`parentNode`/`firstChild`) read a script-supplied number back into a `NodeId` and hand it straight to `turing-dom`, which hands it straight to `turing-html`'s arena — raw `self.nodes[id.0]` indexing, unchecked, throughout. That indexing is a reasonable closed-world contract for a `NodeId` the engine minted itself; it is exactly wrong for one reconstructed from a number script wrote. `appendChild(999999999, 0)` is not exploitation, it is an ordinary line of script text, and it crashed the process: confirmed by reproduction, not inferred — `catch_unwind` around `Page::load` on that one line aborted with `index out of bounds: the len is 6 but the index is 999999999` from deep in `turing-html`'s tree module.
+
+The fix sits at the one seam where an arbitrary script number becomes a `NodeId`: `node_handle()` in `turing-webidl`, which already validated non-negative-integer form and now also validates the index against the document's actual current length before it is ever trusted downstream. Everything past that seam keeps its existing closed-world contract unchanged — this is a boundary fix, not a rewrite of `turing-html`'s indexing discipline, because that discipline is correct for the ids the engine mints and the boundary is precisely where an untrusted one enters.
+
+Reproduced first, then fixed, then re-reproduced clean: five previously-crashing calls (`appendChild`, `removeChild`, `parentNode`, `setNodeAttribute`, `insertBefore`, all with a nonsense handle) now return a typed `HostOperationFailed` naming the bad handle and the document's real size. Two regression tests wrap the same five operations in `catch_unwind`, so "did not panic" is asserted, not assumed, plus a negative/fractional-handle case that was already correct and stays covered.
+
+The workspace is at 420 tests. This is exactly the class of defect the application-runtime book's security section names — running untrusted script is the hostile-input surface the security book governs — found by actually looking rather than by the surface staying quiet.
+
 ## 2026-07-21 - for loops, ++/--, and compound assignment: the syntax React code assumes exists
 
 Every ladder rung so far has been about capability — arrays, closures, DOM. This one is about idiom: `for (let i = 0; i < n; i++)` and `total += x` are not exotic React features, they are how ordinary loop and accumulator code is written everywhere, including inside component bodies and the mini-runtime built two entries ago. Their absence would have been a constant friction against every future test fixture.

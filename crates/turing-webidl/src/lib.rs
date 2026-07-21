@@ -165,12 +165,19 @@ impl<'dom> DomHost<'dom> {
     }
 }
 
-/// Reads a script value used as a node handle back into a [`NodeId`].
+/// Reads a script value used as a node handle back into a [`NodeId`],
+/// validated against `dom`'s current arena.
 ///
-/// A handle crosses into script as a `Number` equal to the arena index. A
-/// non-integer or negative value is a script error naming the bad handle,
-/// not a silent read of node zero.
-fn node_handle(value: &Value) -> Result<NodeId, String> {
+/// A handle crosses into script as a `Number` equal to the arena index, and
+/// script can write any number literal it likes — `appendChild(999999999,
+/// 0)` is ordinary, not exploitation, and the interpreter has no way to stop
+/// a script writing it. Every internal consumer of a [`NodeId`] indexes the
+/// arena directly and trusts the id is in range, which is a reasonable
+/// closed-world contract for ids the engine minted itself but is exactly
+/// wrong for one script handed back to it. So the check belongs here, at the
+/// one seam where an arbitrary script number becomes a `NodeId`: out of range
+/// is refused with a typed message, not handed downstream to panic on.
+fn node_handle(dom: &Dom, value: &Value) -> Result<NodeId, String> {
     let Value::Number(index) = value else {
         return Err(format!("expected a node handle, got {value}"));
     };
@@ -178,7 +185,14 @@ fn node_handle(value: &Value) -> Result<NodeId, String> {
         return Err(format!("{index} is not a node handle"));
     }
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    Ok(NodeId::from_index(*index as usize))
+    let index = *index as usize;
+    if index >= dom.document().len() {
+        return Err(format!(
+            "{index} is not a live node handle; the document has {} nodes",
+            dom.document().len()
+        ));
+    }
+    Ok(NodeId::from_index(index))
 }
 
 /// The arena index of a node, as the `Number` script sees.
@@ -217,15 +231,15 @@ impl Host for DomHost<'_> {
                 Ok(node_value(handle.node()))
             }
             "appendChild" => {
-                let parent = self.dom.handle(node_handle(&arguments[0])?);
-                let child = self.dom.handle(node_handle(&arguments[1])?);
+                let parent = self.dom.handle(node_handle(self.dom, &arguments[0])?);
+                let child = self.dom.handle(node_handle(self.dom, &arguments[1])?);
                 self.dom
                     .append_child(parent, child)
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
             "setNodeAttribute" => {
-                let node = self.dom.handle(node_handle(&arguments[0])?);
+                let node = self.dom.handle(node_handle(self.dom, &arguments[0])?);
                 let name = arguments[1].to_string();
                 let value = arguments[2].to_string();
                 self.dom
@@ -236,23 +250,23 @@ impl Host for DomHost<'_> {
             "insertBefore" => {
                 // insertBefore(parent, child, reference): place `child` before
                 // `reference` among `parent`'s children.
-                let parent = self.dom.handle(node_handle(&arguments[0])?);
-                let child = self.dom.handle(node_handle(&arguments[1])?);
-                let reference = self.dom.handle(node_handle(&arguments[2])?);
+                let parent = self.dom.handle(node_handle(self.dom, &arguments[0])?);
+                let child = self.dom.handle(node_handle(self.dom, &arguments[1])?);
+                let reference = self.dom.handle(node_handle(self.dom, &arguments[2])?);
                 self.dom
                     .insert_before(parent, child, reference)
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
             "removeChild" => {
-                let child = self.dom.handle(node_handle(&arguments[0])?);
+                let child = self.dom.handle(node_handle(self.dom, &arguments[0])?);
                 self.dom
                     .remove_child(child)
                     .map_err(|error| error.to_string())?;
                 Ok(Value::Undefined)
             }
             "parentNode" => {
-                let node = node_handle(&arguments[0])?;
+                let node = node_handle(self.dom, &arguments[0])?;
                 // `null` for a node with no parent, which is what the DOM
                 // returns and is distinguishable from a handle.
                 Ok(self
@@ -263,7 +277,7 @@ impl Host for DomHost<'_> {
                     .map_or(Value::Null, node_value))
             }
             "firstChild" => {
-                let node = node_handle(&arguments[0])?;
+                let node = node_handle(self.dom, &arguments[0])?;
                 Ok(self
                     .dom
                     .document()

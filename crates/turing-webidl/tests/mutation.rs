@@ -204,3 +204,51 @@ fn a_read_only_host_cannot_change_the_document() {
         "the attribute is unchanged"
     );
 }
+
+// -- node handle bounds ---------------------------------------------------
+
+/// A node handle crosses into script as a plain number script can write any
+/// literal into — `appendChild(999999999, 0)` is ordinary script text, not
+/// exploitation. Every one of these must refuse with a typed error rather
+/// than let an out-of-range index reach the arena's raw indexing, which
+/// panics and aborts the process. `catch_unwind` makes "did not panic" part
+/// of what each assertion checks, not just "returned an error".
+#[test]
+fn an_out_of_range_node_handle_is_refused_not_indexed_raw() {
+    let operations = [
+        "appendChild(999999999, 0);",
+        "removeChild(999999999);",
+        "parentNode(999999999);",
+        "firstChild(999999999);",
+        "setNodeAttribute(999999999, 'x', 'y');",
+        "insertBefore(0, 0, 999999999);",
+    ];
+    for body in operations {
+        let mut dom = dom();
+        let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let mut host = DomHost::new(&mut dom);
+            run(&mut host, body)
+        }));
+        let result = outcome.unwrap_or_else(|_| panic!("{body} panicked instead of refusing"));
+        assert!(
+            matches!(result, Err(JsError::HostOperationFailed { .. })),
+            "{body} did not refuse cleanly: {result:?}"
+        );
+    }
+}
+
+#[test]
+fn a_negative_or_fractional_handle_is_refused() {
+    let mut first = dom();
+    let mut host = DomHost::new(&mut first);
+    assert!(matches!(
+        run(&mut host, "removeChild(-1);"),
+        Err(JsError::HostOperationFailed { .. })
+    ));
+    let mut second = dom();
+    let mut host = DomHost::new(&mut second);
+    assert!(matches!(
+        run(&mut host, "removeChild(1.5);"),
+        Err(JsError::HostOperationFailed { .. })
+    ));
+}
