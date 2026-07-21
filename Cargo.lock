@@ -1507,6 +1507,7 @@ dependencies = [
  "turing-css",
  "turing-dom",
  "turing-engine",
+ "turing-html",
  "turing-layout",
  "turing-paint",
  "turing-raster",

@@ -25,7 +25,7 @@ fn dom_of(html: &str) -> Dom {
 
 fn layout_of(dom: &Dom) -> LayoutBox {
     let sheet = turing_css::Stylesheet::parse(SHEET).expect("parses");
-    layout(dom.document(), &sheet, 400.0, TextMetrics::default()).expect("lays out")
+    layout(dom.document(), &sheet, 400.0, TextMetrics::default(), None).expect("lays out")
 }
 
 fn node_named(dom: &Dom, id: &str) -> NodeId {

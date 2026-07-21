@@ -692,6 +692,37 @@ impl Browser {
         }
     }
 
+    /// Updates the active tab's `:hover` target from the current cursor
+    /// position, following the same window-to-page point mapping `click`
+    /// uses: remove the bar, add the scroll offset.
+    ///
+    /// `in_bar` is passed in rather than recomputed, since the caller
+    /// already needed it to decide whether to redraw for the chrome's own
+    /// hover affordances. While the pointer is over the bar there is no page
+    /// point to hover, so the page's hover clears — matching a real
+    /// browser's behaviour when the pointer leaves the content area for the
+    /// chrome. A hit-test refusal (stale geometry mid-transition) clears
+    /// hover rather than propagating, the same way it would for any other
+    /// pointer-driven query that can race a relayout.
+    fn update_page_hover(&mut self, in_bar: bool) {
+        let point = if in_bar {
+            None
+        } else {
+            let window_point = self.cursor_point();
+            let bar = turing_chrome::bar_height();
+            let scroll = self.active_tab().scroll_y;
+            Some(Point {
+                x: window_point.x,
+                y: window_point.y - bar + scroll,
+            })
+        };
+        let tab = self.active_tab_mut();
+        let hovered = point.and_then(|point| tab.page.target_at(point).unwrap_or(None));
+        if let Err(error) = tab.page.set_hovered(hovered) {
+            eprintln!("turing-browser: hover relayout refused: {error}");
+        }
+    }
+
     /// Keyboard input while the palette is open: text entry, submit, dismiss.
     fn palette_key(&mut self, key: &Key) -> bool {
         let Some(input) = &mut self.palette else {
@@ -798,12 +829,13 @@ impl ApplicationHandler for Browser {
                 }
                 let in_bar = self.cursor_point().y < turing_chrome::bar_height();
                 // Redraw while over the bar or on leaving it, so hover
-                // affordances appear and disappear; page hover is not a
-                // repaint trigger yet.
+                // affordances appear and disappear.
                 if in_bar || self.hover_in_bar {
                     self.request_redraw();
                 }
                 self.hover_in_bar = in_bar;
+                self.update_page_hover(in_bar);
+                self.request_redraw();
             }
             WindowEvent::ScaleFactorChanged { .. } => {
                 let width = self.window_size().0;
@@ -1043,5 +1075,83 @@ mod tests {
         // No press ever happened, so `scrollbar_drag` is already `None`;
         // `Option::take` on `None` must not panic or otherwise misbehave.
         assert!(browser.scrollbar_drag.take().is_none());
+    }
+
+    /// Height of the box for the element with `id`, walking the layout tree
+    /// the same way `click`'s own hit-test logging reads element identity —
+    /// through `page.dom().document()` rather than any layout-crate test
+    /// helper, since this crate has no access to those.
+    fn box_height(page: &Page, id: &str) -> f32 {
+        fn walk<'a>(
+            layout_box: &'a turing_layout::LayoutBox,
+            page: &Page,
+            id: &str,
+        ) -> Option<&'a turing_layout::LayoutBox> {
+            if let Some(index) = layout_box.node
+                && page
+                    .dom()
+                    .document()
+                    .attribute_of(turing_html::NodeId::from_index(index), "id")
+                    == Some(id)
+            {
+                return Some(layout_box);
+            }
+            layout_box
+                .children
+                .iter()
+                .find_map(|child| walk(child, page, id))
+        }
+        walk(page.layout(), page, id)
+            .expect("the element exists")
+            .dimensions
+            .content
+            .height
+    }
+
+    #[test]
+    fn hovering_a_page_element_applies_its_hover_style() {
+        let html = "<html><head><style>\
+            #target { display: block; height: 10px; }\
+            #target:hover { height: 40px; }\
+            </style></head><body><div id='target'>x</div></body></html>";
+        let mut browser = windowless(html);
+        assert_eq!(
+            box_height(&browser.active_tab().page, "target"),
+            10.0,
+            "the pointer has not moved yet, so nothing is hovered"
+        );
+
+        let bar = turing_chrome::bar_height();
+        browser.cursor = PhysicalPosition::new(10.0, (bar + 5.0).into());
+        browser.update_page_hover(false);
+        assert_eq!(
+            box_height(&browser.active_tab().page, "target"),
+            40.0,
+            "the cursor sits over #target, so :hover must apply and change its height"
+        );
+    }
+
+    #[test]
+    fn moving_the_pointer_into_the_chrome_bar_clears_page_hover() {
+        let html = "<html><head><style>\
+            #target { display: block; height: 10px; }\
+            #target:hover { height: 40px; }\
+            </style></head><body><div id='target'>x</div></body></html>";
+        let mut browser = windowless(html);
+        let bar = turing_chrome::bar_height();
+        browser.cursor = PhysicalPosition::new(10.0, (bar + 5.0).into());
+        browser.update_page_hover(false);
+        assert_eq!(box_height(&browser.active_tab().page, "target"), 40.0);
+
+        // The pointer moving up into the chrome bar leaves no page point to
+        // hover — a real browser does not keep the last page element's
+        // hover style active once the pointer has left the content area.
+        browser.cursor = PhysicalPosition::new(10.0, 1.0);
+        browser.update_page_hover(true);
+        assert_eq!(
+            box_height(&browser.active_tab().page, "target"),
+            10.0,
+            "hover must clear once the pointer is over the chrome, not the page"
+        );
     }
 }

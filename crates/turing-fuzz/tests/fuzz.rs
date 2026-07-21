@@ -142,6 +142,7 @@ fn deep_nesting_is_refused_by_layout_rather_than_overflowing_the_stack() {
         &sheet,
         800.0,
         turing_layout::TextMetrics::default(),
+        None,
     );
     assert!(matches!(
         result,
@@ -179,7 +180,8 @@ fn nesting_just_inside_the_limit_still_works() {
             &document,
             &sheet,
             800.0,
-            turing_layout::TextMetrics::default()
+            turing_layout::TextMetrics::default(),
+            None
         )
         .is_ok()
     );
@@ -308,7 +310,8 @@ fn every_recursive_consumer_refuses_rather_than_aborting() {
             &deep_markup,
             &sheet,
             800.0,
-            turing_layout::TextMetrics::default()
+            turing_layout::TextMetrics::default(),
+            None
         ),
         Err(turing_layout::LayoutError::NestingTooDeep { .. })
     ));
@@ -347,8 +350,8 @@ fn the_indexed_cascade_agrees_with_the_reference_everywhere() {
         for raw in 0..document.len() {
             let node = turing_html::NodeId::from_index(raw);
             assert_eq!(
-                turing_css::cascade(&document, node, &index),
-                turing_css::cascade_reference(&document, node, &sheet),
+                turing_css::cascade(&document, node, &index, None),
+                turing_css::cascade_reference(&document, node, &sheet, None),
                 "seed {seed}, node {raw}: the index disagreed with the reference"
             );
         }
@@ -434,8 +437,8 @@ fn an_unkeyed_selector_is_still_considered() {
 
     assert_eq!(index.candidate_count(&document, p), 2);
     assert_eq!(
-        turing_css::cascade(&document, p, &index),
-        turing_css::cascade_reference(&document, p, &sheet)
+        turing_css::cascade(&document, p, &index, None),
+        turing_css::cascade_reference(&document, p, &sheet, None)
     );
 }
 
@@ -453,7 +456,7 @@ fn a_selector_list_is_filed_under_every_key() {
         1,
         "reached through the class selector, not the type one"
     );
-    assert!(!turing_css::cascade(&document, span, &index).is_empty());
+    assert!(!turing_css::cascade(&document, span, &index, None).is_empty());
 }
 
 #[test]

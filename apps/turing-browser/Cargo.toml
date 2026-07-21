@@ -29,5 +29,10 @@ turing-ui-model = { path = "../../crates/turing-ui-model" }
 winit = "0.30"
 softbuffer = "0.4"
 
+[dev-dependencies]
+# Only tests construct a NodeId directly, to walk a layout tree by element
+# id; runtime code reaches the same nodes through turing-engine's own API.
+turing-html = { path = "../../crates/turing-html" }
+
 [lints]
 workspace = true

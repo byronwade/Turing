@@ -481,3 +481,79 @@ fn an_unsupported_stylesheet_notation_refuses_the_load() {
         Err(EngineError::Layout(_))
     ));
 }
+
+const HOVER_PAGE: &str = "<html><head><style>\
+    #banner { display: block; background: navy; }\
+    #banner:hover { background: forestgreen; }\
+    </style></head><body><div id='banner'>x</div></body></html>";
+
+#[test]
+fn set_hovered_changes_what_the_next_render_paints() {
+    // Sampled far from the "x" label's own glyph, the same trap
+    // `embed_minimal.rs` ran into: a point inside rendered text reads the
+    // text's own foreground colour, not the element's background.
+    let sample = (300, 8);
+    let mut page = Page::load(HOVER_PAGE, 320.0).expect("loads");
+    assert_eq!(
+        page.render(320, 20)
+            .expect("renders")
+            .pixel(sample.0, sample.1),
+        Some(color("navy")),
+        "nothing is hovered yet"
+    );
+
+    let target = page
+        .target_at(Point { x: 10.0, y: 5.0 })
+        .expect("routes")
+        .expect("hits the banner");
+    page.set_hovered(Some(target)).expect("relayout succeeds");
+    assert_eq!(
+        page.render(320, 20)
+            .expect("renders")
+            .pixel(sample.0, sample.1),
+        Some(color("forestgreen")),
+        "hovering the banner must apply its :hover background"
+    );
+
+    page.set_hovered(None).expect("relayout succeeds");
+    assert_eq!(
+        page.render(320, 20)
+            .expect("renders")
+            .pixel(sample.0, sample.1),
+        Some(color("navy")),
+        "clearing the hover must revert to the base style"
+    );
+}
+
+#[test]
+fn set_hovered_is_a_no_op_for_the_node_already_hovered() {
+    // Not observable through layout output — the point is that calling
+    // `set_hovered` again with the same node must not error or otherwise
+    // misbehave, the same "repeating a no-op input is harmless" property
+    // `turing-dom`'s `remove_listener` guarantees for a mismatched removal.
+    let mut page = Page::load(HOVER_PAGE, 320.0).expect("loads");
+    let target = page
+        .target_at(Point { x: 10.0, y: 5.0 })
+        .expect("routes")
+        .expect("hits the banner");
+    page.set_hovered(Some(target)).expect("relayout succeeds");
+    page.set_hovered(Some(target))
+        .expect("setting the same hover again must still succeed");
+}
+
+#[test]
+fn resizing_preserves_the_current_hover() {
+    let mut page = Page::load(HOVER_PAGE, 320.0).expect("loads");
+    let target = page
+        .target_at(Point { x: 10.0, y: 5.0 })
+        .expect("routes")
+        .expect("hits the banner");
+    page.set_hovered(Some(target)).expect("relayout succeeds");
+
+    page.resize(280.0).expect("resizes");
+    assert_eq!(
+        page.render(280, 20).expect("renders").pixel(260, 8),
+        Some(color("forestgreen")),
+        "a resize must not silently drop the hovered element"
+    );
+}

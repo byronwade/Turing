@@ -446,6 +446,11 @@ struct Style {
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
 ///
+/// `hovered` is the one node currently under the pointer, if any — the fact
+/// `:hover` rules need. Pass `None` when nothing is hovered (including every
+/// caller that has no concept of a pointer at all, such as a headless
+/// render).
+///
 /// # Errors
 ///
 /// Returns [`LayoutError`] when a declaration selects a formatting model this
@@ -455,11 +460,12 @@ pub fn layout<T: LayoutTree>(
     stylesheet: &Stylesheet,
     width: f32,
     metrics: TextMetrics,
+    hovered: Option<T::Node>,
 ) -> Result<LayoutBox, LayoutError> {
     // Built once per layout rather than once per element. Rebuilding it inside
     // box generation would leave the quadratic behaviour it exists to remove.
     let index = SelectorIndex::build(stylesheet);
-    let root = build_box(tree, &index, tree.root(), Inherited::default(), 0)?
+    let root = build_box(tree, &index, tree.root(), Inherited::default(), hovered, 0)?
         .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
@@ -672,6 +678,7 @@ fn build_box<T: LayoutTree>(
     index: &SelectorIndex,
     node: T::Node,
     inherited: Inherited,
+    hovered: Option<T::Node>,
     depth: usize,
 ) -> Result<Option<LayoutBox>, LayoutError> {
     // Box generation recurses, and so do layout, painting, and hit testing over
@@ -711,7 +718,7 @@ fn build_box<T: LayoutTree>(
         return Ok(None);
     }
 
-    let style = resolve_style(tree, index, node)?;
+    let style = resolve_style(tree, index, node, hovered)?;
     let display = style.display.as_deref().unwrap_or("");
     if display == "none" {
         return Ok(None);
@@ -725,7 +732,7 @@ fn build_box<T: LayoutTree>(
     };
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(tree, index, child, own, depth + 1)? {
+        if let Some(built) = build_box(tree, index, child, own, hovered, depth + 1)? {
             children.push(built);
         }
     }
@@ -842,13 +849,14 @@ fn resolve_style<T: LayoutTree>(
     tree: &T,
     index: &SelectorIndex,
     node: T::Node,
+    hovered: Option<T::Node>,
 ) -> Result<Style, LayoutError> {
     let mut style = Style::default();
     if !tree.is_element(node) {
         return Ok(style);
     }
 
-    let declarations = cascade(tree, node, index);
+    let declarations = cascade(tree, node, index, hovered);
     for (property, computed) in &declarations {
         let value = computed.value.as_str();
         match property.as_str() {
@@ -1585,7 +1593,7 @@ mod foreign_tree {
     fn hit_testing_works_on_a_tree_the_engine_does_not_own() {
         let tree = HostTree::sample();
         let sheet = Stylesheet::parse("p { display: block; height: 20px; }").expect("parses");
-        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default(), None).expect("lays out");
 
         // The two paragraphs stack, so a point in the second one must resolve
         // to a different host node than a point in the first.
@@ -1600,7 +1608,7 @@ mod foreign_tree {
         let tree = HostTree::sample();
         let sheet = Stylesheet::parse("p { display: block; height: 20px; }").expect("parses");
 
-        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default(), None).expect("lays out");
 
         let mut boxes = Vec::new();
         collect(&root, &mut boxes);
@@ -1622,7 +1630,7 @@ mod foreign_tree {
         )
         .expect("parses");
 
-        let root = layout(&tree, &sheet, 200.0, TextMetrics::default()).expect("lays out");
+        let root = layout(&tree, &sheet, 200.0, TextMetrics::default(), None).expect("lays out");
 
         let paragraphs: Vec<f32> = root.children[0]
             .children
@@ -1683,7 +1691,24 @@ mod tests {
         let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
         let document = TreeBuilder::new().build(&tokens).expect("builds");
         let sheet = Stylesheet::parse(css).expect("parses");
-        layout(&document, &sheet, width, TextMetrics::default())
+        layout(&document, &sheet, width, TextMetrics::default(), None)
+    }
+
+    /// Like [`run`], but also returns the parsed document so a test can name
+    /// a node to pass as the hovered element — `run` alone has nowhere to
+    /// get a `NodeId` from, since it discards the document once it's laid
+    /// out.
+    fn run_with_hover(
+        html: &str,
+        css: &str,
+        width: f32,
+        hovered: Option<NodeId>,
+    ) -> (Document, Result<LayoutBox, LayoutError>) {
+        let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
+        let document = TreeBuilder::new().build(&tokens).expect("builds");
+        let sheet = Stylesheet::parse(css).expect("parses");
+        let result = layout(&document, &sheet, width, TextMetrics::default(), hovered);
+        (document, result)
     }
 
     fn document_for(html: &str) -> Document {
@@ -2005,6 +2030,86 @@ mod tests {
     fn document_of(html: &str) -> Document {
         let tokens = Tokenizer::new(html).tokenize().expect("tokenizes").tokens;
         TreeBuilder::new().build(&tokens).expect("builds")
+    }
+
+    fn node_id_of(document: &Document, id: &str) -> NodeId {
+        (0..document.len())
+            .map(NodeId::from_index)
+            .find(|&node| document.attribute_of(node, "id") == Some(id))
+            .expect("the element exists")
+    }
+
+    #[test]
+    fn hover_applies_only_to_the_hovered_element() {
+        let html = "<html><body><p id='a'>a</p><p id='b'>b</p></body></html>";
+        let css = "p { display: block; height: 10px; } p:hover { height: 30px; }";
+
+        let (document, neither) = run_with_hover(html, css, 400.0, None);
+        let root = neither.expect("lays out");
+        assert_eq!(
+            find_by_id(&root, &document, "a").dimensions.content.height,
+            10.0
+        );
+        assert_eq!(
+            find_by_id(&root, &document, "b").dimensions.content.height,
+            10.0
+        );
+
+        let a = node_id_of(&document, "a");
+        let (document, hovering_a) = run_with_hover(html, css, 400.0, Some(a));
+        let root = hovering_a.expect("lays out");
+        assert_eq!(
+            find_by_id(&root, &document, "a").dimensions.content.height,
+            30.0,
+            ":hover must change the geometry of the hovered element, not only its paint"
+        );
+        assert_eq!(
+            find_by_id(&root, &document, "b").dimensions.content.height,
+            10.0,
+            "hovering one element must not affect an unrelated one"
+        );
+    }
+
+    #[test]
+    fn hover_on_an_ancestor_selector_reaches_layout() {
+        // Mirrors `turing-css`'s own `hover_on_an_ancestor_compound_still_matches`,
+        // one layer up: `.parent:hover p` has to change the paragraph's
+        // geometry, not just be evaluated correctly by the cascade in
+        // isolation. This is the thing that actually breaks if `hovered`
+        // ever stopped reaching `build_box`'s recursive calls.
+        //
+        // Layout is called directly here, on one parsed document, rather
+        // than through `run_with_hover` — the hovered node id has to name a
+        // node in the exact document `layout` receives, and building both
+        // from one `document_of` call is the straightforward way to
+        // guarantee that.
+        let html = "<div class='parent'><p>x</p></div>";
+        let css = "p { display: block; height: 10px; } \
+                   .parent:hover p { height: 40px; }";
+        let document = document_of(html);
+        let sheet = Stylesheet::parse(css).expect("parses");
+        let div = (0..document.len())
+            .map(NodeId::from_index)
+            .find(|&node| document.element_name(node) == Some("div"))
+            .expect("the div exists");
+
+        let without_hover =
+            layout(&document, &sheet, 400.0, TextMetrics::default(), None).expect("lays out");
+        assert_eq!(
+            find(&without_hover, &document, "p")
+                .dimensions
+                .content
+                .height,
+            10.0
+        );
+
+        let with_hover =
+            layout(&document, &sheet, 400.0, TextMetrics::default(), Some(div)).expect("lays out");
+        assert_eq!(
+            find(&with_hover, &document, "p").dimensions.content.height,
+            40.0,
+            "hovering the ancestor div must apply .parent:hover p to the paragraph"
+        );
     }
 
     #[test]
