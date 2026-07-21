@@ -552,6 +552,46 @@ impl Dom {
         Ok(())
     }
 
+    /// Removes a listener previously registered with the same target, kind,
+    /// name, and capture flag — the same four-way identity `addEventListener`
+    /// and `removeEventListener` use to mean "the same registration" in the
+    /// specification, since listeners are not otherwise given an identity a
+    /// caller can hold onto.
+    ///
+    /// Removes at most one matching registration, even if the same
+    /// four-tuple was somehow added more than once, mirroring
+    /// `addEventListener`'s own idempotency rule that a duplicate
+    /// registration does not happen twice — this crate does not enforce that
+    /// rule on the way in, so it does not assume it on the way out.
+    ///
+    /// Removing a listener that is not registered is not an error: real DOM
+    /// treats a mismatched `removeEventListener` as a no-op, and a page
+    /// racing its own setup/teardown order is ordinary, not exceptional.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DomError::StaleHandle`] if the handle predates a mutation.
+    pub fn remove_listener(
+        &mut self,
+        target: Handle,
+        kind: &str,
+        name: &str,
+        capture: bool,
+    ) -> Result<(), DomError> {
+        let node = self.resolve(target)?;
+        if let Some(position) = self.listeners.iter().position(|listener| {
+            listener.node == node
+                && listener.kind == kind
+                && listener.name == name
+                && listener.capture == capture
+        }) {
+            self.listeners.remove(position);
+        }
+        // Like registration, removal does not change the tree; the epoch
+        // stays put and existing handles stay valid.
+        Ok(())
+    }
+
     /// Dispatches `event` at `target` through capture, target, and bubble.
     ///
     /// # Errors
@@ -1127,5 +1167,86 @@ mod tests {
 
         assert_eq!(dom.epoch(), before);
         assert!(dom.changes_since(before).expect("available").is_empty());
+    }
+
+    #[test]
+    fn a_removed_listener_no_longer_receives_dispatch() {
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+
+        dom.add_listener(handle, "click", "handler", false, &[])
+            .expect("registers");
+        dom.remove_listener(handle, "click", "handler", false)
+            .expect("removes");
+
+        let dispatch = dom
+            .dispatch(handle, &Event::new("click"))
+            .expect("dispatches");
+        assert!(
+            dispatch.invocations.is_empty(),
+            "the removed listener must not run"
+        );
+    }
+
+    #[test]
+    fn removal_is_scoped_to_the_exact_registration() {
+        // Same node and kind, different name, and a capture-flag twin of the
+        // one being removed: neither is the registration removeEventListener
+        // named, so both must survive.
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+
+        dom.add_listener(handle, "click", "handlerA", false, &[])
+            .expect("registers");
+        dom.add_listener(handle, "click", "handlerB", false, &[])
+            .expect("registers");
+        dom.add_listener(handle, "click", "handlerA", true, &[])
+            .expect("registers");
+
+        dom.remove_listener(handle, "click", "handlerA", false)
+            .expect("removes");
+
+        let dispatch = dom
+            .dispatch(handle, &Event::new("click"))
+            .expect("dispatches");
+        let names: Vec<&str> = dispatch
+            .invocations
+            .iter()
+            .map(|invocation| invocation.listener.as_str())
+            .collect();
+        assert!(names.contains(&"handlerB"), "the other name survives");
+        assert!(
+            names.contains(&"handlerA") && names.len() == 2,
+            "the capture-flag twin survives — only the exact four-way match was removed: {names:?}"
+        );
+    }
+
+    #[test]
+    fn removing_a_listener_that_was_never_registered_is_not_an_error() {
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+
+        // Nothing was ever added; a mismatched removal is a no-op, per the
+        // specification, not a refusal.
+        dom.remove_listener(handle, "click", "nothing", false)
+            .expect("a mismatched removal is not an error");
+    }
+
+    #[test]
+    fn removing_a_listener_does_not_advance_the_epoch() {
+        let mut dom = dom("<html><body><p id='a'>x</p></body></html>");
+        let node = dom.document().element_by_id("a").expect("exists");
+        let handle = dom.handle(node);
+        dom.add_listener(handle, "click", "handler", false, &[])
+            .expect("registers");
+        let before = dom.epoch();
+
+        dom.remove_listener(handle, "click", "handler", false)
+            .expect("removes");
+
+        assert_eq!(dom.epoch(), before);
     }
 }

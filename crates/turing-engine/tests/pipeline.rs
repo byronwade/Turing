@@ -358,6 +358,36 @@ fn a_click_runs_the_script_listener_and_repaints() {
 }
 
 #[test]
+fn removing_a_listener_stops_it_running_on_the_next_click() {
+    // The same interactive loop as above, but the script removes its own
+    // listener before any click arrives — the box must stay red forever
+    // after, because there is nothing left to flip it.
+    let html = "<html><head><style>\
+        .off { background: red; } .on { background: lime; }\
+        </style></head><body><div id='box' class='off'>toggle</div>\
+        <script>\
+        function flip() { setAttribute('box', 'class', 'on'); }\
+        addEventListener('box', 'click', 'flip');\
+        removeEventListener('box', 'click', 'flip');\
+        </script></body></html>";
+    let mut page = Page::load(html, 100.0).expect("loads");
+
+    let dispatch = page
+        .dispatch_at(Point { x: 4.0, y: 8.0 }, &Event::new("click"))
+        .expect("dispatches")
+        .expect("hits the box");
+    assert!(
+        dispatch.invocations.is_empty(),
+        "the removed listener must not run"
+    );
+    assert_eq!(
+        page.render(100, 32).expect("renders").pixel(50, 8),
+        Some(color("red")),
+        "with no listener left, the click cannot have mutated anything"
+    );
+}
+
+#[test]
 fn a_listener_receives_the_event_kind_and_target_per_its_arity() {
     // The two-parameter listener writes both arguments where the page can
     // show them: the kind becomes the class, the target id an attribute.

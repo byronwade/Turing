@@ -252,3 +252,104 @@ fn a_negative_or_fractional_handle_is_refused() {
         Err(JsError::HostOperationFailed { .. })
     ));
 }
+
+// -- removeEventListener ---------------------------------------------------
+
+#[test]
+fn remove_event_listener_stops_dispatch_to_that_listener() {
+    let mut backing = dom();
+    let mut host = DomHost::new(&mut backing);
+
+    run(&mut host, "addEventListener('panel', 'click', 'onClick');").expect("registers");
+    run(
+        &mut host,
+        "removeEventListener('panel', 'click', 'onClick');",
+    )
+    .expect("removes");
+
+    let node = host
+        .dom()
+        .document()
+        .element_by_id("panel")
+        .expect("exists");
+    let handle = host.dom().handle(node);
+    let dispatch = host
+        .dom()
+        .dispatch(handle, &Event::new("click"))
+        .expect("dispatches");
+    assert!(
+        dispatch.invocations.is_empty(),
+        "the removed listener must not appear in the dispatch record"
+    );
+}
+
+#[test]
+fn remove_event_listener_is_scoped_to_the_named_registration() {
+    // A different listener kind on the same element must survive an
+    // unrelated removal — the same exact-match discipline the DOM layer
+    // itself already tests, exercised here through the binding.
+    let mut backing = dom();
+    let mut host = DomHost::new(&mut backing);
+
+    run(&mut host, "addEventListener('panel', 'click', 'onClick');").expect("registers");
+    run(&mut host, "addEventListener('panel', 'focus', 'onFocus');").expect("registers");
+    run(
+        &mut host,
+        "removeEventListener('panel', 'click', 'onClick');",
+    )
+    .expect("removes");
+
+    let node = host
+        .dom()
+        .document()
+        .element_by_id("panel")
+        .expect("exists");
+    let handle = host.dom().handle(node);
+    let dispatch = host
+        .dom()
+        .dispatch(handle, &Event::new("focus"))
+        .expect("dispatches");
+    assert_eq!(
+        dispatch.invocations.len(),
+        1,
+        "the untouched 'focus' registration still fires"
+    );
+}
+
+#[test]
+fn a_read_only_host_cannot_remove_a_listener() {
+    let mut backing = dom();
+    let before = {
+        let mut host = DomHost::new(&mut backing);
+        run(&mut host, "addEventListener('panel', 'click', 'onClick');").expect("registers");
+        host.dom().epoch()
+    };
+
+    let mut host = DomHost::read_only(&mut backing);
+    let result = run(
+        &mut host,
+        "removeEventListener('panel', 'click', 'onClick');",
+    );
+    assert!(matches!(result, Err(JsError::UnboundOperation { .. })));
+    assert_eq!(
+        host.dom().epoch(),
+        before,
+        "a refused removal changes nothing"
+    );
+
+    let node = host
+        .dom()
+        .document()
+        .element_by_id("panel")
+        .expect("exists");
+    let handle = host.dom().handle(node);
+    let dispatch = host
+        .dom()
+        .dispatch(handle, &Event::new("click"))
+        .expect("dispatches");
+    assert_eq!(
+        dispatch.invocations.len(),
+        1,
+        "the listener a read-only host could not remove still fires"
+    );
+}

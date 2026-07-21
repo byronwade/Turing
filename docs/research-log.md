@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-07-21 - removeEventListener: a listener can now leave the way it arrived
+
+A named gap since the event-listener work landed: script could register a listener and never take it back. `Dom::remove_listener` matches `addEventListener`'s own identity rule — target, kind, name, and capture flag together, since a listener has no identity beyond that four-tuple — and removes at most one matching registration. A mismatched removal (wrong kind, wrong name, nothing registered at all) is a no-op rather than a refusal, which is what the specification asks for and what a page racing its own setup/teardown order needs: `removeEventListener` is not supposed to be able to fail.
+
+The binding is the mirror of `addEventListener`'s own shape — `removeEventListener(id, kind, functionName)` — bound in `turing-webidl` and added to the mutating-operation set a read-only host revokes.
+
+Proven at every layer this touches: `turing-dom` tests that a removed listener's registration disappears from dispatch, that removal is scoped exactly to the four-tuple named (a same-kind listener under a different name, and the same name under a different capture flag, both survive), and that removal does not advance the epoch, matching registration's own epoch-neutral rule. `turing-webidl` tests the binding end to end and that a read-only host cannot remove a listener at all. `turing-engine` proves the shape that matters in practice: a page registers a click listener and immediately removes it before the first click arrives, and the click that would have flipped the element's colour does nothing at all.
+
+The workspace is at 435 tests. Known gaps still open: MutationObserver (explicitly blocked on a scheduler `turing-dom` does not have — the microtask queue that landed earlier today lives in `turing-js`, one layer up, and `turing-dom` has no dependency on it by design), shadow trees, CSS `:hover` in the cascade, and the mutable-capture half of closures.
+
 ## 2026-07-21 - A microtask queue: the next real rung, not another review pass
 
 APP-4 was still open on the application-runtime ladder: "a microtask queue and a minimal scheduler... enough of an event loop for a runtime to flush work after an event." Every other engine capability landed this stretch made the language or the DOM richer; this one gives script a way to defer work past the end of the script that scheduled it, which every non-trivial runtime needs and nothing before today provided — `queueMicrotask` did not exist, and there was no notion of "after this script finishes" at all.
