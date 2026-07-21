@@ -97,49 +97,68 @@ plainly rather than glossed:
 
 ### JavaScript (`turing-js`)
 
-The interpreter is a deliberately bounded subset: numbers, strings,
-booleans, `null`/`undefined`, bindings, arithmetic and logic, control flow,
-function declarations, calls, recursion, **and objects with property
-access**. It refuses — by design, at compile time — the constructs a React
-runtime is built from:
+The interpreter is a deliberately bounded subset: numbers, strings, booleans,
+`null`/`undefined`, bindings, arithmetic and logic, control flow, `for`
+loops, function declarations and expressions, arrow functions, calls,
+recursion, first-class function values, closures over `const` bindings,
+arrays, and objects with property access. What still refuses — by design,
+at compile time or, for the array/object method surface, at the call itself
+— are the remaining constructs a React runtime needs:
 
-- **arrays** (children are arrays; `.map` over children is everywhere);
-- **closures and function expressions / arrow functions** (hooks close over
-  state; every JSX event handler is a closure);
+- **mutable capture**: a closure over an enclosing `let`/`var`, and
+  multi-level capture, are refused rather than computed wrong (see APP-2
+  below) — hooks closing over state that changes is the pattern this
+  blocks;
+- **`Array`/`Object` prototype methods** (`.push`, `.map`, `.forEach`,
+  `.filter`, and the rest): array literals, indexing, `length`, and growth
+  by index-write all work, but no method call on an array or object is
+  bound yet — every JSX-adjacent `children.map(...)` pattern needs this;
 - **`class`** (older React components, many libraries);
 - **prototypes and `this` semantics**;
 - **`try`/`catch`**, **`async`/`await`**, **generators**, **modules**,
   **regular expressions**.
 
-This is the largest gap, and it is the load-bearing one. It is also already
-a planned program, not a new one: `docs/blueprint-v1/06-javascript-runtime.md`
-and the `docs/javascript/` book scope a full from-scratch ECMAScript engine —
-parser, bytecode interpreter, generational GC, baseline and optimizing JIT,
-Web IDL bindings, WebAssembly, and an event loop — explicitly "capable enough
-to eventually run React's runtime as web content." What this book adds is a
-*reason to prioritise that program toward framework support*, and a rung
-order for it. The engine's governing principle is a strength for this goal,
-not a weakness: a partially implemented language computes wrong values
-silently, so every unimplemented construct is refused visibly. The runtime
-grows one honest construct at a time, and everything that runs stays
-trustworthy.
+This is the largest remaining gap, and it is the load-bearing one. It is
+also already a planned program, not a new one:
+`docs/blueprint-v1/06-javascript-runtime.md` and the `docs/javascript/` book
+scope a full from-scratch ECMAScript engine — parser, bytecode interpreter,
+generational GC, baseline and optimizing JIT, Web IDL bindings, WebAssembly,
+and an event loop — explicitly "capable enough to eventually run React's
+runtime as web content." What this book adds is a *reason to prioritise
+that program toward framework support*, and a rung order for it. The
+engine's governing principle is a strength for this goal, not a weakness: a
+partially implemented language computes wrong values silently, so every
+unimplemented construct is refused visibly — confirmed directly for the
+array/object method gap: calling an unbound method returns a typed
+`TypeError`, not a panic or a silently wrong value. The runtime grows one
+honest construct at a time, and everything that runs stays trustworthy.
 
 ### DOM API surface
 
-`turing-webidl` binds a small capability set: `getAttribute`, `setAttribute`,
-`removeAttribute`, `tagName`, `hasElement`, `textContent`,
-`addEventListener`. React's renderer needs more — `createElement`,
-`createTextNode`, `appendChild`, `insertBefore`, `removeChild`, `parentNode`,
-`nextSibling`, node identity that crosses into script, and the property/style
-interfaces. The DOM crate already has the *operations* (create, append,
-insert, remove, mutation epochs); the gap is binding them to script with
-live node identity rather than the current id-string indirection.
+`turing-webidl` binds a real capability set now: `getAttribute`,
+`setAttribute`, `removeAttribute`, `tagName`, `hasElement`, `textContent`,
+`addEventListener`, `removeEventListener`, `documentBody`, `createElement`,
+`createText`, `appendChild`, `setNodeAttribute`, `insertBefore`,
+`removeChild`, `parentNode`, and `firstChild` — both the mount half a
+reconciler needs and the patch half (move, replace, remove, and read the
+tree to decide). Nodes cross into script as opaque numeric handles, bounds-
+checked against the live document before every use. What React's renderer
+would still need beyond this: `nextSibling`, the property/style interfaces
+(a node's computed style, `classList`, `dataset`), and the live node
+identity to stop being a numeric handle a script could reuse against a
+stale document (mitigated today by the bounds check, not eliminated by a
+stronger identity model).
 
 ### Event loop and scheduling
 
 React schedules work on microtasks and, in concurrent mode, on a cooperative
-scheduler. The engine has no event loop, microtask queue, or timer yet.
-Script runs once, synchronously, on load or on an input dispatch.
+scheduler. The engine has a microtask queue now — `queueMicrotask(fn)` is a
+VM-native builtin, queued functions run after the triggering script returns
+and before control returns to the embedder, one at a time, including further
+tasks queued during draining. What it is not: a *scheduler*. There is still
+exactly one script execution at a time, no timers, and no task-vs-microtask
+distinction — the primitive a runtime needs to defer work exists; the
+cooperative, priority-aware scheduler concurrent-mode React needs does not.
 
 ### Module loading and app entry
 
