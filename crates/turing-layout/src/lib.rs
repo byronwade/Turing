@@ -100,6 +100,8 @@ pub enum LayoutError {
     WritingModeUnsupported { value: String },
     /// A `text-align` value with no implemented placement.
     TextAlignUnsupported { value: String },
+    /// A `text-decoration` value with no implemented line.
+    TextDecorationUnsupported { value: String },
     /// A negative length on a box edge.
     NegativeEdgeUnsupported { property: String, value: String },
     /// The document nests deeper than this implementation will recurse.
@@ -138,6 +140,11 @@ impl fmt::Display for LayoutError {
                      center, start, and end place content here"
                 )
             }
+            Self::TextDecorationUnsupported { value } => write!(
+                formatter,
+                "text-decoration: {value} is not implemented; only underline, \
+                 line-through, and none draw here"
+            ),
             Self::NestingTooDeep { limit } => write!(
                 formatter,
                 "the document nests deeper than {limit} elements; box generation                  recurses, and continuing would overflow the stack, which aborts                  the process rather than returning an error"
@@ -296,6 +303,28 @@ pub enum TextAlign {
     End,
 }
 
+/// A line drawn through or under text, from `text-decoration`.
+///
+/// Threaded through the tree exactly the way `color` is: declared on an
+/// element, propagated to descendant text nodes that do not override it.
+/// Real CSS's actual model is closer but different — decoration is not
+/// inherited in the strict property sense, it *propagates* to descendants
+/// and is drawn using each ancestor's own colour along its own span — and
+/// implementing that distinction is not worth its complexity next to the
+/// case that matters, an element declaring a decoration for the text it
+/// directly contains. The simplification is stated here rather than left to
+/// be discovered by a nested-override case this engine does not get right.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum TextDecoration {
+    /// The initial value: no line.
+    #[default]
+    None,
+    /// A line at the bottom of the text.
+    Underline,
+    /// A line through the middle of the text.
+    LineThrough,
+}
+
 /// A positioned box in the layout tree.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LayoutBox {
@@ -325,6 +354,10 @@ pub struct LayoutBox {
     pub outline_color: Option<Color>,
     /// How inline children of this box are aligned. Inherited, like `color`.
     pub text_align: TextAlign,
+    /// The line drawn through or under this box's own text. Propagated to
+    /// descendant text nodes like `color`; see [`TextDecoration`] for the
+    /// simplification that makes true.
+    pub text_decoration: TextDecoration,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -377,6 +410,7 @@ struct Style {
     outline_width: f32,
     outline_color: Option<Color>,
     text_align: Option<TextAlign>,
+    text_decoration: Option<TextDecoration>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -394,8 +428,16 @@ pub fn layout<T: LayoutTree>(
     // Built once per layout rather than once per element. Rebuilding it inside
     // box generation would leave the quadratic behaviour it exists to remove.
     let index = SelectorIndex::build(stylesheet);
-    let root = build_box(tree, &index, tree.root(), None, TextAlign::default(), 0)?
-        .unwrap_or_else(|| anonymous_block(Vec::new()));
+    let root = build_box(
+        tree,
+        &index,
+        tree.root(),
+        None,
+        TextAlign::default(),
+        TextDecoration::default(),
+        0,
+    )?
+    .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
     viewport.content.width = width;
@@ -538,13 +580,39 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
         });
     }
     if let (BoxKind::Text, Some(text)) = (layout_box.kind, &layout_box.text) {
+        let rect = layout_box.dimensions.content;
+        // The initial value of `color` is black, per CSS. This is a
+        // specified default rather than a fallback for a missing value.
+        let color = layout_box.color.unwrap_or_default();
         list.items.push(DisplayItem::Text {
-            rect: layout_box.dimensions.content,
+            rect,
             text: text.clone(),
-            // The initial value of `color` is black, per CSS. This is a
-            // specified default rather than a fallback for a missing value.
-            color: layout_box.color.unwrap_or_default(),
+            color,
         });
+        // The decoration line's position is a fraction of the line box's own
+        // height rather than any specific font's glyph metrics — this crate
+        // only knows `TextMetrics`, not what a painter's glyphs actually
+        // look like, and a line tied to one font's bitmap would be wrong the
+        // moment a different painter injected different metrics. Underline
+        // sits near the bottom of the line box; line-through sits at its
+        // vertical centre. One pixel tall, which is thin enough to read as a
+        // line rather than a second, shorter fill.
+        if layout_box.text_decoration != TextDecoration::None {
+            let y = match layout_box.text_decoration {
+                TextDecoration::Underline => rect.y + rect.height * 0.85,
+                TextDecoration::LineThrough => rect.y + rect.height * 0.5,
+                TextDecoration::None => unreachable!("checked above"),
+            };
+            list.items.push(DisplayItem::SolidColor {
+                rect: Rect {
+                    x: rect.x,
+                    y,
+                    width: rect.width,
+                    height: 1.0,
+                },
+                color,
+            });
+        }
     }
     for child in &layout_box.children {
         paint(child, list);
@@ -559,6 +627,7 @@ fn build_box<T: LayoutTree>(
     node: T::Node,
     inherited_color: Option<Color>,
     inherited_align: TextAlign,
+    inherited_decoration: TextDecoration,
     depth: usize,
 ) -> Result<Option<LayoutBox>, LayoutError> {
     // Box generation recurses, and so do layout, painting, and hit testing over
@@ -589,6 +658,7 @@ fn build_box<T: LayoutTree>(
             outline_width: 0.0,
             outline_color: None,
             text_align: inherited_align,
+            text_decoration: inherited_decoration,
             children: Vec::new(),
         }));
     }
@@ -604,9 +674,18 @@ fn build_box<T: LayoutTree>(
 
     let own_color = style.color.or(inherited_color);
     let own_align = style.text_align.unwrap_or(inherited_align);
+    let own_decoration = style.text_decoration.unwrap_or(inherited_decoration);
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(tree, index, child, own_color, own_align, depth + 1)? {
+        if let Some(built) = build_box(
+            tree,
+            index,
+            child,
+            own_color,
+            own_align,
+            own_decoration,
+            depth + 1,
+        )? {
             children.push(built);
         }
     }
@@ -652,6 +731,7 @@ fn build_box<T: LayoutTree>(
         outline_width: style.outline_width,
         outline_color: style.outline_color,
         text_align: own_align,
+        text_decoration: own_decoration,
         children,
     }))
 }
@@ -702,6 +782,11 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         outline_width: 0.0,
         outline_color: None,
         text_align,
+        // An anonymous block has no text of its own — its children already
+        // carry whatever decoration `build_box` resolved for each of them —
+        // so this value is inert for painting; `None` is simply the box
+        // kind's honest own state, same as its colour and background.
+        text_decoration: TextDecoration::default(),
         children,
     }
 }
@@ -833,6 +918,23 @@ fn resolve_style<T: LayoutTree>(
                     // left, which looks correct until the line is long.
                     other => {
                         return Err(LayoutError::TextAlignUnsupported {
+                            value: other.to_string(),
+                        });
+                    }
+                });
+            }
+            "text-decoration" => {
+                style.text_decoration = Some(match value.trim().to_ascii_lowercase().as_str() {
+                    "none" => TextDecoration::None,
+                    "underline" => TextDecoration::Underline,
+                    "line-through" => TextDecoration::LineThrough,
+                    // `overline`, multi-value combinations
+                    // (`underline line-through`), and the colour/style/
+                    // thickness longhands are not implemented; refusing
+                    // keeps an unhandled decoration from silently reading as
+                    // no decoration.
+                    other => {
+                        return Err(LayoutError::TextDecorationUnsupported {
                             value: other.to_string(),
                         });
                     }
@@ -2471,6 +2573,123 @@ mod tests {
                 .any(|item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == red)),
             "a colour with no width paints nothing, same as a border would"
         );
+    }
+
+    #[test]
+    fn underline_paints_a_thin_line_near_the_bottom_of_the_text() {
+        let root = run(
+            "<body><p>x</p></body>",
+            "p { text-decoration: underline; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let text_rect = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(*rect),
+                _ => None,
+            })
+            .expect("text painted");
+        let line = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::SolidColor { rect, .. } if *rect != text_rect => Some(*rect),
+                _ => None,
+            })
+            .expect("a decoration line painted");
+        assert_eq!(line.height, 1.0, "the line is thin");
+        assert!(
+            line.y > text_rect.y + text_rect.height * 0.5,
+            "underline sits in the lower half of the line box: {line:?} vs text {text_rect:?}"
+        );
+        assert!(
+            line.y < text_rect.y + text_rect.height,
+            "underline stays within the line box"
+        );
+    }
+
+    #[test]
+    fn line_through_paints_at_the_vertical_centre() {
+        let root = run(
+            "<body><p>x</p></body>",
+            "p { text-decoration: line-through; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let text_rect = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::Text { rect, .. } => Some(*rect),
+                _ => None,
+            })
+            .expect("text painted");
+        let line = list
+            .items
+            .iter()
+            .find_map(|item| match item {
+                DisplayItem::SolidColor { rect, .. } if *rect != text_rect => Some(*rect),
+                _ => None,
+            })
+            .expect("a decoration line painted");
+        let expected_centre = text_rect.y + text_rect.height * 0.5;
+        assert!(
+            (line.y - expected_centre).abs() < 0.5,
+            "line-through sits at the vertical centre: {line:?} vs expected y {expected_centre}"
+        );
+    }
+
+    #[test]
+    fn no_decoration_by_default_paints_no_extra_line() {
+        let root = run("<body><p>x</p></body>", "p { color: black; }", 100.0).expect("lays out");
+        let list = build_display_list(&root);
+        let solid_fills = list
+            .items
+            .iter()
+            .filter(|item| matches!(item, DisplayItem::SolidColor { .. }))
+            .count();
+        assert_eq!(solid_fills, 0, "text-decoration's initial value is none");
+    }
+
+    #[test]
+    fn text_decoration_propagates_to_descendant_text_like_colour() {
+        // A decoration declared on a block applies to the text nodes it
+        // contains, the same propagation `color` already gets, not only to
+        // an element that declares it directly on itself.
+        let root = run(
+            "<body><div><span>x</span></div></body>",
+            "div { text-decoration: underline; } span { display: inline; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let solid_fills = list
+            .items
+            .iter()
+            .filter(|item| matches!(item, DisplayItem::SolidColor { .. }))
+            .count();
+        assert_eq!(
+            solid_fills, 1,
+            "the span's text inherited the div's underline"
+        );
+    }
+
+    #[test]
+    fn an_unimplemented_text_decoration_is_refused() {
+        let error = run(
+            "<body><p>x</p></body>",
+            "p { text-decoration: overline; }",
+            100.0,
+        )
+        .expect_err("refused");
+        assert!(matches!(
+            error,
+            LayoutError::TextDecorationUnsupported { .. }
+        ));
     }
 
     #[test]
