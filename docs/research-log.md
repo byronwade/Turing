@@ -1,5 +1,17 @@
 # Research Log
 
+## 2026-07-21 - for loops, ++/--, and compound assignment: the syntax React code assumes exists
+
+Every ladder rung so far has been about capability — arrays, closures, DOM. This one is about idiom: `for (let i = 0; i < n; i++)` and `total += x` are not exotic React features, they are how ordinary loop and accumulator code is written everywhere, including inside component bodies and the mini-runtime built two entries ago. Their absence would have been a constant friction against every future test fixture.
+
+`for` desugars to a block holding its init statement and a `while` whose body is itself a block holding the loop body and the update expression — no new control-flow opcodes, and the loop variable is scoped to the enclosing block exactly like an ordinary `let`, so a `let i` after the loop does not collide with the loop's own `i`. `for (;;)` with all three clauses omitted works, defaulting the condition to `true`; `for...in`/`for...of` are not implemented and fail as an ordinary parse error (`in`/`of` where `;` was expected) rather than being misread as the C-style form.
+
+`++`/`--` and `+=`/`-=`/`*=`/`/=` all desugar to the existing assignment machinery — prefix increment is `x = x + 1` evaluating to the new value; postfix duplicates the loaded value before storing so the *old* value is what the expression yields; compound assignment on a member expression re-reads through `GetProperty` before writing. Incrementing anything but a plain variable, and any compound or increment assignment to a `const`, are refused through the same `AssignmentToConstant` path ordinary `=` already uses — one enforcement point rather than a second one that could disagree with the first.
+
+One lexing consequence is worth recording because it looks like a regression and is not: introducing `--` as a real token means `---1` now tokenizes as `--`, `-`, `1` by maximal munch — the same rule real JavaScript tokenizers use — and `-- ` then wants an assignable target, not a unary-minus expression, so it is refused. A prior test asserted `---1` parsed as triple negation; that was only ever true because `--` wasn't a token yet, and real JS engines reject `---1` too (`SyntaxError`). The test now asserts the spec-correct behaviour: `- - -1` (spaced) parses, `---1` (unspaced) is refused.
+
+The workspace is at 418 tests.
+
 ## 2026-07-21 - A component runtime, written in the engine's own subset
 
 The application-runtime thesis has been argued rung by rung; this proves it composes. A minimal React-like runtime now runs *on the engine, written in the engine's own JavaScript*: `h(tag, cls)` and `txt(s)` build virtual nodes, a recursive `render(vnode)` reifies them into real DOM through `createElement`/`appendChild`, and a component is a closure — `Card(title)` captures its title as a const and returns a function producing a vnode. `App` holds an array of components, iterates it, and mounts the tree. The engine parses none of this specially; it runs it and paints three cards and a badge, none of which exist in the source `<body>`.
