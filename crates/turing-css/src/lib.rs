@@ -107,6 +107,14 @@ pub enum CssError {
     /// through, nested past the depth this implementation bounds recursion
     /// to (see the `MAX_VAR_NESTING` constant).
     CustomPropertyNestingTooDeep { text: String },
+    /// Resolving `var()` references in a declaration produced a value past
+    /// `MAX_RESOLVED_VALUE_LENGTH` bytes. This is a distinct guard from
+    /// `CustomPropertyNestingTooDeep`: a chain can be shallow (well under
+    /// `MAX_VAR_NESTING`) and still be exponential in *substitution work*
+    /// when a value references the same custom property more than once —
+    /// see `resolve_var_references`'s doc comment for why depth alone
+    /// does not bound this.
+    CustomPropertyValueTooLarge { text: String },
 }
 
 /// An opaque sRGB colour.
@@ -479,6 +487,15 @@ impl fmt::Display for CssError {
                 "var() in `{text}` nests custom property references past the \
                  depth this implementation bounds recursion to; this is refused \
                  rather than risking runaway recursion on a cyclic definition"
+            ),
+            Self::CustomPropertyValueTooLarge { text } => write!(
+                formatter,
+                "resolving var() references in `{text}` produced a value past \
+                 the size this implementation bounds substitution to; a value \
+                 that references the same custom property more than once can \
+                 grow exponentially with chain depth even while staying within \
+                 the nesting-depth limit, so this is refused rather than \
+                 materializing an unbounded string"
             ),
         }
     }
@@ -1368,14 +1385,46 @@ fn beats(candidate: &ComputedDeclaration, existing: &ComputedDeclaration) -> boo
 /// `var(--a, var(--b, red))`. Both are resolved by recursing, and both are
 /// driven by stylesheet text this crate does not control: a page (or, per
 /// `AGENTS.md`'s rule to bound recursion on untrusted input, a hostile one)
-/// can nest either arbitrarily deep, and a custom property can even name
-/// itself (`--a: var(--a)`) to build a cycle with no natural base case. A
-/// depth counter turns both the ordinary case and the adversarial one into
-/// the same bounded check: real design-token chains are a handful of levels
-/// deep, so thirty-two is generous headroom, and a chain that reaches it is
-/// refused with [`CssError::CustomPropertyNestingTooDeep`] rather than
-/// recursing until the stack gives out.
+/// can nest either arbitrarily deep. A depth counter turns pathologically
+/// deep (but acyclic) nesting into a bounded check: real design-token
+/// chains are a handful of levels deep, so thirty-two is generous headroom,
+/// and a chain that reaches it is refused with
+/// [`CssError::CustomPropertyNestingTooDeep`] rather than recursing until
+/// the stack gives out.
+///
+/// A cycle (`--a: var(--a)`, or the same thing spread across several
+/// properties) is caught separately and faster, by [`resolve_var_call`]'s
+/// `visiting` set noticing a name is already being resolved on the current
+/// path — it does not wait for the depth counter to reach this bound,
+/// though it would eventually if the visiting check were removed.
 const MAX_VAR_NESTING: u32 = 32;
+
+/// The maximum length, in bytes, that resolving a declaration's `var()`
+/// references may produce before resolution is refused.
+///
+/// # Why this bound exists, and why the cache in [`resolve_var_references`]
+/// does not replace it
+///
+/// That cache prevents *redundant* recomputation of a custom property
+/// referenced more than once, but it cannot bound the *size* of the result:
+/// a value that legitimately references the same custom property twice
+/// (`--v0: var(--v1) var(--v1);`) really does produce a value twice the
+/// length of `--v1`'s, and if every level of a chain does the same, the
+/// final substituted text is genuinely, unavoidably exponential in chain
+/// depth — caching it, or computing it any other way, still means
+/// *materializing* that many bytes somewhere. A twenty-level chain built
+/// this way resolves to several megabytes; one nested to
+/// [`MAX_VAR_NESTING`]'s limit of thirty-two would resolve to gigabytes.
+/// This cap stops that early: as soon as a partially-resolved value would
+/// cross it, resolution is refused with
+/// [`CssError::CustomPropertyValueTooLarge`] rather than continuing to grow
+/// a string no real design token would ever need. It is checked
+/// incrementally, after every substitution at every level of recursion, not
+/// only on the final top-level result — so the deepest level whose own
+/// output crosses the cap refuses immediately, before any ancestor ever
+/// tries to copy or concatenate it further, which is also why no
+/// intermediate value can grow past this bound in the first place.
+const MAX_RESOLVED_VALUE_LENGTH: usize = 65_536;
 
 /// Resolves every `var(--name)` and `var(--name, fallback)` reference in
 /// `value` against `environment`, returning the value with all of them
@@ -1393,17 +1442,38 @@ const MAX_VAR_NESTING: u32 = 32;
 /// function, sharing one depth counter bounded by [`MAX_VAR_NESTING`] — see
 /// its doc comment for why cycles and pathological nesting are refused
 /// rather than parsed wrong.
+///
+/// # Why a cache is threaded through every call, not just a depth counter
+///
+/// A value can reference the same custom property more than once (`--v0:
+/// var(--v1) var(--v1);`), and each referenced property can do the same in
+/// turn. Resolving each occurrence independently, with no memoization, is
+/// exponential in chain depth — a linear, twenty-level, entirely non-cyclic
+/// chain built this way took several seconds and produced megabytes of
+/// resolved text in the reproduction that found this, despite being nowhere
+/// near [`MAX_VAR_NESTING`]'s bound, because the bound counts *depth*, not
+/// *total substitution work*. Caching each custom property name's fully
+/// resolved value the first time it is resolved, and reusing it for every
+/// later reference within the same top-level call, removes the redundant
+/// re-derivation: each unique name is *computed* once, however many times
+/// it is referenced. That alone does not bound the *size* of the result,
+/// though — see [`MAX_RESOLVED_VALUE_LENGTH`], the separate guard that
+/// does.
 fn resolve_var_references(
     value: &str,
     environment: &std::collections::HashMap<String, String>,
 ) -> Result<String, CssError> {
-    resolve_var_references_at_depth(value, environment, 0)
+    let mut cache = std::collections::HashMap::new();
+    let mut visiting = std::collections::HashSet::new();
+    resolve_var_references_at_depth(value, environment, 0, &mut cache, &mut visiting)
 }
 
 fn resolve_var_references_at_depth(
     value: &str,
     environment: &std::collections::HashMap<String, String>,
     depth: u32,
+    cache: &mut std::collections::HashMap<String, String>,
+    visiting: &mut std::collections::HashSet<String>,
 ) -> Result<String, CssError> {
     let characters: Vec<char> = value.chars().collect();
     let mut result = String::new();
@@ -1417,12 +1487,22 @@ fn resolve_var_references_at_depth(
                 }
             })?;
             let inner: String = characters[open_paren + 1..close_paren].iter().collect();
-            let substitution = resolve_var_call(&inner, environment, depth, value)?;
+            let substitution =
+                resolve_var_call(&inner, environment, depth, value, cache, visiting)?;
             result.push_str(&substitution);
             index = close_paren + 1;
         } else {
             result.push(characters[index]);
             index += 1;
+        }
+        // Checked every iteration, not just once at the end, so a value that
+        // is already over budget is refused as soon as it crosses the line
+        // rather than after this function finishes building the whole
+        // (potentially far larger) result first.
+        if result.len() > MAX_RESOLVED_VALUE_LENGTH {
+            return Err(CssError::CustomPropertyValueTooLarge {
+                text: value.to_string(),
+            });
         }
     }
     Ok(result)
@@ -1499,11 +1579,23 @@ fn split_top_level_comma(characters: &[char]) -> (String, Option<String>) {
 
 /// Resolves one `var(...)` call's arguments (`inner`, the text between its
 /// parentheses) to a substitution string.
+///
+/// `cache` remembers each custom property name's fully resolved value the
+/// first time this function resolves it, so a value referencing the same
+/// name more than once (directly, or through a chain that fans back out to
+/// a common ancestor property) does the underlying resolution work exactly
+/// once — see [`resolve_var_references`]'s doc comment for the exponential
+/// blowup this avoids. `visiting` holds the names currently being resolved
+/// on the path that led here; a name already in it means a cycle
+/// (`--a: var(--b); --b: var(--a);`, however many properties long), caught
+/// immediately rather than by exhausting [`MAX_VAR_NESTING`].
 fn resolve_var_call(
     inner: &str,
     environment: &std::collections::HashMap<String, String>,
     depth: u32,
     whole_value: &str,
+    cache: &mut std::collections::HashMap<String, String>,
+    visiting: &mut std::collections::HashSet<String>,
 ) -> Result<String, CssError> {
     if depth >= MAX_VAR_NESTING {
         return Err(CssError::CustomPropertyNestingTooDeep {
@@ -1522,17 +1614,39 @@ fn resolve_var_call(
         });
     }
 
+    if let Some(cached) = cache.get(name) {
+        return Ok(cached.clone());
+    }
+
     if let Some(raw) = environment.get(name) {
+        // `insert` returning `false` means `name` was already present — this
+        // path is already resolving it, so resolving it again would recurse
+        // into the same cycle rather than terminate.
+        if !visiting.insert(name.to_string()) {
+            return Err(CssError::CustomPropertyNestingTooDeep {
+                text: whole_value.to_string(),
+            });
+        }
         // The referenced custom property's own value may reference further
         // custom properties (`--gap: var(--space)`); resolving it here,
         // lazily, rather than when the environment was built, means a
         // custom property nobody actually uses can be malformed or
         // undefined without refusing every element that merely inherits it.
-        return resolve_var_references_at_depth(raw, environment, depth + 1);
+        let resolved =
+            resolve_var_references_at_depth(raw, environment, depth + 1, cache, visiting)?;
+        visiting.remove(name);
+        cache.insert(name.to_string(), resolved.clone());
+        return Ok(resolved);
     }
 
     match fallback_part {
-        Some(fallback) => resolve_var_references_at_depth(fallback.trim(), environment, depth + 1),
+        Some(fallback) => resolve_var_references_at_depth(
+            fallback.trim(),
+            environment,
+            depth + 1,
+            cache,
+            visiting,
+        ),
         None => Err(CssError::CustomPropertyUndefined {
             name: name.to_string(),
         }),
@@ -2296,6 +2410,37 @@ mod tests {
             error,
             CssError::CustomPropertyNestingTooDeep { .. }
         ));
+    }
+
+    #[test]
+    fn var_fan_out_past_the_size_budget_is_refused_rather_than_exploding() {
+        // Each level references the next TWICE, so the fully-substituted
+        // value doubles in length per level — a shallow, sixteen-level,
+        // entirely non-cyclic chain (nowhere near `MAX_VAR_NESTING`'s bound
+        // of thirty-two) still resolves to roughly 2^16 * len("red") bytes,
+        // comfortably past `MAX_RESOLVED_VALUE_LENGTH`. This is the
+        // regression test for the bug a security audit found: depth alone
+        // does not bound *substitution work*, because a value can fan out
+        // to the same custom property more than once at every level.
+        const DEPTH: usize = 16;
+        let mut css = String::from("p {\n");
+        for level in 0..DEPTH {
+            let next = level + 1;
+            if next == DEPTH {
+                css.push_str(&format!("  --v{level}: red;\n"));
+            } else {
+                css.push_str(&format!("  --v{level}: var(--v{next}) var(--v{next});\n"));
+            }
+        }
+        css.push_str("  color: var(--v0);\n}");
+
+        let html = "<p>t</p>";
+        let error = resolved_declarations(html, &css, "p")
+            .expect_err("a fan-out chain this shallow must still be refused on size, not resolved");
+        assert!(
+            matches!(error, CssError::CustomPropertyValueTooLarge { .. }),
+            "expected CustomPropertyValueTooLarge, got {error:?}"
+        );
     }
 
     #[test]
