@@ -604,6 +604,14 @@ enum Expr {
         key: Box<Expr>,
         value: Box<Expr>,
     },
+    /// `condition ? then_branch : else_branch`. Only the taken branch is
+    /// compiled to run — the untaken one must not evaluate, the same
+    /// short-circuit contract `Expr::Logical` already keeps for `&&`/`||`.
+    Conditional {
+        condition: Box<Expr>,
+        then_branch: Box<Expr>,
+        else_branch: Box<Expr>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -613,6 +621,12 @@ enum Stmt {
         value: Option<Expr>,
         constant: bool,
     },
+    /// Several statements compiled in place, in the *current* scope rather
+    /// than a fresh one — unlike [`Stmt::Block`], which is a real block
+    /// scope. Exists for destructuring: `const [a, b] = pair;` binds `a` and
+    /// `b` into the scope the `const` itself is in, not a scope that
+    /// disappears the moment the desugared statements finish running.
+    Sequence(Vec<Stmt>),
     Expression(Expr),
     Block(Vec<Stmt>),
     If {
@@ -660,6 +674,99 @@ enum Stmt {
 /// than something a person or a minifier produces.
 pub const MAX_NESTING_DEPTH: usize = 64;
 
+/// One array-pattern slot: `None` for an elided hole (`[a, , b]`'s middle
+/// element), `Some((name, default))` for a bound name and its optional
+/// default expression.
+type ArrayPatternBindings = Vec<Option<(String, Option<Expr>)>>;
+
+/// One object-pattern property: `(source_key, binding_name, default)` — for
+/// shorthand `{a}`, `source_key == binding_name`; for a rename `{a: b}`,
+/// they differ.
+type ObjectPatternBindings = Vec<(String, String, Option<Expr>)>;
+
+/// Desugars an array destructuring pattern into a temp declaration plus one
+/// declaration per binding — see [`Stmt::Sequence`]'s doc comment for why
+/// this must not become a `Stmt::Block`. `value` is compiled exactly once,
+/// into `temp`, regardless of how many bindings read from it or whether any
+/// carries a default; an elided slot (`None`) binds nothing at all.
+fn desugar_array_pattern(
+    bindings: ArrayPatternBindings,
+    value: Expr,
+    constant: bool,
+    temp: String,
+) -> Vec<Stmt> {
+    let mut statements = vec![Stmt::Declare {
+        name: temp.clone(),
+        value: Some(value),
+        constant: true,
+    }];
+    for (index, binding) in bindings.into_iter().enumerate() {
+        let Some((name, default)) = binding else {
+            continue;
+        };
+        let read = Expr::Member {
+            object: Box::new(Expr::Variable(temp.clone())),
+            key: Box::new(Expr::Number(index as f64)),
+        };
+        statements.push(Stmt::Declare {
+            name,
+            value: Some(apply_pattern_default(read, default)),
+            constant,
+        });
+    }
+    statements
+}
+
+/// Desugars an object destructuring pattern the same way
+/// [`desugar_array_pattern`] does, reading each binding by its source
+/// property name instead of by index.
+fn desugar_object_pattern(
+    bindings: ObjectPatternBindings,
+    value: Expr,
+    constant: bool,
+    temp: String,
+) -> Vec<Stmt> {
+    let mut statements = vec![Stmt::Declare {
+        name: temp.clone(),
+        value: Some(value),
+        constant: true,
+    }];
+    for (key, name, default) in bindings {
+        let read = Expr::Member {
+            object: Box::new(Expr::Variable(temp.clone())),
+            key: Box::new(Expr::Str(key)),
+        };
+        statements.push(Stmt::Declare {
+            name,
+            value: Some(apply_pattern_default(read, default)),
+            constant,
+        });
+    }
+    statements
+}
+
+/// `read` unchanged when `default` is absent; otherwise
+/// `read === undefined ? default : read` — real destructuring-default
+/// semantics, where only a genuinely `undefined` value falls back, not a
+/// falsy-but-present one like `0`, `""`, or `false` (`zoom = 1` must not
+/// override an explicitly passed `zoom: 0`). `read` has no side effects of
+/// its own — it is always a plain variable indexed by a compile-time
+/// constant — so compiling it twice here costs nothing but is never wrong.
+fn apply_pattern_default(read: Expr, default: Option<Expr>) -> Expr {
+    match default {
+        None => read,
+        Some(default_expr) => Expr::Conditional {
+            condition: Box::new(Expr::Binary {
+                operator: "===".to_string(),
+                left: Box::new(read.clone()),
+                right: Box::new(Expr::Undefined),
+            }),
+            then_branch: Box::new(default_expr),
+            else_branch: Box::new(read),
+        },
+    }
+}
+
 struct Parser<'a> {
     tokens: Vec<Token>,
     /// Byte offset each token in `tokens` starts at, same length and index
@@ -673,6 +780,11 @@ struct Parser<'a> {
     position: usize,
     /// Current recursion depth, bounded by [`MAX_NESTING_DEPTH`].
     depth: usize,
+    /// Bumped once per destructuring pattern parsed, so the temporary
+    /// binding a pattern desugars through (`__pattern0`, `__pattern1`, ...)
+    /// is unique per occurrence rather than one name reused and shadowed
+    /// throughout the whole program.
+    pattern_count: usize,
 }
 
 impl<'a> Parser<'a> {
@@ -683,6 +795,7 @@ impl<'a> Parser<'a> {
             source,
             position: 0,
             depth: 0,
+            pattern_count: 0,
         }
     }
 
@@ -779,6 +892,12 @@ impl<'a> Parser<'a> {
             let Token::Keyword(kind) = self.advance() else {
                 unreachable!("checked above")
             };
+            let constant = kind == "const";
+            if self.check_punct("[") || self.check_punct("{") {
+                let statements = self.parse_destructuring_declaration(constant)?;
+                self.eat_punct(";");
+                return Ok(Stmt::Sequence(statements));
+            }
             let Token::Ident(name) = self.advance() else {
                 return Err(JsError::UnexpectedToken {
                     found: "token".to_string(),
@@ -794,7 +913,7 @@ impl<'a> Parser<'a> {
             return Ok(Stmt::Declare {
                 name,
                 value,
-                constant: kind == "const",
+                constant,
             });
         }
         if self.check_keyword("if") {
@@ -858,23 +977,9 @@ impl<'a> Parser<'a> {
                 expected: "a function name".to_string(),
             });
         };
-        self.expect_punct("(")?;
-        let mut parameters = Vec::new();
-        while !self.check_punct(")") {
-            let Token::Ident(parameter) = self.advance() else {
-                return Err(JsError::UnexpectedToken {
-                    found: "token".to_string(),
-                    expected: "a parameter name".to_string(),
-                });
-            };
-            parameters.push(parameter);
-            if !self.eat_punct(",") {
-                break;
-            }
-        }
-        self.expect_punct(")")?;
+        let (parameters, prelude) = self.parse_parameter_list()?;
         self.expect_punct("{")?;
-        let mut body = Vec::new();
+        let mut body = prelude;
         while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
             body.push(self.parse_statement()?);
         }
@@ -898,6 +1003,20 @@ impl<'a> Parser<'a> {
             return self.parse_arrow();
         }
         let target = self.parse_logical_or()?;
+        if self.eat_punct("?") {
+            // Right-associative: the branches recurse into `parse_assignment`
+            // (not back into the ternary's own precedence level), so a chain
+            // like `a ? b : c ? d : e` reads as `a ? b : (c ? d : e)`, and
+            // each branch may itself be an assignment or another ternary.
+            let then_branch = Box::new(self.parse_assignment()?);
+            self.expect_punct(":")?;
+            let else_branch = Box::new(self.parse_assignment()?);
+            return Ok(Expr::Conditional {
+                condition: Box::new(target),
+                then_branch,
+                else_branch,
+            });
+        }
         if self.check_punct("=") {
             self.position += 1;
             let value = Box::new(self.parse_assignment()?);
@@ -993,30 +1112,33 @@ impl<'a> Parser<'a> {
     /// inherit its rule that capturing an enclosing local is refused, not
     /// silently captured.
     fn parse_arrow(&mut self) -> Result<Expr, JsError> {
-        let parameters = if self.check_punct("(") {
+        let (parameters, prelude) = if self.check_punct("(") {
             self.parse_parameter_list()?
         } else {
+            // A bare, unparenthesised arrow parameter is always a plain
+            // identifier in real JS too — a destructured single parameter
+            // needs its own parens (`({a}) => ...`), which takes the branch
+            // above.
             let Token::Ident(name) = self.advance() else {
                 return Err(JsError::UnexpectedToken {
                     found: "token".to_string(),
                     expected: "an arrow parameter".to_string(),
                 });
             };
-            vec![name]
+            (vec![name], Vec::new())
         };
         self.expect_punct("=>")?;
-        let body = if self.check_punct("{") {
+        let mut body = prelude;
+        if self.check_punct("{") {
             self.position += 1;
-            let mut statements = Vec::new();
             while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
-                statements.push(self.parse_statement()?);
+                body.push(self.parse_statement()?);
             }
             self.expect_punct("}")?;
-            statements
         } else {
             // `x => expr` is `x => { return expr; }`.
-            vec![Stmt::Return(Some(self.parse_assignment()?))]
-        };
+            body.push(Stmt::Return(Some(self.parse_assignment()?)));
+        }
         Ok(Expr::Lambda { parameters, body })
     }
 
@@ -1403,9 +1525,9 @@ impl<'a> Parser<'a> {
                 feature: "named function expressions (self-reference is capture)".to_string(),
             });
         }
-        let parameters = self.parse_parameter_list()?;
+        let (parameters, prelude) = self.parse_parameter_list()?;
         self.expect_punct("{")?;
-        let mut body = Vec::new();
+        let mut body = prelude;
         while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
             body.push(self.parse_statement()?);
         }
@@ -1427,24 +1549,177 @@ impl<'a> Parser<'a> {
         Ok(arguments)
     }
 
-    /// Parses `(a, b, c)` parameter names, the `(` still ahead.
-    fn parse_parameter_list(&mut self) -> Result<Vec<String>, JsError> {
+    /// Parses `(a, b, c)` parameter names, the `(` still ahead, and returns
+    /// alongside them any statements a destructured parameter needs
+    /// prepended to the body — `function f({ a, b }) {...}` binds a single
+    /// positional parameter (a synthetic name, since it has no source name
+    /// of its own) and then destructures it as the body's first statements,
+    /// the same desugar a `const { a, b } = ...` declaration goes through.
+    /// A plain identifier parameter is unaffected: no synthetic name, no
+    /// prelude statement, identical to before this existed.
+    fn parse_parameter_list(&mut self) -> Result<(Vec<String>, Vec<Stmt>), JsError> {
         self.expect_punct("(")?;
         let mut parameters = Vec::new();
+        let mut prelude = Vec::new();
         while !self.check_punct(")") {
-            let Token::Ident(parameter) = self.advance() else {
-                return Err(JsError::UnexpectedToken {
-                    found: "token".to_string(),
-                    expected: "a parameter name".to_string(),
-                });
-            };
-            parameters.push(parameter);
+            if self.check_punct("[") || self.check_punct("{") {
+                let temp = self.next_pattern_temp();
+                let statements = if self.check_punct("[") {
+                    let bindings = self.parse_array_pattern()?;
+                    desugar_array_pattern(
+                        bindings,
+                        Expr::Variable(temp.clone()),
+                        false,
+                        temp.clone(),
+                    )
+                } else {
+                    let bindings = self.parse_object_pattern()?;
+                    desugar_object_pattern(
+                        bindings,
+                        Expr::Variable(temp.clone()),
+                        false,
+                        temp.clone(),
+                    )
+                };
+                parameters.push(temp);
+                // The temp's own declaration (statements[0]) reads a
+                // variable of the same name that does not exist yet — it is
+                // dropped here, and the parameter binding itself (already
+                // in `locals` at this slot by the time the body runs) takes
+                // its place, so only the per-property reads remain.
+                prelude.extend(statements.into_iter().skip(1));
+            } else {
+                let Token::Ident(parameter) = self.advance() else {
+                    return Err(JsError::UnexpectedToken {
+                        found: "token".to_string(),
+                        expected: "a parameter name".to_string(),
+                    });
+                };
+                parameters.push(parameter);
+            }
             if !self.eat_punct(",") {
                 break;
             }
         }
         self.expect_punct(")")?;
-        Ok(parameters)
+        Ok((parameters, prelude))
+    }
+
+    /// Parses `[pattern] = value` or `{pattern} = value`, the `const`/`let`/
+    /// `var` keyword already consumed, and desugars it into the temporary-
+    /// plus-per-binding sequence `Stmt::Sequence`'s own doc comment explains
+    /// the scoping reason for.
+    fn parse_destructuring_declaration(&mut self, constant: bool) -> Result<Vec<Stmt>, JsError> {
+        let temp = self.next_pattern_temp();
+        if self.check_punct("[") {
+            let bindings = self.parse_array_pattern()?;
+            self.expect_punct("=")?;
+            let value = self.parse_assignment()?;
+            Ok(desugar_array_pattern(bindings, value, constant, temp))
+        } else {
+            let bindings = self.parse_object_pattern()?;
+            self.expect_punct("=")?;
+            let value = self.parse_assignment()?;
+            Ok(desugar_object_pattern(bindings, value, constant, temp))
+        }
+    }
+
+    /// A fresh, source-unreachable name for the value a destructuring
+    /// pattern reads its bindings from — unreachable because a real
+    /// identifier can never contain `$`, so nothing a script writes can
+    /// collide with or shadow it. Counted rather than reused so each
+    /// occurrence gets its own binding, in line with the compiler's
+    /// last-declaration-wins scope resolution rather than depending on it.
+    fn next_pattern_temp(&mut self) -> String {
+        let name = format!("__pattern{}$", self.pattern_count);
+        self.pattern_count += 1;
+        name
+    }
+
+    /// Parses `[a, , b]` after the pattern's own `[`, refusing a rest
+    /// element or a nested pattern rather than mishandling one — a hole
+    /// (`,` with nothing before the next `,`/`]`) is real, observed Nova
+    /// syntax and becomes `None`: a skipped slot with no binding at all.
+    fn parse_array_pattern(&mut self) -> Result<ArrayPatternBindings, JsError> {
+        self.expect_punct("[")?;
+        let mut bindings = Vec::new();
+        while !self.check_punct("]") {
+            if self.check_punct(",") {
+                bindings.push(None);
+                self.position += 1;
+                continue;
+            }
+            if self.check_punct("...") {
+                return Err(JsError::Unsupported {
+                    feature: "a rest element in array destructuring".to_string(),
+                });
+            }
+            if !matches!(self.peek(), Token::Ident(_)) {
+                return Err(JsError::Unsupported {
+                    feature: "a nested pattern in array destructuring".to_string(),
+                });
+            }
+            let Token::Ident(name) = self.advance() else {
+                unreachable!("checked above")
+            };
+            let default = if self.eat_punct("=") {
+                Some(self.parse_assignment()?)
+            } else {
+                None
+            };
+            bindings.push(Some((name, default)));
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct("]")?;
+        Ok(bindings)
+    }
+
+    /// Parses `{a, icon: Ic, size = 12}` after the pattern's own `{`:
+    /// shorthand, renamed, and defaulted properties, the three real shapes
+    /// Nova's source uses. Refuses a rest property or a nested pattern
+    /// rather than mishandling one — neither appears in the real source.
+    fn parse_object_pattern(&mut self) -> Result<ObjectPatternBindings, JsError> {
+        self.expect_punct("{")?;
+        let mut bindings = Vec::new();
+        while !self.check_punct("}") {
+            if self.check_punct("...") {
+                return Err(JsError::Unsupported {
+                    feature: "a rest property in object destructuring".to_string(),
+                });
+            }
+            let Token::Ident(key) = self.advance() else {
+                return Err(JsError::UnexpectedToken {
+                    found: "token".to_string(),
+                    expected: "a property name in an object pattern".to_string(),
+                });
+            };
+            let name = if self.eat_punct(":") {
+                if !matches!(self.peek(), Token::Ident(_)) {
+                    return Err(JsError::Unsupported {
+                        feature: "a nested pattern in object destructuring".to_string(),
+                    });
+                }
+                let Token::Ident(renamed) = self.advance() else {
+                    unreachable!("checked above")
+                };
+                renamed
+            } else {
+                key.clone()
+            };
+            let default = if self.eat_punct("=") {
+                Some(self.parse_assignment()?)
+            } else {
+                None
+            };
+            bindings.push((key, name, default));
+            if !self.eat_punct(",") {
+                break;
+            }
+        }
+        self.expect_punct("}")?;
+        Ok(bindings)
     }
 
     // -- JSX --------------------------------------------------------------
@@ -2507,6 +2782,16 @@ impl Compiler {
                 self.code.push(Op::StoreLocal(slot));
                 self.code.push(Op::Pop);
             }
+            Stmt::Sequence(statements) => {
+                // No push_scope/pop_scope: these bindings belong to whatever
+                // scope this Sequence itself sits in — a destructuring
+                // declaration is one statement in the source, and every name
+                // it introduces must outlive this call the same way a plain
+                // `const` would.
+                for inner in statements {
+                    self.statement(inner)?;
+                }
+            }
             Stmt::Expression(expression) => {
                 self.expression(expression)?;
                 self.code.push(Op::Pop);
@@ -2656,6 +2941,23 @@ impl Compiler {
                 self.code.push(Op::Pop);
                 self.expression(right)?;
                 self.patch(jump);
+            }
+            Expr::Conditional {
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                // Only the taken branch runs: `emit_jump_if_false` consumes
+                // the condition (unlike `Expr::Logical`'s peek variants,
+                // whose own operand is also the result), so both branches
+                // push exactly one value and the two paths rejoin balanced.
+                self.expression(condition)?;
+                let to_else = self.emit_jump_if_false();
+                self.expression(then_branch)?;
+                let to_end = self.emit_jump();
+                self.patch(to_else);
+                self.expression(else_branch)?;
+                self.patch(to_end);
             }
             Expr::ObjectLiteral { entries } => {
                 self.code.push(Op::NewObject);
@@ -3888,6 +4190,49 @@ mod tests {
     }
 
     #[test]
+    fn ternary_conditional_evaluates_the_taken_branch() {
+        assert_eq!(expr("true ? 1 : 2"), Value::Number(1.0));
+        assert_eq!(expr("false ? 1 : 2"), Value::Number(2.0));
+        // A real Nova shape: `i === -1 ? url : url.slice(0, i)`.
+        assert_eq!(
+            eval_in_fn(
+                "let i = -1; let url = \"example.com\"; \
+                 return i === -1 ? url : \"unreachable\";"
+            ),
+            Value::String("example.com".to_string())
+        );
+        // Right-associative chaining: `a ? b : c ? d : e` reads as
+        // `a ? b : (c ? d : e)`.
+        assert_eq!(expr("false ? 1 : true ? 2 : 3"), Value::Number(2.0));
+        assert_eq!(expr("false ? 1 : false ? 2 : 3"), Value::Number(3.0));
+        // Usable as a value: assigned, returned, and as a call argument.
+        assert_eq!(
+            eval_in_fn("let x = 5 > 3 ? \"big\" : \"small\"; return x;"),
+            Value::String("big".to_string())
+        );
+    }
+
+    #[test]
+    fn ternary_conditional_does_not_evaluate_the_untaken_branch() {
+        let program = compile(
+            "function main() { \
+                true ? record(1) : record(2); \
+                false ? record(3) : record(4); \
+             } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(
+            host.calls,
+            vec![1.0, 4.0],
+            "only the taken branch of each ternary should have run"
+        );
+    }
+
+    #[test]
     fn bindings_and_assignment_work() {
         assert_eq!(
             run("let a = 1; let b = 2; function f() { return 0; } a = a + b;"),
@@ -4389,6 +4734,125 @@ mod tests {
                 .expect("runs"),
             Value::Number(42.0)
         );
+    }
+
+    #[test]
+    fn array_destructuring_binds_each_element_in_order() {
+        // The single most common shape in real Nova source: hook calls are
+        // *always* written `const [x, setX] = useState(...)`.
+        assert_eq!(
+            eval_in_fn("const [a, b] = [1, 2]; return a + b;"),
+            Value::Number(3.0)
+        );
+    }
+
+    #[test]
+    fn array_destructuring_skips_elided_slots() {
+        // A real observed Nova shape: `const [, n, from] = c;` and
+        // `const [g, t, s, , dest] = c;` — a hole binds nothing at that
+        // position rather than being a parse error or consuming a name.
+        assert_eq!(
+            eval_in_fn("const [, n, from] = [1, 2, 3]; return n + from;"),
+            Value::Number(5.0)
+        );
+        assert_eq!(
+            eval_in_fn("const [a, , c] = [10, 20, 30]; return a + c;"),
+            Value::Number(40.0)
+        );
+    }
+
+    #[test]
+    fn object_destructuring_binds_shorthand_renamed_and_defaulted_properties() {
+        // Shorthand: `const { visTabs, hidTabs } = ...`.
+        assert_eq!(
+            eval_in_fn("const {a, b} = {a: 1, b: 2}; return a + b;"),
+            Value::Number(3.0)
+        );
+        // Renamed: `function PageHeader({ icon: Ic, ... })`.
+        assert_eq!(
+            eval_in_fn("const {icon: Ic} = {icon: 5}; return Ic;"),
+            Value::Number(5.0)
+        );
+        // Defaulted, property absent: `function FavImg({ d, size = 12 })`.
+        assert_eq!(
+            eval_in_fn("const {size = 12} = {}; return size;"),
+            Value::Number(12.0)
+        );
+        // Defaulted, property genuinely `undefined`: same fallback.
+        assert_eq!(
+            eval_in_fn("const {size = 12} = {size: undefined}; return size;"),
+            Value::Number(12.0)
+        );
+        // Defaulted, but the property IS present and falsy: `zoom = 1`
+        // destructuring an explicit `zoom: 0` must keep 0, not silently
+        // treat "falsy" as "absent" the way a naive `x || default` would.
+        assert_eq!(
+            eval_in_fn("const {zoom = 1} = {zoom: 0}; return zoom;"),
+            Value::Number(0.0)
+        );
+    }
+
+    #[test]
+    fn destructured_function_parameters_bind_shorthand_renamed_and_defaulted_props() {
+        // `function Fav({ f, size })` shape. `describe` and `main` are
+        // top-level siblings, not nested — a *nested* function declaration
+        // is a separate, pre-existing, unrelated restriction this test must
+        // not trip over.
+        let program = compile(
+            "function describe({ label, size }) { return label + size; } \
+             function main() { return describe({ label: \"x\", size: 3 }); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::String("x3".to_string())
+        );
+        // Renamed and defaulted together: `function PageHeader({ icon: Ic,
+        // maxW = 880 })`.
+        let program = compile(
+            "function header({ icon: Ic, maxW = 880 }) { return Ic + maxW; } \
+             function main() { return header({ icon: 1 }); } \
+             main();",
+        )
+        .expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs"),
+            Value::Number(881.0)
+        );
+    }
+
+    #[test]
+    fn destructured_arrow_parameters_work() {
+        // `({ t, c }) => ...`, a real Nova shape.
+        assert_eq!(
+            eval_in_fn("let f = ({t, c}) => t + c; return f({t: 1, c: 2});"),
+            Value::Number(3.0)
+        );
+    }
+
+    #[test]
+    fn destructuring_refuses_rest_and_nested_patterns_rather_than_mishandling_them() {
+        assert!(matches!(
+            compile("const [a, ...rest] = [1, 2, 3];"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("const {a, ...rest} = {a: 1};"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("const [[a, b]] = [[1, 2]];"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("const {a: {b}} = {a: {b: 1}};"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]
