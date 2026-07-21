@@ -261,9 +261,9 @@ fn scrolling_translates_paint_without_touching_geometry() {
 #[test]
 fn an_unsupported_stylesheet_notation_refuses_the_load() {
     // The colour is validated where style is resolved, so the refusal
-    // arrives from the layout stage wearing the CSS value error. hsl() is
-    // the example now that rgb() parses.
-    let html = "<html><head><style>body { background: hsl(1, 2%, 3%); }</style>\
+    // arrives from the layout stage wearing the CSS value error. lab() is
+    // the example now that rgb() and hsl() both parse.
+    let html = "<html><head><style>body { background: lab(50% 40 59.5); }</style>\
         </head><body>x</body></html>";
     assert!(matches!(
         Page::load(html, 100.0),
