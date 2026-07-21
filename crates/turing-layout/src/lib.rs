@@ -1198,13 +1198,24 @@ fn parse_length(value: &str) -> Option<f32> {
 /// wrong formatting model, an un-parseable `opacity` failing open to "paint
 /// normally" is the same outcome CSS itself defines for any other property a
 /// browser does not recognise.
+///
+/// `"NaN"` and `"nan%"` are both syntax `f32::from_str` accepts, so they
+/// count as *parsed*, not *unparseable* — `f32::clamp` passes a `NaN` input
+/// straight through rather than clamping it into range, which would carry a
+/// `NaN` alpha all the way to the compositor's blend math and, cast to a
+/// pixel channel, silently paint a channel Rust's saturating float-to-int
+/// cast resolves to `0` rather than anything a stylesheet author asked for.
+/// Treated the same as any other value this function cannot make sense of.
 fn parse_opacity(value: &str) -> f32 {
     let trimmed = value.trim();
     let parsed = trimmed.strip_suffix('%').map_or_else(
         || trimmed.parse::<f32>().ok(),
         |percent| percent.trim().parse::<f32>().ok().map(|p| p / 100.0),
     );
-    parsed.unwrap_or(1.0).clamp(0.0, 1.0)
+    parsed
+        .filter(|value| !value.is_nan())
+        .unwrap_or(1.0)
+        .clamp(0.0, 1.0)
 }
 
 // -- layout --------------------------------------------------------------
@@ -2975,6 +2986,48 @@ mod tests {
             "opacity: -1 clamps to fully transparent"
         );
         assert_eq!(alpha_of(&percent), 0.5, "opacity: 50% is the same as 0.5");
+    }
+
+    #[test]
+    fn opacity_nan_is_treated_as_unparseable_not_clamped_through() {
+        // "NaN" and "nan%" are both syntax `f32::from_str` accepts, so they
+        // parse successfully rather than falling into the unparseable path
+        // — `f32::clamp` passes a `NaN` input straight through instead of
+        // bringing it into range, which would otherwise carry a `NaN` alpha
+        // all the way to a pixel channel.
+        let bare = run(
+            "<body><div>x</div></body>",
+            "div { opacity: NaN; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+        let percent = run(
+            "<body><div>x</div></body>",
+            "div { opacity: nan%; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+
+        let alpha_of = |root: &LayoutBox| {
+            build_display_list(root)
+                .items
+                .iter()
+                .find_map(|item| match item {
+                    DisplayItem::SolidColor { alpha, .. } => Some(*alpha),
+                    _ => None,
+                })
+                .expect("the background paints")
+        };
+        assert_eq!(
+            alpha_of(&bare),
+            1.0,
+            "opacity: NaN must resolve to the initial value, not NaN itself"
+        );
+        assert_eq!(
+            alpha_of(&percent),
+            1.0,
+            "opacity: nan% must resolve to the initial value, not NaN itself"
+        );
     }
 
     #[test]
