@@ -102,6 +102,8 @@ pub enum LayoutError {
     TextAlignUnsupported { value: String },
     /// A `text-decoration` value with no implemented line.
     TextDecorationUnsupported { value: String },
+    /// A `visibility` value with no implemented meaning.
+    VisibilityUnsupported { value: String },
     /// A negative length on a box edge.
     NegativeEdgeUnsupported { property: String, value: String },
     /// The document nests deeper than this implementation will recurse.
@@ -144,6 +146,11 @@ impl fmt::Display for LayoutError {
                 formatter,
                 "text-decoration: {value} is not implemented; only underline, \
                  line-through, and none draw here"
+            ),
+            Self::VisibilityUnsupported { value } => write!(
+                formatter,
+                "visibility: {value} is not implemented; only visible and hidden \
+                 have meaning here"
             ),
             Self::NestingTooDeep { limit } => write!(
                 formatter,
@@ -325,6 +332,27 @@ pub enum TextDecoration {
     LineThrough,
 }
 
+/// Whether a box paints, from `visibility`.
+///
+/// Unlike `display: none`, a hidden box still exists in layout: it is
+/// still measured, sized, and positioned, and still occupies the space
+/// its geometry claims — only *painting* it is suppressed. This is a real
+/// CSS inherited property, and — unlike [`TextDecoration`]'s stated
+/// simplification — the full inheritance model is worth having here: a
+/// descendant declaring `visibility: visible` under a hidden ancestor
+/// genuinely re-enables painting for itself, which is exactly the same
+/// nearest-ancestor-wins propagation `color` already threads through the
+/// tree, so it costs nothing extra to get right.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum Visibility {
+    /// The initial value: paints normally.
+    #[default]
+    Visible,
+    /// Occupies its layout space; paints nothing of its own, and does not
+    /// suppress a descendant that overrides back to `visible`.
+    Hidden,
+}
+
 /// A positioned box in the layout tree.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LayoutBox {
@@ -358,6 +386,8 @@ pub struct LayoutBox {
     /// descendant text nodes like `color`; see [`TextDecoration`] for the
     /// simplification that makes true.
     pub text_decoration: TextDecoration,
+    /// Whether this box paints. See [`Visibility`].
+    pub visibility: Visibility,
     /// Child boxes.
     pub children: Vec<LayoutBox>,
 }
@@ -411,6 +441,7 @@ struct Style {
     outline_color: Option<Color>,
     text_align: Option<TextAlign>,
     text_decoration: Option<TextDecoration>,
+    visibility: Option<Visibility>,
 }
 
 /// Lays out `document` styled by `stylesheet` into a viewport `width` wide.
@@ -428,16 +459,8 @@ pub fn layout<T: LayoutTree>(
     // Built once per layout rather than once per element. Rebuilding it inside
     // box generation would leave the quadratic behaviour it exists to remove.
     let index = SelectorIndex::build(stylesheet);
-    let root = build_box(
-        tree,
-        &index,
-        tree.root(),
-        None,
-        TextAlign::default(),
-        TextDecoration::default(),
-        0,
-    )?
-    .unwrap_or_else(|| anonymous_block(Vec::new()));
+    let root = build_box(tree, &index, tree.root(), Inherited::default(), 0)?
+        .unwrap_or_else(|| anonymous_block(Vec::new()));
 
     let mut viewport = Dimensions::default();
     viewport.content.width = width;
@@ -456,162 +479,172 @@ pub fn build_display_list(root: &LayoutBox) -> DisplayList {
 }
 
 fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
-    // Borders paint first, as a ring of four edge fills between the border
-    // box and the padding box; the background then covers the padding box.
-    // Painting the ring as fills rather than one covered rectangle means a
-    // box with a border and no background does not invent an interior.
-    let dimensions = layout_box.dimensions;
-    let has_border = dimensions.border.left > 0.0
-        || dimensions.border.right > 0.0
-        || dimensions.border.top > 0.0
-        || dimensions.border.bottom > 0.0;
-    if has_border {
-        // Each side's own colour, defaulting to the element's text colour —
-        // CSS's `currentColor` initial value for `border-color` — one side
-        // at a time, since two adjacent sides may legitimately differ.
-        let currentcolor = layout_box.color.unwrap_or_default();
-        let colors = layout_box.border_colors;
-        let outer = dimensions.border_box();
-        let inner = dimensions.padding_box();
-        for (rect, color) in [
-            // Top and bottom span the full border box; left and right fill
-            // between them.
-            (
+    // A hidden box still occupies its layout space — nothing here changes
+    // where anything else lands — it just paints none of its own border,
+    // outline, background, text, or decoration. Recursion into children is
+    // outside this guard: a descendant's own `visibility` was already
+    // resolved independently when it was built, and one that reads
+    // `visible` genuinely paints again even under a hidden ancestor, which
+    // is real CSS's inheritance-with-override rule, not an approximation of
+    // it.
+    if layout_box.visibility != Visibility::Hidden {
+        // Borders paint first, as a ring of four edge fills between the border
+        // box and the padding box; the background then covers the padding box.
+        // Painting the ring as fills rather than one covered rectangle means a
+        // box with a border and no background does not invent an interior.
+        let dimensions = layout_box.dimensions;
+        let has_border = dimensions.border.left > 0.0
+            || dimensions.border.right > 0.0
+            || dimensions.border.top > 0.0
+            || dimensions.border.bottom > 0.0;
+        if has_border {
+            // Each side's own colour, defaulting to the element's text colour —
+            // CSS's `currentColor` initial value for `border-color` — one side
+            // at a time, since two adjacent sides may legitimately differ.
+            let currentcolor = layout_box.color.unwrap_or_default();
+            let colors = layout_box.border_colors;
+            let outer = dimensions.border_box();
+            let inner = dimensions.padding_box();
+            for (rect, color) in [
+                // Top and bottom span the full border box; left and right fill
+                // between them.
+                (
+                    Rect {
+                        x: outer.x,
+                        y: outer.y,
+                        width: outer.width,
+                        height: inner.y - outer.y,
+                    },
+                    colors.top.unwrap_or(currentcolor),
+                ),
+                (
+                    Rect {
+                        x: outer.x,
+                        y: inner.y + inner.height,
+                        width: outer.width,
+                        height: (outer.y + outer.height) - (inner.y + inner.height),
+                    },
+                    colors.bottom.unwrap_or(currentcolor),
+                ),
+                (
+                    Rect {
+                        x: outer.x,
+                        y: inner.y,
+                        width: inner.x - outer.x,
+                        height: inner.height,
+                    },
+                    colors.left.unwrap_or(currentcolor),
+                ),
+                (
+                    Rect {
+                        x: inner.x + inner.width,
+                        y: inner.y,
+                        width: (outer.x + outer.width) - (inner.x + inner.width),
+                        height: inner.height,
+                    },
+                    colors.right.unwrap_or(currentcolor),
+                ),
+            ] {
+                if rect.width > 0.0 && rect.height > 0.0 {
+                    list.items.push(DisplayItem::SolidColor { rect, color });
+                }
+            }
+        }
+        // Outline: a ring outside the border box, at a uniform width and colour
+        // — CSS gives outline no per-side variant, so this is the same
+        // four-rect ring technique as the border above but with one width and
+        // one colour throughout, drawn against `outer` (the outline's own outer
+        // edge) and `dimensions.border_box()` (its inner edge, which is the
+        // element's ordinary outer edge — outline paints beyond it without
+        // moving it). It cannot overlap the border ring, since the two occupy
+        // disjoint bands, so paint order between them does not matter.
+        if layout_box.outline_width > 0.0 {
+            let currentcolor = layout_box.color.unwrap_or_default();
+            let color = layout_box.outline_color.unwrap_or(currentcolor);
+            let inner = dimensions.border_box();
+            let outer = expand(inner, uniform(layout_box.outline_width));
+            for rect in [
                 Rect {
                     x: outer.x,
                     y: outer.y,
                     width: outer.width,
                     height: inner.y - outer.y,
                 },
-                colors.top.unwrap_or(currentcolor),
-            ),
-            (
                 Rect {
                     x: outer.x,
                     y: inner.y + inner.height,
                     width: outer.width,
                     height: (outer.y + outer.height) - (inner.y + inner.height),
                 },
-                colors.bottom.unwrap_or(currentcolor),
-            ),
-            (
                 Rect {
                     x: outer.x,
                     y: inner.y,
                     width: inner.x - outer.x,
                     height: inner.height,
                 },
-                colors.left.unwrap_or(currentcolor),
-            ),
-            (
                 Rect {
                     x: inner.x + inner.width,
                     y: inner.y,
                     width: (outer.x + outer.width) - (inner.x + inner.width),
                     height: inner.height,
                 },
-                colors.right.unwrap_or(currentcolor),
-            ),
-        ] {
-            if rect.width > 0.0 && rect.height > 0.0 {
-                list.items.push(DisplayItem::SolidColor { rect, color });
+            ] {
+                if rect.width > 0.0 && rect.height > 0.0 {
+                    list.items.push(DisplayItem::SolidColor { rect, color });
+                }
             }
         }
-    }
-    // Outline: a ring outside the border box, at a uniform width and colour
-    // — CSS gives outline no per-side variant, so this is the same
-    // four-rect ring technique as the border above but with one width and
-    // one colour throughout, drawn against `outer` (the outline's own outer
-    // edge) and `dimensions.border_box()` (its inner edge, which is the
-    // element's ordinary outer edge — outline paints beyond it without
-    // moving it). It cannot overlap the border ring, since the two occupy
-    // disjoint bands, so paint order between them does not matter.
-    if layout_box.outline_width > 0.0 {
-        let currentcolor = layout_box.color.unwrap_or_default();
-        let color = layout_box.outline_color.unwrap_or(currentcolor);
-        let inner = dimensions.border_box();
-        let outer = expand(inner, uniform(layout_box.outline_width));
-        for rect in [
-            Rect {
-                x: outer.x,
-                y: outer.y,
-                width: outer.width,
-                height: inner.y - outer.y,
-            },
-            Rect {
-                x: outer.x,
-                y: inner.y + inner.height,
-                width: outer.width,
-                height: (outer.y + outer.height) - (inner.y + inner.height),
-            },
-            Rect {
-                x: outer.x,
-                y: inner.y,
-                width: inner.x - outer.x,
-                height: inner.height,
-            },
-            Rect {
-                x: inner.x + inner.width,
-                y: inner.y,
-                width: (outer.x + outer.width) - (inner.x + inner.width),
-                height: inner.height,
-            },
-        ] {
-            if rect.width > 0.0 && rect.height > 0.0 {
-                list.items.push(DisplayItem::SolidColor { rect, color });
-            }
+        // Backgrounds paint before content, and a parent paints before its
+        // children, which is the document-order approximation of paint order.
+        if let Some(color) = &layout_box.background {
+            let rect = layout_box.dimensions.padding_box();
+            list.items.push(if layout_box.border_radius > 0.0 {
+                DisplayItem::RoundedColor {
+                    rect,
+                    color: *color,
+                    radius: layout_box.border_radius,
+                }
+            } else {
+                DisplayItem::SolidColor {
+                    rect,
+                    color: *color,
+                }
+            });
         }
-    }
-    // Backgrounds paint before content, and a parent paints before its
-    // children, which is the document-order approximation of paint order.
-    if let Some(color) = &layout_box.background {
-        let rect = layout_box.dimensions.padding_box();
-        list.items.push(if layout_box.border_radius > 0.0 {
-            DisplayItem::RoundedColor {
+        if let (BoxKind::Text, Some(text)) = (layout_box.kind, &layout_box.text) {
+            let rect = layout_box.dimensions.content;
+            // The initial value of `color` is black, per CSS. This is a
+            // specified default rather than a fallback for a missing value.
+            let color = layout_box.color.unwrap_or_default();
+            list.items.push(DisplayItem::Text {
                 rect,
-                color: *color,
-                radius: layout_box.border_radius,
-            }
-        } else {
-            DisplayItem::SolidColor {
-                rect,
-                color: *color,
-            }
-        });
-    }
-    if let (BoxKind::Text, Some(text)) = (layout_box.kind, &layout_box.text) {
-        let rect = layout_box.dimensions.content;
-        // The initial value of `color` is black, per CSS. This is a
-        // specified default rather than a fallback for a missing value.
-        let color = layout_box.color.unwrap_or_default();
-        list.items.push(DisplayItem::Text {
-            rect,
-            text: text.clone(),
-            color,
-        });
-        // The decoration line's position is a fraction of the line box's own
-        // height rather than any specific font's glyph metrics — this crate
-        // only knows `TextMetrics`, not what a painter's glyphs actually
-        // look like, and a line tied to one font's bitmap would be wrong the
-        // moment a different painter injected different metrics. Underline
-        // sits near the bottom of the line box; line-through sits at its
-        // vertical centre. One pixel tall, which is thin enough to read as a
-        // line rather than a second, shorter fill.
-        if layout_box.text_decoration != TextDecoration::None {
-            let y = match layout_box.text_decoration {
-                TextDecoration::Underline => rect.y + rect.height * 0.85,
-                TextDecoration::LineThrough => rect.y + rect.height * 0.5,
-                TextDecoration::None => unreachable!("checked above"),
-            };
-            list.items.push(DisplayItem::SolidColor {
-                rect: Rect {
-                    x: rect.x,
-                    y,
-                    width: rect.width,
-                    height: 1.0,
-                },
+                text: text.clone(),
                 color,
             });
+            // The decoration line's position is a fraction of the line box's own
+            // height rather than any specific font's glyph metrics — this crate
+            // only knows `TextMetrics`, not what a painter's glyphs actually
+            // look like, and a line tied to one font's bitmap would be wrong the
+            // moment a different painter injected different metrics. Underline
+            // sits near the bottom of the line box; line-through sits at its
+            // vertical centre. One pixel tall, which is thin enough to read as a
+            // line rather than a second, shorter fill.
+            if layout_box.text_decoration != TextDecoration::None {
+                let y = match layout_box.text_decoration {
+                    TextDecoration::Underline => rect.y + rect.height * 0.85,
+                    TextDecoration::LineThrough => rect.y + rect.height * 0.5,
+                    TextDecoration::None => unreachable!("checked above"),
+                };
+                list.items.push(DisplayItem::SolidColor {
+                    rect: Rect {
+                        x: rect.x,
+                        y,
+                        width: rect.width,
+                        height: 1.0,
+                    },
+                    color,
+                });
+            }
         }
     }
     for child in &layout_box.children {
@@ -621,13 +654,24 @@ fn paint(layout_box: &LayoutBox, list: &mut DisplayList) {
 
 // -- box generation ------------------------------------------------------
 
+/// The inherited properties a box passes down to its children, bundled so
+/// `build_box` takes one parameter for "what this subtree inherited" rather
+/// than growing a new positional parameter for every property that turns
+/// out to inherit — which is exactly the shape that made the function trip
+/// `clippy::too_many_arguments` the day a fourth one arrived.
+#[derive(Clone, Copy, Debug, Default)]
+struct Inherited {
+    color: Option<Color>,
+    align: TextAlign,
+    decoration: TextDecoration,
+    visibility: Visibility,
+}
+
 fn build_box<T: LayoutTree>(
     tree: &T,
     index: &SelectorIndex,
     node: T::Node,
-    inherited_color: Option<Color>,
-    inherited_align: TextAlign,
-    inherited_decoration: TextDecoration,
+    inherited: Inherited,
     depth: usize,
 ) -> Result<Option<LayoutBox>, LayoutError> {
     // Box generation recurses, and so do layout, painting, and hit testing over
@@ -652,13 +696,14 @@ fn build_box<T: LayoutTree>(
             background: None,
             // `color` is inherited, so a text run paints in the colour of
             // the nearest ancestor that set one.
-            color: inherited_color,
+            color: inherited.color,
             border_colors: BorderColors::default(),
             border_radius: 0.0,
             outline_width: 0.0,
             outline_color: None,
-            text_align: inherited_align,
-            text_decoration: inherited_decoration,
+            text_align: inherited.align,
+            text_decoration: inherited.decoration,
+            visibility: inherited.visibility,
             children: Vec::new(),
         }));
     }
@@ -672,20 +717,15 @@ fn build_box<T: LayoutTree>(
         return Ok(None);
     }
 
-    let own_color = style.color.or(inherited_color);
-    let own_align = style.text_align.unwrap_or(inherited_align);
-    let own_decoration = style.text_decoration.unwrap_or(inherited_decoration);
+    let own = Inherited {
+        color: style.color.or(inherited.color),
+        align: style.text_align.unwrap_or(inherited.align),
+        decoration: style.text_decoration.unwrap_or(inherited.decoration),
+        visibility: style.visibility.unwrap_or(inherited.visibility),
+    };
     let mut children = Vec::new();
     for child in tree.children(node) {
-        if let Some(built) = build_box(
-            tree,
-            index,
-            child,
-            own_color,
-            own_align,
-            own_decoration,
-            depth + 1,
-        )? {
+        if let Some(built) = build_box(tree, index, child, own, depth + 1)? {
             children.push(built);
         }
     }
@@ -725,13 +765,14 @@ fn build_box<T: LayoutTree>(
         node: Some(tree.node_index(node)),
         text: None,
         background: style.background,
-        color: own_color,
+        color: own.color,
         border_colors: style.border_colors,
         border_radius: style.border_radius,
         outline_width: style.outline_width,
         outline_color: style.outline_color,
-        text_align: own_align,
-        text_decoration: own_decoration,
+        text_align: own.align,
+        text_decoration: own.decoration,
+        visibility: own.visibility,
         children,
     }))
 }
@@ -787,6 +828,12 @@ fn anonymous_block(children: Vec<LayoutBox>) -> LayoutBox {
         // so this value is inert for painting; `None` is simply the box
         // kind's honest own state, same as its colour and background.
         text_decoration: TextDecoration::default(),
+        // Likewise inert: an anonymous block never paints a background,
+        // border, or outline of its own (it has none, by construction), and
+        // `paint` recurses into every child regardless of this box's own
+        // visibility — each child already carries its own correctly
+        // inherited value from the real element that produced it.
+        visibility: Visibility::default(),
         children,
     }
 }
@@ -935,6 +982,21 @@ fn resolve_style<T: LayoutTree>(
                     // no decoration.
                     other => {
                         return Err(LayoutError::TextDecorationUnsupported {
+                            value: other.to_string(),
+                        });
+                    }
+                });
+            }
+            "visibility" => {
+                style.visibility = Some(match value.trim().to_ascii_lowercase().as_str() {
+                    "visible" => Visibility::Visible,
+                    "hidden" => Visibility::Hidden,
+                    // `collapse` (a table-row-specific behaviour this
+                    // implementation has no table layout to give meaning to)
+                    // is refused rather than treated as `hidden`, which is a
+                    // real but different effect.
+                    other => {
+                        return Err(LayoutError::VisibilityUnsupported {
                             value: other.to_string(),
                         });
                     }
@@ -2690,6 +2752,95 @@ mod tests {
             error,
             LayoutError::TextDecorationUnsupported { .. }
         ));
+    }
+
+    #[test]
+    fn a_hidden_box_paints_nothing_of_its_own() {
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { background: red; border-width: 2px; border-color: lime; \
+             outline-width: 2px; outline-color: blue; visibility: hidden; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        assert!(
+            list.items.is_empty(),
+            "a hidden box paints no background, border, outline, or text: {list:?}"
+        );
+    }
+
+    #[test]
+    fn a_hidden_box_still_occupies_its_layout_space() {
+        // The defining difference from `display: none`: a sibling after a
+        // hidden box must land exactly where it would if the box painted
+        // normally, because hiding it did not remove it from layout.
+        let html = "<body><div class='hidden'>a</div><div id='after'>b</div></body>";
+        let css = "div { display: block; height: 10px; } .hidden { visibility: hidden; }";
+        let with_hidden = run(html, css, 100.0).expect("lays out");
+        let without_hidden =
+            run(html, "div { display: block; height: 10px; }", 100.0).expect("lays out");
+        let with_document = document_of(html);
+        let without_document = document_of(html);
+        let after_hidden = find_by_id(&with_hidden, &with_document, "after");
+        let after_plain = find_by_id(&without_hidden, &without_document, "after");
+        assert_eq!(
+            after_hidden.dimensions.content.y, after_plain.dimensions.content.y,
+            "hiding the first box must not move the second one"
+        );
+    }
+
+    #[test]
+    fn a_descendant_can_override_visibility_back_to_visible() {
+        // Real CSS's inheritance-with-override rule: a hidden ancestor does
+        // not suppress a descendant that explicitly re-declares `visible`.
+        let root = run(
+            "<body><div class='outer'><span class='inner'>x</span></div></body>",
+            "div { visibility: hidden; } \
+             span { display: inline; background: teal; visibility: visible; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        let teal = Color::parse("teal").expect("named colour");
+        assert!(
+            list.items.iter().any(
+                |item| matches!(item, DisplayItem::SolidColor { color, .. } if *color == teal)
+            ),
+            "the inner span's own visible re-enables its own paint under a hidden ancestor"
+        );
+    }
+
+    #[test]
+    fn visibility_hidden_still_paints_a_visible_child_text_node() {
+        // The everyday shape: an element hides everything, one nested
+        // element opts back in, and that element's own text — which
+        // inherits `visible` from *it*, not from the hidden grandparent —
+        // paints.
+        let root = run(
+            "<body><div class='outer'><p class='inner'>shown</p></div></body>",
+            "div { visibility: hidden; } p { visibility: visible; }",
+            100.0,
+        )
+        .expect("lays out");
+        let list = build_display_list(&root);
+        assert!(
+            list.items
+                .iter()
+                .any(|item| matches!(item, DisplayItem::Text { text, .. } if text == "shown")),
+            "the re-enabled paragraph's text paints"
+        );
+    }
+
+    #[test]
+    fn an_unimplemented_visibility_is_refused() {
+        let error = run(
+            "<body><p>x</p></body>",
+            "p { visibility: collapse; }",
+            100.0,
+        )
+        .expect_err("refused");
+        assert!(matches!(error, LayoutError::VisibilityUnsupported { .. }));
     }
 
     #[test]
