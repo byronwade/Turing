@@ -612,6 +612,20 @@ enum Expr {
         then_branch: Box<Expr>,
         else_branch: Box<Expr>,
     },
+    /// `object.name(arguments)` — a dedicated node (like `CompoundMember`)
+    /// so `object` compiles exactly once. Resolved entirely at runtime: an
+    /// own property of `object` named `name` that holds a function or
+    /// closure is called normally, exactly the existing indirect-call path
+    /// (so a callback prop that happens to be named e.g. `filter` is not
+    /// shadowed by anything here); only when no such own property exists
+    /// does a String or Array receiver fall back to one of a fixed set of
+    /// built-in methods, refusing with a typed error for anything neither
+    /// path recognises.
+    MethodCall {
+        object: Box<Expr>,
+        name: String,
+        arguments: Vec<Expr>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1381,12 +1395,31 @@ impl<'a> Parser<'a> {
                     key: Box::new(key),
                 };
             } else if self.check_punct("(") {
-                // A call applied to an expression rather than a bare name: an
-                // indirect call through whatever function value it produced.
                 let arguments = self.parse_argument_list()?;
-                object = Expr::CallValue {
-                    callee: Box::new(object),
-                    arguments,
+                object = match object {
+                    // `receiver.name(args)`: a dedicated node so the
+                    // receiver compiles exactly once — see
+                    // `Expr::MethodCall`'s own doc comment for why this is
+                    // not just `CallValue` over a `Member`.
+                    Expr::Member {
+                        object: receiver,
+                        key,
+                    } if matches!(*key, Expr::Str(_)) => {
+                        let Expr::Str(name) = *key else {
+                            unreachable!("checked above")
+                        };
+                        Expr::MethodCall {
+                            object: receiver,
+                            name,
+                            arguments,
+                        }
+                    }
+                    // A call applied to any other expression: an indirect
+                    // call through whatever function value it produced.
+                    other => Expr::CallValue {
+                        callee: Box::new(other),
+                        arguments,
+                    },
                 };
             } else {
                 return Ok(object);
@@ -2376,6 +2409,15 @@ pub enum Op {
     CallValue {
         argc: usize,
     },
+    /// Pop `argc` arguments then the receiver; call `name` as a method on
+    /// it. An own property of the receiver named `name` holding a function
+    /// or closure runs first if present; otherwise a built-in String/Array
+    /// method with that name runs directly against the receiver, refusing
+    /// with a typed error if neither applies.
+    CallMethod {
+        name: String,
+        argc: usize,
+    },
     /// Pop `upvalues` captured values and push a closure over function
     /// `index`. The values were pushed in upvalue order, index 0 deepest.
     MakeClosure {
@@ -2958,6 +3000,20 @@ impl Compiler {
                 self.patch(to_else);
                 self.expression(else_branch)?;
                 self.patch(to_end);
+            }
+            Expr::MethodCall {
+                object,
+                name,
+                arguments,
+            } => {
+                self.expression(object)?;
+                for argument in arguments {
+                    self.expression(argument)?;
+                }
+                self.code.push(Op::CallMethod {
+                    name: name.clone(),
+                    argc: arguments.len(),
+                });
             }
             Expr::ObjectLiteral { entries } => {
                 self.code.push(Op::NewObject);
@@ -3564,6 +3620,25 @@ impl Vm {
                 Op::GetProperty => {
                     let key = pop(&mut stack);
                     let object = pop(&mut stack);
+                    // A string has no heap object to look a stored property
+                    // up in, but `.length` (and, in real JS, an unknown
+                    // property reading `undefined` rather than refusing) are
+                    // still real string behaviour. A string *method*
+                    // (`.indexOf`, `.slice`, ...) is resolved separately, by
+                    // `Op::CallMethod`, not through here — so an unrecognised
+                    // key here (including a known method's own bare name,
+                    // never called) reads `undefined`, matching every other
+                    // "absence is ordinary" property read in this VM.
+                    if let Value::String(text) = &object {
+                        let value = if property_key(&key) == "length" {
+                            Value::Number(text.chars().count() as f64)
+                        } else {
+                            Value::Undefined
+                        };
+                        stack.push(value);
+                        pointer += 1;
+                        continue;
+                    }
                     let (Value::Object(handle) | Value::Array(handle)) = object else {
                         return Err(JsError::TypeError {
                             message: format!("cannot access a property of {object}"),
@@ -3696,44 +3771,9 @@ impl Vm {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
                     let callee = pop(&mut stack);
-                    // A plain function has no captures; a closure carries the
-                    // values it captured. Both resolve to a function index.
-                    let (index, captured) = match callee {
-                        Value::Function(index) => (index, Vec::new()),
-                        Value::Closure(handle) => closure_parts(runtime, handle)?,
-                        other => {
-                            return Err(JsError::TypeError {
-                                message: format!("{other} is not a function"),
-                            });
-                        }
-                    };
-                    let function =
-                        program
-                            .functions
-                            .get(index)
-                            .ok_or_else(|| JsError::TypeError {
-                                message: "call to an unknown function value".to_owned(),
-                            })?;
-                    if function.arity != arguments.len() {
-                        return Err(JsError::TypeError {
-                            message: format!(
-                                "a function value expects {} argument(s), got {}",
-                                function.arity,
-                                arguments.len()
-                            ),
-                        });
-                    }
-                    let result = {
-                        let restore = runtime.outer.len();
-                        runtime.outer.extend(stack.iter().cloned());
-                        runtime.outer.extend(locals.iter().cloned());
-                        runtime.outer.extend(captured.iter().cloned());
-                        let outcome = self.run_function_with_upvalues(
-                            program, index, arguments, &captured, runtime, host,
-                        );
-                        runtime.outer.truncate(restore);
-                        outcome
-                    }?;
+                    let result = self.call_function_value(
+                        program, callee, arguments, &stack, &locals, runtime, host,
+                    )?;
                     stack.push(result);
                 }
                 Op::MakeClosure { index, upvalues } => {
@@ -3774,12 +3814,562 @@ impl Vm {
                     runtime.microtasks.push(task);
                     stack.push(Value::Undefined);
                 }
+                Op::CallMethod { name, argc } => {
+                    let split = stack.len().saturating_sub(*argc);
+                    let arguments = stack.split_off(split);
+                    let receiver = pop(&mut stack);
+                    // An own property holding a function/closure wins over
+                    // any built-in — the same own-property-shadows-prototype
+                    // rule real JS follows, and how a stored callback prop
+                    // that happens to share a name with a built-in method
+                    // (rare, but not impossible) still calls correctly.
+                    let own =
+                        match &receiver {
+                            Value::Object(handle) | Value::Array(handle) => {
+                                let object = runtime.heap.get(*handle).map_err(|error| {
+                                    JsError::TypeError {
+                                        message: error.to_string(),
+                                    }
+                                })?;
+                                object.get(name).cloned()
+                            }
+                            _ => None,
+                        };
+                    let result =
+                        if let Some(callee @ (Value::Function(_) | Value::Closure(_))) = own {
+                            self.call_function_value(
+                                program, callee, arguments, &stack, &locals, runtime, host,
+                            )?
+                        } else {
+                            self.call_builtin_method(
+                                program, receiver, name, arguments, &stack, &locals, runtime, host,
+                            )?
+                        };
+                    stack.push(result);
+                }
                 Op::Return => return Ok(pop(&mut stack)),
             }
             pointer += 1;
         }
         Ok(Value::Undefined)
     }
+
+    /// Calls `callee` (must be a `Value::Function`/`Value::Closure`) with
+    /// exactly `arguments`, refusing on an arity mismatch — the ordinary,
+    /// strict call contract every other call site in this interpreter uses.
+    /// Factored out of what was `Op::CallValue`'s own body, so `Op::CallMethod`'s
+    /// own-property-is-callable path shares it rather than a second copy.
+    #[allow(clippy::too_many_arguments)]
+    fn call_function_value(
+        &self,
+        program: &Program,
+        callee: Value,
+        arguments: Vec<Value>,
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        let (index, captured) = match callee {
+            Value::Function(index) => (index, Vec::new()),
+            Value::Closure(handle) => closure_parts(runtime, handle)?,
+            other => {
+                return Err(JsError::TypeError {
+                    message: format!("{other} is not a function"),
+                });
+            }
+        };
+        let function = program
+            .functions
+            .get(index)
+            .ok_or_else(|| JsError::TypeError {
+                message: "call to an unknown function value".to_owned(),
+            })?;
+        if function.arity != arguments.len() {
+            return Err(JsError::TypeError {
+                message: format!(
+                    "a function value expects {} argument(s), got {}",
+                    function.arity,
+                    arguments.len()
+                ),
+            });
+        }
+        let restore = runtime.outer.len();
+        runtime.outer.extend(stack.iter().cloned());
+        runtime.outer.extend(locals.iter().cloned());
+        runtime.outer.extend(captured.iter().cloned());
+        let outcome =
+            self.run_function_with_upvalues(program, index, arguments, &captured, runtime, host);
+        runtime.outer.truncate(restore);
+        outcome
+    }
+
+    /// Calls a built-in method's own callback argument, adapting the
+    /// argument count to the callback's declared arity the way real JS
+    /// invocation always does: a parameter the callback did not declare is
+    /// simply never passed, and one it declared but the caller did not
+    /// supply reads `undefined`. `call_function_value` requires an exact
+    /// match deliberately (a mismatch there is normally a real bug, not a
+    /// convention) — this exists specifically for `array.map((item) => ...)`,
+    /// where a callback legitimately declares fewer parameters than `map`
+    /// conventionally passes (item, index).
+    #[allow(clippy::too_many_arguments)]
+    fn call_callback(
+        &self,
+        program: &Program,
+        callee: Value,
+        mut arguments: Vec<Value>,
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        let (index, captured) = match callee {
+            Value::Function(index) => (index, Vec::new()),
+            Value::Closure(handle) => closure_parts(runtime, handle)?,
+            other => {
+                return Err(JsError::TypeError {
+                    message: format!("{other} is not a function"),
+                });
+            }
+        };
+        let function = program
+            .functions
+            .get(index)
+            .ok_or_else(|| JsError::TypeError {
+                message: "call to an unknown function value".to_owned(),
+            })?;
+        arguments.resize(function.arity, Value::Undefined);
+        let restore = runtime.outer.len();
+        runtime.outer.extend(stack.iter().cloned());
+        runtime.outer.extend(locals.iter().cloned());
+        runtime.outer.extend(captured.iter().cloned());
+        let outcome =
+            self.run_function_with_upvalues(program, index, arguments, &captured, runtime, host);
+        runtime.outer.truncate(restore);
+        outcome
+    }
+
+    /// Allocates a new array from `elements`, charged and safepointed
+    /// exactly like `Op::NewArray` — the same allocation, reached from a
+    /// built-in method (`slice`, `split`, `map`, `filter`) instead of that
+    /// opcode.
+    fn allocate_array(
+        &self,
+        runtime: &mut Runtime,
+        stack: &[Value],
+        locals: &[Value],
+        elements: Vec<Value>,
+    ) -> Result<Value, JsError> {
+        let count = elements.len();
+        let charge = OBJECT_OVERHEAD_BYTES
+            .saturating_add((count as u64).saturating_mul(ELEMENT_OVERHEAD_BYTES));
+        runtime.bytes = runtime.bytes.saturating_add(charge);
+        if runtime.bytes > self.byte_limit {
+            return Err(JsError::ByteLimitExceeded {
+                limit: self.byte_limit,
+            });
+        }
+        if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+            collect_now(runtime, stack, locals);
+        }
+        let mut data = ObjectData::default();
+        for (index, element) in elements.into_iter().enumerate() {
+            data.set(index.to_string(), element);
+        }
+        data.set("length".to_owned(), Value::Number(count as f64));
+        let reference = runtime
+            .heap
+            .allocate(data)
+            .map_err(|error| JsError::TypeError {
+                message: error.to_string(),
+            })?;
+        Ok(Value::Array(reference))
+    }
+
+    /// Dispatches a method call to a receiver with no matching own property:
+    /// a fixed, real-usage-driven set of String and Array built-ins.
+    /// Refuses with a typed error for any other receiver type or any
+    /// unrecognised name — the same never-silently-wrong contract every
+    /// other unimplemented-feature path in this interpreter keeps.
+    #[allow(clippy::too_many_arguments)]
+    fn call_builtin_method(
+        &self,
+        program: &Program,
+        receiver: Value,
+        name: &str,
+        arguments: Vec<Value>,
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        match receiver {
+            Value::String(text) => {
+                self.call_string_method(&text, name, &arguments, stack, locals, runtime)
+            }
+            Value::Array(handle) => self.call_array_method(
+                program, handle, name, arguments, stack, locals, runtime, host,
+            ),
+            other => Err(JsError::TypeError {
+                message: format!("{other} has no method `{name}`"),
+            }),
+        }
+    }
+
+    fn call_string_method(
+        &self,
+        text: &str,
+        name: &str,
+        arguments: &[Value],
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+    ) -> Result<Value, JsError> {
+        let arg_string = |i: usize| {
+            arguments
+                .get(i)
+                .map(ToString::to_string)
+                .unwrap_or_default()
+        };
+        match name {
+            "indexOf" => {
+                let needle = arg_string(0);
+                let result = text
+                    .find(needle.as_str())
+                    .map(|byte| text[..byte].chars().count() as f64)
+                    .unwrap_or(-1.0);
+                Ok(Value::Number(result))
+            }
+            "includes" => Ok(Value::Boolean(text.contains(arg_string(0).as_str()))),
+            "startsWith" => Ok(Value::Boolean(text.starts_with(arg_string(0).as_str()))),
+            "toLowerCase" => Ok(Value::String(text.to_lowercase())),
+            "toUpperCase" => Ok(Value::String(text.to_uppercase())),
+            "trim" => Ok(Value::String(text.trim().to_string())),
+            // Real `String.prototype.replace` with a plain string search
+            // replaces only the first occurrence — a global replace needs a
+            // `/g` regex, which this interpreter does not have.
+            "replace" => Ok(Value::String(text.replacen(
+                arg_string(0).as_str(),
+                arg_string(1).as_str(),
+                1,
+            ))),
+            "slice" => {
+                let chars: Vec<char> = text.chars().collect();
+                let len = chars.len() as i64;
+                let start = arguments
+                    .first()
+                    .map(to_number)
+                    .map(|n| clamp_slice_index(n, len))
+                    .unwrap_or(0);
+                let end = arguments
+                    .get(1)
+                    .map(to_number)
+                    .map(|n| clamp_slice_index(n, len))
+                    .unwrap_or(len);
+                let (start, end) = (start.max(0) as usize, end.max(0) as usize);
+                let sliced = if start < end {
+                    chars[start.min(chars.len())..end.min(chars.len())]
+                        .iter()
+                        .collect()
+                } else {
+                    String::new()
+                };
+                Ok(Value::String(sliced))
+            }
+            "split" => {
+                let separator = arg_string(0);
+                let pieces: Vec<Value> = if separator.is_empty() {
+                    text.chars().map(|c| Value::String(c.to_string())).collect()
+                } else {
+                    text.split(separator.as_str())
+                        .map(|piece| Value::String(piece.to_string()))
+                        .collect()
+                };
+                self.allocate_array(runtime, stack, locals, pieces)
+            }
+            _ => Err(JsError::TypeError {
+                message: format!("a string has no method `{name}`"),
+            }),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn call_array_method(
+        &self,
+        program: &Program,
+        handle: GcRef,
+        name: &str,
+        arguments: Vec<Value>,
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        match name {
+            "push" => {
+                let mut elements = array_elements(runtime, handle)?;
+                elements.extend(arguments);
+                let new_length = elements.len();
+                let object = runtime
+                    .heap
+                    .get_mut(handle)
+                    .map_err(|error| JsError::TypeError {
+                        message: error.to_string(),
+                    })?;
+                for (index, element) in elements.into_iter().enumerate() {
+                    object.set(index.to_string(), element);
+                }
+                object.set("length".to_owned(), Value::Number(new_length as f64));
+                Ok(Value::Number(new_length as f64))
+            }
+            "join" => {
+                let elements = array_elements(runtime, handle)?;
+                let separator = arguments
+                    .first()
+                    .map(ToString::to_string)
+                    .unwrap_or_else(|| ",".to_string());
+                let joined = elements
+                    .iter()
+                    .map(|value| match value {
+                        Value::Undefined | Value::Null => String::new(),
+                        other => other.to_string(),
+                    })
+                    .collect::<Vec<_>>()
+                    .join(&separator);
+                Ok(Value::String(joined))
+            }
+            "indexOf" => {
+                let elements = array_elements(runtime, handle)?;
+                let needle = arguments.first().cloned().unwrap_or(Value::Undefined);
+                let result = elements
+                    .iter()
+                    .position(|value| strict_equal(value, &needle))
+                    .map(|index| index as f64)
+                    .unwrap_or(-1.0);
+                Ok(Value::Number(result))
+            }
+            "includes" => {
+                let elements = array_elements(runtime, handle)?;
+                let needle = arguments.first().cloned().unwrap_or(Value::Undefined);
+                Ok(Value::Boolean(
+                    elements.iter().any(|value| strict_equal(value, &needle)),
+                ))
+            }
+            "slice" => {
+                let elements = array_elements(runtime, handle)?;
+                let len = elements.len() as i64;
+                let start = arguments
+                    .first()
+                    .map(to_number)
+                    .map(|n| clamp_slice_index(n, len))
+                    .unwrap_or(0);
+                let end = arguments
+                    .get(1)
+                    .map(to_number)
+                    .map(|n| clamp_slice_index(n, len))
+                    .unwrap_or(len);
+                let sliced = if start < end {
+                    elements[start as usize..end as usize].to_vec()
+                } else {
+                    Vec::new()
+                };
+                self.allocate_array(runtime, stack, locals, sliced)
+            }
+            "map" | "filter" | "forEach" | "find" | "findIndex" | "some" => {
+                let elements = array_elements(runtime, handle)?;
+                let callback = arguments
+                    .first()
+                    .cloned()
+                    .ok_or_else(|| JsError::TypeError {
+                        message: format!("{name} requires a callback argument"),
+                    })?;
+                match name {
+                    "map" => {
+                        let mut mapped = Vec::with_capacity(elements.len());
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element, Value::Number(index as f64)];
+                            mapped.push(self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            )?);
+                        }
+                        self.allocate_array(runtime, stack, locals, mapped)
+                    }
+                    "filter" => {
+                        let mut kept = Vec::new();
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element.clone(), Value::Number(index as f64)];
+                            let keep = self
+                                .call_callback(
+                                    program,
+                                    callback.clone(),
+                                    args,
+                                    stack,
+                                    locals,
+                                    runtime,
+                                    host,
+                                )?
+                                .truthy();
+                            if keep {
+                                kept.push(element);
+                            }
+                        }
+                        self.allocate_array(runtime, stack, locals, kept)
+                    }
+                    "forEach" => {
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element, Value::Number(index as f64)];
+                            self.call_callback(
+                                program,
+                                callback.clone(),
+                                args,
+                                stack,
+                                locals,
+                                runtime,
+                                host,
+                            )?;
+                        }
+                        Ok(Value::Undefined)
+                    }
+                    "find" => {
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element.clone(), Value::Number(index as f64)];
+                            let matched = self
+                                .call_callback(
+                                    program,
+                                    callback.clone(),
+                                    args,
+                                    stack,
+                                    locals,
+                                    runtime,
+                                    host,
+                                )?
+                                .truthy();
+                            if matched {
+                                return Ok(element);
+                            }
+                        }
+                        Ok(Value::Undefined)
+                    }
+                    "findIndex" => {
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element, Value::Number(index as f64)];
+                            let matched = self
+                                .call_callback(
+                                    program,
+                                    callback.clone(),
+                                    args,
+                                    stack,
+                                    locals,
+                                    runtime,
+                                    host,
+                                )?
+                                .truthy();
+                            if matched {
+                                return Ok(Value::Number(index as f64));
+                            }
+                        }
+                        Ok(Value::Number(-1.0))
+                    }
+                    "some" => {
+                        for (index, element) in elements.into_iter().enumerate() {
+                            let args = vec![element, Value::Number(index as f64)];
+                            let matched = self
+                                .call_callback(
+                                    program,
+                                    callback.clone(),
+                                    args,
+                                    stack,
+                                    locals,
+                                    runtime,
+                                    host,
+                                )?
+                                .truthy();
+                            if matched {
+                                return Ok(Value::Boolean(true));
+                            }
+                        }
+                        Ok(Value::Boolean(false))
+                    }
+                    _ => unreachable!("matched above"),
+                }
+            }
+            "reduce" => {
+                let elements = array_elements(runtime, handle)?;
+                let callback = arguments
+                    .first()
+                    .cloned()
+                    .ok_or_else(|| JsError::TypeError {
+                        message: "reduce requires a callback argument".to_string(),
+                    })?;
+                let mut iter = elements.into_iter().enumerate();
+                let mut accumulator = if let Some(initial) = arguments.get(1) {
+                    initial.clone()
+                } else {
+                    let Some((_, first)) = iter.next() else {
+                        return Err(JsError::TypeError {
+                            message: "reduce of empty array with no initial value".to_string(),
+                        });
+                    };
+                    first
+                };
+                for (index, element) in iter {
+                    let args = vec![accumulator, element, Value::Number(index as f64)];
+                    accumulator = self.call_callback(
+                        program,
+                        callback.clone(),
+                        args,
+                        stack,
+                        locals,
+                        runtime,
+                        host,
+                    )?;
+                }
+                Ok(accumulator)
+            }
+            _ => Err(JsError::TypeError {
+                message: format!("an array has no method `{name}`"),
+            }),
+        }
+    }
+}
+
+/// Reads an array's elements in index order, `0..length`.
+fn array_elements(runtime: &Runtime, handle: GcRef) -> Result<Vec<Value>, JsError> {
+    let object = runtime
+        .heap
+        .get(handle)
+        .map_err(|error| JsError::TypeError {
+            message: error.to_string(),
+        })?;
+    let length = object.get("length").map(to_number).unwrap_or(0.0).max(0.0) as usize;
+    Ok((0..length)
+        .map(|index| {
+            object
+                .get(&index.to_string())
+                .cloned()
+                .unwrap_or(Value::Undefined)
+        })
+        .collect())
+}
+
+/// Clamps a `slice`-style index argument to `0..=len`: negative counts from
+/// the end (`-1` is the last element), out of range clamps rather than
+/// wraps or errors, `NaN` reads as `0` — the same coercion
+/// `String.prototype.slice`/`Array.prototype.slice` use in real JS.
+fn clamp_slice_index(n: f64, len: i64) -> i64 {
+    if n.is_nan() {
+        return 0;
+    }
+    let n = n as i64;
+    let n = if n < 0 { (len + n).max(0) } else { n };
+    n.min(len)
 }
 
 fn pop(stack: &mut Vec<Value>) -> Value {
@@ -5224,6 +5814,188 @@ mod tests {
         // erring would be wrong even though it matches this workspace's habit.
         assert_eq!(expr("({ a: 1 }).missing"), Value::Undefined);
         assert_eq!(expr("({}).anything"), Value::Undefined);
+    }
+
+    #[test]
+    fn string_length_and_built_in_methods_work() {
+        assert_eq!(expr("\"hello\".length"), Value::Number(5.0));
+        assert_eq!(
+            expr("\"example.com/page\".indexOf(\"/\")"),
+            Value::Number(11.0)
+        );
+        assert_eq!(expr("\"example.com\".indexOf(\"/\")"), Value::Number(-1.0));
+        assert_eq!(expr("\"hello\".includes(\"ell\")"), Value::Boolean(true));
+        assert_eq!(expr("\"hello\".startsWith(\"he\")"), Value::Boolean(true));
+        assert_eq!(
+            expr("\"Hello\".toLowerCase()"),
+            Value::String("hello".to_string())
+        );
+        assert_eq!(
+            expr("\"Hello\".toUpperCase()"),
+            Value::String("HELLO".to_string())
+        );
+        assert_eq!(expr("\"  hi  \".trim()"), Value::String("hi".to_string()));
+        assert_eq!(
+            expr("\"a-b-c\".replace(\"-\", \"+\")"),
+            Value::String("a+b-c".to_string()),
+            "replace touches only the first occurrence, like real String.prototype.replace"
+        );
+        // The real Nova shape: `i === -1 ? url : url.slice(0, i)`.
+        assert_eq!(
+            expr("\"example.com/page\".slice(0, 11)"),
+            Value::String("example.com".to_string())
+        );
+        assert_eq!(
+            expr("\"example.com/page\".slice(11)"),
+            Value::String("/page".to_string())
+        );
+        // Negative indices count from the end.
+        assert_eq!(
+            expr("\"hello\".slice(-3)"),
+            Value::String("llo".to_string())
+        );
+    }
+
+    #[test]
+    fn string_split_returns_a_real_array() {
+        assert_eq!(
+            eval_in_fn("let parts = \"a,b,c\".split(\",\"); return parts.length;"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn("let parts = \"a,b,c\".split(\",\"); return parts[1];"),
+            Value::String("b".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let parts = \"ab\".split(\"\"); return parts.length;"),
+            Value::Number(2.0),
+            "an empty separator splits into individual characters"
+        );
+    }
+
+    #[test]
+    fn array_built_in_methods_without_a_callback_work() {
+        assert_eq!(
+            eval_in_fn("let a = [1, 2]; a.push(3); return a.length;"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn("let a = [1, 2]; a.push(3); return a[2];"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].join(\"-\");"),
+            Value::String("1-2-3".to_string())
+        );
+        assert_eq!(expr("[1, 2, 3].indexOf(2)"), Value::Number(1.0));
+        assert_eq!(expr("[1, 2, 3].indexOf(9)"), Value::Number(-1.0));
+        assert_eq!(expr("[1, 2, 3].includes(2)"), Value::Boolean(true));
+        assert_eq!(expr("[1, 2, 3].includes(9)"), Value::Boolean(false));
+        assert_eq!(
+            eval_in_fn("let s = [1, 2, 3, 4].slice(1, 3); return s.length + s[0];"),
+            Value::Number(4.0),
+            "slice(1, 3) of [1,2,3,4] is [2, 3]: length 2 plus element 0 (2) is 4"
+        );
+    }
+
+    #[test]
+    fn array_built_in_methods_with_a_callback_work() {
+        assert_eq!(
+            eval_in_fn("let m = [1, 2, 3].map(x => x * 2); return m[0] + m[1] + m[2];"),
+            Value::Number(12.0)
+        );
+        assert_eq!(
+            eval_in_fn("let f = [1, 2, 3, 4].filter(x => x > 2); return f.length + f[0];"),
+            Value::Number(5.0),
+            "filter(x > 2) of [1,2,3,4] is [3, 4]: length 2 plus element 0 (3) is 5"
+        );
+        // forEach has no return value of its own; observe it ran via a
+        // captured side effect instead.
+        let program = compile("function main() { [1, 2, 3].forEach(x => record(x)); } main();")
+            .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![1.0, 2.0, 3.0]);
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].find(x => x > 1);"),
+            Value::Number(2.0)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].find(x => x > 9);"),
+            Value::Undefined
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].findIndex(x => x > 1);"),
+            Value::Number(1.0)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].some(x => x > 2);"),
+            Value::Boolean(true)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].some(x => x > 9);"),
+            Value::Boolean(false)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].reduce((acc, x) => acc + x, 0);"),
+            Value::Number(6.0)
+        );
+        assert_eq!(
+            eval_in_fn("return [1, 2, 3].reduce((acc, x) => acc + x);"),
+            Value::Number(6.0),
+            "reduce with no initial value seeds the accumulator from element 0"
+        );
+    }
+
+    #[test]
+    fn a_callback_may_declare_fewer_parameters_than_the_method_conventionally_passes() {
+        // `map` conventionally passes (item, index), but a callback that only
+        // declares `item` must still work — real JS ignores unused trailing
+        // arguments rather than refusing the call.
+        assert_eq!(
+            eval_in_fn("let m = [10, 20].map(x => x + 1); return m[0] + m[1];"),
+            Value::Number(32.0)
+        );
+    }
+
+    #[test]
+    fn an_own_property_named_like_a_built_in_method_shadows_it() {
+        // Real own-property-shadows-prototype precedence: a stored callback
+        // prop that happens to be named `filter` must still be called as
+        // itself, not treated as Array.prototype.filter (this receiver is
+        // an ordinary object, not even an array, so the built-in path could
+        // never legitimately apply — the point is that resolution checks
+        // the own property first, unconditionally).
+        assert_eq!(
+            eval_in_fn(
+                "let o = { filter: function(x) { return x + 100; } }; \
+                 return o.filter(1);"
+            ),
+            Value::Number(101.0)
+        );
+    }
+
+    #[test]
+    fn calling_an_unrecognised_method_is_a_typed_refusal_not_a_panic() {
+        let program = compile("function main() { \"hi\".bogus(); } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
+        let program = compile("function main() { [1, 2].bogus(); } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
+        // A receiver type with no built-in methods at all (unlike String/
+        // Array) still refuses rather than silently returning `undefined`.
+        let program = compile("function main() { (5).bogus(); } main();").expect("compiles");
+        assert!(matches!(
+            Vm::default().call(&program, "main", Vec::new(), &mut NoHost::default()),
+            Err(JsError::TypeError { .. })
+        ));
     }
 
     #[test]
