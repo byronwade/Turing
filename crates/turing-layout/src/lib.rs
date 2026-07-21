@@ -1182,10 +1182,25 @@ fn non_negative(property: &str, value: &str) -> Result<f32, LayoutError> {
 
 /// Parses a length in `px` or a bare number. Percentages and relative units
 /// are not resolved here and yield `None`, which layout treats as `auto`.
+///
+/// `"NaN"` is syntax `f32::from_str` accepts, so it counts as *parsed*, not
+/// *unparseable*, unless filtered out here — every one of this function's
+/// three callers (`width`, `height`, and `non_negative`, which per-side
+/// border widths, `border-radius`, and `outline-width` all go through)
+/// would otherwise carry a `NaN` straight into that box's actual layout
+/// geometry: `non_negative`'s own `length < 0.0` refusal never fires for
+/// `NaN` (every comparison against `NaN` is `false`), and an `Option<f32>`
+/// already holding `Some(f32::NAN)` is not `None`, so `width.unwrap_or(0.0)`
+/// keeps the `NaN` rather than falling back to anything. Treated the same
+/// as any other value this function cannot make sense of.
 fn parse_length(value: &str) -> Option<f32> {
     let trimmed = value.trim();
     let number = trimmed.strip_suffix("px").unwrap_or(trimmed);
-    number.trim().parse::<f32>().ok()
+    number
+        .trim()
+        .parse::<f32>()
+        .ok()
+        .filter(|value| !value.is_nan())
 }
 
 /// Parses `opacity`'s value — a bare number or a percentage — and clamps it
@@ -1948,6 +1963,49 @@ mod tests {
             result,
             Err(LayoutError::NegativeEdgeUnsupported { .. })
         ));
+    }
+
+    #[test]
+    fn nan_border_radius_does_not_reach_layout_geometry() {
+        // "NaN" is syntax f32::from_str accepts, so it parses successfully
+        // rather than falling into non_negative's unparseable-defaults-to-0
+        // path — and NaN < 0.0 is false, so the negative-value refusal below
+        // it never fires either. Both gaps would let a NaN border-radius
+        // through to paint. Confirmed via `run` rather than calling
+        // parse_length directly, so this proves the whole declaration path,
+        // not just the parsing function in isolation.
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { border-radius: NaN; background: navy; }",
+            100.0,
+        )
+        .expect("lays out");
+        let document = document_of("<body><div>x</div></body>");
+        assert_eq!(
+            find(&root, &document, "div").border_radius,
+            0.0,
+            "a NaN border-radius must resolve to the unparseable-value default, not NaN itself"
+        );
+    }
+
+    #[test]
+    fn nan_width_does_not_reach_layout_geometry() {
+        // Unlike non_negative's properties, `width`/`height` store
+        // parse_length's Option<f32> directly — `Some(f32::NAN)` is not
+        // `None`, so `.unwrap_or(0.0)` would keep the NaN rather than
+        // falling back to auto.
+        let root = run(
+            "<body><div>x</div></body>",
+            "div { display: block; width: NaN; }",
+            100.0,
+        )
+        .expect("lays out");
+        let document = document_of("<body><div>x</div></body>");
+        let width = find(&root, &document, "div").dimensions.content.width;
+        assert!(
+            !width.is_nan(),
+            "a NaN width must not reach the box's own resolved geometry"
+        );
     }
 
     #[test]
