@@ -59,6 +59,70 @@
 //! implemented language does not fail visibly; it computes a wrong value and
 //! carries on. Refusing an unimplemented construct at compile time keeps every
 //! program that *does* run trustworthy.
+//!
+//! # JSX
+//!
+//! JSX (`<Tag prop="a" other={b}>child1{child2}</Tag>`) is parsed and
+//! desugared entirely at parse time into an ordinary call this crate already
+//! knows how to compile — the same discipline the `for`-loop desugaring
+//! above follows, applied to a syntax extension instead of a statement form.
+//! This is **syntax only**: the desugared call names a function,
+//! `createElement`, that this crate does not implement. Calling it produces
+//! [`JsError::UnboundOperation`], exactly like calling any other undeclared
+//! name — the correct, honest state until a later phase (a real
+//! component/DOM runtime) binds that name to something. Parsing JSX and
+//! running it are different milestones, and this is only the first.
+//!
+//! `<Tag prop1="a" prop2={b}>child1{child2}</Tag>` desugars to
+//! `createElement(Tag, {prop1: "a", prop2: b}, child1, child2)`, where:
+//!
+//! - The tag becomes the first argument. A lowercase-leading name (`<div>`)
+//!   is a host/intrinsic element and passes as a **string**, `"div"`; an
+//!   uppercase-leading name (`<Header>`) is a component reference and passes
+//!   as the **identifier itself**, `Header` — an ordinary variable reference,
+//!   evaluated and type-checked exactly like any other use of that name. This
+//!   matches real JSX's own lowercase/uppercase convention and means an
+//!   undeclared component fails to compile as [`JsError::UndefinedVariable`]
+//!   rather than silently stringifying its name.
+//! - Attributes become the second argument, an object literal built from
+//!   them in source order (`{}` when there are none — always an object,
+//!   never `null`, so the next phase never needs to null-check it).
+//! - Children — text runs, `{expression}` children, and nested elements —
+//!   become the remaining, variadic arguments, in source order, mirroring
+//!   `createElement`'s own real multi-argument convention rather than
+//!   collecting them into an array.
+//! - A fragment, `<>child1<Foo /></>`, desugars the same way but names
+//!   `Fragment` — a variable reference, the same convention a component
+//!   uses — as the tag, with no attributes: `createElement(Fragment, {},
+//!   child1, createElement(Foo, {}))`.
+//!
+//! Supported: self-closing tags, tags with children, string (`x="a"`) and
+//! `{expression}` attribute values (including an arrow function value, since
+//! an attribute's brace content is parsed with the ordinary expression
+//! grammar), text children, `{expression}` children, nested tags, mixed
+//! text/element/expression children, and fragments. A text run that is pure
+//! whitespace between tags contributes no child at all, so ordinarily
+//! indented multi-line JSX does not produce spurious whitespace-only
+//! arguments; a text run with any non-whitespace content is otherwise kept
+//! verbatim, without JSX's fuller per-line trim-and-rejoin whitespace rule.
+//!
+//! Refused, each as a named [`JsError::Unsupported`] rather than a
+//! misparse: spread attributes and spread children (`{...props}`), a
+//! boolean-shorthand attribute (`<Foo disabled>` — write `disabled={true}`),
+//! namespaced or hyphenated tag names (`<Foo.Bar>`), namespaced attribute
+//! names, and an empty expression container (`{}`).
+//!
+//! JSX text and attribute values are not tokenized as JavaScript at all —
+//! quoting and every other lexical rule this file's lexer applies simply do
+//! not apply inside them — so they are scanned directly from the source
+//! text rather than from the pre-lexed token stream, and ordinary
+//! token-based parsing resumes at the first token starting at or after
+//! where the scan ends. That handoff depends on JSX content staying within
+//! the plain lexer's own character set; content that does not (most
+//! plausibly an unescaped quote inside text, since this lexer has no escape
+//! sequences) is refused rather than silently misaligning the tokens that
+//! follow — seen in `Parser::resume_at`, which is the one place in this
+//! feature where the limitation is checked rather than merely documented.
 
 #![forbid(unsafe_code)]
 
@@ -313,9 +377,17 @@ const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("do", "do/while"),
 ];
 
-fn lex(source: &str) -> Result<Vec<Token>, JsError> {
+/// Lexes `source`, returning each token alongside the byte offset its first
+/// character starts at (`Token::Eof`'s offset is `source.len()`).
+///
+/// The offsets exist for JSX (see the module-level doc comment on JSX): JSX
+/// text is not JavaScript and is scanned directly from these same source
+/// bytes rather than through this token stream, and the offsets are how the
+/// parser finds, after such a scan, which pre-lexed token to resume from.
+fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
     let bytes = source.as_bytes();
     let mut tokens = Vec::new();
+    let mut starts = Vec::new();
     let mut index = 0;
 
     while index < bytes.len() {
@@ -344,16 +416,19 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
             while index < bytes.len() && (bytes[index].is_ascii_digit() || bytes[index] == b'.') {
                 index += 1;
             }
+            starts.push(start);
             tokens.push(Token::Number(source[start..index].to_string()));
             continue;
         }
         if byte == b'"' || byte == b'\'' {
+            let token_start = index;
             let quote = byte;
             index += 1;
             let start = index;
             while index < bytes.len() && bytes[index] != quote {
                 index += 1;
             }
+            starts.push(token_start);
             tokens.push(Token::Str(source[start..index].to_string()));
             index += 1;
             continue;
@@ -368,6 +443,7 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
                 index += 1;
             }
             let word = &source[start..index];
+            starts.push(start);
             if KEYWORDS.contains(&word) {
                 tokens.push(Token::Keyword(word.to_string()));
             } else {
@@ -380,6 +456,7 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
         let three = source.get(index..index + 3).unwrap_or("");
         let two = source.get(index..index + 2).unwrap_or("");
         if matches!(three, "===" | "!==") {
+            starts.push(index);
             tokens.push(Token::Punct(three.to_string()));
             index += 3;
             continue;
@@ -387,6 +464,7 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
         // `...` before `.`, so spread lexes as one token and can be refused
         // as itself rather than as three property accesses.
         if three == "..." {
+            starts.push(index);
             tokens.push(Token::Punct(three.to_string()));
             index += 3;
             continue;
@@ -406,11 +484,13 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
                 | "*="
                 | "/="
         ) {
+            starts.push(index);
             tokens.push(Token::Punct(two.to_string()));
             index += 2;
             continue;
         }
         if b"+-*/%<>=!(){};,.[]:?".contains(&byte) {
+            starts.push(index);
             tokens.push(Token::Punct((byte as char).to_string()));
             index += 1;
             continue;
@@ -421,8 +501,9 @@ fn lex(source: &str) -> Result<Vec<Token>, JsError> {
             offset: index,
         });
     }
+    starts.push(bytes.len());
     tokens.push(Token::Eof);
-    Ok(tokens)
+    Ok((tokens, starts))
 }
 
 // -- ast -----------------------------------------------------------------
@@ -566,17 +647,27 @@ enum Stmt {
 /// than something a person or a minifier produces.
 pub const MAX_NESTING_DEPTH: usize = 64;
 
-struct Parser {
+struct Parser<'a> {
     tokens: Vec<Token>,
+    /// Byte offset each token in `tokens` starts at, same length and index
+    /// alignment as `tokens`. Unused by ordinary token-based parsing; it
+    /// exists for JSX, which parses a run of the underlying source directly
+    /// (see the module-level doc comment on JSX) and uses these to find
+    /// where to resume afterward.
+    starts: Vec<usize>,
+    /// The original source, for JSX's raw-source scanning.
+    source: &'a str,
     position: usize,
     /// Current recursion depth, bounded by [`MAX_NESTING_DEPTH`].
     depth: usize,
 }
 
-impl Parser {
-    const fn new(tokens: Vec<Token>) -> Self {
+impl<'a> Parser<'a> {
+    const fn new(source: &'a str, tokens: Vec<Token>, starts: Vec<usize>) -> Self {
         Self {
             tokens,
+            starts,
+            source,
             position: 0,
             depth: 0,
         }
@@ -1170,6 +1261,9 @@ impl Parser {
 
     fn parse_primary_base(&mut self) -> Result<Expr, JsError> {
         self.refuse_unsupported_keyword()?;
+        if self.jsx_ahead() {
+            return self.parse_jsx_expression();
+        }
         if self.check_punct("{") {
             return self.parse_object_literal();
         }
@@ -1338,6 +1432,481 @@ impl Parser {
         }
         self.expect_punct(")")?;
         Ok(parameters)
+    }
+
+    // -- JSX --------------------------------------------------------------
+    //
+    // JSX text and attribute values are not JavaScript — quoting, comment
+    // syntax, and every other token rule this lexer applies simply do not
+    // apply inside them — so none of what follows consults `self.tokens`.
+    // It reads `self.source` directly with its own byte cursor, threaded
+    // through these methods as a plain `usize` rather than `self.position`,
+    // which stays exactly where it was in the token stream throughout. Once
+    // a whole JSX expression has been scanned this way, `resume_at` finds
+    // the token to continue ordinary parsing from. See the module-level doc
+    // comment on JSX for the calling convention this desugars to and the
+    // one limitation this design does not paper over.
+
+    /// A byte of the source at an arbitrary offset, or `None` past the end.
+    fn byte_at(&self, at: usize) -> Option<u8> {
+        self.source.as_bytes().get(at).copied()
+    }
+
+    /// Advances past ASCII whitespace, the only kind JSX's own grammar (tag
+    /// and attribute layout) needs to skip; text content is handled
+    /// separately by `jsx_text` and never calls this.
+    fn skip_jsx_space(&self, mut at: usize) -> usize {
+        while matches!(self.byte_at(at), Some(byte) if byte.is_ascii_whitespace()) {
+            at += 1;
+        }
+        at
+    }
+
+    /// Whether the cursor begins a JSX expression: `<` followed immediately
+    /// by an identifier (an element) or by `>` (a fragment).
+    ///
+    /// Pure token lookahead — deciding *that* this is JSX needs only the
+    /// next token, even though parsing its content drops below the token
+    /// stream. `a < b` never reaches this: `parse_comparison`'s left operand
+    /// already consumed `a` before its own `<` is examined, so `<` is never
+    /// the first token of a *primary* expression there. This is consulted
+    /// only where a bare `<` would otherwise be an unhandled primary token
+    /// and today is simply a parse error — so a false positive is
+    /// impossible: anything this accepts was refused before JSX existed.
+    fn jsx_ahead(&self) -> bool {
+        if !self.check_punct("<") {
+            return false;
+        }
+        matches!(self.peek_at(1), Token::Ident(_))
+            || matches!(self.peek_at(1), Token::Punct(punct) if punct == ">")
+    }
+
+    /// Reads a JSX name (a tag or attribute name) starting at `cursor`.
+    ///
+    /// `allow_hyphen` additionally permits `-` after the first character,
+    /// which real JSX allows in attribute names (`data-id`, `aria-label`)
+    /// but not in tag names, where a following `-` is instead refused
+    /// explicitly by the caller.
+    fn jsx_read_name(&self, cursor: usize, allow_hyphen: bool) -> Result<(String, usize), JsError> {
+        let is_start = |byte: u8| byte.is_ascii_alphabetic() || byte == b'_' || byte == b'$';
+        let is_continue = |byte: u8| {
+            byte.is_ascii_alphanumeric()
+                || byte == b'_'
+                || byte == b'$'
+                || (allow_hyphen && byte == b'-')
+        };
+        match self.byte_at(cursor) {
+            Some(byte) if is_start(byte) => {}
+            Some(byte) => {
+                return Err(JsError::UnexpectedToken {
+                    found: format!("`{}`", byte as char),
+                    expected: "a JSX name".to_string(),
+                });
+            }
+            None => {
+                return Err(JsError::UnexpectedToken {
+                    found: "end of input".to_string(),
+                    expected: "a JSX name".to_string(),
+                });
+            }
+        }
+        let mut end = cursor + 1;
+        while matches!(self.byte_at(end), Some(byte) if is_continue(byte)) {
+            end += 1;
+        }
+        Ok((self.source[cursor..end].to_string(), end))
+    }
+
+    /// Parses the source between a `{` (already consumed up to `cursor`,
+    /// which points just past it) and its matching `}` as an embedded
+    /// JavaScript expression: an attribute value (`onClick={handler}`) or an
+    /// expression child (`{value}`).
+    ///
+    /// The scan tracks brace depth and skips over quoted strings so a `}`
+    /// or `{` inside one (`{"a}"}`) does not miscount, but otherwise does
+    /// not tokenize this span — it only needs to find the matching `}`, not
+    /// to understand what is between them. What is between them is parsed
+    /// properly afterward, by lexing and parsing exactly that substring
+    /// with the ordinary expression grammar (`parse_expression`), which is
+    /// what makes `onClick={() => count = count + 1}` — an arrow function —
+    /// work for free.
+    fn jsx_expr_container(&mut self, cursor: usize) -> Result<(Expr, usize), JsError> {
+        let bytes = self.source.as_bytes();
+        let mut index = cursor;
+        let mut depth = 1_i32;
+        loop {
+            match bytes.get(index) {
+                None => {
+                    return Err(JsError::UnexpectedToken {
+                        found: "end of input".to_string(),
+                        expected: "a closing `}` for the JSX expression".to_string(),
+                    });
+                }
+                Some(b'{') => {
+                    depth += 1;
+                    index += 1;
+                }
+                Some(b'}') => {
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                    index += 1;
+                }
+                Some(&quote) if quote == b'"' || quote == b'\'' => {
+                    let value_start = index + 1;
+                    let end = self.source[value_start..]
+                        .find(quote as char)
+                        .map(|offset| value_start + offset)
+                        .ok_or_else(|| JsError::UnexpectedToken {
+                            found: "end of input".to_string(),
+                            expected: "a closing quote inside the JSX expression".to_string(),
+                        })?;
+                    index = end + 1;
+                }
+                Some(_) => index += 1,
+            }
+        }
+        let inner = self.source[cursor..index].trim();
+        if inner.is_empty() {
+            return Err(JsError::Unsupported {
+                feature: "empty JSX expression containers (`{}`)".to_string(),
+            });
+        }
+        if inner.starts_with("...") {
+            return Err(JsError::Unsupported {
+                feature: "JSX spread ({...props} / {...children})".to_string(),
+            });
+        }
+        let expr = self.parse_embedded_expression(inner)?;
+        Ok((expr, index + 1))
+    }
+
+    /// Lexes and parses `source` as a single expression, entirely on its
+    /// own — a fresh `Parser` over just this substring — reusing the whole
+    /// precedence chain rather than re-implementing expression parsing for
+    /// JSX's embedded `{expr}` positions.
+    ///
+    /// Depth starts from the enclosing parser's current depth rather than
+    /// zero, so deeply nested JSX with deeply nested `{expr}` inside it
+    /// still refuses past `MAX_NESTING_DEPTH` overall instead of resetting
+    /// the budget at each boundary.
+    fn parse_embedded_expression(&mut self, source: &str) -> Result<Expr, JsError> {
+        let (tokens, starts) = lex(source)?;
+        let mut embedded = Parser::new(source, tokens, starts);
+        embedded.depth = self.depth;
+        let expr = embedded.parse_expression()?;
+        if !matches!(embedded.peek(), Token::Eof) {
+            return Err(JsError::UnexpectedToken {
+                found: embedded.peek().describe(),
+                expected: "end of the JSX expression".to_string(),
+            });
+        }
+        Ok(expr)
+    }
+
+    /// Scans a run of JSX text starting at `cursor`, stopping before `<` or
+    /// `{` (or the end of input). Returns the child expression to emit, if
+    /// any, and the offset of the character it stopped at.
+    ///
+    /// A run that is nothing but whitespace contributes no child at all —
+    /// otherwise every line break and indent in ordinarily-formatted
+    /// multi-line JSX (exactly what a 1500-tag hand-formatted source file
+    /// contains) would show up as a spurious whitespace-only string
+    /// argument to `createElement`. A run with any non-whitespace content
+    /// is kept verbatim, spacing included: this implementation does not
+    /// attempt JSX's fuller per-line trim-and-rejoin whitespace algorithm,
+    /// only the one rule needed to keep formatting-only whitespace out of
+    /// the desugared call.
+    fn jsx_text(&self, cursor: usize) -> (Option<Expr>, usize) {
+        let bytes = self.source.as_bytes();
+        let mut index = cursor;
+        while !matches!(bytes.get(index), None | Some(b'<') | Some(b'{')) {
+            index += 1;
+        }
+        let raw = &self.source[cursor..index];
+        if raw.trim().is_empty() {
+            (None, index)
+        } else {
+            (Some(Expr::Str(raw.to_string())), index)
+        }
+    }
+
+    /// Parses JSX children starting at `cursor` up to and including the
+    /// matching closing tag, returning the children in source order and the
+    /// offset just past that closing tag's `>`.
+    ///
+    /// `name` is `None` for a fragment, matched against a bare `</>`, or
+    /// `Some(tag)` for an element, matched against `</tag>`. A closing tag
+    /// that does not match — or none before the input ends — is a parse
+    /// error naming what was expected, never a silent pairing with whatever
+    /// closes next.
+    fn jsx_children(
+        &mut self,
+        mut cursor: usize,
+        name: Option<&str>,
+    ) -> Result<(Vec<Expr>, usize), JsError> {
+        let mut children = Vec::new();
+        loop {
+            match self.byte_at(cursor) {
+                None => {
+                    return Err(JsError::UnexpectedToken {
+                        found: "end of input".to_string(),
+                        expected: format!("a closing tag `</{}>`", name.unwrap_or_default()),
+                    });
+                }
+                Some(b'{') => {
+                    let (expr, next) = self.jsx_expr_container(cursor + 1)?;
+                    children.push(expr);
+                    cursor = next;
+                }
+                Some(b'<') if self.byte_at(cursor + 1) == Some(b'/') => {
+                    let mut after = cursor + 2;
+                    let closing_name = if self.byte_at(after) == Some(b'>') {
+                        None
+                    } else {
+                        let (name, next) = self.jsx_read_name(after, true)?;
+                        after = next;
+                        Some(name)
+                    };
+                    after = self.skip_jsx_space(after);
+                    if self.byte_at(after) != Some(b'>') {
+                        return Err(JsError::UnexpectedToken {
+                            found: "token".to_string(),
+                            expected: "`>` to close the JSX closing tag".to_string(),
+                        });
+                    }
+                    if closing_name.as_deref() != name {
+                        return Err(JsError::UnexpectedToken {
+                            found: format!("closing tag `</{}>`", closing_name.unwrap_or_default()),
+                            expected: format!(
+                                "the matching closing tag `</{}>`",
+                                name.unwrap_or_default()
+                            ),
+                        });
+                    }
+                    return Ok((children, after + 1));
+                }
+                Some(b'<') => {
+                    let (expr, next) = self.jsx_element(cursor)?;
+                    children.push(expr);
+                    cursor = next;
+                }
+                Some(_) => {
+                    let (text, next) = self.jsx_text(cursor);
+                    if let Some(text) = text {
+                        children.push(text);
+                    }
+                    cursor = next;
+                }
+            }
+        }
+    }
+
+    /// Parses `name="value"` and `name={expr}` attributes starting at
+    /// `cursor`, stopping (without consuming) at the `/` or `>` that ends
+    /// the opening tag.
+    fn jsx_attributes(
+        &mut self,
+        mut cursor: usize,
+    ) -> Result<(Vec<(String, Expr)>, usize), JsError> {
+        let mut entries = Vec::new();
+        loop {
+            cursor = self.skip_jsx_space(cursor);
+            match self.byte_at(cursor) {
+                Some(b'/' | b'>') | None => break,
+                _ => {}
+            }
+            if self.source[cursor..].starts_with("{...") {
+                return Err(JsError::Unsupported {
+                    feature: "JSX spread attributes ({...props})".to_string(),
+                });
+            }
+            let (name, mut after_name) = self.jsx_read_name(cursor, true)?;
+            if self.byte_at(after_name) == Some(b'.') {
+                return Err(JsError::Unsupported {
+                    feature: "namespaced JSX attribute names".to_string(),
+                });
+            }
+            after_name = self.skip_jsx_space(after_name);
+            if self.byte_at(after_name) != Some(b'=') {
+                return Err(JsError::Unsupported {
+                    feature: "boolean-shorthand JSX attributes (write e.g. `x={true}` explicitly)"
+                        .to_string(),
+                });
+            }
+            let value_cursor = self.skip_jsx_space(after_name + 1);
+            let (value, next) = match self.byte_at(value_cursor) {
+                Some(quote) if quote == b'"' || quote == b'\'' => {
+                    let value_start = value_cursor + 1;
+                    let end = self.source[value_start..]
+                        .find(quote as char)
+                        .map(|offset| value_start + offset)
+                        .ok_or_else(|| JsError::UnexpectedToken {
+                            found: "end of input".to_string(),
+                            expected: format!(
+                                "a closing `{}` for the attribute value",
+                                quote as char
+                            ),
+                        })?;
+                    (
+                        Expr::Str(self.source[value_start..end].to_string()),
+                        end + 1,
+                    )
+                }
+                Some(b'{') => self.jsx_expr_container(value_cursor + 1)?,
+                _ => {
+                    return Err(JsError::UnexpectedToken {
+                        found: "token".to_string(),
+                        expected: "a quoted string or `{expression}` after `=`".to_string(),
+                    });
+                }
+            };
+            entries.push((name, value));
+            cursor = next;
+        }
+        Ok((entries, cursor))
+    }
+
+    /// Parses one JSX element or fragment starting at the `<` at `cursor`
+    /// and desugars it into a `createElement` call (see the module-level
+    /// doc comment on JSX for the exact convention), returning that
+    /// expression and the offset just past its own closing — or
+    /// self-closing — tag.
+    ///
+    /// Wrapped by [`Self::enter`]/[`Self::leave`] like every other
+    /// recursive grammar production in this parser, so `<a><a><a>…` refuses
+    /// past [`MAX_NESTING_DEPTH`] rather than overflowing the stack — this
+    /// recursion is on the native call stack the same as any other, even
+    /// though it walks raw source instead of tokens.
+    fn jsx_element(&mut self, cursor: usize) -> Result<(Expr, usize), JsError> {
+        self.enter()?;
+        let result = self.jsx_element_inner(cursor);
+        self.leave();
+        result
+    }
+
+    fn jsx_element_inner(&mut self, cursor: usize) -> Result<(Expr, usize), JsError> {
+        // `cursor` is the `<`; `jsx_ahead` already confirmed an identifier
+        // or `>` follows.
+        let after_angle = cursor + 1;
+        if self.byte_at(after_angle) == Some(b'>') {
+            // A fragment, `<>...</>`, desugars to a call naming `Fragment`
+            // as a variable reference rather than a string — the same
+            // convention a component reference uses, and consistent with
+            // it being a real (if special) value in scope rather than a
+            // host/intrinsic tag name. It carries no attributes.
+            let (children, end) = self.jsx_children(after_angle + 1, None)?;
+            let mut arguments = vec![
+                Expr::Variable("Fragment".to_string()),
+                Expr::ObjectLiteral {
+                    entries: Vec::new(),
+                },
+            ];
+            arguments.extend(children);
+            return Ok((
+                Expr::Call {
+                    callee: "createElement".to_string(),
+                    arguments,
+                },
+                end,
+            ));
+        }
+
+        let (tag_name, after_name) = self.jsx_read_name(after_angle, false)?;
+        if matches!(self.byte_at(after_name), Some(b'.' | b'-')) {
+            return Err(JsError::Unsupported {
+                feature: "namespaced or hyphenated JSX tag names (e.g. `<Foo.Bar>`)".to_string(),
+            });
+        }
+        let (attributes, after_attrs) = self.jsx_attributes(after_name)?;
+        // Lowercase-leading names are host/intrinsic elements and pass as a
+        // string; uppercase-leading names are component references and
+        // pass as the identifier itself, evaluated like any other variable
+        // — matching real JSX semantics exactly, and meaning an
+        // undeclared component name fails to compile as `UndefinedVariable`
+        // rather than silently stringifying it.
+        let tag_arg = if tag_name.starts_with(|c: char| c.is_ascii_uppercase()) {
+            Expr::Variable(tag_name.clone())
+        } else {
+            Expr::Str(tag_name.clone())
+        };
+        let props_arg = Expr::ObjectLiteral {
+            entries: attributes,
+        };
+
+        if self.byte_at(after_attrs) == Some(b'/') {
+            if self.byte_at(after_attrs + 1) != Some(b'>') {
+                return Err(JsError::UnexpectedToken {
+                    found: "token".to_string(),
+                    expected: "`/>` to self-close the JSX tag".to_string(),
+                });
+            }
+            return Ok((
+                Expr::Call {
+                    callee: "createElement".to_string(),
+                    arguments: vec![tag_arg, props_arg],
+                },
+                after_attrs + 2,
+            ));
+        }
+        if self.byte_at(after_attrs) != Some(b'>') {
+            return Err(JsError::UnexpectedToken {
+                found: "token".to_string(),
+                expected: "`>` or `/>` to close the JSX opening tag".to_string(),
+            });
+        }
+        let (children, end) = self.jsx_children(after_attrs + 1, Some(&tag_name))?;
+        let mut arguments = vec![tag_arg, props_arg];
+        arguments.extend(children);
+        Ok((
+            Expr::Call {
+                callee: "createElement".to_string(),
+                arguments,
+            },
+            end,
+        ))
+    }
+
+    /// Entry point called from `parse_primary_base` once `jsx_ahead`
+    /// confirms a JSX expression starts here. Scans it from the raw source
+    /// and then hands control back to ordinary token-based parsing.
+    fn parse_jsx_expression(&mut self) -> Result<Expr, JsError> {
+        let start = self.starts[self.position];
+        let (expr, end) = self.jsx_element(start)?;
+        self.resume_at(end)?;
+        Ok(expr)
+    }
+
+    /// After a raw-source JSX scan ending at byte offset `byte_offset`,
+    /// resumes ordinary token-based parsing at the first token starting at
+    /// or after it.
+    ///
+    /// Every delimiter this scanner stops on (`<`, `>`, `/`, `{`, `}`, and
+    /// quotes) is also individually tokenized by the plain lexer no matter
+    /// what precedes it, so as long as JSX text and attribute content stay
+    /// within the plain lexer's own supported character set, `byte_offset`
+    /// always lands exactly on a pre-lexed token's start — checked here
+    /// rather than assumed. JSX content that desynchronises the eager
+    /// whole-file lex (most plausibly an unescaped quote inside text, since
+    /// this lexer has no escape sequences) is refused here rather than
+    /// silently resuming from whatever token happens to follow. Fixing that
+    /// case outright would need the tokenizer to be JSX-context-aware —
+    /// lexing on demand as the parser asks for tokens, rather than the
+    /// whole file eagerly up front — which is a larger change than this
+    /// syntax-layer step makes; this is the honest boundary of what it does
+    /// instead.
+    fn resume_at(&mut self, byte_offset: usize) -> Result<(), JsError> {
+        self.position = self.starts.partition_point(|&start| start < byte_offset);
+        if self.starts.get(self.position) != Some(&byte_offset) {
+            return Err(JsError::Unsupported {
+                feature: "a JSX text or attribute value using a character (most likely a quote) \
+                          that the plain lexer would read differently, desynchronising the \
+                          tokens that follow the JSX expression"
+                    .to_string(),
+            });
+        }
+        Ok(())
     }
 }
 
@@ -2191,8 +2760,8 @@ impl Compiler {
 /// condition. Unsupported features are refused here rather than at run time so
 /// that a program which compiles can be trusted to mean what it says.
 pub fn compile(source: &str) -> Result<Program, JsError> {
-    let tokens = lex(source)?;
-    let statements = Parser::new(tokens).parse_program()?;
+    let (tokens, starts) = lex(source)?;
+    let statements = Parser::new(source, tokens, starts).parse_program()?;
     Compiler::new().compile(&statements)
 }
 
@@ -4294,5 +4863,283 @@ mod tests {
             result.is_ok(),
             "a malformed MakeClosure operand count must not panic, got {result:?}"
         );
+    }
+
+    // -- JSX ----------------------------------------------------------------
+    //
+    // JSX desugars entirely at parse time (see the module-level doc comment
+    // on JSX), so most of these assert on `compile`'s `Result` rather than
+    // on a run: a lowercase tag name compiles without the name being
+    // declared (it became a string), an uppercase one does not (it became a
+    // variable reference — the calling-convention claim these tests exist to
+    // pin down), and every construct that does compile calls the
+    // well-known, deliberately unbound `createElement`, which running
+    // confirms fails as `JsError::UnboundOperation` — neither a panic nor a
+    // silent no-op, exactly like calling any other undeclared name.
+
+    #[test]
+    fn jsx_self_closing_tag_calls_the_unbound_create_element() {
+        let program = compile("function main() { return <div />; } main();").expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_lowercase_tag_name_is_a_string_not_a_declared_name() {
+        // A lowercase-leading tag is a host/intrinsic element and passes as
+        // a string, so nothing named `div` needs to exist for this to
+        // compile — the clearest proof the tag did not become a variable
+        // reference.
+        assert!(compile("function main() { return <div />; } main();").is_ok());
+    }
+
+    #[test]
+    fn jsx_uppercase_tag_name_is_a_variable_reference() {
+        // An uppercase-leading tag is a component reference and passes as
+        // the identifier itself, so an undeclared one fails to compile as
+        // an ordinary undefined variable — not as an unbound operation, and
+        // not silently as the string `"Header"`.
+        let error = compile("function main() { return <Header />; } main();")
+            .expect_err("Header is not declared");
+        assert_eq!(
+            error,
+            JsError::UndefinedVariable {
+                name: "Header".to_string()
+            }
+        );
+
+        // Declaring it resolves the reference; the only remaining failure
+        // is the createElement call itself, at run time.
+        let program = compile("function main() { let Header = 0; return <Header />; } main();")
+            .expect("compiles once Header is declared");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is still not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_attributes_accept_strings_and_expression_braces() {
+        let program = compile(
+            "function main() { let handler = 1; \
+             return <div className=\"card\" onClick={handler} />; } main();",
+        )
+        .expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_attribute_expression_brace_accepts_an_arrow_function() {
+        // The brace content is parsed with the ordinary expression grammar,
+        // so an event-handler arrow works without any JSX-specific case for
+        // it. `count` is `const`: an arrow only captures a `const` binding
+        // (see the module docs on closures), so this is the one this test
+        // can exercise without also tripping that unrelated refusal.
+        assert!(
+            compile(
+                "function main() { const count = 0; \
+             return <button onClick={() => count} />; } main();"
+            )
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn jsx_text_children_are_kept() {
+        let program =
+            compile("function main() { return <div>hello</div>; } main();").expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_expression_children_are_parsed_as_expressions() {
+        let program =
+            compile("function main() { let value = 1; return <div>{value}</div>; } main();")
+                .expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_nested_tags_and_mixed_children_compile() {
+        // Text, a nested element, and an expression child together, in one
+        // parent — the mixed-content case, and deep enough to exercise
+        // `jsx_children`'s recursion into `jsx_element` for the nested tag.
+        let program = compile(
+            "function main() { let name = \"world\"; \
+             return <div>Hello, <span>{name}</span>!</div>; } main();",
+        )
+        .expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_fragment_uses_a_fragment_variable_reference() {
+        // A stretch-goal construct: `<>...</>` desugars like a component
+        // reference naming `Fragment`, so it is refused as undefined until
+        // something named `Fragment` is in scope — the same proof pattern
+        // as the uppercase-tag test above.
+        let error = compile("function main() { return <><div /></>; } main();")
+            .expect_err("Fragment is not declared");
+        assert_eq!(
+            error,
+            JsError::UndefinedVariable {
+                name: "Fragment".to_string()
+            }
+        );
+
+        let program =
+            compile("function main() { let Fragment = 0; return <><div /><span /></>; } main();")
+                .expect("compiles once Fragment is declared");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("createElement is still not bound");
+        assert_eq!(
+            error,
+            JsError::UnboundOperation {
+                name: "createElement".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn jsx_spread_attributes_are_refused_at_compile_time_not_a_panic() {
+        let result = compile("function main() { return <div {...props} />; } main();");
+        assert!(
+            matches!(result, Err(JsError::Unsupported { .. })),
+            "spread attributes must be a named refusal, got {result:?}"
+        );
+    }
+
+    #[test]
+    fn jsx_boolean_shorthand_attribute_is_refused() {
+        let result = compile("function main() { return <input disabled />; } main();");
+        assert!(matches!(result, Err(JsError::Unsupported { .. })));
+    }
+
+    #[test]
+    fn jsx_namespaced_tag_name_is_refused() {
+        let result = compile("function main() { return <Foo.Bar />; } main();");
+        assert!(matches!(result, Err(JsError::Unsupported { .. })));
+    }
+
+    #[test]
+    fn less_than_comparison_still_parses_as_a_comparison_not_jsx() {
+        // The one ambiguity JSX introduces at the token level: `<` in
+        // expression position. `jsx_ahead` only fires when an identifier or
+        // `>` immediately follows, and a plain comparison's `<` is examined
+        // by `parse_comparison` after its left operand already consumed the
+        // first identifier — so this must still evaluate as `a < b`, not
+        // fail trying to parse `b` as a tag name.
+        assert_eq!(
+            run_main("let a = 1; let b = 2; return a < b;"),
+            Value::Boolean(true)
+        );
+        assert_eq!(expr("1 < 2"), Value::Boolean(true));
+    }
+
+    #[test]
+    fn jsx_whitespace_only_between_siblings_produces_no_stray_text_child() {
+        // Ordinarily-indented multi-line JSX: the whitespace runs before and
+        // after `<span />` must not become extra string-argument children.
+        let program = compile("function main() { return <div>\n  <span />\n</div>; } main();")
+            .expect("compiles");
+        let Op::HostCall(_, argc) = program.functions[1]
+            .code
+            .iter()
+            .rfind(|op| matches!(op, Op::HostCall(name, _) if name == "createElement"))
+            .expect("an outer createElement call")
+        else {
+            unreachable!("matched above");
+        };
+        // tag + props + exactly one child (the nested `<span />`'s own
+        // createElement result) — not three, which is what stray
+        // whitespace-only text children would add.
+        assert_eq!(*argc, 3);
+    }
+
+    #[test]
+    fn jsx_deeply_nested_tags_refuse_rather_than_overflow_the_stack() {
+        // `jsx_element` is wrapped in `enter`/`leave` like every other
+        // recursive production, so pathological nesting is a typed refusal,
+        // not a crash. 2000 levels is far past `MAX_NESTING_DEPTH` and would
+        // overflow the native stack if this recursion were unbounded.
+        let mut source = "function main() { return ".to_string();
+        for _ in 0..2000 {
+            source.push_str("<a>");
+        }
+        for _ in 0..2000 {
+            source.push_str("</a>");
+        }
+        source.push_str("; } main();");
+        assert!(matches!(
+            compile(&source),
+            Err(JsError::NestingTooDeep { .. })
+        ));
+    }
+
+    #[test]
+    fn jsx_quote_desynchronised_text_is_refused_not_silently_corrupted() {
+        // A raw apostrophe in JSX text (not inside a quoted attribute value,
+        // where it would sit safely inside the attribute's own quote span)
+        // is exactly the documented boundary: the eager whole-file lex
+        // reads it as the start of a *string token*, since text is not
+        // exempt from ordinary tokenization there, and that token then runs
+        // to the next quote or end of input, desynchronising everything the
+        // JSX scan tries to resume from. `resume_at` catches the mismatch
+        // and refuses by name rather than resuming from the wrong token.
+        //
+        // Verified by the discipline this session follows for a real edge
+        // case: with `resume_at`'s mismatch check removed, this same source
+        // did not error usefully — it failed with a confusing
+        // `UnexpectedToken { found: "end of input", expected: "\`}\`" }`
+        // pointing nowhere near the actual defect, rather than naming JSX
+        // desynchronisation as the cause. Restoring the check is what turns
+        // that into an honest, named refusal.
+        let result = compile("function main() { return <div>Don't</div>; } main();");
+        assert!(matches!(result, Err(JsError::Unsupported { .. })));
     }
 }
