@@ -1,6 +1,6 @@
 # Using `turing-engine` today
 
-Status: describes the real, current library API  
+Status: describes the real, current library API
 Companion to: [`README.md`](README.md), which describes the *design target*
 (`Engine`/`Profile`/`View`, a C ABI, generated multi-language SDKs) — none of
 that exists yet. This document is the other half: what a Rust program can
