@@ -51,7 +51,9 @@ pub const WARMUP: usize = 20;
 /// How many recorded iterations each measurement takes.
 pub const SAMPLES: usize = 100;
 
-/// The timing distribution for one stage.
+/// The timing distribution for one stage, with the statistical treatment
+/// `PB-013` and the benchmark book's statistics chapter require before a
+/// number may be read as evidence rather than an anecdote.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Measurement {
     /// Fastest observed iteration. The least contaminated by unrelated load,
@@ -62,6 +64,23 @@ pub struct Measurement {
     /// Slowest observed iteration. Worth watching: a max far above the median
     /// usually means an allocation or growth step, not measurement noise.
     pub max: Duration,
+    /// The 25th and 75th percentiles. The interquartile range between them is
+    /// the spread of the middle half, unmoved by the tail a single scheduling
+    /// hiccup drags out.
+    pub p25: Duration,
+    pub p75: Duration,
+    /// A distribution-free 95% confidence interval for the median, from the
+    /// order statistics — no assumption that the timings are normal, which
+    /// they are not (they are right-skewed by scheduling). If two runs'
+    /// intervals do not overlap, their medians differ for a reason beyond
+    /// this run's noise.
+    pub median_ci_low: Duration,
+    pub median_ci_high: Duration,
+    /// Coefficient of variation in parts per thousand: the standard deviation
+    /// as a fraction of the mean. The single-number noise indicator — a stage
+    /// with a high CoV is measuring the machine as much as the code, and its
+    /// comparisons deserve less weight.
+    pub cov_permille: u32,
 }
 
 impl Measurement {
@@ -84,11 +103,78 @@ impl Measurement {
         }
 
         samples.sort_unstable();
+        Self::from_sorted(&samples)
+    }
+
+    /// Computes the distribution from an already-sorted sample slice.
+    ///
+    /// Separated from timing so the statistics are testable against known
+    /// inputs without running a clock.
+    #[must_use]
+    fn from_sorted(samples: &[Duration]) -> Self {
+        assert!(
+            !samples.is_empty(),
+            "a measurement needs at least one sample"
+        );
+        let n = samples.len();
+        let percentile = |fraction: f64| {
+            // Nearest-rank: the smallest sample at or above the fraction.
+            let rank = (fraction * n as f64).ceil() as usize;
+            samples[rank.saturating_sub(1).min(n - 1)]
+        };
+
+        // Distribution-free 95% CI for the median via the normal approximation
+        // to the binomial ranks: the median sits between the order statistics
+        // at n/2 +/- 1.96*sqrt(n)/2. Clamped so a small sample still yields a
+        // valid (if wide) interval.
+        let half = n as f64 / 2.0;
+        let spread = 1.96 * (n as f64).sqrt() / 2.0;
+        let low_rank = (half - spread).floor().max(0.0) as usize;
+        let high_rank = ((half + spread).ceil() as usize).min(n - 1);
+
+        // Coefficient of variation from the mean and population standard
+        // deviation, in nanoseconds.
+        let nanos: Vec<f64> = samples.iter().map(|d| d.as_nanos() as f64).collect();
+        let mean = nanos.iter().sum::<f64>() / n as f64;
+        let variance = nanos.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n as f64;
+        let cov_permille = if mean > 0.0 {
+            (variance.sqrt() / mean * 1000.0).round() as u32
+        } else {
+            0
+        };
+
         Self {
             min: samples[0],
-            median: samples[SAMPLES / 2],
-            max: samples[SAMPLES - 1],
+            median: samples[n / 2],
+            max: samples[n - 1],
+            p25: percentile(0.25),
+            p75: percentile(0.75),
+            median_ci_low: samples[low_rank],
+            median_ci_high: samples[high_rank],
+            cov_permille,
         }
+    }
+
+    /// Whether `self` is a regression against `baseline`.
+    ///
+    /// A practical threshold, not a bare comparison: a run is a regression
+    /// only when its median exceeds the baseline's by more than
+    /// `min_effect_permille` (a deliberate effect size, screening out changes
+    /// too small to matter) **and** the two medians' confidence intervals do
+    /// not overlap (screening out changes that are only this run's noise).
+    /// Both gates must pass, which is what keeps a control chart from crying
+    /// wolf on a quiet machine's jitter.
+    #[must_use]
+    pub fn is_regression(&self, baseline: &Self, min_effect_permille: u32) -> bool {
+        let effect_gate = {
+            let base = baseline.median.as_nanos();
+            let threshold = base + base * u128::from(min_effect_permille) / 1000;
+            self.median.as_nanos() > threshold
+        };
+        // Intervals are disjoint when this run's low bound is above the
+        // baseline's high bound.
+        let separated = self.median_ci_low > baseline.median_ci_high;
+        effect_gate && separated
     }
 }
 
@@ -289,8 +375,67 @@ mod tests {
     #[test]
     fn measurements_are_ordered() {
         let measurement = Measurement::of(|| Stylesheet::parse(STYLESHEET).expect("parses"));
-        assert!(measurement.min <= measurement.median);
-        assert!(measurement.median <= measurement.max);
+        assert!(measurement.min <= measurement.p25);
+        assert!(measurement.p25 <= measurement.median);
+        assert!(measurement.median <= measurement.p75);
+        assert!(measurement.p75 <= measurement.max);
+        assert!(measurement.median_ci_low <= measurement.median);
+        assert!(measurement.median <= measurement.median_ci_high);
+    }
+
+    /// A known sample set makes the statistics checkable without a clock.
+    fn from_micros(values: &[u64]) -> Measurement {
+        let mut samples: Vec<Duration> = values.iter().map(|&v| Duration::from_micros(v)).collect();
+        samples.sort_unstable();
+        Measurement::from_sorted(&samples)
+    }
+
+    #[test]
+    fn the_statistics_match_a_known_sample_set() {
+        // 0..=100 microseconds: median 50, quartiles at 25 and 75, and a
+        // tight-enough distribution that its CoV is a stable known figure.
+        let values: Vec<u64> = (0..=100).collect();
+        let m = from_micros(&values);
+        assert_eq!(m.median, Duration::from_micros(50));
+        assert_eq!(m.p25, Duration::from_micros(25));
+        assert_eq!(m.p75, Duration::from_micros(75));
+        // A uniform 0..=100 distribution has CoV ~ 0.577/... near 58%.
+        assert!(
+            (550..=600).contains(&m.cov_permille),
+            "uniform CoV near 58%: {}",
+            m.cov_permille
+        );
+        // The median CI brackets the median and is narrower than the full
+        // range.
+        assert!(m.median_ci_low < m.median && m.median < m.median_ci_high);
+        assert!(m.median_ci_high - m.median_ci_low < m.max - m.min);
+    }
+
+    #[test]
+    fn regression_needs_both_a_real_effect_and_separated_intervals() {
+        // Baseline and a run 20% slower with no overlap: a regression.
+        let baseline = from_micros(&(90..=110).collect::<Vec<_>>());
+        let slower = from_micros(&(190..=210).collect::<Vec<_>>());
+        assert!(
+            slower.is_regression(&baseline, 50),
+            "clear slowdown flagged"
+        );
+
+        // A run only marginally slower, intervals overlapping: not a
+        // regression, because it is within this run's noise.
+        let jitter = from_micros(&(92..=112).collect::<Vec<_>>());
+        assert!(
+            !jitter.is_regression(&baseline, 50),
+            "overlapping intervals are noise, not regression"
+        );
+
+        // A real, separated slowdown that is nonetheless below the effect
+        // threshold is screened out: statistically clear, practically trivial.
+        let tiny = from_micros(&(111..=131).collect::<Vec<_>>());
+        assert!(
+            !tiny.is_regression(&baseline, 500),
+            "a sub-threshold effect is not a regression even when separated"
+        );
     }
 
     #[test]

@@ -41,6 +41,34 @@ The scope includes normal use, hostile input, compromised-process assumptions, l
 - Which work belongs on the user's critical path, and which work can yield, cancel, batch, degrade, or move to an isolated worker?
 - How does the subsystem expose causality without logging secrets or retaining sensitive payloads?
 
+## First implemented slice (2026-07-20)
+
+`turing-bench`'s `Measurement` now carries the statistical treatment this
+chapter requires, computed std-only (no external stats crate):
+
+- **Percentiles and IQR** (`p25`, `p75`): the spread of the middle half,
+  unmoved by the tail a single scheduling hiccup drags out.
+- **Distribution-free 95% confidence interval for the median**
+  (`median_ci_low`/`median_ci_high`): from the order statistics via the
+  normal approximation to the binomial ranks, so it assumes nothing about
+  the shape of the timing distribution — which is right-skewed, not normal.
+  Two runs whose intervals do not overlap differ beyond one run's noise.
+- **Coefficient of variation** (`cov_permille`): the single-number noise
+  indicator. The current baseline shows `tokenize` as the noisiest stage
+  (~21%), which is the kind of finding this metric exists to surface — a
+  noisy stage's comparisons deserve less weight.
+- **A practical-threshold regression test** (`is_regression`): a run is a
+  regression only when it exceeds the baseline median by more than a
+  deliberate effect size **and** the medians' confidence intervals are
+  disjoint. Both gates — practical significance and statistical
+  separation — must pass, which is what keeps a control chart from crying
+  wolf on a quiet machine's jitter.
+
+Tested against known sample sets so the statistics are checkable without a
+clock. This is the analysis layer; it does not by itself constitute a
+`Chrome-class` claim, which still needs the corpus, hardware control, and
+owner-reviewed analysis the rest of this book specifies.
+
 ## Data and lifecycle contract
 
 Every durable design note must enumerate:
