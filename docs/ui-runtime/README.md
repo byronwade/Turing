@@ -8,7 +8,7 @@ This book defines the current native browser-shell boundary and the migration to
 
 The full target boundary is [`Turing Platform Architecture`](../application-runtime/01-turing-platform-architecture.md). It is the source for the one-visual-composition-system rule across the browser and future Nova applications.
 
-The current visual and layout source of truth is the [Turing Nova design source](design-lab/README.md), backed by the checked [`design-source-manifest.json`](machine/design-source-manifest.json) and [`validate_design_source.py`](../../tools/validate_design_source.py). It is a separate React design-lab reference; it does not change the native-runtime boundary.
+The current visual, layout, and intended component-authoring source of truth is the [Turing Nova design source](design-lab/README.md), backed by the checked [`design-source-manifest.json`](machine/design-source-manifest.json) and [`validate_design_source.py`](../../tools/validate_design_source.py). It remains immutable. The current low-maintenance compiler recommendation is recorded in the [JSX Runtime Compiler Selection study](../research/jsx-runtime-compiler-selection-2026-07.md); that recommendation is not a production dependency decision.
 
 The [Nova Native Build Entry Criteria](../research/nova-native-build-entry-criteria-2026-07.md) is the canonical future handoff for extracting tokens, surface/state/command mappings, authority boundaries, native fixtures, page-surface contracts, and review evidence before Nova can inform authorized native implementation.
 
@@ -16,7 +16,7 @@ The [Nova Native Build Entry Criteria](../research/nova-native-build-entry-crite
 
 > Keep browser state, commands, identity, policy, recovery, and resource accounting in pure Rust; compile JSX-shaped authoring into a Turing-owned component runtime behind replaceable platform adapters; keep external React, Node, webviews, page DOM, and runtime CSS parsers out of the release path.
 
-Slint is not selected. Licensing, page-surface composition, accessibility, IME, package size, memory, GPU interoperability, failure isolation, and replacement cost must pass the framework experiment before ADR-0014 can be accepted.
+No native UI framework or JSX compiler is selected. The current research recommendation is to use esbuild only as a pinned build-time JSX front-end and keep the runtime renderer Turing-owned. Licensing, page-surface composition, accessibility, IME, package size, memory, GPU interoperability, failure isolation, and replacement cost remain evidence gates before any ADR is accepted.
 
 ## Implemented M0 boundary
 

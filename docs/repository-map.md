@@ -256,6 +256,7 @@ Current crates:
 - `turing-input`: epoch-guarded pointer routing into DOM dispatch;
 - `turing-a11y`: accessibility tree generation;
 - `turing-chrome`: toolkit-neutral Nova chrome renderer — shell snapshots in, display lists and typed commands out, with paint and hit testing sharing one geometry;
+- `turing-runtime`: Turing-owned retained component IR, design tokens, frame flattening, hit regions, and runtime inspection contracts; it is a runtime foundation, not a browser page DOM or a hand-authored Nova replacement;
 - `turing-engine`: end-to-end page pipeline composing the stages above — parse, script, cascade, layout, paint, route — with relayout after every mutation;
 - `turing-bench`: pipeline stage benchmarks;
 - `turing-fuzz`: seeded fuzz harness over the parse-to-layout stages.
@@ -264,7 +265,7 @@ A toolkit, platform, GPU, network, storage, serializer, or runtime dependency ma
 
 ## `design/`
 
-The shared design-system data prescribed by the UI-runtime authoring workflow. `design/tokens.json` holds the visual tokens extracted from the pinned Nova design source (themes, radii, typography, chrome and tab metrics); `crates/turing-chrome/src/tokens.rs` is its Rust projection, and the two must not drift. The Nova JSX itself stays under `docs/ui-runtime/design-lab/` and is integrity-pinned — tokens are extracted from it, never edited into it.
+The shared design-system data prescribed by the UI-runtime authoring workflow. `design/tokens.json` holds the visual tokens extracted from the pinned Nova design source (themes, radii, typography, chrome and tab metrics); `crates/turing-chrome/src/tokens.rs` is its Rust projection, and the two must not drift. The Nova JSX itself stays under `docs/ui-runtime/design-lab/` and is integrity-pinned — it is the intended source artifact for the Turing-owned JSX build path, while tokens are extracted from it, never edited into it.
 
 ## `schemas/`
 

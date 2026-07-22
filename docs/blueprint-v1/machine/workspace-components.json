@@ -455,6 +455,7 @@
         "turing-css",
         "turing-layout",
         "turing-paint",
+        "turing-runtime",
         "turing-types",
         "turing-ui-model"
       ],
@@ -479,6 +480,26 @@
         "turing-raster"
       ],
       "failure_boundary": "reference-parity-on-the-opaque-square-domain"
+    },
+    {
+      "id": "COMP-025",
+      "package": "turing-runtime",
+      "path": "crates/turing-runtime",
+      "kind": "library",
+      "owner_scope": "ui-runtime",
+      "privilege": "presentation-contract",
+      "hostile_input": false,
+      "public_api": "internal-retained-component-runtime",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "all-rust-hosts"
+      ],
+      "dependencies": [
+        "turing-css",
+        "turing-layout",
+        "turing-paint"
+      ],
+      "failure_boundary": "bounded-component-tree-to-paint-and-hit-regions"
     }
   ]
 }

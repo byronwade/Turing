@@ -44,8 +44,10 @@ The current primary visual/layout reference is the captured [Turing Nova design 
 - Visual similarity is not proof of native accessibility, input, timing, or platform correctness.
 - Every stable component fixture must run in the native test kit.
 - The design lab is separately packaged and never a release dependency.
-- The Nova JSX artifact is preserved as a visual regression reference; it is never bundled into trusted browser chrome.
+- The Nova JSX artifact is immutable source input and a visual regression reference; external React is never bundled into trusted browser chrome.
 
-## Future TSX option
+## Turing-owned JSX compilation target
 
-A restricted TSX authoring layer may be reconsidered only after native component contracts stabilize. It would support typed props, composition, conditions, keyed lists, bindings, and symbolic commands—not React hooks, effects, arbitrary JavaScript, DOM APIs, npm components, or runtime reconciliation.
+The current research recommendation is to preserve this JSX artifact as the authoring source and use a pinned build-time JSX front-end such as esbuild to lower syntax into Turing-owned factories. The compiler front-end is not the runtime: the release path must still provide bounded component IR, state slots, lifecycle, typed commands, accessibility semantics, source maps, and deterministic invalidation.
+
+The full Nova file currently uses React-shaped hooks, icon imports, browser-like values, and event closures. Those require an explicit Turing compatibility shim and capability audit. They must not be silently replaced by a native approximation or by importing the external React implementation.

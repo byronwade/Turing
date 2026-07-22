@@ -1,0 +1,19 @@
+[package]
+name = "turing-runtime"
+description = "Turing-owned retained component runtime and Nova design-system projection"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+turing-css = { path = "../turing-css" }
+turing-layout = { path = "../turing-layout" }
+turing-paint = { path = "../turing-paint" }
+
+[lints]
+workspace = true

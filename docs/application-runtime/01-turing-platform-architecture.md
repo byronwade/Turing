@@ -34,7 +34,7 @@ JSX or native component authoring
 
 Browser chrome, tabs, toolbars, sidebars, settings, dialogs, downloads, history, DevTools, context menus, workspaces, and future desktop surfaces all use this pipeline. App-specific renderers are prohibited.
 
-The JSX source is an authoring and visual source of truth, not an authority source. The release runtime must not embed the external npm React package, React DOM, Node, a system webview, or a runtime browser DOM/CSS parser. The intended implementation is a Turing-owned compiler/runtime that produces bounded native component IR and routes behavior through typed Rust state and commands. A future implementation may execute a compatible JSX/React API surface, but compatibility is not permission to import the external implementation.
+The JSX source is an authoring and visual source of truth, not an authority source. The release runtime must not embed the external npm React package, React DOM, Node, a system webview, or a runtime browser DOM/CSS parser. The current compiler research recommendation is a pinned build-time front-end such as esbuild targeting Turing-owned factories and compatibility shims. The release implementation remains a Turing-owned compiler/runtime that produces bounded native component IR and routes behavior through typed Rust state and commands. Compatibility is not permission to import the external implementation.
 
 Operating-system integrations required for security, text input, window management, or accessibility remain adapters at the boundary. They do not create a second application renderer or own browser authority.
 
@@ -133,7 +133,7 @@ Customization is dependency injection at contract boundaries, not mutation of en
 
 ## Migration sequence
 
-1. **Contained M0:** freeze this ownership contract, keep `turing-ui-model` and `turing-chrome` as reference surfaces, and add no second renderer.
+1. **Contained M0:** freeze this ownership contract, keep `turing-ui-model` and `turing-chrome` only as reference/fixture surfaces, and add no second renderer or hand-authored replacement for the Nova source.
 2. **Runtime contract task:** define the component IR, state/command protocol, semantic tree, invalidation model, animation clock, and trace vocabulary as an approved task with negative tests.
 3. **Native runtime proof:** implement a small runtime slice against the current Nova fixture set and compare it with the existing reference renderer across states, accessibility, fault, and performance axes.
 4. **Browser composition:** compose chrome and typed page surfaces through the shared scene/compositor contract after `ADR-0013`, `ADR-0014`, `ADR-0016`, and the applicable UI gates are accepted.

@@ -1527,6 +1527,7 @@ dependencies = [
  "turing-css",
  "turing-layout",
  "turing-paint",
+ "turing-runtime",
  "turing-types",
  "turing-ui-model",
 ]
@@ -1634,6 +1635,15 @@ version = "0.1.0"
 dependencies = [
  "turing-css",
  "turing-layout",
+]
+
+[[package]]
+name = "turing-runtime"
+version = "0.1.0"
+dependencies = [
+ "turing-css",
+ "turing-layout",
+ "turing-paint",
 ]
 
 [[package]]
