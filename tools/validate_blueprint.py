@@ -1047,10 +1047,15 @@ def check_required_files() -> None:
 
 
 def check_document_locations() -> None:
+    # Local npm installs are reproducible package inputs, not canonical
+    # repository documentation. Their README files must not fail the docs
+    # placement check when the Nova development package has been installed.
     outside = [
         relative(path)
         for path in ROOT.rglob("*.md")
-        if not path.is_relative_to(DOCS) and path not in ALLOWED_MARKDOWN_OUTSIDE_DOCS
+        if "node_modules" not in path.parts
+        and not path.is_relative_to(DOCS)
+        and path not in ALLOWED_MARKDOWN_OUTSIDE_DOCS
     ]
     if outside:
         fail(

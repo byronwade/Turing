@@ -24,6 +24,30 @@ import {
    ========================================================================== */
 
 const DESIGN_W = 1440, DESIGN_H = 900;
+const ENGINE_COMMAND_EVENT = "turing:engine-command";
+
+function emitEngineCommand(type, payload = {}) {
+  const command = { version: 1, type, payload };
+  const host = typeof globalThis !== "undefined" ? globalThis.__TURING_ENGINE__ : null;
+  if (host && typeof host.dispatch === "function") host.dispatch(command);
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function" && typeof CustomEvent !== "undefined") {
+    window.dispatchEvent(new CustomEvent(ENGINE_COMMAND_EVENT, { detail: command }));
+  }
+}
+
+function describeControl(event) {
+  const target = event.target && event.target.closest
+    ? event.target.closest("button,input,textarea,select,[role=button],[role=switch],[data-id],[data-gid]")
+    : null;
+  if (!target) return null;
+  return {
+    tag: target.tagName.toLowerCase(),
+    className: typeof target.className === "string" ? target.className : "",
+    label: target.getAttribute("aria-label") || target.getAttribute("title") || "",
+    name: target.getAttribute("name") || "",
+    value: "value" in target ? String(target.value || "").slice(0, 512) : "",
+  };
+}
 // mirrors --ease-out: the Web Animations API cannot resolve CSS custom properties
 const EASE_OUT = "cubic-bezier(.2,.8,.2,1)";
 let __lastId = 0;
@@ -52,32 +76,11 @@ const CSS = `
 .nova,.nova *{font-family:var(--sans)}
 .stage{
   position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;
-  background:#121216;font-family:var(--sans);
+  background:var(--ink);font-family:var(--sans);
 }
-.zbar{
-  flex:none;height:44px;display:flex;align-items:center;gap:10px;padding:0 14px;
-  background:#17171b;border-bottom:1px solid rgba(255,255,255,.09);color:#9a9a9f;
-}
-.zbar .zt{font-size:12px;font-weight:500;color:#ededed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.zbar .zd{font-family:var(--mono);font-size:11px;color:#616166;white-space:nowrap}
-.zseg{display:flex;background:#101013;border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:2px;margin-left:auto}
-.zseg button{height:28px;padding:0 12px;border-radius:var(--r);color:#9a9a9f;font-size:12px;font-weight:500;font-family:var(--mono);transition:background var(--dur-2),color var(--dur-2)}
-.zseg button.on{background:#26262b;color:#ededed}
-.zpres{height:28px;padding:0 12px;margin-left:10px;border-radius:var(--r);border:1px solid rgba(255,255,255,.14);color:#c9c9d2;font-size:12px;font-weight:500}
-.zpres:hover{background:#26262b;color:#fff}
-.canvas.present{background:#0a0a0f;background-image:radial-gradient(760px 460px at 50% 36%,rgba(88,96,180,.22),transparent 70%);background-size:auto}
-.zexit{position:fixed;right:18px;bottom:16px;z-index:99;font-size:11px;color:#9a9aa6;background:rgba(20,20,28,.85);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 11px;opacity:.18;transition:opacity var(--dur-3)}
-.zexit:hover{opacity:1}
-.canvas{
-  flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:grid;
-  background-image:radial-gradient(rgba(255,255,255,.055) 1px,transparent 1px);
-  background-size:22px 22px;
-}
-.holder{margin:auto;padding:28px;flex:none}
 .nova{
-  width:1440px;height:900px;position:relative;transform-origin:top left;
+  width:100%;height:100%;min-height:100vh;position:relative;
   background:var(--ink);color:var(--tx);display:flex;flex-direction:column;overflow:hidden;
-  border-radius:var(--r-lg);box-shadow:0 30px 90px -18px color-mix(in srgb,var(--tx) 46%,transparent),0 0 0 1px rgba(255,255,255,.14);
   font-size:13px;line-height:1.45;letter-spacing:-.01em;
   -webkit-font-smoothing:antialiased;user-select:none;
 }
@@ -1901,6 +1904,7 @@ export default function Nova() {
   }, []);
   const canBack = hist.i > 0, canFwd = hist.i < hist.stack.length - 1;
   const goHist = useCallback((dir) => {
+    emitEngineCommand("navigation.history", { direction: dir });
     setHist((h) => {
       const i = Math.min(Math.max(h.i + dir, 0), h.stack.length - 1);
       if (i === h.i) return h;
@@ -1929,38 +1933,6 @@ export default function Nova() {
   const zenTimerRef = useRef(null);
   useEffect(() => { if (!zen) clearTimeout(zenTimerRef.current); }, [zen]);
   const hideBar = zen || autoHide;
-
-  // Design-canvas viewing: the browser always renders at its true 1440×900
-  // desktop viewport; zoom chooses how you view it (Fit or fixed %, pan by scroll).
-  const canvasRef = useRef(null);
-  const [zoom, setZoom] = useState("fit");
-  const [present, setPresent] = useState(false);
-  const [fitScale, setFitScale] = useState(0.5);
-  useEffect(() => {
-    const measure = () => {
-      const el = canvasRef.current;
-      const w = (el && el.clientWidth) || window.innerWidth || 1440;
-      const h = (el && el.clientHeight) || window.innerHeight || 900;
-      const s = Math.min((w - 56) / DESIGN_W, (h - 56) / DESIGN_H);
-      if (s > 0 && isFinite(s)) setFitScale(Math.min(1, s));
-    };
-    measure();
-    const raf = requestAnimationFrame(measure);
-    let ro;
-    if (typeof ResizeObserver !== "undefined" && canvasRef.current) {
-      ro = new ResizeObserver(measure);
-      ro.observe(canvasRef.current);
-    }
-    window.addEventListener("resize", measure);
-    window.addEventListener("orientationchange", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      if (ro) ro.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("orientationchange", measure);
-    };
-  }, []);
-  const eff = zoom === "fit" ? fitScale : zoom;
 
   const tab = tabs.find((t) => t.id === active) || tabs[0];
   tabsRef.current = tabs;
@@ -2092,6 +2064,7 @@ export default function Nova() {
   useEffect(() => { if (!flags.devmode) setDock(false); }, [flags.devmode]);
 
   const go = useCallback((v, sec) => {
+    emitEngineCommand("shell.view.open", { view: v, section: sec || null });
     setView(v);
     if (sec) { if (v === "agents") setAgentSec(sec); else setSetSec(sec); }
     setPop(null); setCmd(false);
@@ -2129,7 +2102,11 @@ export default function Nova() {
   const sideRef = useRef(null);
   const noteRef2 = useRef(null);
   noteRef2.current = note;
-  sideRef.current = () => setSideOpen((v) => { note(v ? "Sidebar hidden" : "Sidebar shown"); return !v; });
+  sideRef.current = () => setSideOpen((v) => {
+    emitEngineCommand("shell.sidebar.toggle", { open: !v });
+    note(v ? "Sidebar hidden" : "Sidebar shown");
+    return !v;
+  });
   // drag an entire collapsed group by its folder chip
   const startGroupDrag = (gid) => (e) => {
     e.stopPropagation();
@@ -2653,6 +2630,7 @@ export default function Nova() {
     if (e) e.stopPropagation();
     const t = tabsRef.current.find((x) => x.id === id);
     if (!t) return;
+    emitEngineCommand("tabs.close.request", { id, url: t.url });
     if (t.pin) { note("Pinned — unpin to close"); return; }
     if (dirtyRef.current[id]) {
       note("You have unsaved typing here", [
@@ -2682,6 +2660,7 @@ export default function Nova() {
 
   const addTab = useCallback(() => {
     const id = uid();
+    emitEngineCommand("tabs.create", { id, url: "nova://newtab" });
     setTabs((ts) => [...ts, { id, title: "Turing — New Tab", url: "nova://newtab", secure: true, heat: 0 }]);
     setActive(id); setView("newtab");
     record(id, "newtab", "nova://newtab", "Turing — New Tab");
@@ -2690,6 +2669,7 @@ export default function Nova() {
   const TRACKY = /(google\.com\/search|youtube|news\.|doubleclick)/;
 
   const selectTab = useCallback((t) => {
+    emitEngineCommand("tabs.activate", { id: t.id, url: t.url });
     if (t.group) setGroups((gs) => gs[t.group]?.collapsed ? { ...gs, [t.group]: { ...gs[t.group], collapsed: false } } : gs);
     setActive(t.id); setView("newtab"); setAutoHide(false); setGlance(null);
     setTabs((ts) => ts.map((x) => (x.id === t.id ? { ...x, heat: 0 } : x)));
@@ -2707,6 +2687,7 @@ export default function Nova() {
   const navigate = useCallback((q) => {
     const bang = applyBang(q);
     if (bang) {
+      emitEngineCommand("navigation.navigate", { query: q, url: bang.url, kind: "bang" });
       markLoading(active);
       setTabs((ts) => ts.map((x) => (x.id === active ? { ...x, url: bang.url, title: bang.term + " — " + bang.name, heat: 0, status: "loading" } : x)));
       setView("newtab"); setCmd(false); setAutoHide(false);
@@ -2716,6 +2697,7 @@ export default function Nova() {
     let url = q.trim().replace(/^https?:\/\//, "");
     let title = url;
     if (!url.includes(".") || url.includes(" ")) { title = q.trim() + " — Search"; url = "google.com/search?q=" + encodeURIComponent(q.trim()); }
+    emitEngineCommand("navigation.navigate", { query: q, url, kind: "mock" });
     markLoading(active);
     setTabs((ts) => ts.map((x) => (x.id === active ? { ...x, url, title, heat: 0, status: "loading" } : x)));
     setView("newtab"); setCmd(false); setAutoHide(false); record(active, "newtab", url, title);
@@ -2736,17 +2718,20 @@ export default function Nova() {
 
   const copyUrl = useCallback(() => {
     const t = tabsRef.current.find((x) => x.id === activeRef.current);
+    emitEngineCommand("navigation.copy-url", { id: t && t.id, url: t && t.url });
     try { navigator.clipboard && navigator.clipboard.writeText("https://" + t.url); } catch { }
     note("Address copied");
     setCmd(false);
   }, [note]);
 
   const toggleReader = useCallback(() => {
+    emitEngineCommand("view.reader.toggle", { id: activeRef.current });
     setReaderIds((r) => ({ ...r, [activeRef.current]: !r[activeRef.current] }));
     setCmd(false); sweep();
   }, [sweep]);
 
   const toggleSplit = useCallback((id) => {
+    emitEngineCommand("view.split.toggle", { requestedTab: id ?? null });
     setSplitId((s) => {
       if (s) { note("Split view closed"); return null; }
       const pick = tabsRef.current.find((t) => t.id !== activeRef.current && t.url !== "nova://newtab") || tabsRef.current.find((t) => t.id !== activeRef.current);
@@ -2913,24 +2898,28 @@ export default function Nova() {
   const delHistory = useCallback((id) => { /* concept: no-op removal animation slot */ }, []);
 
   return (
-    <div className="stage">
+    <div
+      className={"stage nova" + (theme === "light" ? " light" : "") + (density === "compact" ? " compact" : "")}
+      style={{ ...themeVars, "--ac": customVars["--ac"] || tint, "--ac-soft": rgba(customVars["--ac"] || tint, theme === "light" ? 0.11 : 0.12), "--ac-line": rgba(customVars["--ac"] || tint, 0.4) }}
+      onClickCapture={(event) => {
+        const control = describeControl(event);
+        if (control) emitEngineCommand("ui.control.click", control);
+      }}
+      onPointerDownCapture={(event) => {
+        const control = describeControl(event);
+        if (control) emitEngineCommand("ui.control.pointerdown", control);
+      }}
+      onInputCapture={(event) => {
+        const control = describeControl(event);
+        if (control) emitEngineCommand("ui.control.input", control);
+      }}
+      onChangeCapture={(event) => {
+        const control = describeControl(event);
+        if (control) emitEngineCommand("ui.control.change", control);
+      }}
+    >
       <style>{CSS}</style>
-      {!present && (
-      <div className="zbar">
-        <span className="zt">Turing</span>
-        <span className="zd">desktop · 1440×900 · {Math.round(eff * 100)}%</span>
-        <div className="zseg">
-          {[["fit", "Fit"], [0.5, "50"], [0.75, "75"], [1, "100"]].map(([z, l]) => (
-            <button key={l} className={zoom === z ? "on" : ""} onClick={() => setZoom(z)}>{l}</button>
-          ))}
-        </div>
-        <button className="zpres" onClick={() => setPresent(true)}>Present <span style={{ opacity: .55 }}>⌘.</span></button>
-      </div>
-      )}
-      <div className={"canvas" + (present ? " present" : "")} ref={canvasRef}>
-        <div className="holder" style={{ width: 1440 * eff + 56, height: 900 * eff + 56 }}>
-          <div className={"nova" + (theme === "light" ? " light" : "") + (density === "compact" ? " compact" : "")}
-            style={{ transform: `scale(${eff || 0.5})`, ...themeVars, "--ac": customVars["--ac"] || tint, "--ac-soft": rgba(customVars["--ac"] || tint, theme === "light" ? 0.11 : 0.12), "--ac-line": rgba(customVars["--ac"] || tint, 0.4) }}>
+      {/* design-lab presentation chrome removed: the Nova root is the browser */}
           {hideBar && !peek && <div className="peek" onMouseEnter={() => setPeek(true)} />}
 
       {/* ===== the bar — window, navigation, tabs, and address in one ===== */}
@@ -3538,10 +3527,6 @@ export default function Nova() {
       )}
 
       {shortcuts && <ShortcutsOverlay close={() => setShortcuts(false)} />}
-          </div>
-        </div>
-        {present && <button className="zexit" onClick={() => setPresent(false)}>Exit presentation · ⌘.</button>}
-      </div>
     </div>
   );
 }

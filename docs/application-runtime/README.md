@@ -12,6 +12,14 @@ canonical ownership and boundary contract. This book supplies capability-gap
 and milestone detail; it cannot authorize implementation, select a toolkit,
 or override security, source-strategy, or production controls.
 
+## Prototype runbook
+
+The current source-fidelity proof is documented in the [Nova Shell Prototype
+runbook](02-nova-shell-prototype.md). It is the reproducible Windows path for
+building the supplied JSX bundle and loading it in a local Servo desktop
+window. Its results are development evidence only and do not close the native
+runtime or release gates.
+
 ## The target
 
 Turing is not only a web browser. The owner's direction is that the Turing
@@ -274,15 +282,20 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   runtime needs. It is a demonstration of composition, not the real React
   runtime (APP-6), which additionally needs mutable capture, an event loop,
   and a great deal more of the language.
-- **APP-6 — The real React runtime, then a bundler's output.** The bounded
-  development proof should use the researched esbuild + Preact compatibility
-  path inside the Servo page surface. This is explicitly a source-fidelity
+- **APP-6 — The real React-shaped runtime, then a bundler's output.**
+  *Development proof exists.* `apps/nova-shell` uses the pinned esbuild +
+  Preact compatibility path and aliases Lucide imports while preserving the
+  supplied JSX source as the bundle input. This is explicitly a source-fidelity
   and engine-integration experiment, not approval to put Preact, React DOM, or
   a page DOM in trusted release chrome. See the [JSX runtime compiler
-  selection](../research/jsx-runtime-compiler-selection-2026-07.md).
-- **APP-7 — The Nova source rendered by the engine.** The chrome, and then
-  the system interface, rendered by running its own React rather than by the
-  Rust interim.
+  selection](../research/jsx-runtime-compiler-selection-2026-07.md) and the
+  [Nova shell prototype runbook](02-nova-shell-prototype.md).
+- **APP-7 — The Nova source rendered by the engine.** *Development proof
+  exists.* Servo's desktop shell loads the bundle, the Nova root owns the full
+  viewport, and control/input/navigation commands cross the in-process
+  `window.__TURING_ENGINE__` adapter. Browser navigation, persistence, and
+  policy are still mocked or host-local; this is not a release or native
+  Turing-runtime completion claim.
 
 ## What does not change
 

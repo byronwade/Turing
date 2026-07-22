@@ -225,6 +225,15 @@ Benchmark and compatibility fixtures live here when they are executable or serve
 
 Application binaries live here.
 
+`nova-shell` is the development-only source-fidelity package for the supplied
+Nova JSX. `package.json` and `package-lock.json` pin the esbuild, Preact
+compatibility, and Lucide Preact toolchain; `build.mjs` emits the ignored
+bundle and source metadata; `launch-servo.mjs` opens the bundle in a local
+Servo `servoshell.exe` desktop window; and `src/entry.jsx` installs the
+development engine-command adapter. It is not a release shell and must not be
+used as evidence that native Turing chrome or the Turing-owned JSX runtime is
+complete. Its runbook is [`docs/application-runtime/02-nova-shell-prototype.md`](application-runtime/02-nova-shell-prototype.md).
+
 `turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 
 `turing-browser` is the Research-maturity windowed laboratory presenter: it loads local HTML files through `turing-engine`, presents them under the Nova chrome rendered by `turing-chrome` (tab strip, address pill, command palette), and routes pointer input back through the engine's hit testing. `--screenshot out.bmp [page.html] [extra-tabs]` renders the same composed frame headlessly for visual review. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.
@@ -696,6 +705,11 @@ These reports feed `ADR-0009`; they do not approve a Servo-derived release path:
 Build output, caches, transfer payloads, generated publication scripts, secrets, and local editor state are not durable source.
 
 CI and wrapper commands set `CARGO_TARGET_DIR` outside the repository. The repository validator rejects known generated or temporary paths.
+
+The `apps/nova-shell/node_modules/` directory is a local `npm ci` installation
+of the pinned development-only source-fidelity toolchain. It is ignored by
+Git and excluded from canonical Markdown placement checks; it is recreated
+from `package-lock.json` and is never a release artifact.
 
 ## Change procedure
 

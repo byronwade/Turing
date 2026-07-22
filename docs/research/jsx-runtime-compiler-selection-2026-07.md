@@ -116,6 +116,13 @@ The current `turing-js` parser remains useful as a Turing-owned semantic/runtime
 
 ## Next proof
 
-Create a bounded development-only transform fixture that compiles the immutable Nova source with the pinned esbuild front-end and Turing factory/shims, then records the transformed module hash and rejects unsupported imports, globals, CSS constructs, and event forms. The next runtime proof must execute a small source slice through the same factory, state, event, layout, and paint path before the full file is promoted into any application launch path.
+The bounded development-only transform and runtime fixture now exists in the
+[`apps/nova-shell` prototype runbook](../application-runtime/02-nova-shell-prototype.md), compiling the versioned Nova source
+with pinned esbuild, Preact compatibility shims, and Lucide Preact aliases. Its
+metadata records the source hash and bundle inputs; Servo headless and desktop
+proofs load the resulting bundle, and WebDriver evidence confirms control,
+input, keyboard, and navigation commands cross the engine adapter. The next
+proof is a Rust-owned host bridge and native runtime review, including bounded
+command decoding, accessibility, fault, resource, and release-boundary tests.
 
 This document informs the future runtime task and ADR work. It does not select esbuild for production, approve a dependency, close the native UI or Servo gates, or claim that the browser face is implemented.

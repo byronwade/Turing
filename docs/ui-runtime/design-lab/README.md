@@ -1,6 +1,6 @@
 # Turing Nova Design Source
 
-Status: immutable primary visual, layout, and intended component-authoring source; executable Turing-owned runtime target remains gated
+Status: versioned primary visual, layout, and intended component-authoring source; executable Turing-owned runtime target remains gated
 Owner: product design, UI runtime, accessibility, platform, performance, and developer experience
 Captured: 2026-07-19
 
@@ -16,9 +16,9 @@ The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementatio
 
 The captured source content is preserved from the supplied attachment with repository LF line-ending normalization. The manifest records the committed bytes exactly. SHA-256:
 
-`7A85933F7C794F29A5F0B8FBB55DD53C28C0834A3FEF0ECDC73184BB8782148B`
+`EAD9704DF31179007F31B32661A8F09119BAF82C4F5454ACD486D258C0C0C84F`
 
-It contains 7,727 lines and is retained as the source artifact for the intended Turing-owned JSX build path, not as an external React release dependency.
+It contains 7,713 lines and 500,326 bytes. It is retained as the source artifact for the intended Turing-owned JSX build path, not as an external React release dependency.
 
 ## Authority boundaries
 
@@ -46,15 +46,15 @@ Before native implementation begins, the design lab must extract the source into
 3. bind every actionable visual state to a typed command or read-only snapshot field;
 4. create native component fixtures for light, dark, high-contrast, forced-color, reduced-motion, localization, keyboard, focus, fault, and density axes;
 5. compare the selected native adapter and the design lab against the same token and fixture records;
-6. retain the JSX source as the immutable input and visual regression reference until the Turing-owned runtime is accepted through `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020`.
+6. retain the JSX source as the versioned input and visual regression reference until the Turing-owned runtime is accepted through `PB-003`, `PB-004`, `PB-005`, `PB-014`, `PB-015`, and `PB-020`; any intentional source edit updates this manifest and its evidence.
 
 No React, Node, DOM, CSSOM, runtime CSS parser, or webview may enter trusted browser chrome because this source is adopted as the visual reference.
 
 ## 2026-07-21 amendment: Turing-owned JSX runtime target
 
-The owner-directed target is now a **Turing-owned, from-scratch JSX/component runtime** with a compatible React-shaped authoring surface where that compatibility is useful. The target is built from the repository's own typed runtime, layout, scene, accessibility, and command contracts, not from the external `react`, `react-dom`, Node, webview, or another browser engine. The design source remains immutable and continues to be the visual/layout source of truth.
+The owner-directed target is now a **Turing-owned, from-scratch JSX/component runtime** with a compatible React-shaped authoring surface where that compatibility is useful. The target is built from the repository's own typed runtime, layout, scene, accessibility, and command contracts, not from the external `react`, `react-dom`, Node, webview, or another browser engine. The design source remains the versioned visual/layout source of truth.
 
-This target does not authorize production implementation by itself. The file remains permanently unedited (hash `7A85933F7C794F29A5F0B8FBB55DD53C28C0834A3FEF0ECDC73184BB8782148B`, never modified), while the runtime must first prove parsing/compilation, lifecycle, state, input, accessibility, fault, resource, and performance contracts. The [Turing Platform Architecture](../../application-runtime/01-turing-platform-architecture.md) is the repository source for this target; no out-of-repository memory record is normative.
+This target does not authorize production implementation by itself. The runtime must first prove parsing/compilation, lifecycle, state, input, accessibility, fault, resource, and performance contracts. The 2026-07-22 source revision removes the design-lab presentation frame so the Nova root is the browser viewport and adds the development engine-command adapter used by the Servo proof. The [Turing Platform Architecture](../../application-runtime/01-turing-platform-architecture.md) is the repository source for this target; no out-of-repository memory record is normative.
 
 The "Required extraction path" section above is not deleted — extraction remains the correct approach for anything the native runtime cannot yet execute, and its verification method (compare against the design-lab source and approved fixtures) remains load-bearing.
 

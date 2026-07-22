@@ -44,7 +44,7 @@ The current primary visual/layout reference is the captured [Turing Nova design 
 - Visual similarity is not proof of native accessibility, input, timing, or platform correctness.
 - Every stable component fixture must run in the native test kit.
 - The design lab is separately packaged and never a release dependency.
-- The Nova JSX artifact is immutable source input and a visual regression reference; external React is never bundled into trusted browser chrome.
+- The Nova JSX artifact is versioned source input and a visual regression reference; external React is never bundled into trusted browser chrome. Intentional edits refresh the source manifest and require source-fidelity evidence.
 
 ## Turing-owned JSX compilation target
 
