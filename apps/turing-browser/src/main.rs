@@ -238,6 +238,7 @@ impl Browser {
                     protects_unsaved_work: false,
                 })
                 .collect(),
+            page_surfaces: Vec::new(),
         };
         debug_assert!(snapshot.validate().is_ok());
         snapshot

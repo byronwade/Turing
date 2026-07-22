@@ -76,7 +76,9 @@ define_id!(ProfileId, "profile");
 define_id!(SpaceId, "space");
 define_id!(TabId, "tab");
 define_id!(ViewId, "view");
+define_id!(SurfaceId, "surface");
 define_id!(DocumentEpoch, "document epoch");
+define_id!(DeviceGeneration, "device generation");
 define_id!(OperationId, "operation");
 define_id!(ChannelId, "channel");
 define_id!(SequenceNumber, "sequence number");
@@ -120,7 +122,10 @@ impl fmt::Display for ProcessIdentity {
 
 #[cfg(test)]
 mod tests {
-    use super::{ProcessEpoch, ProcessId, ProcessIdentity, SequenceNumber, ZeroIdError};
+    use super::{
+        DeviceGeneration, ProcessEpoch, ProcessId, ProcessIdentity, SequenceNumber, SurfaceId,
+        ZeroIdError,
+    };
 
     #[test]
     fn typed_ids_reject_zero() {
@@ -132,6 +137,14 @@ mod tests {
         let id = ProcessId::new(42).expect("42 is non-zero");
         assert_eq!(id.get(), 42);
         assert_eq!(id.to_string(), "42");
+    }
+
+    #[test]
+    fn surface_generations_are_typed_non_zero_ids() {
+        let surface = SurfaceId::new(4).expect("valid surface id");
+        let device = DeviceGeneration::new(2).expect("valid device generation");
+        assert_eq!(surface.get(), 4);
+        assert_eq!(device.get(), 2);
     }
 
     #[test]

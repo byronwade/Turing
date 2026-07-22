@@ -33,6 +33,7 @@ fn shell_self_test() -> Result<(), Box<dyn std::error::Error>> {
         space: SpaceId::new(1)?,
         active_tab: Some(tab.id),
         tabs: vec![tab],
+        page_surfaces: Vec::new(),
     }
     .validate()?;
 

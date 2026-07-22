@@ -11,6 +11,12 @@ Ordinary application widgets do not prove browser suitability. Turing must place
 
 A page surface carries a typed view ID, document epoch, device generation, logical and physical size, scale factor, color space, alpha mode, damage region, synchronization primitive, frame sequence, presentation deadline, and release acknowledgement.
 
+The current M0 model implements only the renderer-neutral metadata subset as
+`turing_ui_model::PageSurfaceDescriptor`. It is bounded, validates one surface
+per view in a `ShellSnapshot`, and rejects invalid scale, size, and physical
+allocation metadata. It is not a brokered handle and does not prove that Servo
+frames can be composed into trusted chrome.
+
 The UI never receives a renderer process pointer. The GPU or compositor service publishes a brokered surface handle. Stale document, view, or device generations are rejected.
 
 ## Composition alternatives

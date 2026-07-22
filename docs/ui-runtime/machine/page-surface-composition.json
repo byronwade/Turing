@@ -2,7 +2,7 @@
   "schema_version": 1,
   "inventory_id": "UI.SURFACE.NOCLAIM_COMPOSITION.2026_07",
   "status": "no_claim_surface_inventory",
-  "updated": "2026-07-18",
+  "updated": "2026-07-22",
   "claim_status": "no-claim page-surface composition inventory only; no UI-GATE-7 claim, no page-surface approval, no compositor ownership decision, no UI toolkit selection, no renderer-texture composition proof, no typed page-surface handle implementation, no brokered surface handle proof, no resize scale or damage proof, no input IME or accessibility routing proof, no occlusion or capture proof, no renderer-crash or GPU device-loss proof, no software-fallback proof, no latency or frame-pacing proof, no release-path UI approval, and no production claim",
   "source_records": [
     "docs/blueprint-v1/04-system-architecture.md",
@@ -19,6 +19,8 @@
     "docs/ui-runtime/10-prototype-plan-decision-record-and-migration.md",
     "docs/accessibility/README.md",
     "docs/accessibility/machine/window-input-accessibility-spike.json",
+    "crates/turing-types/src/lib.rs",
+    "crates/turing-ui-model/src/lib.rs",
     "docs/blueprint-v1/machine/pre-build-readiness.json",
     "docs/blueprint-v1/machine/build-readiness-task-queue.json",
     "docs/blueprint-v1/machine/research-readiness-crosswalk.json"
@@ -27,17 +29,17 @@
     {
       "field": "view_id",
       "purpose": "Bind the page surface to the Turing view that owns presentation, input routing, accessibility composition, capture policy, and resource attribution.",
-      "missing_evidence": "No generated surface protocol, page-surface handle type, or stale-view rejection test exists."
+      "missing_evidence": "A bounded renderer-neutral descriptor exists, but no versioned surface protocol, brokered page-surface handle, or stale-view rejection test exists."
     },
     {
       "field": "document_epoch",
       "purpose": "Reject stale renderer frames, hit-test state, accessibility subtrees, input targets, and release acknowledgements after navigation commit.",
-      "missing_evidence": "No document-epoch checked surface protocol or stale-epoch negative fixture exists."
+      "missing_evidence": "The descriptor carries a document epoch, but no document-epoch checked surface protocol or stale-epoch negative fixture exists."
     },
     {
       "field": "device_generation",
       "purpose": "Reject stale GPU resources and synchronize page-surface recreation after GPU device loss or backend reset.",
-      "missing_evidence": "No device-generation protocol, GPU-loss fixture, or resource-rebuild trace exists."
+      "missing_evidence": "The descriptor carries a device generation, but no device-generation protocol, GPU-loss fixture, or resource-rebuild trace exists."
     },
     {
       "field": "logical_size",
@@ -395,7 +397,7 @@
         "document and device generations",
         "release acknowledgements"
       ],
-      "missing_evidence": "No schema, generated type, or protocol decision defines the page-surface contract."
+      "missing_evidence": "The local descriptor is not a versioned wire schema or protocol decision; no generated surface protocol or brokered-handle contract defines the compositor boundary."
     },
     {
       "blocker_id": "UI-SURFACE-BLOCKER-BROKERED_HANDLE_MODEL",

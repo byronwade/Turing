@@ -43,7 +43,7 @@ Operating-system integrations required for security, text input, window manageme
 | Area | Turing owns | Engine/Servo boundary | Evidence required before promotion |
 |---|---|---|---|
 | Component runtime | component IR, lifecycle, state synchronization, layout, motion, themes, tokens, variants, hit testing, semantic output | none | runtime contract, deterministic fixtures, accessibility and performance evidence |
-| Browser UI | windows, tabs, workspaces, command palette, settings, downloads, history, DevTools surfaces | typed page-surface handles only | UI ADRs, page-surface proof, security and accessibility gates |
+| Browser UI | windows, tabs, workspaces, command palette, settings, downloads, history, DevTools surfaces | typed page-surface descriptors now; brokered handles only after the page-surface gates | UI ADRs, page-surface proof, security and accessibility gates |
 | Web content | browser policy, process identity, broker authority, product integration | HTML, CSS, DOM, layout, rendering, scripting, networking, standards behavior according to the accepted engine strategy | ADR-0009, engine conformance, process/sandbox/IPC evidence |
 | Browser services | navigation, history, permissions, storage, credentials, network policy, GPU scheduling, tracing, profiling | engine-facing adapters and broker protocols | service contracts, identity/epoch tests, transport and recovery evidence |
 | Platform shell | native window, input, IME, clipboard, display, accessibility, packaging | OS APIs through replaceable adapters | platform matrix, manual accessibility workflows, fault and resource evidence |
@@ -81,7 +81,7 @@ The public API is organized by capability and identity rather than by internal s
 
 | API family | Core objects | Required invariants |
 |---|---|---|
-| Windows and surfaces | `WindowId`, `SurfaceId`, `DisplayId` | lifecycle, device generation, resize, scale, occlusion, recovery |
+| Windows and surfaces | `WindowId`, `SurfaceId`, `PageSurfaceDescriptor`, `DisplayId` | lifecycle, document/device generation, resize, scale, occlusion, recovery |
 | Tabs and navigation | `TabId`, `NavigationId`, `DocumentEpoch` | origin, profile, frame, epoch, cancellation, commit authority |
 | History and workspaces | `HistoryEntryId`, `WorkspaceId`, `SpaceId` | explicit profile scope, transactional updates, recovery |
 | Permissions and storage | `PermissionRequestId`, partition keys, storage handles | deny by default, broker ownership, redaction, quota, migration |
@@ -155,4 +155,4 @@ An implementation agent must:
 
 ## Known limitations
 
-The component runtime is not implemented as a release platform. The current engine is a partial research engine, `turing-browser` is local-file laboratory software, and `turing-nova` is a development desktop host that builds the canonical JSX package and launches a locally installed Servo process. That host proves the source-fidelity path and exposes an opt-in development console observation bridge that validates command type and payload size, but it does not make Servo an accepted release dependency, replace the Turing-owned retained runtime, or provide a native privileged IPC bridge. The native toolkit and page-surface compositor are unselected, the Servo/source strategy is unresolved, and the browser services/SDK/desktop runtime listed above are contracts and research targets rather than supported APIs.
+The component runtime is not implemented as a release platform. The current engine is a partial research engine, `turing-browser` is local-file laboratory software, and `turing-nova` is a development desktop host that builds the canonical JSX package and launches a locally installed Servo process. That host proves the source-fidelity path and exposes an opt-in development console observation bridge that validates command type and payload size, but it does not make Servo an accepted release dependency, replace the Turing-owned retained runtime, or provide a native privileged IPC bridge. `turing-ui-model` now has a bounded renderer-neutral page-surface descriptor, but no brokered handle, compositor implementation, frame delivery, stale-generation receiver, or recovery proof exists. The native toolkit and page-surface compositor are unselected, the Servo/source strategy is unresolved, and the browser services/SDK/desktop runtime listed above are contracts and research targets rather than supported APIs.

@@ -26,6 +26,7 @@ This evidence moves `PB-005` from `not_started` to `partial` because the missing
 - [Native UI Runtime book](../ui-runtime/README.md)
 - [Page surface, compositor, and process integration](../ui-runtime/04-page-surface-compositor-and-process-integration.md)
 - [Window Input Accessibility Spike Inventory](window-input-accessibility-spike-inventory-2026-07.md)
+- [`turing-types` and `turing-ui-model` page-surface metadata](../../crates/turing-ui-model/src/lib.rs)
 - [`page-surface-composition.schema.json`](../ui-runtime/machine/page-surface-composition.schema.json)
 - [`page-surface-composition.json`](../ui-runtime/machine/page-surface-composition.json)
 - [`validate_page_surface_composition.py`](../../tools/validate_page_surface_composition.py)
@@ -54,9 +55,10 @@ The checked inventory now contains:
 - 8 security identity boundaries;
 - 9 evidence blockers;
 - source-record linkage to the Blueprint, engine book, UI-runtime book, accessibility records, readiness registry, task queue, and research crosswalk;
+- a bounded, renderer-neutral `PageSurfaceDescriptor` in `turing-ui-model` with typed surface/view/document/device identities, geometry, scale, color/alpha, frame sequence, and recovery state;
 - no-claim language that blocks `UI-GATE-7`, page-surface approval, compositor ownership, toolkit selection, renderer-texture composition proof, typed-handle implementation, brokered-handle proof, resize/scale/damage proof, input/IME/accessibility routing proof, occlusion/capture proof, renderer-crash/GPU-loss proof, software fallback proof, latency/frame-pacing proof, release-path UI approval, and production claims.
 
-`PB-005` can move to `partial` because the inventory and validator now exist. The status must not move beyond `partial` until a reference shell, simulated renderer frames, typed surface protocol, fault fixtures, latency traces, owner review, and `ADR-0016` evidence exist.
+`PB-005` remains `partial`. The descriptor closes only the local metadata shape; the status must not move beyond `partial` until a reference shell, simulated renderer frames, versioned surface protocol, brokered handles, fault fixtures, latency traces, owner review, and `ADR-0016` evidence exist.
 
 ## Unsupported Conclusions
 

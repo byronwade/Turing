@@ -593,6 +593,7 @@ mod tests {
             space: SpaceId::new(1).expect("nonzero"),
             active_tab: Some(TabId::new(active).expect("nonzero")),
             tabs,
+            page_surfaces: Vec::new(),
         };
         snapshot.validate().expect("valid");
         snapshot

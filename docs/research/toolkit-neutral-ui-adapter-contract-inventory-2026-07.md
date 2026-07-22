@@ -78,7 +78,7 @@ This report does not support any of these conclusions:
 - accepted `ADR-0013`;
 - complete toolkit-neutral state contract with versioning, stale-version rejection, coalescing, update ordering, and trace semantics;
 - complete command contract with identity, epoch, deadline, cancellation, confirmation, rejection, and service-side validation semantics;
-- complete surface contract tied to `PB-005`, typed page-surface handles, brokered surface handles, document/device generations, fallback behavior, and `ADR-0016`;
+- complete surface contract tied to `PB-005`, typed page-surface handles, brokered surface handles, document/device generations, fallback behavior, and `ADR-0016`; the current M0 descriptor is only the bounded metadata subset;
 - complete accessibility contract with native roles, names, states, focus, page-tree composition, platform snapshots, and manual assistive-technology evidence;
 - complete diagnostic contract with trace events, snapshot hashes, screenshot capture, accessibility capture, fault injection, and redaction rules;
 - accepted adapter trait or boundary shape;

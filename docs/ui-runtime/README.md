@@ -26,8 +26,15 @@ No native UI framework or JSX compiler is selected. The current research recomme
 - typed window, profile, Space, tab, and view identities;
 - explicit tab lifecycle;
 - typed shell commands;
+- bounded `PageSurfaceDescriptor` metadata carrying `SurfaceId`, `ViewId`, document and device generations, geometry, scale, color/alpha, frame sequencing, and recovery state;
 - snapshot validation;
 - no toolkit, platform, GPU, page, credential, Plug-in, or agent types.
+
+The descriptor is a renderer-neutral development contract, not a page-surface
+handle. It does not carry pixels, renderer process pointers, native GPU handles,
+or synchronization primitives. Brokered handles, stale-generation rejection at
+the compositor boundary, and renderer-produced frames remain future evidence
+gates.
 
 `apps/turing-shell` exercises the model through a command-line self-test. It is not a native UI and must not be presented as one.
 

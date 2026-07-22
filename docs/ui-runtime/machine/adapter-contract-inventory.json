@@ -43,9 +43,9 @@
       "area_id": "UI-ADAPTER-AREA-SURFACE",
       "area": "surface",
       "owner_scope": "ui-runtime",
-      "current_evidence": "The checked page-surface inventory identifies page-surface fields, composition alternatives, failure cases, and blockers for future `UI-GATE-7` work.",
+      "current_evidence": "`turing-ui-model` exposes a bounded renderer-neutral `PageSurfaceDescriptor` with typed surface, view, document, and device identities, logical/physical dimensions, scale, color/alpha metadata, frame sequencing, recovery state, and one-surface-per-view snapshot validation; the checked page-surface inventory identifies the remaining composition alternatives, failure cases, and blockers for future `UI-GATE-7` work.",
       "required_contract": "A surface contract must bind view identity, document epoch, device generation, scale, damage, synchronization, brokered surface handles, fallback frames, and crash or device-loss replacement semantics without exposing toolkit object layouts.",
-      "missing_evidence": "No executable page-surface protocol, typed page-surface handle implementation, brokered handle proof, software fallback, latency trace, or `ADR-0016` exists."
+      "missing_evidence": "The descriptor is not an executable page-surface protocol or handle. Brokered handle proof, synchronization, damage, renderer-produced frames, stale-generation receiver rejection, software fallback, latency trace, and `ADR-0016` remain missing."
     },
     {
       "area_id": "UI-ADAPTER-AREA-ACCESSIBILITY",
@@ -83,7 +83,7 @@
       "invariant_id": "UI-ADAPTER-INVARIANT-TYPED_IDENTITIES",
       "invariant": "typed window profile Space tab and view identities",
       "source": "crates/turing-ui-model/src/lib.rs",
-      "still_missing": "Document epoch, process role, principal, origin, frame, and surface-handle identities remain outside the current shell model."
+      "still_missing": "Document and device generations now exist in the page-surface descriptor, but process role, principal, origin, frame, and brokered surface-handle identities remain outside the current shell model."
     },
     {
       "invariant_id": "UI-ADAPTER-INVARIANT-TAB_LIFECYCLE",
