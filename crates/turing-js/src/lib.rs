@@ -2106,12 +2106,20 @@ impl<'a> Parser<'a> {
         Ok(result.unwrap_or(Expr::Str(String::new())))
     }
 
-    /// Parses `{ a: 1, ...rest, "b": 2 }`.
+    /// Parses `{ a: 1, ...rest, "b": 2, name, greet() {...} }`.
     ///
     /// Keys are identifiers, strings, or numbers, which is what the object
-    /// initialiser grammar allows without computed keys. Computed keys,
-    /// shorthand, and methods are refused rather than partly handled: each
-    /// changes what the initialiser means, not merely how it is written.
+    /// initialiser grammar allows without computed keys — those are refused
+    /// (`[expr]:` as a key changes what the initialiser means, not merely
+    /// how it is written). Three real shapes follow a key: `key: value`
+    /// (ordinary), `key(...) {...}` (method shorthand, desugaring to
+    /// `key: function(...) {...}` — an `Expr::Lambda` value, exactly what a
+    /// real `function` expression already produces), and a bare `key` with
+    /// nothing after it (property shorthand for `key: key`, valid only for
+    /// an identifier-origin key — `{ "a" }` or `{ 1 }` are not legal JS).
+    /// Getters, setters, generator methods, and `async` methods all refuse
+    /// with a typed error rather than being silently mis-parsed as some
+    /// other shape — none appear in real Nova usage (confirmed by grep).
     fn parse_object_literal(&mut self) -> Result<Expr, JsError> {
         self.expect_punct("{")?;
         let mut entries = Vec::new();
@@ -2128,6 +2136,7 @@ impl<'a> Parser<'a> {
                 }
                 continue;
             }
+            let key_is_ident = matches!(self.peek(), Token::Ident(_));
             let key = match self.advance() {
                 Token::Ident(name) => name,
                 Token::Str(text) => text,
@@ -2139,12 +2148,33 @@ impl<'a> Parser<'a> {
                     });
                 }
             };
-            if !self.eat_punct(":") {
+            if self.check_punct("(") {
+                let (parameters, prelude) = self.parse_parameter_list()?;
+                self.expect_punct("{")?;
+                let mut body = prelude;
+                while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
+                    body.push(self.parse_statement()?);
+                }
+                self.expect_punct("}")?;
+                entries.push(ObjectEntry::Property(
+                    key,
+                    Expr::Lambda { parameters, body },
+                ));
+            } else if self.eat_punct(":") {
+                entries.push(ObjectEntry::Property(key, self.parse_assignment()?));
+            } else if self.check_punct(",") || self.check_punct("}") {
+                if !key_is_ident {
+                    return Err(JsError::Unsupported {
+                        feature: "shorthand property with a non-identifier key".to_string(),
+                    });
+                }
+                entries.push(ObjectEntry::Property(key.clone(), Expr::Variable(key)));
+            } else {
                 return Err(JsError::Unsupported {
-                    feature: "shorthand and method properties".to_string(),
+                    feature: "getter, setter, generator, or async object-literal methods"
+                        .to_string(),
                 });
             }
-            entries.push(ObjectEntry::Property(key, self.parse_assignment()?));
             if !self.eat_punct(",") {
                 break;
             }
@@ -7214,19 +7244,19 @@ mod tests {
 
     #[test]
     fn unmodelled_object_syntax_is_refused() {
-        // Each of these changes what an initialiser means rather than only how
-        // it is written, so a partial implementation would silently drop
-        // properties the author wrote.
-        for source in [
-            "let o = { ['computed']: 1 };",
-            "let a = 1; let o = { a };",
-            "let o = { m() { return 1; } };",
-        ] {
-            assert!(
-                matches!(compile(source), Err(JsError::Unsupported { .. })),
-                "expected a refusal for {source}"
-            );
-        }
+        // Computed keys change what an initialiser means rather than only
+        // how it is written, so a partial implementation would silently
+        // drop properties the author wrote. (Shorthand properties and
+        // method shorthand — `{ a }`, `{ m() {...} }` — used to be refused
+        // here too; both are now implemented, see
+        // `object_literal_shorthand_property_binds_key_to_the_same_name_
+        // variable` and `object_literal_method_shorthand_desugars_to_a_
+        // callable_property`.)
+        let source = "let o = { ['computed']: 1 };";
+        assert!(
+            matches!(compile(source), Err(JsError::Unsupported { .. })),
+            "expected a refusal for {source}"
+        );
     }
 
     #[test]
@@ -7297,6 +7327,64 @@ mod tests {
             Value::String("var(--c4)".to_string()),
             "no style on ff falls back to the default background"
         );
+    }
+
+    #[test]
+    fn object_literal_shorthand_property_binds_key_to_the_same_name_variable() {
+        // `{ name }` is shorthand for `{ name: name }` — valid only for an
+        // identifier-origin key.
+        assert_eq!(
+            eval_in_fn("let name = \"Nova\"; let obj = { name }; return obj.name;"),
+            Value::String("Nova".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let a = 1; let b = 2; let obj = { a, b }; return obj.a + obj.b;"),
+            Value::Number(3.0)
+        );
+    }
+
+    #[test]
+    fn object_literal_method_shorthand_desugars_to_a_callable_property() {
+        // `{ greet() { ... } }` desugars to `{ greet: function() { ... } }`
+        // — an ordinary `Expr::Lambda` value, called the same way any other
+        // function-valued property already is.
+        assert_eq!(
+            eval_in_fn("let obj = { greet() { return \"hi\"; } }; return obj.greet();"),
+            Value::String("hi".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let obj = { add(a, b) { return a + b; } }; return obj.add(2, 3);"),
+            Value::Number(5.0)
+        );
+    }
+
+    #[test]
+    fn object_literal_shorthand_with_a_non_identifier_key_still_refuses() {
+        // `{ "a" }`/`{ 1 }` are not legal JS shorthand — only an
+        // identifier-origin key may omit its value.
+        assert!(matches!(
+            compile("function main() { let obj = { \"a\" }; } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn object_literal_getter_setter_and_generator_methods_still_refuse() {
+        // None of these appear in real Nova usage; each must refuse by
+        // name rather than being silently mis-parsed as some other shape.
+        // `get`/`set` are ordinary identifiers to this engine, so `get x()`
+        // reaches the new method-shorthand branch's fallback refusal
+        // (`Unsupported`); `async` is already a reserved keyword refused
+        // earlier, at the property-name token match itself (`UnexpectedToken`
+        // — still a typed refusal, just from an earlier, more general check).
+        assert!(matches!(
+            compile("function main() { let obj = { get x() { return 1; } }; } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("function main() { let obj = { async x() {} }; } main();"),
+            Err(JsError::UnexpectedToken { .. })
+        ));
     }
 
     #[test]
