@@ -1117,6 +1117,13 @@ enum ObjectEntry {
     /// per-index characters — a case this engine does not model) instead
     /// of matching a genuine no-op case.
     Spread(Expr),
+    /// `[key]: value` — real Nova usage is always this exact shape (a
+    /// dynamic dictionary-update, `{ ...f, [k]: !f[k] }`), never a
+    /// computed getter/setter/method (`{ [k]() {} }`, confirmed absent via
+    /// AST scan), so only the key-and-value property form exists here; a
+    /// computed method is refused by `Parser::parse_object_literal`
+    /// rather than modeled.
+    Computed(Expr, Expr),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2454,10 +2461,27 @@ impl<'a> Parser<'a> {
         self.expect_punct("{")?;
         let mut entries = Vec::new();
         while !self.check_punct("}") {
-            if self.check_punct("[") {
-                return Err(JsError::Unsupported {
-                    feature: "computed property keys".to_string(),
-                });
+            if self.eat_punct("[") {
+                // Real usage: `{ ...f, [k]: !f[k] }` — always a plain
+                // computed property, never a computed method
+                // (`{ [k]() {} }`, confirmed absent by an AST scan of the
+                // real file) — refused explicitly, with its own message,
+                // rather than left to fall through to a confusing "expected
+                // `:`" parse error.
+                let key = self.parse_assignment()?;
+                self.expect_punct("]")?;
+                if self.check_punct("(") {
+                    return Err(JsError::Unsupported {
+                        feature: "a computed object-literal method (`{ [k]() {} }`)".to_string(),
+                    });
+                }
+                self.expect_punct(":")?;
+                let value = self.parse_assignment()?;
+                entries.push(ObjectEntry::Computed(key, value));
+                if !self.eat_punct(",") {
+                    break;
+                }
+                continue;
             }
             if self.eat_punct("...") {
                 entries.push(ObjectEntry::Spread(self.parse_assignment()?));
@@ -4291,6 +4315,17 @@ impl Compiler {
                         ObjectEntry::Spread(source) => {
                             self.expression(source)?;
                             self.code.push(Op::SpreadInto);
+                        }
+                        // Same shape as `ObjectEntry::Property` just above,
+                        // except the key is a runtime expression rather
+                        // than a compile-time constant string — `SetProperty`
+                        // already coerces whatever value it pops into a
+                        // property key (see `property_key`), so no
+                        // additional handling is needed here.
+                        ObjectEntry::Computed(key, value) => {
+                            self.expression(key)?;
+                            self.expression(value)?;
+                            self.code.push(Op::SetProperty);
                         }
                     }
                     // Both ops leave a value (SetProperty the assigned value,
@@ -8076,15 +8111,18 @@ mod tests {
 
     #[test]
     fn unmodelled_object_syntax_is_refused() {
-        // Computed keys change what an initialiser means rather than only
-        // how it is written, so a partial implementation would silently
-        // drop properties the author wrote. (Shorthand properties and
-        // method shorthand — `{ a }`, `{ m() {...} }` — used to be refused
-        // here too; both are now implemented, see
+        // A computed *method* (`{ [k]() {} }`) is refused — confirmed
+        // absent from real Nova usage by an AST scan (all 28 real computed
+        // keys are the plain `[k]: value` property shape, which is now
+        // implemented; see `computed_object_literal_key_evaluates_the_key_
+        // expression_at_runtime`). Modeling the method form on top would be
+        // unused surface, not a real blocker. (Shorthand properties and
+        // ordinary — non-computed — method shorthand, `{ a }`/`{ m() {...} }`,
+        // used to be refused here too; both are now implemented, see
         // `object_literal_shorthand_property_binds_key_to_the_same_name_
         // variable` and `object_literal_method_shorthand_desugars_to_a_
         // callable_property`.)
-        let source = "let o = { ['computed']: 1 };";
+        let source = "let o = { ['computed']() { return 1; } };";
         assert!(
             matches!(compile(source), Err(JsError::Unsupported { .. })),
             "expected a refusal for {source}"
@@ -8468,6 +8506,46 @@ mod tests {
         assert!(matches!(
             compile("function main() { let obj = { async x() {} }; } main();"),
             Err(JsError::UnexpectedToken { .. })
+        ));
+    }
+
+    #[test]
+    fn computed_object_literal_key_evaluates_the_key_expression_at_runtime() {
+        // Real Nova shape: `{ ...f, [k]: !f[k] }` — a dynamic
+        // dictionary-update. The key is read from a variable, not a
+        // literal, so this only proves the feature if the key expression
+        // really runs rather than being coerced from its source text.
+        assert_eq!(
+            eval_in_fn("let k = \"x\"; let o = { [k]: 1 }; return o.x;"),
+            Value::Number(1.0)
+        );
+        assert_eq!(
+            eval_in_fn("let k = \"x\" + \"y\"; let o = { [k]: 1 }; return o.xy;"),
+            Value::Number(1.0)
+        );
+    }
+
+    #[test]
+    fn computed_object_literal_key_combines_with_spread_matching_the_real_toggle_shape() {
+        // `{ ...f, [k]: !f[k] }` — flips one field of a copy, by name,
+        // leaving the rest untouched.
+        assert_eq!(
+            eval_in_fn(
+                "let f = { a: true, b: false }; let k = \"a\"; \
+                 let n = { ...f, [k]: !f[k] }; \
+                 return n.a === false && n.b === false;"
+            ),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn computed_object_literal_method_is_refused() {
+        // Confirmed absent from real usage (an AST scan found all 28 real
+        // computed keys are the plain property shape) — not modeled.
+        assert!(matches!(
+            compile("function main() { let o = { [\"m\"]() { return 1; } }; } main();"),
+            Err(JsError::Unsupported { .. })
         ));
     }
 
