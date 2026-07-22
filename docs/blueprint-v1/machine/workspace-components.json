@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-07-20",
+  "updated": "2026-07-22",
   "status": "wp002_control_plane_reference",
   "reference_target": "x86_64-unknown-linux-gnu",
   "rules": {
@@ -500,6 +500,25 @@
         "turing-paint"
       ],
       "failure_boundary": "bounded-component-tree-to-paint-and-hit-regions"
+    },
+    {
+      "id": "COMP-026",
+      "package": "turing-nova",
+      "path": "apps/turing-nova",
+      "kind": "binary",
+      "owner_scope": "ui-runtime",
+      "privilege": "development-desktop-host",
+      "hostile_input": false,
+      "public_api": "none",
+      "unsafe_policy": "forbid",
+      "platforms": [
+        "windows",
+        "macos",
+        "x11",
+        "wayland"
+      ],
+      "dependencies": [],
+      "failure_boundary": "report-build-or-Servo-launch-failure-without-recreating-Nova-UI"
     }
   ]
 }

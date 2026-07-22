@@ -1621,6 +1621,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "turing-nova"
+version = "0.1.0"
+
+[[package]]
 name = "turing-paint"
 version = "0.1.0"
 dependencies = [

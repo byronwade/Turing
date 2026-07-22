@@ -121,7 +121,7 @@ def manifest_internal_dependencies(path: Path, package_set: set[str]) -> set[str
     return set(dependencies) & package_set
 
 
-def check_workspace() -> None:
+def check_workspace() -> int:
     workspace = load_toml(ROOT / "Cargo.toml")
     table = workspace.get("workspace")
     if not isinstance(table, dict):
@@ -188,6 +188,7 @@ def check_workspace() -> None:
 
     for package in graph:
         visit(package)
+    return len(members)
 
 
 def check_ipc_schema() -> None:
@@ -292,7 +293,7 @@ def main() -> int:
     try:
         check_required_files()
         check_toolchain()
-        check_workspace()
+        workspace_count = check_workspace()
         check_ipc_schema()
         check_ledgers()
         check_execution_task()
@@ -303,7 +304,7 @@ def main() -> int:
 
     print(
         "build foundation validation passed: "
-        "8 workspace members, Rust 1.97.1, generated IPC schema, "
+        f"{workspace_count} workspace members, Rust 1.97.1, generated IPC schema, "
         "0 external runtime dependencies, 0 unsafe entries, 0 native-code entries"
     )
     return 0

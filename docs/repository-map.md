@@ -30,6 +30,7 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   └── adr0009/
 │   └── corpus/
 ├── apps/
+│   ├── turing-nova/
 │   └── turing-shell/
 ├── crates/
 │   ├── turing-build-info/
@@ -233,6 +234,12 @@ Servo `servoshell.exe` desktop window; and `src/entry.jsx` installs the
 development engine-command adapter. It is not a release shell and must not be
 used as evidence that native Turing chrome or the Turing-owned JSX runtime is
 complete. Its runbook is [`docs/application-runtime/02-nova-shell-prototype.md`](application-runtime/02-nova-shell-prototype.md).
+
+`turing-nova` is the native Rust desktop entry point for that prototype. It
+runs the locked npm package check, resolves `TURING_SERVO` or the documented
+local Servo paths, and opens the generated bundle in Servo. It is a host
+launcher, not a second renderer and not release embedding; `--no-build` skips
+the npm step when `dist/` already exists.
 
 `turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 

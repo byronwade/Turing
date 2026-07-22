@@ -51,6 +51,18 @@ npm run check
 npm run launch:servo
 ```
 
+The native Turing entry point is also available:
+
+```powershell
+Set-Location ..\..
+cargo run -p turing-nova
+```
+
+After the package has already been checked, `cargo run -p turing-nova --
+--no-build` launches the existing bundle without invoking npm. This Rust
+binary is intentionally a thin host boundary: it does not duplicate Nova's
+component tree or silently create a second renderer.
+
 `npm run check` rebuilds the ignored `dist/` directory, verifies that the
 canonical source is bundled, and writes `dist/build-metadata.json`. The
 metadata includes the source SHA-256, byte and line counts, compiler/runtime

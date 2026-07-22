@@ -6,6 +6,7 @@ members = [
   # the default build stays standard-library-only. Build it explicitly with
   # `cargo run -p turing-browser`.
   "apps/turing-browser",
+  "apps/turing-nova",
   "apps/turing-shell",
   "crates/turing-a11y",
   "crates/turing-bench",
@@ -32,6 +33,7 @@ members = [
   "tools/xtask",
 ]
 default-members = [
+  "apps/turing-nova",
   "apps/turing-shell",
   "crates/turing-a11y",
   "crates/turing-bench",
