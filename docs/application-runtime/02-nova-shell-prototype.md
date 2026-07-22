@@ -103,6 +103,13 @@ Rust-owned host must replace the adapter and validate identity, origin,
 document epoch, permissions, and command authority before any command can
 perform a real browser action.
 
+When launched by `turing-nova`, the URL contains the opt-in
+`turing_engine_bridge=1` flag. The adapter emits a tab-delimited development
+record to Servo's console; the Rust host validates protocol version and command
+type and reports only command type and payload byte length. It never writes raw
+typed payload values to host output. This is an observable prototype bridge,
+not an IPC or privileged command path.
+
 ## Verified behavior
 
 The current proof has been exercised against the local Servo binary on
@@ -129,5 +136,7 @@ evidence. Any source change must refresh the design manifest and rerun the
 source validator, package check, Servo render proof, and relevant repository
 gates.
 
-The next implementation slice is a reviewed Rust host bridge with bounded
-command decoding and the same command/state contracts used by the native shell.
+The next implementation slice is a reviewed Rust/Servo embedding bridge with
+bounded command decoding and the same command/state contracts used by the
+native shell. The current console bridge must not be promoted to production
+IPC.

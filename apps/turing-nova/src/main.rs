@@ -9,10 +9,31 @@
 
 use std::env;
 use std::fmt::Write as _;
+use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Child, Command, Stdio};
+use std::thread;
 
 const PACKAGE_RELATIVE: &str = "apps/nova-shell";
+const ENGINE_COMMAND_PREFIX: &str = "TURING_ENGINE_COMMAND\t";
+const MAX_ENGINE_RECORD_BYTES: usize = 64 * 1024;
+const SUPPORTED_ENGINE_COMMANDS: &[&str] = &[
+    "navigation.history",
+    "navigation.navigate",
+    "navigation.copy-url",
+    "shell.view.open",
+    "shell.sidebar.toggle",
+    "tabs.close.request",
+    "tabs.create",
+    "tabs.activate",
+    "view.reader.toggle",
+    "view.split.toggle",
+    "ui.control.click",
+    "ui.control.pointerdown",
+    "ui.control.input",
+    "ui.control.change",
+    "ui.keyboard",
+];
 
 fn repository_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -91,6 +112,70 @@ fn file_url(path: &Path) -> Result<String, String> {
     Ok(url)
 }
 
+#[derive(Debug, Eq, PartialEq)]
+struct EngineRecord {
+    version: u16,
+    kind: String,
+    payload_bytes: usize,
+}
+
+fn parse_engine_record(line: &str) -> Option<EngineRecord> {
+    let record = line
+        .find(ENGINE_COMMAND_PREFIX)
+        .map(|index| &line[index..])?;
+    let fields: Vec<&str> = record[ENGINE_COMMAND_PREFIX.len()..]
+        .splitn(3, '\t')
+        .collect();
+    if fields.len() != 3 {
+        return None;
+    }
+    let version = fields[0].parse().ok()?;
+    let kind = fields[1];
+    if version != 1 || !SUPPORTED_ENGINE_COMMANDS.contains(&kind) {
+        return None;
+    }
+    let payload_bytes = fields[2].len();
+    (payload_bytes <= MAX_ENGINE_RECORD_BYTES).then(|| EngineRecord {
+        version,
+        kind: kind.to_owned(),
+        payload_bytes,
+    })
+}
+
+fn observe_engine_output<R: Read + Send + 'static>(output: R) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+        let reader = BufReader::new(output);
+        for line in reader.lines() {
+            let Ok(line) = line else { break };
+            if let Some(record) = parse_engine_record(&line) {
+                println!(
+                    "turing-nova: engine command v{} type={} payload_bytes={}",
+                    record.version, record.kind, record.payload_bytes
+                );
+            }
+        }
+    })
+}
+
+fn launch_servo(servo: &Path, url: String) -> Result<std::process::ExitStatus, String> {
+    let mut child: Child = Command::new(servo)
+        .arg(url)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::inherit())
+        .spawn()
+        .map_err(|error| format!("cannot launch Servo: {error}"))?;
+    let output = child
+        .stdout
+        .take()
+        .ok_or_else(|| "Servo stdout pipe was unavailable".to_owned())?;
+    let observer = observe_engine_output(output);
+    let status = child
+        .wait()
+        .map_err(|error| format!("cannot wait for Servo: {error}"))?;
+    let _ = observer.join();
+    Ok(status)
+}
+
 fn usage() {
     println!(
         "turing-nova\n\nUsage: cargo run -p turing-nova [-- --no-build]\n\n\
@@ -125,13 +210,11 @@ fn run() -> Result<(), String> {
     }
 
     let servo = find_servo()?;
-    let url = file_url(&html)?;
+    let mut url = file_url(&html)?;
+    url.push_str("?turing_engine_bridge=1");
     println!("turing-nova: launching {}", servo.display());
     println!("turing-nova: loading {url}");
-    let status = Command::new(&servo)
-        .arg(url)
-        .status()
-        .map_err(|error| format!("cannot launch Servo: {error}"))?;
+    let status = launch_servo(&servo, url)?;
     if status.success() {
         Ok(())
     } else {
@@ -158,5 +241,22 @@ mod tests {
         assert!(url.ends_with("Cargo.toml"));
         assert!(!url.contains('\\'));
         assert!(!url.contains("%3F"));
+    }
+
+    #[test]
+    fn engine_record_accepts_known_types_without_exposing_payload() {
+        let record = super::parse_engine_record(
+            "prefix TURING_ENGINE_COMMAND\t1\tnavigation.navigate\t{\"url\":\"secret\"}",
+        )
+        .expect("known command is accepted");
+        assert_eq!(record.version, 1);
+        assert_eq!(record.kind, "navigation.navigate");
+        assert!(record.payload_bytes > 0);
+    }
+
+    #[test]
+    fn engine_record_rejects_unknown_or_wrong_version() {
+        assert!(super::parse_engine_record("TURING_ENGINE_COMMAND\t2\ttabs.create\t{}").is_none());
+        assert!(super::parse_engine_record("TURING_ENGINE_COMMAND\t1\tsecret.read\t{}").is_none());
     }
 }

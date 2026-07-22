@@ -2,10 +2,18 @@ import { h, render } from "preact";
 import Nova from "../../../docs/ui-runtime/design-lab/turing-nova-design-source.jsx";
 
 const commandHistory = [];
+const ENGINE_CONSOLE_PREFIX = "TURING_ENGINE_COMMAND";
 const engineState = {
   version: 1,
   lastCommand: null,
 };
+const bridgeEnabled = (() => {
+  try {
+    return new URL(window.location.href).searchParams.get("turing_engine_bridge") === "1";
+  } catch {
+    return false;
+  }
+})();
 
 // This is the browser-facing adapter boundary. The prototype keeps the
 // engine side in-process, but all source interactions cross this typed object
@@ -17,6 +25,11 @@ window.__TURING_ENGINE__ = {
     commandHistory.push(command);
     if (commandHistory.length > 128) commandHistory.shift();
     document.documentElement.dataset.turingLastCommand = command.type;
+    if (bridgeEnabled && typeof console !== "undefined" && typeof console.log === "function") {
+      // The native host observes the type and payload size only. Raw payloads
+      // stay inside the page adapter so typed input is not written to stdout.
+      console.log([ENGINE_CONSOLE_PREFIX, command.version, command.type, JSON.stringify(command.payload)].join("\t"));
+    }
   },
   snapshot() {
     return {
