@@ -521,8 +521,37 @@ fn lex(source: &str, tolerate_unknown: bool) -> Result<(Vec<Token>, Vec<usize>),
             let quote = byte;
             index += 1;
             let start = index;
-            while index < bytes.len() && bytes[index] != quote {
+            while index < bytes.len() && bytes[index] != quote && bytes[index] != b'\n' {
                 index += 1;
+            }
+            // A real JS string literal can never contain a raw newline, so
+            // hitting one before the closing quote proves this was never a
+            // string open at all — e.g. an apostrophe written directly in
+            // unquoted JSX text ("...only what's on screen exists...").
+            // Every genuine single-quoted/double-quoted literal in the real
+            // Nova file is a single line (verified by simulating this exact
+            // scan over the whole file and checking for newline-crossings
+            // before shipping this), so this is a grammar fact, not a
+            // tuned heuristic. Without it, the bogus "string" this quote
+            // opened would keep scanning past the newline until some later,
+            // unrelated quote character happened to close it — corrupting
+            // every real token in between (confirmed: one apostrophe near
+            // real-file byte 323116 previously swallowed ~25KB this way).
+            if index >= bytes.len() || bytes[index] == b'\n' {
+                if tolerate_unknown {
+                    // This pass's tokenization of a JSX-text region is
+                    // discarded once JSX's own raw-byte re-scan takes over
+                    // (see `tolerate_unknown`'s doc comment) — resume right
+                    // after the stray quote byte, same as any other
+                    // unrecognized byte, rather than treating it as an
+                    // unterminated string.
+                    index = token_start + 1;
+                    continue;
+                }
+                return Err(JsError::UnexpectedCharacter {
+                    character: quote as char,
+                    offset: token_start,
+                });
             }
             starts.push(token_start);
             tokens.push(Token::Str(source[start..index].to_string()));
@@ -7925,25 +7954,57 @@ mod tests {
     }
 
     #[test]
-    fn jsx_quote_desynchronised_text_is_refused_not_silently_corrupted() {
-        // A raw apostrophe in JSX text (not inside a quoted attribute value,
-        // where it would sit safely inside the attribute's own quote span)
-        // is exactly the documented boundary: the eager whole-file lex
-        // reads it as the start of a *string token*, since text is not
-        // exempt from ordinary tokenization there, and that token then runs
-        // to the next quote or end of input, desynchronising everything the
-        // JSX scan tries to resume from. `resume_at` catches the mismatch
-        // and refuses by name rather than resuming from the wrong token.
+    fn jsx_text_may_contain_a_raw_apostrophe_unquoted() {
+        // Real Nova text writes English contractions/possessives directly
+        // and unquoted in JSX ("...only what's on screen exists...",
+        // "browser's own CSS engine", "Don't"). The eager whole-file lex
+        // used to read a bare `'` as opening a real string-literal token
+        // and scan forward to the next `'` (or end of input) looking for a
+        // close, silently desynchronising everything JSX's own raw-byte
+        // re-scan tries to resume from afterward — confirmed on the real
+        // file: one apostrophe near byte 323116 swallowed ~25KB of real
+        // code/JSX this way before `resume_at`'s mismatch check turned that
+        // into at least a named (if confusingly-located) refusal.
         //
-        // Verified by the discipline this session follows for a real edge
-        // case: with `resume_at`'s mismatch check removed, this same source
-        // did not error usefully — it failed with a confusing
-        // `UnexpectedToken { found: "end of input", expected: "\`}\`" }`
-        // pointing nowhere near the actual defect, rather than naming JSX
-        // desynchronisation as the cause. Restoring the check is what turns
-        // that into an honest, named refusal.
-        let result = compile("function main() { return <div>Don't</div>; } main();");
-        assert!(matches!(result, Err(JsError::Unsupported { .. })));
+        // Fixed at the root: a genuine JS string literal can never contain
+        // a raw newline, so the scan in `lex` now bails the moment it
+        // crosses one without finding a closing quote — the same
+        // "unrecognized byte in a to-be-discarded eager pass" tolerance
+        // already applied to non-ASCII bytes and a bare `&` (see `lex`'s
+        // `tolerate_unknown` doc comment), just reached via a different
+        // signal. Verified against the real file: simulating this exact
+        // scan found zero genuine single/double-quoted string literals
+        // that span a newline, so the rule has no false positives there.
+        assert!(compile("function main() { return <div>Don't</div>; } main();").is_ok());
+        assert!(
+            compile(
+                "function main() { return <p>...only what's on screen exists...</p>; } main();"
+            )
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn an_unterminated_string_inside_a_jsx_expression_or_interpolation_still_refuses() {
+        // Mirrors the bitwise-`&` refusal test above for the same reason:
+        // only the eager whole-file pass may treat a stray quote as "not
+        // really a string open" and back out (see `lex`'s
+        // `tolerate_unknown` doc comment) — the two strict re-lex paths
+        // (a JSX `{expr}` body, a template-literal interpolation) must
+        // still refuse a genuinely unterminated string literal by name,
+        // not silently drop the quote as if it were inert JSX text.
+        let jsx_expr =
+            compile("function main() { return <div>{'unterminated\nstring'}</div>; } main();");
+        assert!(
+            matches!(
+                jsx_expr,
+                Err(JsError::UnexpectedCharacter {
+                    character: '\'',
+                    ..
+                })
+            ),
+            "an unterminated string inside a JSX expression must refuse, got {jsx_expr:?}"
+        );
     }
 
     #[test]
