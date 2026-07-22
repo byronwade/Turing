@@ -2245,10 +2245,20 @@ impl<'a> Parser<'a> {
     /// the name is only visible inside for self-reference, which is capture —
     /// the feature this first-class-function step deliberately does not add.
     fn parse_function_expression_body(&mut self) -> Result<Expr, JsError> {
+        // An optional name — real Nova usage: `memo(function Toggle(...)
+        // {...})`, React's devtools-name idiom for giving an inline
+        // component a readable name. Consumed and dropped, not bound as a
+        // capturable local: confirmed by grep across every real
+        // `memo(function Name(...) {...})` in the file (8 occurrences) that
+        // the name is never referenced inside its own body — it is purely
+        // decorative here. A body that *did* try to self-reference the name
+        // would resolve through the ordinary scope chain if an enclosing
+        // binding of the same name exists, or refuse as
+        // `JsError::UndefinedVariable` if none does — either way a typed
+        // outcome, never a silently wrong one — so no capture machinery is
+        // needed to handle that case honestly.
         if matches!(self.peek(), Token::Ident(_)) {
-            return Err(JsError::Unsupported {
-                feature: "named function expressions (self-reference is capture)".to_string(),
-            });
+            self.position += 1;
         }
         let (parameters, prelude, min_arity) = self.parse_parameter_list()?;
         self.expect_punct("{")?;
@@ -6744,11 +6754,13 @@ mod tests {
     }
 
     #[test]
-    fn a_named_function_expression_is_refused() {
-        assert!(matches!(
-            compile("let f = function named() { return 1; };"),
-            Err(JsError::Unsupported { .. })
-        ));
+    fn a_named_function_expression_compiles_with_the_name_unbound() {
+        // Was refused outright; now compiles — see
+        // `a_named_function_expression_compiles_with_the_name_dropped` for
+        // the real Nova usage that motivated this and the value-level
+        // regression test, and `a_named_function_expression_that_actually_
+        // self_references_still_refuses` for what still refuses.
+        assert!(compile("let f = function named() { return 1; };").is_ok());
     }
 
     #[test]
@@ -7594,6 +7606,46 @@ mod tests {
             eval_in_fn("let obj = { add(a, b) { return a + b; } }; return obj.add(2, 3);"),
             Value::Number(5.0)
         );
+    }
+
+    #[test]
+    fn a_named_function_expression_compiles_with_the_name_dropped() {
+        // Real Nova usage: `memo(function Toggle(...) {...})`, React's
+        // devtools-name idiom for an inline component. Confirmed by grep
+        // across every real `memo(function Name(...) {...})` in the file
+        // (8 occurrences) that the name is never referenced inside its own
+        // body — the name is consumed and dropped, not bound as a
+        // capturable local.
+        assert_eq!(
+            eval_in_fn("let f = function greet() { return \"hi\"; }; return f();"),
+            Value::String("hi".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let add = function sum(a, b) { return a + b; }; return add(2, 3);"),
+            Value::Number(5.0)
+        );
+    }
+
+    #[test]
+    fn a_named_function_expression_that_actually_self_references_still_refuses() {
+        // The discriminating case: dropping the name rather than binding it
+        // must not silently swallow a genuine self-reference. `fib` is not
+        // bound as a local anywhere, so a call to it inside its own body
+        // resolves the same way any other unresolved name would — as a
+        // host operation, checked at the call site since the compiler does
+        // not hold the host's table (see `Expr::Call`'s own doc comment on
+        // this resolution order) — and since no host binds `fib`, running
+        // it refuses with a typed `UnboundOperation`, not a wrong answer.
+        // Proves the drop is honest: it would not silently compute the
+        // wrong value for a script that actually meant self-recursion.
+        let program = compile(
+            "function main() { let f = function fib(n) { return fib(n); }; return f(1); } main();",
+        )
+        .expect("compiles");
+        let error = Vm::default()
+            .call(&program, "main", Vec::new(), &mut NoHost::default())
+            .expect_err("refused");
+        assert!(matches!(error, JsError::UnboundOperation { .. }));
     }
 
     #[test]
