@@ -1,5 +1,29 @@
 # Research Log
 
+## 2026-07-21 - Speeding up the empirical loop: a real JS parser as a one-time analysis tool
+
+The owner asked whether any open-source tooling could speed up the one-blocker-per-`nova_native`-run loop this session has used since Milestone 1 began, without touching the engine's own dependency policy (`docs/blueprint-v1/03-language-and-dependency-strategy.md`: the executable bootstrap uses only the Rust standard library; a new *runtime* dependency needs a decision record; **build-only tools — code generators, test runners — are a separate, lighter-scrutiny category, never shipped in runtime artifacts**).
+
+Researched test262 (the official TC39 ECMAScript conformance suite, 50,000+ tests) and Rust-native JS parsers (oxc-parser, swc) as candidates. Neither fit this specific problem: test262 tests full spec conformance, which is far broader than "what does this one real file need for a static paint" — the methodology this session has already validated repeatedly (regex, named-function-expressions) works by scoping tightly to real usage, and a conformance suite would pull scope the wrong direction. A Rust parser crate would mean vendoring parsing logic the project's whole point is to write from scratch — not what was being asked.
+
+The actual answer: Node.js was already available locally, so a throwaway, gitignored scratchpad directory got `@babel/parser` + `@babel/traverse` installed via `npm install --no-save` — a mature, real-world JS/JSX parser, run **once**, outside the Rust workspace entirely, never touching `Cargo.toml`, never committed, never shipped. This is squarely "build-only" under the project's own dependency policy — arguably lighter than that category even, since nothing about it persists past this session.
+
+Parsed the real Nova file with it and walked the resulting AST counting every distinct node type, operator, and construct. This answered, in one ~10-second script run, what the one-blocker-at-a-time loop would have taken many more advisor-consultation-and-harness-rerun cycles to discover:
+
+- **Unary `+`** (numeric coercion): 23 uses, all `+e.key - 1`/`+c.dataset.id` shaped — confirmed as the harness's *current* blocker before writing any Rust, rather than guessing from the bare error message.
+- **Optional chaining** (`?.`/`?.()`): 42 uses — not yet reached by the harness, but the single most common not-yet-implemented construct in the file.
+- **Computed object-literal keys** (`{ [k]: v }`): 28 uses, always a dynamic dictionary-update shape (`{ ...f, [k]: !f[k] }`) — contradicts an earlier, pre-AST-scan assumption (made from a text grep, not a real parse) that this wasn't real usage.
+- **try/catch**: 8 uses, mostly wrapping `navigator.clipboard.writeText(...)`.
+- **for-of**: 3 uses, always over a plain array.
+- **`new` constructors other than `RegExp`**: `Set` (12), `ResizeObserver` (2), `Date` (2), `Map` (1) — none of which this engine models at all yet.
+- Confirmed via the same scan: zero generators, zero real `async` functions, zero classes, zero labeled statements, zero for-in, zero getters/setters outside what was already found and implemented — so those stay correctly out of scope.
+
+Fixed the confirmed current blocker (unary `+`) immediately: new `Op::ToNumber`, parsed the same way `-` is already both a unary and binary operator without ambiguity (`parse_unary_inner` only runs where a fresh operand is expected). 158 -> 159 tests.
+
+The remaining five findings (optional chaining, computed keys, try/catch, for-of, Set/Map/Date) are recorded as separate, prioritized tasks rather than implemented in this same pass — try/catch in particular is a materially larger scope than the parser-shape fixes this session has mostly been doing, since the VM has no notion of thrown/caught control flow at all yet and will need its own design pass, not just a parser change.
+
+**Methodological note for future sessions:** when a real fixture file is available and a mature external parser can be run against it as a one-time, non-shipped analysis step, do this *before* the one-error-at-a-time harness loop, not only after getting stuck on a confusing error message. It would have saved real time earlier this session too (the computed-object-key scope, in particular, was under-estimated by a manual text grep in a way a real AST walk would not have been).
+
 ## 2026-07-21 - The `delete` operator, and a bare-statement gap that would have broken every real call site
 
 Direct continuation of the entry below, still "continue building." After named function expressions, the harness's next refusal was `delete` — real Nova usage: `delete rowEl.dataset.dragged;`, `delete g[gid];`, `delete scrollMem.current[id];`, always a dot- or bracket-accessed member expression, always a bare statement (never assigned or returned).
