@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../..");
 const source = resolve(root, "docs/ui-runtime/design-lab/turing-nova-design-source.jsx");
+const tokenSource = resolve(root, "design/tokens.json");
 const dist = resolve(here, "dist");
 const output = resolve(dist, "nova-shell.js");
 const entry = resolve(here, "src/entry.jsx");
@@ -15,6 +16,11 @@ const html = resolve(here, "src/index.html");
 const sourceBytes = await readFile(source);
 const sourceText = sourceBytes.toString("utf8");
 const sourceHash = createHash("sha256").update(sourceBytes).digest("hex").toUpperCase();
+const tokens = JSON.parse(await readFile(tokenSource, "utf8"));
+if (tokens.source !== "docs/ui-runtime/design-lab/turing-nova-design-source.jsx"
+  || tokens.source_sha256 !== sourceHash) {
+  throw new Error("design/tokens.json is stale or points at a different Nova source");
+}
 
 if (process.argv.includes("--clean")) {
   await rm(dist, { recursive: true, force: true });
@@ -57,6 +63,11 @@ const metadata = {
   compiler: "esbuild 0.28.1",
   runtime: "preact 10.29.7 via preact/compat",
   icons: "lucide-preact 1.25.0",
+  design_tokens: {
+    path: "design/tokens.json",
+    schema_version: tokens.schema_version,
+    source_sha256: tokens.source_sha256,
+  },
   output_bytes: (await readFile(output)).length,
   bundle_inputs: Object.keys(result.metafile.inputs).sort(),
 };
@@ -70,6 +81,9 @@ if (process.argv.includes("--check")) {
   }
   if (!analysis.includes("turing-nova-design-source.jsx")) {
     throw new Error("Nova bundle does not contain the canonical source artifact");
+  }
+  if (metadata.design_tokens.source_sha256 !== metadata.source_sha256) {
+    throw new Error("Nova bundle metadata has stale design-token provenance");
   }
 }
 

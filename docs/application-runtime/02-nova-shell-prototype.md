@@ -64,9 +64,10 @@ binary is intentionally a thin host boundary: it does not duplicate Nova's
 component tree or silently create a second renderer.
 
 `npm run check` rebuilds the ignored `dist/` directory, verifies that the
-canonical source is bundled, and writes `dist/build-metadata.json`. The
-metadata includes the source SHA-256, byte and line counts, compiler/runtime
-versions, output size, and bundle inputs.
+canonical source and current `design/tokens.json` provenance are bundled, and
+writes `dist/build-metadata.json`. The metadata includes the source and design
+token SHA-256 values, byte and line counts, compiler/runtime versions, output
+size, and bundle inputs. A stale token projection fails the build.
 
 Run the reproducible headless interaction proof with:
 
