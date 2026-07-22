@@ -422,6 +422,8 @@ impl Host for DomHost<'_> {
 /// into one of the above; `__mount`'s `kind != "object"` fallback already
 /// drops any unrecognised tag the same way real JSX drops an unrenderable
 /// child, so this is a correct no-op for it, not an unhandled case.
+/// `Set`/`Map`/`Date`/`ResizeObserver` are the same story — none of them
+/// have any real Nova use as a JSX child either.
 fn value_kind(value: &Value) -> &'static str {
     match value {
         Value::Undefined => "undefined",
@@ -433,6 +435,10 @@ fn value_kind(value: &Value) -> &'static str {
         Value::Object(_) => "object",
         Value::Array(_) => "array",
         Value::Regex(_) => "regex",
+        Value::Set(_) => "set",
+        Value::Map(_) => "map",
+        Value::Date => "date",
+        Value::ResizeObserver => "resize-observer",
     }
 }
 

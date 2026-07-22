@@ -287,6 +287,32 @@ pub enum Value {
     /// function) clones this `Rc`, which is a pointer copy and a refcount
     /// bump, not a recompile. See `mod regex`.
     Regex(Rc<regex::CompiledRegex>),
+    /// `new Set(...)` — a collection of unique string/number elements,
+    /// backed by the same `ObjectData` heap representation and GC tracing
+    /// as `Object`/`Array` (a distinct `Value` tag rather than reusing
+    /// `Object` outright, so `GetProperty`/`SetProperty` do not treat a
+    /// `Set` as a plain object with arbitrary properties — every method
+    /// beyond construction is not yet implemented and must refuse rather
+    /// than silently read/write the wrong thing). See `Op::ConstructSet`.
+    Set(GcRef),
+    /// `new Map()` — same heap representation as `Set`, distinguished only
+    /// by tag; methods (`.get`/`.set`/`.has`) are not yet implemented and
+    /// refuse through `call_builtin_method`'s catch-all, the same as
+    /// `Set`'s.
+    Map(GcRef),
+    /// `new Date()`. No payload: real Nova usage of `.toISOString()`/
+    /// `.toLocaleDateString()` is not yet implemented (a wall-clock read is
+    /// also nondeterministic, unsuited to this milestone's static,
+    /// reproducible paint), so there is nothing yet to store — added when
+    /// those methods are.
+    Date,
+    /// `new ResizeObserver(callback)`. Every real use is inside a
+    /// `useEffect`, which does not run at a static first paint (see the
+    /// engine's hook shims), so this is an inert marker: the constructor
+    /// validates its argument is callable (matching real DOM behavior,
+    /// which throws for a non-function callback) but does not retain it,
+    /// and `.observe`/`.disconnect` are not yet implemented.
+    ResizeObserver,
 }
 
 impl Value {
@@ -304,6 +330,7 @@ impl Value {
             // A regex value is likewise always truthy, real JS's own rule.
             Self::Function(_) | Self::Object(_) | Self::Array(_) | Self::Closure(_) => true,
             Self::Regex(_) => true,
+            Self::Set(_) | Self::Map(_) | Self::Date | Self::ResizeObserver => true,
         }
     }
 }
@@ -335,6 +362,10 @@ impl fmt::Display for Value {
             // A closure stringifies like any function.
             Self::Closure(_) => write!(formatter, "[function]"),
             Self::Regex(regex) => write!(formatter, "/{}/{}", regex.source, regex.flags),
+            Self::Set(_) => write!(formatter, "[object Set]"),
+            Self::Map(_) => write!(formatter, "[object Map]"),
+            Self::Date => write!(formatter, "[object Date]"),
+            Self::ResizeObserver => write!(formatter, "[object ResizeObserver]"),
         }
     }
 }
@@ -908,12 +939,28 @@ enum Expr {
         pattern: String,
         flags: String,
     },
-    /// `new RegExp(pattern)` / `new RegExp(pattern, flags)`, the one
-    /// `new`-expression this engine implements (see `Parser::parse_new`).
-    /// Unlike `Expr::Regex`, the pattern is an arbitrary runtime
-    /// expression, not fixed source text, so it compiles the pattern at
-    /// runtime rather than once here.
+    /// `new RegExp(pattern)` / `new RegExp(pattern, flags)` (see
+    /// `Parser::parse_new_expression` for every constructor this engine
+    /// recognizes). Unlike `Expr::Regex`, the pattern is an arbitrary
+    /// runtime expression, not fixed source text, so it compiles the
+    /// pattern at runtime rather than once here.
     NewRegExp {
+        arguments: Vec<Expr>,
+    },
+    /// `new Set()` / `new Set(iterable)` — see `Value::Set`'s doc comment
+    /// for what this engine models so far.
+    NewSet {
+        arguments: Vec<Expr>,
+    },
+    /// `new Map()` — always zero arguments in real usage; see `Value::Map`.
+    NewMap,
+    /// `new Date()` — always zero arguments in real usage; see
+    /// `Value::Date`.
+    NewDate,
+    /// `new ResizeObserver(callback)` — see `Value::ResizeObserver`'s doc
+    /// comment for why this is an inert stub beyond validating its
+    /// argument is callable.
+    NewResizeObserver {
         arguments: Vec<Expr>,
     },
     Variable(String),
@@ -2271,20 +2318,83 @@ impl<'a> Parser<'a> {
     /// out of the blanket `new` refusal.
     fn parse_new_expression(&mut self) -> Result<Expr, JsError> {
         self.position += 1; // `new`
-        if !matches!(self.peek(), Token::Ident(name) if name == "RegExp") {
+        let Token::Ident(name) = self.peek().clone() else {
             return Err(JsError::Unsupported {
                 feature: "constructors".to_string(),
             });
+        };
+        match name.as_str() {
+            "RegExp" => {
+                self.position += 1;
+                let arguments = self.parse_argument_list()?;
+                if arguments.is_empty() || arguments.len() > 2 {
+                    return Err(JsError::Unsupported {
+                        feature:
+                            "`new RegExp` with anything but a pattern and an optional flags string"
+                                .to_string(),
+                    });
+                }
+                Ok(Expr::NewRegExp { arguments })
+            }
+            // Real usage: `new Set()`, `new Set(vis.map((t) => t.id))`
+            // (seeded from an array), `new Set(s)` (copied from another
+            // `Set` — the `setSel((s) => new Set(s).add(id))` immutable-
+            // update idiom). More than one argument is refused: real `Set`
+            // takes at most one, an iterable.
+            "Set" => {
+                self.position += 1;
+                let arguments = self.parse_argument_list()?;
+                if arguments.len() > 1 {
+                    return Err(JsError::Unsupported {
+                        feature: "`new Set` with more than one argument".to_string(),
+                    });
+                }
+                Ok(Expr::NewSet { arguments })
+            }
+            // Real usage is always `new Map()`, never seeded — refusing a
+            // constructor argument rather than silently ignoring it, since
+            // real `new Map(entries)` is a real (if unused-here) shape.
+            "Map" => {
+                self.position += 1;
+                let arguments = self.parse_argument_list()?;
+                if !arguments.is_empty() {
+                    return Err(JsError::Unsupported {
+                        feature: "`new Map` with a seed argument".to_string(),
+                    });
+                }
+                Ok(Expr::NewMap)
+            }
+            // Real usage is always `new Date()`, never given a timestamp or
+            // date-string argument.
+            "Date" => {
+                self.position += 1;
+                let arguments = self.parse_argument_list()?;
+                if !arguments.is_empty() {
+                    return Err(JsError::Unsupported {
+                        feature: "`new Date` with an argument".to_string(),
+                    });
+                }
+                Ok(Expr::NewDate)
+            }
+            // Real usage is always `new ResizeObserver(callback)` — one
+            // argument, the observation callback (which does not run at a
+            // static first paint; see `Value::ResizeObserver`'s doc
+            // comment for why this is an inert stub).
+            "ResizeObserver" => {
+                self.position += 1;
+                let arguments = self.parse_argument_list()?;
+                if arguments.len() != 1 {
+                    return Err(JsError::Unsupported {
+                        feature: "`new ResizeObserver` without exactly one callback argument"
+                            .to_string(),
+                    });
+                }
+                Ok(Expr::NewResizeObserver { arguments })
+            }
+            _ => Err(JsError::Unsupported {
+                feature: "constructors".to_string(),
+            }),
         }
-        self.position += 1; // `RegExp`
-        let arguments = self.parse_argument_list()?;
-        if arguments.is_empty() || arguments.len() > 2 {
-            return Err(JsError::Unsupported {
-                feature: "`new RegExp` with anything but a pattern and an optional flags string"
-                    .to_string(),
-            });
-        }
-        Ok(Expr::NewRegExp { arguments })
     }
 
     /// Desugars a template literal into a chain of `+` concatenations —
@@ -3256,10 +3366,17 @@ impl Trace for ObjectData {
     /// than any subset it believes to be interesting.
     fn trace(&self, out: &mut Vec<GcRef>) {
         for (_, value) in &self.entries {
-            // Both object and array values are heap references this data
-            // keeps alive; missing either collects a live value.
+            // Object, array, closure, set, and map values are all heap
+            // references this data keeps alive; missing any of them
+            // collects a live value — e.g. `{ mySet: new Set() }` must keep
+            // the Set's own backing object alive for as long as this one
+            // is reachable.
             match value {
-                Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
+                Value::Object(reference)
+                | Value::Array(reference)
+                | Value::Closure(reference)
+                | Value::Set(reference)
+                | Value::Map(reference) => {
                     out.push(*reference);
                 }
                 _ => {}
@@ -3420,6 +3537,22 @@ pub enum Op {
     ConstructRegex {
         argc: usize,
     },
+    /// Pop `argc` arguments (0 or 1 — an iterable to seed from, an array or
+    /// another `Set`) and push a new `Value::Set`. See `Value::Set`'s doc
+    /// comment.
+    ConstructSet {
+        argc: usize,
+    },
+    /// Push a new, empty `Value::Map`. No arguments to pop — real usage is
+    /// always `new Map()`, enforced at parse time.
+    ConstructMap,
+    /// Push a new `Value::Date`. No arguments to pop, same reasoning as
+    /// `Op::ConstructMap`.
+    ConstructDate,
+    /// Pop one argument (the observation callback) and push a new
+    /// `Value::ResizeObserver`, refusing if the popped value is not
+    /// callable. See `Value::ResizeObserver`'s doc comment.
+    ConstructResizeObserver,
     Add,
     Sub,
     Mul,
@@ -3991,6 +4124,22 @@ impl Compiler {
                 self.code.push(Op::ConstructRegex {
                     argc: arguments.len(),
                 });
+            }
+            Expr::NewSet { arguments } => {
+                for argument in arguments {
+                    self.expression(argument)?;
+                }
+                self.code.push(Op::ConstructSet {
+                    argc: arguments.len(),
+                });
+            }
+            Expr::NewMap => self.code.push(Op::ConstructMap),
+            Expr::NewDate => self.code.push(Op::ConstructDate),
+            Expr::NewResizeObserver { arguments } => {
+                for argument in arguments {
+                    self.expression(argument)?;
+                }
+                self.code.push(Op::ConstructResizeObserver);
             }
             Expr::Variable(name) => {
                 if let Some((slot, _)) = self.resolve(name) {
@@ -5000,6 +5149,98 @@ impl Vm {
                     })?;
                     stack.push(Value::Regex(Rc::new(compiled)));
                 }
+                Op::ConstructSet { argc } => {
+                    let split = stack.len().saturating_sub(*argc);
+                    let arguments = stack.split_off(split);
+                    // Charged and safepointed exactly like `Op::NewObject` —
+                    // a `Set` is the same heap allocation, just a different
+                    // `Value` tag.
+                    runtime.bytes = runtime.bytes.saturating_add(OBJECT_OVERHEAD_BYTES);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+                        collect_now(runtime, &stack, &locals);
+                    }
+                    let mut data = ObjectData::default();
+                    let mut charged = 0u64;
+                    if let Some(seed) = arguments.into_iter().next() {
+                        let elements = match seed {
+                            Value::Array(handle) => array_elements(runtime, handle)?,
+                            Value::Set(handle) => runtime
+                                .heap
+                                .get(handle)
+                                .map_err(|error| JsError::TypeError {
+                                    message: error.to_string(),
+                                })?
+                                .entries
+                                .iter()
+                                .map(|(_, value)| value.clone())
+                                .collect(),
+                            other => {
+                                return Err(JsError::Unsupported {
+                                    feature: format!(
+                                        "`new Set` from anything but an array or another Set \
+                                         (got {other})"
+                                    ),
+                                });
+                            }
+                        };
+                        for element in elements {
+                            let key = collection_key(&element)?;
+                            charged += data.set(key, element) as u64;
+                        }
+                    }
+                    runtime.bytes = runtime.bytes.saturating_add(charged);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    let reference =
+                        runtime
+                            .heap
+                            .allocate(data)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    stack.push(Value::Set(reference));
+                }
+                Op::ConstructMap => {
+                    runtime.bytes = runtime.bytes.saturating_add(OBJECT_OVERHEAD_BYTES);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    if runtime.heap.occupied_slots() >= COLLECT_AFTER_ALLOCATIONS {
+                        collect_now(runtime, &stack, &locals);
+                    }
+                    let reference =
+                        runtime
+                            .heap
+                            .allocate(ObjectData::default())
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    stack.push(Value::Map(reference));
+                }
+                Op::ConstructDate => {
+                    stack.push(Value::Date);
+                }
+                Op::ConstructResizeObserver => {
+                    let callback = pop(&mut stack);
+                    if !matches!(callback, Value::Function(_) | Value::Closure(_)) {
+                        return Err(JsError::TypeError {
+                            message: format!(
+                                "new ResizeObserver expects a function, got {callback}"
+                            ),
+                        });
+                    }
+                    stack.push(Value::ResizeObserver);
+                }
                 Op::Sub => binary_number(&mut stack, |a, b| a - b),
                 Op::Mul => binary_number(&mut stack, |a, b| a * b),
                 Op::Div => binary_number(&mut stack, |a, b| a / b),
@@ -5765,6 +6006,21 @@ fn array_elements(runtime: &Runtime, handle: GcRef) -> Result<Vec<Value>, JsErro
         .collect())
 }
 
+/// Canonical string key for a `Set` element (see `Op::ConstructSet`). Real
+/// Nova usage only ever puts strings or numbers into a `Set` (tab/group
+/// ids, URLs) — refused rather than silently coerced for anything else,
+/// since two different objects would otherwise collide under the same
+/// `"[object Object]"` key.
+fn collection_key(value: &Value) -> Result<String, JsError> {
+    match value {
+        Value::String(text) => Ok(text.clone()),
+        Value::Number(_) => Ok(value.to_string()),
+        other => Err(JsError::Unsupported {
+            feature: format!("a Set element that is not a string or number (got {other})"),
+        }),
+    }
+}
+
 /// Clamps a `slice`-style index argument to `0..=len`: negative counts from
 /// the end (`-1` is the last element), out of range clamps rather than
 /// wraps or errors, `NaN` reads as `0` — the same coercion
@@ -5873,9 +6129,11 @@ fn collect_now(runtime: &mut Runtime, stack: &[Value], locals: &[Value]) {
         .chain(&runtime.globals)
         .chain(&runtime.microtasks)
         .filter_map(|value| match value {
-            Value::Object(reference) | Value::Array(reference) | Value::Closure(reference) => {
-                Some(*reference)
-            }
+            Value::Object(reference)
+            | Value::Array(reference)
+            | Value::Closure(reference)
+            | Value::Set(reference)
+            | Value::Map(reference) => Some(*reference),
             _ => None,
         })
         .collect::<Vec<_>>();
@@ -6016,13 +6274,18 @@ fn to_number(value: &Value) -> f64 {
         // An object or array would coerce through `valueOf`/`toString`, which
         // needs a prototype chain this implementation does not model, so it is
         // NaN rather than a guessed conversion. A regex has no numeric
-        // coercion in real JS either.
+        // coercion in real JS either — nor do Set/Map/Date/ResizeObserver,
+        // real JS's own `+new Set()` is also `NaN`.
         Value::Undefined
         | Value::Function(_)
         | Value::Object(_)
         | Value::Array(_)
         | Value::Closure(_)
-        | Value::Regex(_) => f64::NAN,
+        | Value::Regex(_)
+        | Value::Set(_)
+        | Value::Map(_)
+        | Value::Date
+        | Value::ResizeObserver => f64::NAN,
     }
 }
 
@@ -9007,5 +9270,121 @@ mod tests {
                 "whitespace around a parenthesised JSX expression must not be a desync: {source:?}"
             );
         }
+    }
+
+    #[test]
+    fn new_set_constructs_an_empty_set() {
+        assert!(matches!(eval_in_fn("return new Set();"), Value::Set(_)));
+    }
+
+    #[test]
+    fn new_set_seeded_from_an_array_or_another_set_constructs_without_refusing() {
+        // Real shapes: `new Set(vis.map((t) => t.id))` (seeded from an
+        // array) and `new Set(s).add(id)` (copied from another `Set`, the
+        // `setSel((s) => ...)` immutable-update idiom). `.has`/`.add`/
+        // spread are not implemented yet (separate tasks), so the elements
+        // are not independently observable from JS source in this pass —
+        // this pins that seeding does not refuse, matching the population
+        // logic `Op::ConstructSet` already runs (dedup via `ObjectData`'s
+        // existing key-based `set`, insertion order preserved). A
+        // `[...set]`-shaped test belongs with array spread once that
+        // exists.
+        assert!(matches!(
+            eval_in_fn("return new Set([1, 2, 2, 3]);"),
+            Value::Set(_)
+        ));
+        assert!(matches!(
+            eval_in_fn("let a = new Set([1]); return new Set(a);"),
+            Value::Set(_)
+        ));
+    }
+
+    #[test]
+    fn new_set_from_anything_but_an_array_or_set_is_refused() {
+        assert!(matches!(
+            evaluate("function main() { return new Set(5); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn new_set_element_that_is_not_a_string_or_number_is_refused() {
+        assert!(matches!(
+            evaluate("function main() { return new Set([{}]); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn new_set_with_more_than_one_argument_is_refused_at_compile_time() {
+        assert!(matches!(
+            compile("function main() { return new Set(1, 2); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn new_map_constructs_and_a_seed_argument_is_refused_at_compile_time() {
+        assert!(matches!(eval_in_fn("return new Map();"), Value::Map(_)));
+        assert!(matches!(
+            compile("function main() { return new Map({}); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn new_date_constructs_and_an_argument_is_refused_at_compile_time() {
+        assert_eq!(eval_in_fn("return new Date();"), Value::Date);
+        assert!(matches!(
+            compile("function main() { return new Date(0); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn new_resize_observer_requires_exactly_one_callback_argument() {
+        assert_eq!(
+            eval_in_fn("let cb = () => {}; return new ResizeObserver(cb);"),
+            Value::ResizeObserver
+        );
+        assert!(matches!(
+            compile("function main() { return new ResizeObserver(); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+        // A non-function callback is refused at *run* time — real DOM
+        // behavior, which throws for a non-function callback too.
+        assert!(matches!(
+            evaluate("function main() { return new ResizeObserver(5); } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn set_map_date_and_resize_observer_have_no_methods_implemented_yet() {
+        // Every method beyond construction refuses through the existing
+        // `call_builtin_method` catch-all — nothing new to implement for
+        // this to be true, but pinned here so a future accidental partial
+        // implementation (e.g. `.size` silently reading `undefined` via
+        // `GetProperty`) is caught by this test rather than shipped.
+        assert!(matches!(
+            evaluate("function main() { let s = new Set(); return s.has(1); } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+        assert!(matches!(
+            evaluate("function main() { let m = new Map(); return m.get(\"x\"); } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+        assert!(matches!(
+            evaluate("function main() { return new Date().toISOString(); } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+        // Bare property access (not a method call) on a Set/Map/Date also
+        // refuses rather than reading back `undefined` — `GetProperty`'s
+        // `Value::Object | Value::Array` pattern deliberately does not
+        // include `Set`/`Map`.
+        assert!(matches!(
+            evaluate("function main() { return new Set().size; } main();"),
+            Err(JsError::TypeError { .. })
+        ));
     }
 }
