@@ -451,7 +451,36 @@ const NATIVE_MODULES: &[&str] = &["react", "lucide-react"];
 /// text is not JavaScript and is scanned directly from these same source
 /// bytes rather than through this token stream, and the offsets are how the
 /// parser finds, after such a scan, which pre-lexed token to resume from.
-fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
+///
+/// `tolerate_unknown` governs what happens when a byte reaches the fallback
+/// at the bottom of the scan loop — one that starts no known token. `true`
+/// (only from [`compile`], lexing the *whole file* once, eagerly) skips it
+/// rather than erroring: this pass's only job over a JSX region is to leave
+/// *some* token stream for JSX's own raw-byte re-scan to resynchronize
+/// with afterward (see the module-level JSX doc comment and
+/// `Parser::resume_at`) — its tokenization of that region is discarded
+/// once that direct scan runs, so a byte with no ordinary-JS meaning
+/// (`&` from `Wade's Plumbing &amp; Septic LLC`'s literal JSX text, or any
+/// non-ASCII byte — Nova writes curly quotes, emoji, Japanese titles
+/// directly and unquoted) is safe to skip rather than fail the whole
+/// compile over.
+///
+/// `false` (from [`parse_expression_from_source`] and
+/// [`Parser::parse_embedded_expression`], each re-lexing a substring that
+/// is already known to be real code — a template-literal interpolation or
+/// a JSX `{expr}`) keeps the strict, error-on-unknown-byte behavior:
+/// unlike the eager whole-file pass, this token stream *is* what compiles,
+/// not a discarded placeholder. Tolerating an unknown byte here would
+/// silently drop it from the token stream instead of refusing — exactly
+/// the never-silently-wrong violation this crate's entire error-handling
+/// discipline exists to prevent. Concretely: Nova's `rgba(${(n >> 16) &
+/// 255}, ...)` uses the bitwise `&` operator, which this engine does not
+/// implement, inside a template interpolation — that `&` never reaches
+/// the eager pass at all (`scan_template_literal` brace-skips over
+/// interpolation bodies without lexing their contents), but it does reach
+/// this strict re-lex once parsing actually resolves the interpolation,
+/// and must refuse there rather than vanish.
+fn lex(source: &str, tolerate_unknown: bool) -> Result<(Vec<Token>, Vec<usize>), JsError> {
     let bytes = source.as_bytes();
     let mut tokens = Vec::new();
     let mut starts = Vec::new();
@@ -587,23 +616,23 @@ fn lex(source: &str) -> Result<(Vec<Token>, Vec<usize>), JsError> {
         // A non-ASCII byte reaching here is never inside a string/template
         // literal or a comment — both already scan raw bytes to their own
         // closing delimiter above, with no interest in what those bytes
-        // are — so it can only be one of two things: a Unicode character
-        // written directly as JSX text (Nova does this constantly — curly
-        // quotes, emoji, ⌘, Japanese titles in its own fixture data — all
-        // outside any quote), or genuine ordinary-JS-position stray
-        // Unicode whitespace. Neither needs a real token here: this whole
-        // *eager* lex pass exists only so JSX's own raw-byte scan (see the
-        // module-level JSX doc comment and `Parser::resume_at`) has some
-        // token stream to resynchronize with afterward — whatever this
-        // pass tokenizes across a JSX region is already discarded once
-        // that direct scan runs, the same way it already discards this
-        // pass's tokenization of ordinary JSX tags and attributes written
-        // in ASCII. So a lone non-ASCII byte is skipped, byte at a time
-        // (safe regardless of a multi-byte sequence's length, since every
-        // continuation byte is also >= 0x80 and takes the same path) —
-        // never erroring, and never landing in a token some later
-        // resolution step could read as if it were meaningful.
-        if byte >= 0x80 {
+        // are — so a byte reaching here, in the eager whole-file pass, can
+        // only be one of two things: a Unicode character written directly
+        // as JSX text (Nova does this constantly — curly quotes, emoji,
+        // ⌘, Japanese titles in its own fixture data — all outside any
+        // quote), or an ASCII byte with no meaning in this engine's
+        // (deliberately small) operator set written the same way — `&`
+        // from a literal `&amp;`/`&nbsp;` or a bare "Cookies & site data"
+        // in JSX text is the real example that motivated this. See this
+        // function's own doc comment on `tolerate_unknown` for why
+        // skipping is safe here specifically (this pass's tokenization of
+        // a JSX region is discarded once JSX's own raw-byte re-scan runs)
+        // and not safe in the two substring re-lex call sites, which keep
+        // the strict, error-on-unknown-byte behavior below instead.
+        // Skipping one byte at a time is safe regardless of a multi-byte
+        // UTF-8 sequence's length, since every continuation byte is also
+        // >= 0x80 and takes this same path in turn.
+        if tolerate_unknown {
             index += 1;
             continue;
         }
@@ -2458,7 +2487,10 @@ impl<'a> Parser<'a> {
     /// still refuses past `MAX_NESTING_DEPTH` overall instead of resetting
     /// the budget at each boundary.
     fn parse_embedded_expression(&mut self, source: &str) -> Result<Expr, JsError> {
-        let (tokens, starts) = lex(source)?;
+        // Strict, not tolerant: this substring's tokens are the real
+        // program, not a discarded eager-pass placeholder — see `lex`'s
+        // own doc comment on `tolerate_unknown`.
+        let (tokens, starts) = lex(source, false)?;
         let mut embedded = Parser::new(source, tokens, starts);
         embedded.depth = self.depth;
         let expr = embedded.parse_expression()?;
@@ -3884,7 +3916,9 @@ impl Compiler {
 /// rather than silently ignoring it, the same as `compile` refusing
 /// anything `parse_program` cannot fully consume.
 fn parse_expression_from_source(source: &str) -> Result<Expr, JsError> {
-    let (tokens, starts) = lex(source)?;
+    // Strict, not tolerant — see `lex`'s own doc comment on
+    // `tolerate_unknown`: this substring's tokens are the real program.
+    let (tokens, starts) = lex(source, false)?;
     let mut parser = Parser::new(source, tokens, starts);
     let expression = parser.parse_expression()?;
     if !matches!(parser.peek(), Token::Eof) {
@@ -3904,7 +3938,9 @@ fn parse_expression_from_source(source: &str) -> Result<Expr, JsError> {
 /// condition. Unsupported features are refused here rather than at run time so
 /// that a program which compiles can be trusted to mean what it says.
 pub fn compile(source: &str) -> Result<Program, JsError> {
-    let (tokens, starts) = lex(source)?;
+    // Tolerant: the one whole-file eager pass — see `lex`'s own doc
+    // comment on `tolerate_unknown`.
+    let (tokens, starts) = lex(source, true)?;
     let statements = Parser::new(source, tokens, starts).parse_program()?;
     Compiler::new().compile(&statements)
 }
@@ -7693,6 +7729,49 @@ mod tests {
         // choke on any of that — it previously errored on the very first
         // multi-byte character reached outside a string/comment.
         assert!(compile("function main() { return <span>⌘T \u{201c}quoted\u{201d} 日本語 🚀</span>; } main();").is_ok());
+    }
+
+    #[test]
+    fn jsx_text_may_contain_a_bare_ampersand_or_an_html_entity() {
+        // Real Nova text: a literal HTML entity ("Wade's Plumbing &amp;
+        // Septic LLC") and, elsewhere in the file, bare `&` used as the
+        // word "and" ("Cookies & site data") — neither is JavaScript, and
+        // this engine has no bitwise-AND operator for a bare `&` to mean
+        // anyway. The eager lexer must tolerate it here the same way it
+        // already tolerates non-ASCII bytes in JSX text.
+        assert!(
+            compile("function main() { return <div>Total &amp; &nbsp; Cookies & site data</div>; } main();")
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn an_unsupported_operator_inside_a_jsx_expression_or_interpolation_still_refuses() {
+        // The gap a real bitwise `&` (Nova's `rgba` helper: `(n >> 16) &
+        // 255`) would fall into if eager-lex tolerance were applied
+        // unconditionally instead of only to the whole-file pass: `&`
+        // inside a JSX `{expr}` or a template-literal interpolation is
+        // real code, re-lexed strictly by `parse_embedded_expression`/
+        // `parse_expression_from_source` — it must refuse, not silently
+        // vanish from the token stream.
+        let jsx_expr =
+            compile("function main() { let a = 1; let b = 2; return <div>{a & b}</div>; } main();");
+        assert!(
+            matches!(
+                jsx_expr,
+                Err(JsError::UnexpectedCharacter { character: '&', .. })
+            ),
+            "a bitwise `&` inside a JSX expression must refuse, got {jsx_expr:?}"
+        );
+        let interpolation =
+            compile("function main() { let a = 1; let b = 2; return `${a & b}`; } main();");
+        assert!(
+            matches!(
+                interpolation,
+                Err(JsError::UnexpectedCharacter { character: '&', .. })
+            ),
+            "a bitwise `&` inside a template interpolation must refuse, got {interpolation:?}"
+        );
     }
 
     #[test]
