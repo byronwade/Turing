@@ -1297,22 +1297,51 @@ impl<'a> Parser<'a> {
                 self.eat_punct(";");
                 return Ok(Stmt::Sequence(statements));
             }
-            let Token::Ident(name) = self.advance() else {
-                return Err(JsError::UnexpectedToken {
-                    found: "token".to_string(),
-                    expected: "a binding name".to_string(),
+            // `const a = 1, b = 2;` — real Nova usage (e.g. `const
+            // DESIGN_W = 1440, DESIGN_H = 900;`) declares several bindings
+            // in one statement. Each declarator desugars to its own
+            // `Stmt::Declare`; more than one is wrapped in a
+            // `Stmt::Sequence` (same-scope, not [`Stmt::Block`]'s fresh
+            // scope — see its doc comment) so every name lands in the
+            // enclosing scope exactly as if each had been written as its
+            // own `const`/`let`/`var` statement. A single declarator stays
+            // a bare `Stmt::Declare`, unchanged from before this supported
+            // more than one.
+            //
+            // Correct only because this engine has no comma/sequence
+            // operator: every `,` that is not a declarator separator sits
+            // inside a `(`/`[`/`{` a nested parser already consumes whole
+            // (e.g. `const a = f(1, 2), b = 3;`), so `parse_expression`
+            // always stops exactly at the separator. If a comma operator
+            // is ever added, a bare `const a = (x, y), b;` would need this
+            // loop revisited.
+            let mut declarations = Vec::new();
+            loop {
+                let Token::Ident(name) = self.advance() else {
+                    return Err(JsError::UnexpectedToken {
+                        found: "token".to_string(),
+                        expected: "a binding name".to_string(),
+                    });
+                };
+                let value = if self.eat_punct("=") {
+                    Some(self.parse_expression()?)
+                } else {
+                    None
+                };
+                declarations.push(Stmt::Declare {
+                    name,
+                    value,
+                    constant,
                 });
-            };
-            let value = if self.eat_punct("=") {
-                Some(self.parse_expression()?)
-            } else {
-                None
-            };
+                if !self.eat_punct(",") {
+                    break;
+                }
+            }
             self.eat_punct(";");
-            return Ok(Stmt::Declare {
-                name,
-                value,
-                constant,
+            return Ok(if declarations.len() == 1 {
+                declarations.into_iter().next().expect("checked len == 1")
+            } else {
+                Stmt::Sequence(declarations)
             });
         }
         if self.check_keyword("if") {
@@ -6282,6 +6311,46 @@ mod tests {
             eval_in_fn("const [a, , c] = [10, 20, 30]; return a + c;"),
             Value::Number(40.0)
         );
+    }
+
+    #[test]
+    fn multiple_declarators_in_one_statement_all_bind() {
+        // Real Nova usage, right at the top of the file: `const DESIGN_W =
+        // 1440, DESIGN_H = 900;`. Before this, the declaration parser only
+        // read one `name (= value)?` and left a dangling `,` for the next
+        // statement to choke on — it would see the comma, try to parse it
+        // as the start of a new expression statement, and refuse with a
+        // confusing "unexpected `,`; expected an expression" that pointed
+        // nowhere near the real cause.
+        assert_eq!(
+            eval_in_fn("const a = 1, b = 2, c = a + b; return c;"),
+            Value::Number(3.0)
+        );
+        // A declarator with no initializer, mixed with ones that have one —
+        // `var`/`let` both allow this.
+        assert_eq!(
+            eval_in_fn("let x, y = 5; x = 10; return x + y;"),
+            Value::Number(15.0)
+        );
+    }
+
+    #[test]
+    fn multiple_declarators_at_top_level_all_become_real_globals() {
+        // Same root cause as `top_level_destructuring_creates_real_global_
+        // bindings`: a multi-declarator statement desugars to the same
+        // `Stmt::Sequence` destructuring already relies on, so it must be
+        // visible to the top-level pass's global-store handling the exact
+        // same way.
+        let program = compile(
+            "const DESIGN_W = 1440, DESIGN_H = 900; \
+             function main() { record(DESIGN_W + DESIGN_H); } main();",
+        )
+        .expect("compiles");
+        let mut host = RecordingHost::new();
+        Vm::default()
+            .run_with_host(&program, &mut host)
+            .expect("runs");
+        assert_eq!(host.calls, vec![2340.0]);
     }
 
     #[test]
