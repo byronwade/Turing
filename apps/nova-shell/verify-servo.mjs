@@ -89,6 +89,34 @@ async function execute(script) {
   });
 }
 
+const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
+
+async function clickSelector(selector, label) {
+  await execute(`const target = document.querySelector(${JSON.stringify(selector)});
+    if (!target) throw new Error(${JSON.stringify(`${label} was not rendered`)});
+    target.click();
+    return true;`);
+  await sleep(250);
+}
+
+async function clickText(selector, text, label) {
+  await execute(`const target = [...document.querySelectorAll(${JSON.stringify(selector)})]
+    .find((element) => element.textContent.trim().includes(${JSON.stringify(text)}));
+    if (!target) throw new Error(${JSON.stringify(`${label} was not rendered`)});
+    target.click();
+    return true;`);
+  await sleep(250);
+}
+
+async function clickTitle(fragment, label) {
+  await execute(`const target = [...document.querySelectorAll('button')]
+    .find((element) => (element.title || '').toLowerCase().includes(${JSON.stringify(fragment.toLowerCase())}));
+    if (!target) throw new Error(${JSON.stringify(`${label} was not rendered`)});
+    target.click();
+    return true;`);
+  await sleep(250);
+}
+
 async function waitForNovaMount() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     try {
@@ -96,7 +124,7 @@ async function waitForNovaMount() {
     } catch {
       // The document can still be transitioning while Servo finishes loading.
     }
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
+    await sleep(250);
   }
   throw new Error("Nova JSX root did not mount in Servo");
 }
@@ -122,7 +150,7 @@ try {
   }
 
   await execute("document.querySelector('.ttab.on').click(); return true;");
-  await new Promise((resolvePromise) => setTimeout(resolvePromise, 350));
+  await sleep(350);
   const hasInput = await execute("return Boolean(document.querySelector('.cmd-in input'));");
   if (!hasInput) throw new Error("Command palette input was not rendered");
   await execute(`const input = document.querySelector('.cmd-in input');
@@ -131,16 +159,51 @@ try {
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
     return input.value;`);
-  await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
+  await sleep(250);
   await execute(`window.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
       bubbles: true, cancelable: true,
     }));`);
-  await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
+  await sleep(700);
+
+  // Exercise the major shell surfaces through their rendered controls. These
+  // are deliberately DOM interactions, not direct adapter calls.
+  await clickSelector("button.newtab", "new-tab control");
+  await clickSelector("button.avatar", "profile control");
+  await clickText("button.mitem", "Settings", "settings menu item");
+  const settingsInput = await execute("return Boolean(document.querySelector('.pnav-search input'));");
+  if (!settingsInput) throw new Error("Settings search input was not rendered");
+  await execute(`const input = document.querySelector('.pnav-search input');
+    input.focus();
+    input.value = 'appearance';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return input.value;`);
+  await sleep(250);
+  await clickText("a", "Appearance", "appearance settings navigation");
+  await clickText("button", "Left", "left tab-position control");
+  await clickTitle("sidebar", "sidebar control");
+  await clickSelector("button.site", "toolbar address control");
+  await clickText("button.qa", "Reader", "reader command");
+  await clickSelector("button.site", "toolbar address control");
+  await clickText("button.qa", "Split", "split command");
+  await clickSelector(".vtab.on button.xc", "active-tab close control");
+  await sleep(450);
 
   const snapshot = await execute("return window.__TURING_ENGINE__.snapshot();");
   const types = snapshot.commands.map((command) => command.type);
-  for (const required of ["ui.control.click", "ui.control.input", "navigation.navigate"]) {
+  for (const required of [
+    "ui.control.click",
+    "ui.control.input",
+    "ui.control.change",
+    "navigation.navigate",
+    "tabs.create",
+    "shell.sidebar.toggle",
+    "shell.view.open",
+    "view.reader.toggle",
+    "view.split.toggle",
+    "tabs.close.request",
+  ]) {
     if (!types.includes(required)) {
       throw new Error(`Missing engine command ${required}: ${JSON.stringify(types)}`);
     }

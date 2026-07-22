@@ -241,6 +241,12 @@ local Servo paths, and opens the generated bundle in Servo. It is a host
 launcher, not a second renderer and not release embedding; `--no-build` skips
 the npm step when `dist/` already exists.
 
+`apps/nova-shell/verify-servo.mjs` is the dependency-free WebDriver proof for
+the same bundle. It starts local Servo, waits for the Nova root, drives the
+major shell controls through the rendered DOM, and asserts that their typed
+engine-adapter records are present. It is development evidence, not a release
+compatibility or accessibility test.
+
 `turing-shell` is currently a command-line M0 integration laboratory. It exercises toolkit-neutral shell state plus the generated process/capability/IPC policy reference. It has no native UI, web engine, operating-system IPC transport, networking, storage, Plug-in, or AI capability.
 
 `turing-browser` is the Research-maturity windowed laboratory presenter: it loads local HTML files through `turing-engine`, presents them under the Nova chrome rendered by `turing-chrome` (tab strip, address pill, command palette), and routes pointer input back through the engine's hit testing. `--screenshot out.bmp [page.html] [extra-tabs]` renders the same composed frame headlessly for visual review. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.

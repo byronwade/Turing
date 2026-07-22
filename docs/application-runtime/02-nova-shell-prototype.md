@@ -76,9 +76,11 @@ npm run verify:servo
 
 It starts Servo WebDriver, asserts that Nova owns the full viewport, dispatches
 the equivalent DOM click/input/keyboard events for the address surface, enters
-`example.com`, submits the command field, and checks that click, input, and
-navigation records reached the adapter. It uses only Node's built-in
-HTTP/process APIs and the local Servo executable.
+`example.com`, submits the command field, and then drives new-tab, profile and
+settings navigation, settings input, tab-position/sidebar, reader, split-view,
+and tab-close controls. It checks that the resulting typed records reached the
+adapter. It uses only Node's built-in HTTP/process APIs and the local Servo
+executable.
 
 To use another Servo checkout:
 
@@ -131,8 +133,11 @@ Windows:
 - Servo headless rendering produced a non-empty screenshot;
 - the Nova root filled the viewport without the removed design-lab header or
   outer presentation canvas;
-- WebDriver clicked the address surface, typed into the command field, and
-  submitted a navigation command through the adapter.
+- WebDriver drove the address, new-tab, profile/settings, settings-input,
+  sidebar, reader, split-view, and tab-close surfaces through the rendered DOM;
+- the resulting adapter trace contained click, input, change, keyboard,
+  navigation, tab, shell-view, sidebar, reader, split-view, and tab-close
+  command records.
 
 These results prove this bounded development path only. They do not prove
 native Turing chrome, real network navigation, profile persistence,
