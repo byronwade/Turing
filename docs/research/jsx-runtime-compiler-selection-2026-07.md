@@ -38,6 +38,54 @@ On the reference Windows development host, `npx --yes esbuild --version` reporte
 
 Servo describes itself as an embeddable Rust web engine and owns browser-web concerns such as HTML, CSS, layout, and rendering. The [Servo project](https://servo.org/) is therefore the correct future owner for a tab's web page surface, subject to the unresolved ADR-0009 source-strategy gate. Servo does not supply React semantics, JSX lowering, or Turing's trusted application-shell state and command model.
 
+### Lowest-maintenance source-execution proof
+
+For a **development-only source-fidelity proof**, the most capable lightweight
+combination found is:
+
+```text
+Nova JSX
+    -> esbuild (pinned build-time transform)
+    -> Preact compatibility aliases (`react` -> `preact/compat`)
+    -> Lucide's `lucide-preact` package
+    -> Servo WebView / DOM / CSS / event loop / paint
+```
+
+This path keeps the supplied source intact, gives it the hooks and
+reconciliation behavior it actually uses, and leaves HTML, CSS, DOM, browser
+events, layout, and painting to the engine that already owns those concerns.
+Preact documents its React compatibility layer and DOM `render` entry point in
+its [API reference](https://preactjs.com/guide/v10/api-reference/) and
+[React-aliasing guide](https://preactjs.com/guide/v10/getting-started/).
+Lucide publishes a zero-dependency Preact package for the source's icon
+imports: [`lucide-preact`](https://www.npmjs.com/package/lucide-preact).
+
+This is the answer to the maintenance question for the prototype: Turing
+maintains the build manifest, host bindings, security policy, and integration
+tests, but does not maintain a JavaScript parser, JSX parser, virtual-DOM
+reconciler, hooks implementation, icon set, DOM, CSS parser, or paint engine.
+The external packages remain pinned dependencies and require normal license,
+advisory, provenance, update, and replacement review. "Low maintenance" does
+not mean "unreviewed".
+
+This route is **not yet a release decision**. It would put a JavaScript runtime,
+DOM, and browser CSS in the trusted-chrome path, which conflicts with the
+current native-chrome rule and requires an explicit revision of ADR-0008 plus
+the Servo source-strategy decision. It is nevertheless the correct next
+prototype because it answers the user's actual source-fidelity question without
+building a native imitation of Nova. Servo's own embedding overview still
+describes its embedding documentation as work in progress, so the prototype
+must also record the exact Servo revision and launch surface:
+[Servo embedding overview](https://book.servo.org/embedding/overview.html).
+
+Boa and QuickJS-NG were rejected for this specific proof. Boa describes itself
+as an experimental ECMAScript engine and supplies no browser DOM/CSS host;
+QuickJS-NG is small and embeddable, but would leave Turing responsible for the
+React-compatible hooks, DOM, event, and rendering host that the source needs.
+Those are viable scripting research inputs, not lower-maintenance solutions
+for rendering this file. Sources: [Boa documentation](https://boajs.dev/docs/intro)
+and [QuickJS-NG](https://github.com/quickjs-ng/quickjs).
+
 ### Alternatives considered
 
 - [Dioxus Desktop](https://dioxuslabs.com/learn/0.7/guides/platforms/desktop/) is small and productive, but its documented desktop path uses a system WebView. It would move trusted chrome into a second browser/DOM stack and does not consume this React JSX artifact unchanged.

@@ -274,8 +274,12 @@ posture, `WP-019`; the trusted-chrome authority for a system UI, `WP-004`).
   runtime needs. It is a demonstration of composition, not the real React
   runtime (APP-6), which additionally needs mutable capture, an event loop,
   and a great deal more of the language.
-- **APP-6 — The real React runtime, then a bundler's output.** Load
-  framework-emitted JS and run it.
+- **APP-6 — The real React runtime, then a bundler's output.** The bounded
+  development proof should use the researched esbuild + Preact compatibility
+  path inside the Servo page surface. This is explicitly a source-fidelity
+  and engine-integration experiment, not approval to put Preact, React DOM, or
+  a page DOM in trusted release chrome. See the [JSX runtime compiler
+  selection](../research/jsx-runtime-compiler-selection-2026-07.md).
 - **APP-7 — The Nova source rendered by the engine.** The chrome, and then
   the system interface, rendered by running its own React rather than by the
   Rust interim.
