@@ -451,6 +451,8 @@ const KEYWORDS: &[&str] = &[
     "switch",
     "import",
     "export",
+    "break",
+    "continue",
 ];
 
 /// Keywords that name a feature this implementation refuses outright.
@@ -1177,7 +1179,29 @@ enum Stmt {
     While {
         condition: Expr,
         body: Box<Stmt>,
+        /// Runs after `body` completes and before `condition` is
+        /// re-checked — never before the first `body`, and skipped once
+        /// `condition` first tests false. Present only when this `While`
+        /// is a `for(init; cond; update)`'s desugared form (`update`) or a
+        /// `for (const x of iterable)`'s desugared form (the index
+        /// increment); absent (`None`) for a hand-written `while`. Exists
+        /// so `continue`'s compiled jump target — `Compiler`'s handling of
+        /// this variant, and of `Stmt::Continue` — is always "the loop's
+        /// own next-iteration step", whether that is `post` or (when
+        /// `post` is absent) `condition`'s own re-check. Without this, a
+        /// `continue` inside a desugared for-loop would jump straight to
+        /// `condition`, skipping `update`/the index increment and hanging
+        /// — a real risk once `for`-of and `continue` share this same
+        /// variant, not merely a hypothetical one.
+        post: Option<Box<Stmt>>,
     },
+    /// `break;` inside the nearest enclosing loop. Refused at compile time
+    /// outside one — real JS's own rule, not a gap in this engine.
+    Break,
+    /// `continue;` inside the nearest enclosing loop — see `While`'s
+    /// `post` field for why this always reaches the loop's own
+    /// next-iteration step, never skipping it.
+    Continue,
     Function {
         name: String,
         parameters: Vec<String>,
@@ -1531,7 +1555,11 @@ impl<'a> Parser<'a> {
             let condition = self.parse_expression()?;
             self.expect_punct(")")?;
             let body = Box::new(self.parse_statement()?);
-            return Ok(Stmt::While { condition, body });
+            return Ok(Stmt::While {
+                condition,
+                body,
+                post: None,
+            });
         }
         if self.check_keyword("for") {
             return self.parse_for();
@@ -1545,6 +1573,16 @@ impl<'a> Parser<'a> {
             };
             self.eat_punct(";");
             return Ok(Stmt::Return(value));
+        }
+        if self.check_keyword("break") {
+            self.position += 1;
+            self.eat_punct(";");
+            return Ok(Stmt::Break);
+        }
+        if self.check_keyword("continue") {
+            self.position += 1;
+            self.eat_punct(";");
+            return Ok(Stmt::Continue);
         }
         if self.eat_punct("{") {
             let mut statements = Vec::new();
@@ -2004,13 +2042,38 @@ impl<'a> Parser<'a> {
     }
 
     /// `for (init; condition; update) body`, desugared to a block holding the
-    /// init and a `while`, so no new control-flow machinery is needed. The
-    /// enclosing block scopes the loop variable, and the update runs at the end
-    /// of each iteration — which is what putting it after the body in the
-    /// while's block achieves.
+    /// init and a `while`, so no new control-flow machinery is needed beyond
+    /// `Stmt::While`'s own `post` field, which `update` becomes — see that
+    /// field's doc comment for why `update` must live there (a `continue`
+    /// target `Stmt::Break`/`Stmt::Continue` compile against) rather than as
+    /// a plain trailing statement inside the body block, which is how this
+    /// used to be desugared before `continue` existed to care about the
+    /// difference.
     fn parse_for(&mut self) -> Result<Stmt, JsError> {
         self.position += 1; // `for`
         self.expect_punct("(")?;
+        // `for (const x of iterable)` — detected by lookahead before
+        // committing to the general `init; condition; update` parse below,
+        // since both shapes start with a declaration keyword. `of` is a
+        // contextual keyword (a plain identifier to this lexer, not
+        // reserved — `let of = 1;` is legal JS and might appear), so it is
+        // recognized here by its position, never reserved outright.
+        if matches!(self.peek(), Token::Keyword(k) if matches!(k.as_str(), "let" | "var"))
+            && matches!(self.peek_at(1), Token::Ident(_))
+            && matches!(self.peek_at(2), Token::Ident(word) if word == "of")
+        {
+            return Err(JsError::Unsupported {
+                feature: "`for (let/var x of ...)` — real Nova usage is always `for (const x \
+                          of ...)`"
+                    .to_string(),
+            });
+        }
+        if self.check_keyword("const")
+            && matches!(self.peek_at(1), Token::Ident(_))
+            && matches!(self.peek_at(2), Token::Ident(word) if word == "of")
+        {
+            return self.parse_for_of();
+        }
         let init = if self.eat_punct(";") {
             None
         } else {
@@ -2032,13 +2095,10 @@ impl<'a> Parser<'a> {
         self.expect_punct(")")?;
         let body = self.parse_statement()?;
 
-        let mut while_body = vec![body];
-        if let Some(update) = update {
-            while_body.push(Stmt::Expression(update));
-        }
         let loop_statement = Stmt::While {
             condition,
-            body: Box::new(Stmt::Block(while_body)),
+            body: Box::new(body),
+            post: update.map(|update| Box::new(Stmt::Expression(update))),
         };
         let mut block = Vec::new();
         if let Some(init) = init {
@@ -2046,6 +2106,80 @@ impl<'a> Parser<'a> {
         }
         block.push(loop_statement);
         Ok(Stmt::Block(block))
+    }
+
+    /// `for (const name of source) body`, called with the cursor at the
+    /// `const` token. Real Nova usage: `for (const c of units) { ... }` —
+    /// always a bare identifier binding (never destructured — 0 real
+    /// cases) over a plain array (a DOM query result or a filtered/spread
+    /// copy of one).
+    ///
+    /// Desugars to a counted `while` over a synthetic index, reusing
+    /// `Stmt::While`'s `post` field for the index increment — the same
+    /// reason `parse_for`'s `update` lives there now: so `continue`
+    /// compiles to a correct jump (to the increment, not straight back to
+    /// the condition, which would skip it and hang) for free, without this
+    /// loop shape needing any control-flow machinery of its own. A
+    /// non-array (and non-array-like) source refuses at *run* time with a
+    /// typed error through the ordinary property-access path — reading
+    /// `.length` on anything but an object/array already refuses there, so
+    /// nothing extra is needed here to keep that honest.
+    fn parse_for_of(&mut self) -> Result<Stmt, JsError> {
+        self.position += 1; // `const`
+        let Token::Ident(name) = self.advance() else {
+            unreachable!("checked by parse_for's own lookahead just above")
+        };
+        self.position += 1; // `of` (contextual, not a lexed keyword)
+        let source = self.parse_expression()?;
+        self.expect_punct(")")?;
+        let body = self.parse_statement()?;
+
+        let iter_temp = self.next_pattern_temp();
+        let index_temp = self.next_pattern_temp();
+
+        let condition = Expr::Binary {
+            operator: "<".to_string(),
+            left: Box::new(Expr::Variable(index_temp.clone())),
+            right: Box::new(Expr::Member {
+                object: Box::new(Expr::Variable(iter_temp.clone())),
+                key: Box::new(Expr::Str("length".to_string())),
+                optional: false,
+            }),
+        };
+        let element_declaration = Stmt::Declare {
+            name,
+            value: Some(Expr::Member {
+                object: Box::new(Expr::Variable(iter_temp.clone())),
+                key: Box::new(Expr::Variable(index_temp.clone())),
+                optional: false,
+            }),
+            constant: true,
+        };
+        let post = Stmt::Expression(Expr::Assign {
+            name: index_temp.clone(),
+            value: Box::new(Expr::Binary {
+                operator: "+".to_string(),
+                left: Box::new(Expr::Variable(index_temp.clone())),
+                right: Box::new(Expr::Number(1.0)),
+            }),
+        });
+        Ok(Stmt::Block(vec![
+            Stmt::Declare {
+                name: iter_temp,
+                value: Some(source),
+                constant: true,
+            },
+            Stmt::Declare {
+                name: index_temp,
+                value: Some(Expr::Number(0.0)),
+                constant: false,
+            },
+            Stmt::While {
+                condition,
+                body: Box::new(Stmt::Block(vec![element_declaration, body])),
+                post: Some(Box::new(post)),
+            },
+        ]))
     }
 
     fn parse_unary(&mut self) -> Result<Expr, JsError> {
@@ -3751,6 +3885,30 @@ struct Compiler {
     /// nested chain — e.g. an optional chain inside a call argument of an
     /// outer one — patches only its own jumps, not the outer chain's.
     optional_chain_jumps: Vec<usize>,
+    /// A stack of the loops currently being compiled, innermost last —
+    /// `break`/`continue` always target `.last()`. Saved and restored
+    /// around a nested function body in `fill_function`, the same as
+    /// `code`/`scopes`/`upvalues`: a `break`/`continue` cannot cross a
+    /// function boundary in real JS, and without this save/restore, one
+    /// written inside a callback defined in a loop body would patch a jump
+    /// index that means nothing in the callback's own, separate `code`
+    /// buffer — `optional_chain_jumps` needs no such treatment because an
+    /// optional chain is fully expression-local and always drains itself
+    /// before a nested function's body could ever start compiling, but a
+    /// loop's body can directly contain a function expression while the
+    /// loop's own context is still open.
+    loop_contexts: Vec<LoopContext>,
+}
+
+/// One loop's pending `break`/`continue` jump indices — see
+/// `Compiler::loop_contexts`.
+#[derive(Default)]
+struct LoopContext {
+    /// Patched to just past the whole loop once compiled.
+    break_jumps: Vec<usize>,
+    /// Patched to the loop's own next-iteration step (`Stmt::While`'s
+    /// `post`, if present, else its `condition` re-check) once compiled.
+    continue_jumps: Vec<usize>,
 }
 
 impl Compiler {
@@ -3766,6 +3924,7 @@ impl Compiler {
             enclosing_scopes: None,
             upvalues: Vec::new(),
             optional_chain_jumps: Vec::new(),
+            loop_contexts: Vec::new(),
         }
     }
 
@@ -3942,6 +4101,11 @@ impl Compiler {
         let outer_scopes = core::mem::take(&mut self.scopes);
         let outer_enclosing = core::mem::replace(&mut self.enclosing_scopes, enclosing);
         let outer_upvalues = core::mem::take(&mut self.upvalues);
+        // A `break`/`continue` cannot cross a function boundary in real
+        // JS, and a jump index from the outer loop's context would mean
+        // nothing in this function's own, separate `code` buffer anyway —
+        // see `Compiler::loop_contexts`'s doc comment.
+        let outer_loop_contexts = core::mem::take(&mut self.loop_contexts);
         let outer_next = self.next_slot;
         let outer_max = self.max_slot;
         self.next_slot = 0;
@@ -3971,6 +4135,7 @@ impl Compiler {
         self.enclosing_scopes = outer_enclosing;
         self.code = outer_code;
         self.scopes = outer_scopes;
+        self.loop_contexts = outer_loop_contexts;
         self.next_slot = outer_next;
         self.max_slot = outer_max;
         Ok(captured)
@@ -4169,13 +4334,63 @@ impl Compiler {
                     None => self.patch(jump_over_then),
                 }
             }
-            Stmt::While { condition, body } => {
+            Stmt::While {
+                condition,
+                body,
+                post,
+            } => {
                 let loop_start = self.code.len();
                 self.expression(condition)?;
                 let exit = self.emit_jump_if_false();
+                self.loop_contexts.push(LoopContext::default());
                 self.statement(body)?;
+                // `continue`'s target: right here, after `body` but before
+                // `post` (if any) — patching now, while `self.code.len()`
+                // is exactly this position, is what makes a jump here run
+                // `post` (a desugared for-loop's update/index-increment)
+                // exactly once before `condition` is re-checked, never
+                // skipping it. See `Stmt::While`'s `post` field.
+                let context = self
+                    .loop_contexts
+                    .pop()
+                    .expect("pushed immediately above, in the same call");
+                for continue_jump in context.continue_jumps {
+                    self.patch(continue_jump);
+                }
+                if let Some(post) = post {
+                    self.statement(post)?;
+                }
                 self.code.push(Op::Jump(loop_start));
                 self.patch(exit);
+                for break_jump in context.break_jumps {
+                    self.patch(break_jump);
+                }
+            }
+            Stmt::Break => {
+                if self.loop_contexts.is_empty() {
+                    return Err(JsError::Unsupported {
+                        feature: "`break` outside a loop".to_string(),
+                    });
+                }
+                let jump = self.emit_jump();
+                self.loop_contexts
+                    .last_mut()
+                    .expect("checked non-empty above")
+                    .break_jumps
+                    .push(jump);
+            }
+            Stmt::Continue => {
+                if self.loop_contexts.is_empty() {
+                    return Err(JsError::Unsupported {
+                        feature: "`continue` outside a loop".to_string(),
+                    });
+                }
+                let jump = self.emit_jump();
+                self.loop_contexts
+                    .last_mut()
+                    .expect("checked non-empty above")
+                    .continue_jumps
+                    .push(jump);
             }
             Stmt::Return(value) => {
                 match value {
@@ -7729,6 +7944,169 @@ mod tests {
             ),
             Value::Number(3.0)
         );
+    }
+
+    #[test]
+    fn for_of_iterates_a_plain_array() {
+        // Real shape: `for (const c of units) { ... }`.
+        assert_eq!(
+            eval_in_fn(
+                "let sum = 0; \
+                 for (const x of [1, 2, 3]) { sum = sum + x; } \
+                 return sum;"
+            ),
+            Value::Number(6.0)
+        );
+    }
+
+    #[test]
+    fn for_of_break_inside_an_if_matches_the_real_nova_shape() {
+        // Real shape (lines 2154-2161, 2543-2545 of the real file): a
+        // for-of loop that scans for the first matching element and
+        // `break`s out of the `if` that found it, never reaching the rest
+        // of the array.
+        assert_eq!(
+            eval_in_fn(
+                "let found = null; \
+                 for (const x of [1, 2, 3, 4]) { \
+                     if (x === 3) { found = x; break; } \
+                 } \
+                 return found;"
+            ),
+            Value::Number(3.0)
+        );
+        // Proves it actually stopped early, not just found the right value
+        // by chance — a counter that would keep climbing past 3 if `break`
+        // did not really exit the loop.
+        assert_eq!(
+            eval_in_fn(
+                "let seen = 0; \
+                 for (const x of [1, 2, 3, 4]) { \
+                     seen = seen + 1; \
+                     if (x === 2) { break; } \
+                 } \
+                 return seen;"
+            ),
+            Value::Number(2.0)
+        );
+    }
+
+    #[test]
+    fn while_continue_runs_after_the_increment_that_already_happened() {
+        // The real shape (lines 2444, 3037 of the real file): `continue`
+        // inside a `while` whose own body already advanced the loop
+        // variable before reaching `continue` — proving this terminates
+        // (rather than hanging) is the actual point, since a `while` has
+        // no separate "step" phase for `continue` to skip past in the
+        // first place; the risk this test guards is a regression, not a
+        // gap in this specific shape.
+        assert_eq!(
+            eval_in_fn(
+                "let i = 0; let sum = 0; \
+                 while (i < 5) { \
+                     i = i + 1; \
+                     if (i === 3) { continue; } \
+                     sum = sum + i; \
+                 } \
+                 return sum;"
+            ),
+            // 1 + 2 + 4 + 5 (3 skipped)
+            Value::Number(12.0)
+        );
+    }
+
+    #[test]
+    fn for_of_continue_runs_the_index_increment_and_keeps_going() {
+        // 0 real Nova uses `continue` inside a for-of loop, but this
+        // engine builds it correctly rather than refusing it, by sharing
+        // `Stmt::While`'s `post` field (the desugared index increment)
+        // with `parse_for`'s `update` — see that field's own doc comment.
+        // A naive "continue jumps straight to the condition" would skip
+        // the increment and loop on the same index forever; this proves
+        // it does not hang and does visit every later element.
+        assert_eq!(
+            eval_in_fn(
+                "let sum = 0; \
+                 for (const x of [1, 2, 3, 4]) { \
+                     if (x === 2) { continue; } \
+                     sum = sum + x; \
+                 } \
+                 return sum;"
+            ),
+            // 1 + 3 + 4 (2 skipped)
+            Value::Number(8.0)
+        );
+    }
+
+    #[test]
+    fn c_style_for_continue_runs_the_update_and_keeps_going() {
+        // Same shared-`post` mechanism as for-of's continue, exercised
+        // through `parse_for`'s own desugaring — 0 real Nova uses this
+        // shape either, but it shares the exact same compiled machinery,
+        // so pinning it here catches a regression in either path.
+        assert_eq!(
+            eval_in_fn(
+                "let sum = 0; \
+                 for (let i = 0; i < 5; i = i + 1) { \
+                     if (i === 2) { continue; } \
+                     sum = sum + i; \
+                 } \
+                 return sum;"
+            ),
+            // 0 + 1 + 3 + 4 (2 skipped)
+            Value::Number(8.0)
+        );
+    }
+
+    #[test]
+    fn nested_loops_break_and_continue_only_affect_the_innermost_one() {
+        assert_eq!(
+            eval_in_fn(
+                "let count = 0; \
+                 for (const a of [1, 2]) { \
+                     for (const b of [1, 2, 3]) { \
+                         if (b === 2) { break; } \
+                         count = count + 1; \
+                     } \
+                 } \
+                 return count;"
+            ),
+            // Each outer iteration runs the inner loop once (b=1, then
+            // breaks at b=2) — 2 outer iterations x 1 inner increment.
+            Value::Number(2.0)
+        );
+    }
+
+    #[test]
+    fn break_and_continue_outside_a_loop_are_refused() {
+        assert!(matches!(
+            compile("function main() { break; } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("function main() { continue; } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn break_cannot_reach_through_a_nested_function_into_an_outer_loop() {
+        // Real JS: a function boundary always stops `break`/`continue`
+        // from reaching an enclosing loop, arrow function or not. A
+        // closure defined inside a loop body must not accidentally patch
+        // its `break` into the outer loop's (unrelated) bytecode buffer —
+        // see `Compiler::loop_contexts`'s doc comment on why this needs
+        // its own save/restore in `fill_function`.
+        assert!(matches!(
+            compile(
+                "function main() { \
+                     for (const x of [1]) { \
+                         let f = () => { break; }; \
+                     } \
+                 } main();"
+            ),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]
