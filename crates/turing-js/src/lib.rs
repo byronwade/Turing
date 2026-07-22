@@ -455,15 +455,16 @@ const KEYWORDS: &[&str] = &[
 
 /// Keywords that name a feature this implementation refuses outright.
 ///
-/// `delete` is deliberately absent — like `typeof`, it is a real,
-/// implemented (if scoped) feature now, not a blanket refusal, and this
+/// `delete` and `typeof` are both deliberately absent — both are real,
+/// implemented (if scoped) features now, not blanket refusals, and this
 /// table's lookup fires at the very start of `parse_statement_inner` too,
-/// before any expression parsing runs. Real Nova usage is always a bare
-/// `delete object.key;` statement, not an assignment or a return value, so
-/// that early check would refuse it before `Parser::parse_unary_inner`'s
-/// own, more specific handling ever ran. `typeof`'s explicit refusal inside
-/// `parse_unary_inner` is unaffected by that same statement-level check for
-/// the identical reason — it, too, is not in this table.
+/// before any expression parsing runs. Real Nova usage of `delete` is
+/// always a bare `delete object.key;` statement, not an assignment or a
+/// return value, so that early check would refuse it before
+/// `Parser::parse_unary_inner`'s own, more specific handling ever ran.
+/// `typeof`'s own handling inside `parse_unary_inner` is exempt from that
+/// same statement-level check for the identical reason — it, too, is not
+/// in this table.
 const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("class", "class"),
     ("try", "try/catch"),
@@ -977,6 +978,17 @@ enum Expr {
         object: Box<Expr>,
         key: Box<Expr>,
     },
+    /// `typeof x`. Real usage is always `typeof x === "literal"` (a type
+    /// guard), including `typeof ResizeObserver !== "undefined"` — a bare
+    /// reference to a name that is not a bound variable anywhere in this
+    /// engine (only `new ResizeObserver(...)`'s constructor syntax exists,
+    /// not the plain identifier). This is real JS's one specified case
+    /// where an unresolvable reference is not an error: `Compiler`'s
+    /// handling special-cases a bare `Expr::Variable` operand that fails
+    /// every resolution path and compiles it as the constant `"undefined"`
+    /// instead of raising `JsError::UndefinedVariable` — see
+    /// `Compiler::variable_is_bound`.
+    TypeOf(Box<Expr>),
     Binary {
         operator: String,
         left: Box<Expr>,
@@ -2065,9 +2077,9 @@ impl<'a> Parser<'a> {
             });
         }
         if self.check_keyword("typeof") {
-            return Err(JsError::Unsupported {
-                feature: "typeof".to_string(),
-            });
+            self.position += 1;
+            let operand = self.parse_unary()?;
+            return Ok(Expr::TypeOf(Box::new(operand)));
         }
         // Real Nova usage: `delete rowEl.dataset.dragged`, `delete g[gid]` —
         // always a member expression, never a bare variable or anything
@@ -3549,6 +3561,12 @@ pub enum Op {
     /// does not model non-configurable ones), true regardless of whether
     /// the key existed to begin with.
     DeleteProperty,
+    /// Pop a value, push the real-JS `typeof` string naming its runtime
+    /// type. `null` reports `"object"`, real JS's own long-standing quirk.
+    /// The compile-time-`"undefined"`-for-an-unbound-name special case
+    /// (`typeof NotDeclared`) never reaches this op at all — see
+    /// `Expr::TypeOf`'s doc comment.
+    TypeOf,
     /// Pop source, then target; copy every own property of `source` onto
     /// `target` (spreading nothing for `null`/`undefined`) and push
     /// `target` back. Used by object-literal spread (`{...source}`).
@@ -3993,6 +4011,27 @@ impl Compiler {
         }
     }
 
+    /// Whether `name` resolves to *something* — a local, a captured
+    /// upvalue, a declared function, or a global — without emitting any
+    /// code for it. Mirrors `Expr::Variable`'s own resolution order
+    /// exactly; `Expr::TypeOf`'s only caller, so that `typeof
+    /// NotDeclared` can compile to the constant `"undefined"` instead of
+    /// tripping `Expr::Variable`'s ordinary `UndefinedVariable` refusal.
+    /// Calling `resolve_upvalue` here and then again from the ordinary
+    /// `Expr::Variable` compile (when the operand does resolve and
+    /// `Expr::TypeOf` falls through to `self.expression(operand)`) is
+    /// safe: it checks its own already-registered upvalues first, so a
+    /// second call is a cheap lookup, not a second capture.
+    fn variable_is_bound(&mut self, name: &str) -> Result<bool, JsError> {
+        Ok(self.resolve(name).is_some()
+            || self.resolve_upvalue(name)?.is_some()
+            || self
+                .signatures
+                .iter()
+                .any(|(candidate, ..)| candidate == name)
+            || self.global_slot(name).is_some())
+    }
+
     /// Resolves a name against the top-level global table: slot and whether
     /// reassignment is refused. Unlike `resolve`/`resolve_upvalue`, this
     /// check does not depend on nesting depth or which function is currently
@@ -4379,6 +4418,17 @@ impl Compiler {
                 self.expression(object)?;
                 self.expression(key)?;
                 self.code.push(Op::DeleteProperty);
+            }
+            Expr::TypeOf(operand) => {
+                if let Expr::Variable(name) = operand.as_ref()
+                    && !self.variable_is_bound(name)?
+                {
+                    self.code
+                        .push(Op::Const(Value::String("undefined".to_string())));
+                } else {
+                    self.expression(operand)?;
+                    self.code.push(Op::TypeOf);
+                }
             }
             Expr::Call { callee, arguments } => {
                 // Resolution order: a declared function wins a name collision
@@ -5088,6 +5138,27 @@ impl Vm {
                             })?;
                     object.remove(&property_key(&key));
                     stack.push(Value::Boolean(true));
+                }
+                Op::TypeOf => {
+                    let value = pop(&mut stack);
+                    let kind = match value {
+                        Value::Undefined => "undefined",
+                        // Real JS's own long-standing quirk: `typeof null`
+                        // is `"object"`, not `"null"` or `"undefined"`.
+                        Value::Null => "object",
+                        Value::Boolean(_) => "boolean",
+                        Value::Number(_) => "number",
+                        Value::String(_) => "string",
+                        Value::Function(_) | Value::Closure(_) => "function",
+                        Value::Object(_)
+                        | Value::Array(_)
+                        | Value::Regex(_)
+                        | Value::Set(_)
+                        | Value::Map(_)
+                        | Value::Date
+                        | Value::ResizeObserver => "object",
+                    };
+                    stack.push(Value::String(kind.to_string()));
                 }
                 Op::SpreadInto => {
                     let source = pop(&mut stack);
@@ -8315,6 +8386,76 @@ mod tests {
         assert_eq!(
             eval_in_fn("let o = { a: 1 }; delete o.a; return o.a === undefined;"),
             Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn typeof_reports_the_runtime_type_of_a_bound_value() {
+        // Real shapes: `typeof anchorId === "number"`,
+        // `typeof fn === "function"`.
+        assert_eq!(
+            eval_in_fn("let n = 5; return typeof n;"),
+            Value::String("number".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let s = \"x\"; return typeof s;"),
+            Value::String("string".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let b = true; return typeof b;"),
+            Value::String("boolean".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let u; return typeof u;"),
+            Value::String("undefined".to_string())
+        );
+        // Real JS's own quirk: `typeof null` is `"object"`.
+        assert_eq!(
+            eval_in_fn("return typeof null;"),
+            Value::String("object".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let o = {}; return typeof o;"),
+            Value::String("object".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let arr = []; return typeof arr;"),
+            Value::String("object".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let fn = () => {}; return typeof fn;"),
+            Value::String("function".to_string())
+        );
+    }
+
+    #[test]
+    fn typeof_on_an_unbound_name_reads_undefined_without_refusing() {
+        // The real Nova shape this exists for:
+        // `typeof ResizeObserver !== "undefined"` — `ResizeObserver` is
+        // only ever referenced via `new ResizeObserver(...)`'s constructor
+        // syntax, never as a plain bound value, so a normal
+        // `Expr::Variable` reference to it would refuse at compile time as
+        // `UndefinedVariable`. Real JS's one specified case where an
+        // unresolvable reference is not an error.
+        assert_eq!(
+            eval_in_fn("return typeof TotallyUndeclaredName;"),
+            Value::String("undefined".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("return typeof TotallyUndeclaredName !== \"undefined\";"),
+            Value::Boolean(false)
+        );
+    }
+
+    #[test]
+    fn typeof_on_a_declared_function_reads_function_not_undefined() {
+        // Confirms the unbound-name special case in
+        // `Compiler::variable_is_bound` does not accidentally swallow a
+        // *bound* function reference — only a genuinely unresolvable name
+        // takes the constant-`"undefined"` path.
+        assert_eq!(
+            run_main_source("function main() { return typeof f; } function f() { return 1; }"),
+            Value::String("function".to_string())
         );
     }
 
