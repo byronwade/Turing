@@ -5,7 +5,7 @@ Turing is an independent, Rust-first browser and web-engine program focused on m
 > **Current status:** M0 research and implementation stage. The repository contains extensive architecture and product documentation, a dependency-free architecture prototype, a buildable workspace, and the first generated kernel/IPC policy reference. The active WP-002 execution manifest is `TASK-000011` and remains `review_pending`, not accepted; its [review handoff](docs/research/task-000011-wp002-review-handoff-2026-07.md) is an evidence map, not an approval. Turing is not yet a usable browser, is not safe for sensitive or hostile browsing, and is not ready for production or stable release.
 > **Continuity checkpoint:** The first continuation stop is the [Build Readiness Start Guide](docs/project-buildout/21-build-readiness-start-guide.md), then the [Build Continuation Readiness Pack](docs/project-buildout/20-build-continuation-readiness-pack.md) scorecard.
 
-### Build readiness decision (as of 2026-07-20)
+### Build readiness decision (as of 2026-07-22)
 
 - **Can we start broad implementation now?** **No.**
 - **Allowed continuation:** contained M0 continuity work, validators, documentation/research indexing, and no-claim task-handoff maintenance.
@@ -216,7 +216,7 @@ The planned embedding surface uses an idiomatic Rust API, a minimal opaque C ABI
 
 ### Native shell
 
-Trusted chrome will not ship Electron, Tauri, a system webview, React, Node, a DOM, or a runtime browser CSS engine. Pure Rust owns state and commands; a replaceable native adapter owns presentation. The checked [Toolkit-Neutral UI Adapter Contract Inventory](docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md) records the no-claim `PB-003` state, command, surface, accessibility, diagnostic, adapter, and denied-authority boundaries. Slint is the first candidate to prototype against Vizia and Floem or GPUI, and the checked [Native UI Framework Bake-Off Inventory](docs/research/native-ui-framework-bakeoff-inventory-2026-07.md) defines the no-claim evidence axes. No toolkit is selected.
+Trusted chrome will not ship Electron, Tauri, a system webview, external React/React DOM, Node, a page DOM, or a runtime browser CSS engine. The target is a single Turing-owned JSX/component composition runtime compiled to bounded native IR, with pure Rust owning state and commands and replaceable platform adapters owning presentation integration. The [Turing Platform Architecture](docs/application-runtime/01-turing-platform-architecture.md) defines that boundary. The checked [Toolkit-Neutral UI Adapter Contract Inventory](docs/research/toolkit-neutral-ui-adapter-contract-inventory-2026-07.md) records the no-claim `PB-003` state, command, surface, accessibility, diagnostic, adapter, and denied-authority boundaries. No toolkit or runtime implementation is selected.
 
 ## What remains before M1
 

@@ -83,6 +83,9 @@ Update rule: required for every file or directory addition, deletion, rename, or
 │   │   └── machine/
 │   │       ├── design-source-manifest.json
 │   │       └── design-source-manifest.schema.json
+│   ├── application-runtime/
+│   │   ├── README.md
+│   │   └── 01-turing-platform-architecture.md
 │   ├── accessibility/
 │   │   └── machine/
 │   └── subsystem engineering books
@@ -227,6 +230,8 @@ Application binaries live here.
 `turing-browser` is the Research-maturity windowed laboratory presenter: it loads local HTML files through `turing-engine`, presents them under the Nova chrome rendered by `turing-chrome` (tab strip, address pill, command palette), and routes pointer input back through the engine's hit testing. `--screenshot out.bmp [page.html] [extra-tabs]` renders the same composed frame headlessly for visual review. It carries the workspace's only external runtime dependencies (`winit`, `softbuffer`), accepted and bounded in [`docs/research/graphics-foundation-decision-2026-07.md`](research/graphics-foundation-decision-2026-07.md). It is not the product shell, has no network, and makes no hostile-input claim. Run it with `cargo run -p turing-browser [-- page.html]`.
 
 Future application directories require an accepted purpose, owner, maturity label, support boundary, and package/update implications.
+
+The platform-runtime architecture is documented in [`docs/application-runtime/01-turing-platform-architecture.md`](application-runtime/01-turing-platform-architecture.md). It is the canonical boundary for the one Turing-owned component/composition pipeline, JSX authoring target, Browser SDK, desktop runtime, and future Nova applications. It does not authorize implementation or release adoption.
 
 ## `crates/`
 

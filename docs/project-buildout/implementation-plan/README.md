@@ -6,6 +6,8 @@ Last reviewed: 2026-07-20
 
 This handbook converts Turing's research library, Blueprint, requirements, work packages, agent controls, and release gates into one dependency-ordered game plan that an implementation agent can follow without inventing scope or silently bypassing unresolved decisions.
 
+The owner-directed Nova platform target is defined in [Turing Platform Architecture](../../application-runtime/01-turing-platform-architecture.md). It is a target contract, not a blanket implementation task: the first runtime slice must be represented by an approved immutable `TASK-*` manifest, use the existing `turing-ui-model`/Nova reference surfaces, and preserve the one-renderer, typed-authority, page-surface, accessibility, and production gates.
+
 It is subordinate to accepted requirements and ADRs. When this plan conflicts with a machine-readable registry, accepted ADR, security rule, or requirement, the stricter and more authoritative record wins and the inconsistency must be corrected before implementation continues.
 
 ## Current authorization

@@ -63,7 +63,7 @@ Browser chrome uses a Turing-owned retained UI scene graph and command model. Te
 
 The UI never depends on the web engine to render essential browser controls. A renderer crash cannot remove the address bar, permission UI, agent stop control, or crash recovery.
 
-The native toolkit remains unselected. The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) records `PB-004` no-claim planning evidence for candidate summaries, equivalent reference-shell scope, evidence axes, disqualifiers, and unsupported runtime boundaries. It does not accept `ADR-0014`, approve Slint or any other toolkit, prove accessibility or IME/keyboard behavior, approve page-surface composition, approve license/provenance, or approve release-path UI.
+The native toolkit remains unselected. The target architecture adds one Turing-owned JSX/component composition runtime above replaceable platform adapters; it does not add a second renderer or allow external React/Node/webview dependencies. The checked [Native UI Framework Bake-Off Inventory](../research/native-ui-framework-bakeoff-inventory-2026-07.md) records `PB-004` no-claim planning evidence for candidate summaries, equivalent reference-shell scope, evidence axes, disqualifiers, and unsupported runtime boundaries. It does not accept `ADR-0014`, approve Slint or any other toolkit, prove accessibility or IME/keyboard behavior, approve page-surface composition, approve license/provenance, or approve release-path UI.
 
 ## 6. Motion
 
@@ -196,9 +196,9 @@ Automation profiles are isolated and ephemeral by default. Disabling confirmatio
 Research targets project-native Spaces, Workspace Time Machine, Research Canvas, identity routing, open migration, privacy receipts, Web App Fabric, and Developer Causal Mode. Familiar browsing remains the default. Advanced project capability is progressively disclosed and fully keyboard/screen-reader operable.
 
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
-## 18. Native UI implementation working hypothesis
+## 18. Native UI and Turing component-runtime target
 
-Browser state, typed commands, policy, persistence, recovery, tracing, and resource accounting remain pure Rust. A compiled native toolkit is isolated behind a Turing-owned adapter. Slint is evaluated first against Vizia and Floem or GPUI. React is permitted only in a separate design lab consuming shared tokens and fixtures; it does not ship in trusted chrome.
+Browser state, typed commands, policy, persistence, recovery, tracing, and resource accounting remain pure Rust. JSX-shaped authoring compiles to a Turing-owned component/runtime IR, while platform windowing and accessibility facilities remain replaceable adapters. External React, Node, DOM, webview, and runtime browser CSS are not release dependencies. The target and its API families are defined in [Turing Platform Architecture](../application-runtime/01-turing-platform-architecture.md); `ADR-0021` remains proposed.
 
 The decisive prototype composes renderer-produced page textures with chrome across resize, scale, damage, input, IME, accessibility, occlusion, capture, renderer crash, and GPU device loss. `UI-GATE-7` through `UI-GATE-12` in the [Native UI Runtime book](../ui-runtime/README.md) govern selection.
 

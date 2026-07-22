@@ -268,3 +268,41 @@ Status: proposed. Evaluate root, targets, snapshot, and timestamp roles, thresho
 ### ADR-0020 — Human release and signing authority
 
 Status: proposed. Production signing, legal approval, vulnerability disclosure, support commitments, and stable promotion remain human-controlled and separated from implementation agents and ordinary CI.
+
+<!-- NOVA-PLATFORM-ARCHITECTURE-2026-07 -->
+### ADR-0021 — One Turing component runtime for Nova applications
+
+Status: proposed owner-directed target; not accepted for release implementation. Decision preparation recorded 2026-07-22.
+
+#### Context
+
+The owner-directed Nova platform target makes Turing more than a browser: the browser, future desktop shell, and future Nova applications need one replaceable component/composition system. The pinned Nova JSX source is the visual source of truth, while the current repository has a toolkit-neutral shell model (`turing-ui-model`), a hand-built Nova reference renderer (`turing-chrome`), and a separate page engine (`turing-engine`). Without an explicit boundary, the project would grow a second UI renderer, allow page semantics to own trusted chrome, or import external React/Node/webview technology into a release path.
+
+#### Proposed decision
+
+Create one Turing-owned component runtime contract for application UI. JSX-shaped source may be compiled to bounded native component IR, retained state/command snapshots, layout/semantic output, animation timelines, and a shared scene/display representation. Browser chrome, DevTools, workspaces, and future desktop application surfaces use that contract. Platform APIs for windows, input, IME, clipboard, GPU presentation, and accessibility remain replaceable adapters. Page content remains an engine-owned surface reached through typed, identity-bearing compositor handles.
+
+The external `react`, `react-dom`, Node, system webview, page DOM, and runtime browser CSS parser are not release dependencies. A Turing-owned compatibility surface may implement useful React-shaped APIs only after independent parsing, lifecycle, state, accessibility, fault, resource, performance, and security evidence.
+
+This proposal does not resolve ADR-0009. Servo/networking ownership remains undecided until the source-strategy decision is accepted.
+
+#### Consequences
+
+- Nova becomes the visual/layout source for a shared runtime rather than a one-off chrome port.
+- `turing-ui-model` remains the state/command contract; `turing-chrome` remains a reference renderer until runtime parity evidence exists.
+- The future runtime must not depend on `turing-engine` page semantics or create a second DOM/state graph.
+- A runtime slice requires an immutable `TASK-*` manifest, negative tests, independent review, and the native UI/page-surface/production gates named by the implementation plan.
+- The initial cost is higher than retaining separate renderers, but the platform avoids duplicated invalidation, theming, accessibility, diagnostics, and customization models.
+
+#### Required evidence before acceptance
+
+1. Component IR schema and compatibility/versioning rules.
+2. State, command, identity, epoch, lifecycle, cancellation, and resource contracts.
+3. Nova source-region and token traceability for the initial fixture set.
+4. Equivalent native fixtures for keyboard, IME, focus, screen reader, forced colors, reduced motion, localization, fault, and text-fit cases.
+5. Page-surface/compositor proof and stale-handle negative tests.
+6. Startup, memory, frame-pacing, invalidation, and energy measurements with reproducible manifests.
+7. External-runtime exclusion, dependency, provenance, and replacement evidence.
+8. Owner decision, independent review, accepted predecessor ADRs, and synchronized registries.
+
+The canonical target contract is [`Turing Platform Architecture`](../application-runtime/01-turing-platform-architecture.md). This proposed ADR does not claim that the runtime exists, that Nova is release chrome, or that the browser is production-ready.

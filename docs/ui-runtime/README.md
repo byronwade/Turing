@@ -1,10 +1,12 @@
 # Native UI Runtime and Browser Chrome Engineering
 
-Status: architecture research plus buildable toolkit-neutral M0 model; no UI framework adopted  
+Status: architecture research plus buildable toolkit-neutral M0 model; Turing-owned JSX runtime is the target and no release UI framework is adopted
 Owner: UI runtime, product, platform, accessibility, performance, security, and build engineering  
 Last reviewed: 2026-07-19
 
-This book defines a small native browser shell without Electron, Tauri, a system webview, a second browser engine, or a JavaScript runtime in trusted chrome.
+This book defines the current native browser-shell boundary and the migration to the Turing-owned JSX application runtime. The current M0 shell contains no external React, Node, system webview, second browser engine, or JavaScript runtime in trusted chrome. The target runtime may accept JSX-shaped authoring and a compatible component API only after compilation to bounded native IR and the relevant security, accessibility, platform, and production gates.
+
+The full target boundary is [`Turing Platform Architecture`](../application-runtime/01-turing-platform-architecture.md). It is the source for the one-visual-composition-system rule across the browser and future Nova applications.
 
 The current visual and layout source of truth is the [Turing Nova design source](design-lab/README.md), backed by the checked [`design-source-manifest.json`](machine/design-source-manifest.json) and [`validate_design_source.py`](../../tools/validate_design_source.py). It is a separate React design-lab reference; it does not change the native-runtime boundary.
 
@@ -12,7 +14,7 @@ The [Nova Native Build Entry Criteria](../research/nova-native-build-entry-crite
 
 ## Working hypothesis
 
-> Keep browser state, commands, identity, policy, recovery, and resource accounting in pure Rust; place a compiled native toolkit behind a narrow replaceable adapter; evaluate Slint first against Vizia and Floem or GPUI; use React only in a development design lab that never ships.
+> Keep browser state, commands, identity, policy, recovery, and resource accounting in pure Rust; compile JSX-shaped authoring into a Turing-owned component runtime behind replaceable platform adapters; keep external React, Node, webviews, page DOM, and runtime CSS parsers out of the release path.
 
 Slint is not selected. Licensing, page-surface composition, accessibility, IME, package size, memory, GPU interoperability, failure isolation, and replacement cost must pass the framework experiment before ADR-0014 can be accepted.
 
@@ -59,8 +61,9 @@ Native UI and accessibility decisions remain subject to the [Owner Decision Clos
 ## Non-negotiable rules
 
 - Trusted chrome never depends on page rendering.
-- Release builds contain no Electron, Tauri, system webview, React, Node, DOM, CSSOM, or runtime HTML/CSS parser for browser chrome.
+- Release builds contain no Electron, Tauri, system webview, external React/React DOM, Node, page DOM, CSSOM, or runtime HTML/CSS parser for browser chrome. A Turing-owned JSX compiler/runtime remains a gated target, not a current M0 capability.
 - UI code cannot decide navigation, permissions, credentials, profile authority, agent grants, Plug-in authority, or release trust.
 - UI callbacks emit typed commands; trusted services revalidate identity, epoch, state, and authority.
 - One selected production backend and renderer normally ship.
 - Toolkit types remain behind Turing-owned state, command, surface, accessibility, and diagnostic contracts.
+- Browser chrome, DevTools, and future desktop application surfaces use the same Turing component/runtime IR; no app-specific visual renderer is introduced.

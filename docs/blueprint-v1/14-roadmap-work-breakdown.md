@@ -292,7 +292,7 @@ An opportunity enters the executable backlog only after promotion through eviden
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI and pre-build sequencing
 
-Before M1 shell code expands, complete the toolkit-neutral UI contracts, select one reference desktop platform, build equivalent Slint/Vizia/Floem-or-GPUI shells, prove page-surface/accessibility/IME/crash integration, and review licensing. These are controlled M0/M1 experiments, not a reason to delay unrelated parser, schema, sandbox, or benchmark research.
+Before M1 shell code expands, complete the toolkit-neutral UI contracts, freeze the [Turing Platform Architecture](../application-runtime/01-turing-platform-architecture.md), select one reference desktop platform, build equivalent adapter experiments, prove page-surface/accessibility/IME/crash integration, and review licensing. The component-runtime task must define one shared IR and invalidation path; app-specific renderers are not permitted. These are controlled M0/M1 experiments, not a reason to delay unrelated parser, schema, sandbox, or benchmark research.
 
 `PB-GATE-0` tracks the minimum applicable evidence for implementation kickoff; preview and stable operational gates remain later milestones.
 

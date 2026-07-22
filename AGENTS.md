@@ -216,7 +216,7 @@ Changes to product positioning, workspaces, migration, synchronization, resource
 <!-- NATIVE-UI-ARCHITECTURE-2026-07 -->
 ## Native UI rule
 
-Trusted browser chrome is toolkit-replaceable and contains no Electron, Tauri, system webview, React/JavaScript runtime, DOM, or runtime CSS parser in release builds. UI work must update `docs/ui-runtime/`, the framework and budget registries, pre-build readiness, affected platform/product/security/performance/accessibility documentation, and repository validation.
+Trusted browser chrome is toolkit-replaceable and contains no Electron, Tauri, system webview, external React/React DOM, Node, page DOM, or runtime browser CSS parser in release builds. The target architecture permits a Turing-owned JSX authoring/compiler/runtime path only when JSX-shaped source becomes bounded native component IR and all applicable security, accessibility, platform, performance, and production gates are accepted. UI work must update `docs/ui-runtime/`, `docs/application-runtime/`, the framework and budget registries, pre-build readiness, affected platform/product/security/performance/accessibility documentation, and repository validation.
 
 <!-- AGENT-PRODUCTION-READINESS-2026-07 -->
 ## Production implementation-agent controls

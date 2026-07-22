@@ -101,6 +101,7 @@ This index supports contained M0 and no-claim evidence work only. It does not ap
 | [Professional buildout](project-buildout/README.md) | Phase gates, ownership, review, traceability, repository, coding, operations, and sustainability |
 | [Market strategy](market-strategy/README.md) | Competitive evidence, Spaces, Time Machine, resource truth, agents, migration, and validation |
 | [Native UI runtime](ui-runtime/README.md) | Framework selection, toolkit-neutral Rust contracts, page surfaces, design lab, budgets, and component-fixture inventory |
+| [Application runtime](application-runtime/README.md) | Turing platform architecture, JSX/component runtime target, Browser SDK, desktop runtime, and milestone gap |
 | [Agent execution](agent-execution/README.md) | Task authority, protected review, provenance, independent evidence, rollback, and escalation |
 | [TASK-000011 WP-002 review handoff](research/task-000011-wp002-review-handoff-2026-07.md) | Reviewer-facing evidence map for the active M0 `WP-002` execution task and the checked no-claim evidence capture; not acceptance or readiness promotion |
 | [Production readiness](production-readiness/README.md) | Stable scope, platforms, SLOs, updates, services, support, signing, and release authority |
@@ -140,7 +141,7 @@ The checked [`validate_source_manifest_coverage.py`](../tools/validate_source_ma
 | [Performance, security, developer, and systems audit — July 2026](research/performance-security-developer-expansion-audit-2026-07.md) | Historical nineteen-book subsystem expansion |
 | [Memory Object Representation and Tab Lifecycle Research — July 2026](research/memory-object-representation-and-tab-lifecycle-research-2026-07.md) | Deferred `RQ-01`/`RQ-03` plus active benchmark-lane `RQ-35` source-backed experiment handoff for compact representations, allocation safety, freeze/discard/revival, resource attribution, and performance evidence; no architecture or performance decision |
 | [Process Topology and Isolation-Adjusted Memory Research — July 2026](research/process-topology-isolation-adjusted-memory-research-2026-07.md) | Active `RQ-02`/`RQ-20`/`RQ-36` source-backed experiment handoff for site-instance identity, process sharing, crash containment, IPC, sandbox, accessibility, and isolation-adjusted resource evidence; no topology or readiness decision |
-| [Nova Native Build Entry Criteria — July 2026](research/nova-native-build-entry-criteria-2026-07.md) | No-claim extraction and acceptance route for using the supplied Nova source as the native browser-face visual/layout reference; React remains design-lab-only and no toolkit, native adapter, page-surface, accessibility, or UI-gate decision is made |
+| [Nova Native Build Entry Criteria — July 2026](research/nova-native-build-entry-criteria-2026-07.md) | No-claim extraction and acceptance route for using the supplied Nova source as the browser-face visual/layout reference; external React remains design-lab-only, while the Turing-owned JSX runtime target remains gated and no toolkit, native adapter, page-surface, accessibility, or UI-gate decision is made |
 | [Professional buildout audit — July 2026](research/professional-buildout-gap-audit-2026-07.md) | Ownership, traceability, operations, legal, and sustainability |
 | [Browser market gap and differentiation research — July 2026](research/browser-market-gap-2026-07.md) | `OP-001` through `OP-014` product hypotheses |
 | [Native UI framework evaluation — July 2026](research/native-ui-framework-evaluation-2026-07.md) | Slint-first comparison hypothesis and browser-specific risks |
@@ -256,4 +257,4 @@ Machine-readable records live under the owning `machine/` directory and must rem
 
 ## Application runtime (research direction)
 
-The owner-directed target of running the engine as an Electron-class application runtime — rendering React/Next.js/TanStack apps and the Nova source itself as the system UI — is planned in [`docs/application-runtime/`](application-runtime/README.md).
+The owner-directed target of running the engine as an application runtime — with a Turing-owned JSX/component runtime, the Nova source as the browser face, a Browser SDK, and future desktop applications — is defined in [`docs/application-runtime/01-turing-platform-architecture.md`](application-runtime/01-turing-platform-architecture.md) and detailed in [`docs/application-runtime/`](application-runtime/README.md). This remains a gated architecture target, not a supported runtime or release claim.

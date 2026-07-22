@@ -1,27 +1,33 @@
 # Turing as an Application Runtime
 
-Status: architecture and milestone research. Owner: @byronwade (product
-direction), engine and UI-runtime owners. Opened 2026-07-20 by owner
-direction.
+Status: architecture and milestone research; target architecture is defined in [Turing Platform Architecture](01-turing-platform-architecture.md)
+Owner: product direction, architecture, engine, UI runtime, platform, security, performance, accessibility, and developer experience
+Opened 2026-07-20; last reviewed 2026-07-22.
 
-/ This book does not claim the runtime exists. It states the target, the
-honest gap from today's engine, and the order the gap can be closed in. /
+This book does not claim the runtime exists. It states the target, the honest
+gap from today's engine, and the order the gap can be closed in.
+
+The [Turing Platform Architecture](01-turing-platform-architecture.md) is the
+canonical ownership and boundary contract. This book supplies capability-gap
+and milestone detail; it cannot authorize implementation, select a toolkit,
+or override security, source-strategy, or production controls.
 
 ## The target
 
 Turing is not only a web browser. The owner's direction is that the Turing
 engine become an **application runtime** — the way Electron lets a product
 ship a React/Next.js/TanStack application as a desktop app, except that the
-rendering engine is Turing's own, built from scratch, with no Chromium,
-Blink, or V8 underneath.
+runtime and rendering path are Turing-owned, built from scratch, with no
+Chromium, Blink, V8, external React runtime, or webview underneath.
 
 Two concrete ambitions define the target:
 
 1. **The system UI is the engine's own output.** The Nova design
    (`docs/ui-runtime/design-lab/turing-nova-design-source.jsx`) is React.
-   The end state is that the engine *runs that React* and the running
+   The end state is that a Turing-owned JSX/component runtime can execute the
+   captured source or a compatible compiled representation and the running
    result **is** the browser's chrome and, further out, the desktop system
-   interface — not a hand-port of Nova into Rust display lists. Today's
+   interface — not a hand-port of Nova into unrelated app-specific widgets. Today's
    `turing-chrome` crate is an honest interim: it renders Nova's design at
    reference fidelity from extracted tokens, which is what let the product
    look right before the engine could run the source. It is a stepping

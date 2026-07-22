@@ -22,6 +22,9 @@ Every interface declares its caller, callee, trust level, principal identities, 
 ## API families
 
 - Internal typed IPC between process roles.
+- Browser Engine API for windows, surfaces, tabs, navigation, history, permissions, storage, GPU, networking, workspaces, accessibility, performance, tracing, and profiling.
+- Component Runtime API for JSX/native component IR, state snapshots, typed commands, lifecycle, themes, layout, motion, semantic output, and replacement registries.
+- Desktop Runtime API for application identity, windows, surfaces, input, display, packaging, resource ownership, and recovery.
 - WebDriver BiDi standards-facing automation.
 - Turing Engine Protocol for introspection and diagnostics.
 - Agent observation/action protocol.
@@ -39,6 +42,8 @@ Every interface declares its caller, callee, trust level, principal identities, 
 - Stable and experimental surfaces have different support commitments.
 - API changes include compatibility tests, migration notes, and sunset dates.
 - Measured common workflows require less glue and produce better diagnostics than reference tools.
+
+The canonical platform boundary for these families is [Turing Platform Architecture](../application-runtime/01-turing-platform-architecture.md). The list is a design target: no family is stable merely because a Rust type or prototype exists, and public embedding continues to use opaque handles and generated schemas rather than Rust layout.
 
 ## Related material
 
