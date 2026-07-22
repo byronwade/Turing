@@ -3,6 +3,7 @@ import Nova from "../../../docs/ui-runtime/design-lab/turing-nova-design-source.
 
 const commandHistory = [];
 const ENGINE_CONSOLE_PREFIX = "TURING_ENGINE_COMMAND";
+const RUNTIME_READY_PREFIX = "TURING_RUNTIME_READY";
 const MAX_ENGINE_PAYLOAD_BYTES = 64 * 1024;
 const SUPPORTED_ENGINE_COMMANDS = new Set([
   "navigation.history",
@@ -119,5 +120,16 @@ window.__TURING_RUNTIME__ = {
     };
   },
 };
+
+if (bridgeEnabled && typeof console !== "undefined" && typeof console.log === "function") {
+  // The native host receives provenance only; no page or command payload is
+  // included in this readiness record.
+  console.log([
+    RUNTIME_READY_PREFIX,
+    window.__TURING_RUNTIME__.version,
+    window.__TURING_RUNTIME__.sourceSha256,
+    window.__TURING_RUNTIME__.tokensSha256,
+  ].join("\t"));
+}
 
 render(h(Nova, null), root);

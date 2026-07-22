@@ -73,7 +73,10 @@ The bundle also exposes a read-only `window.__TURING_RUNTIME__` composition
 descriptor. It reports the canonical source hash, token hash, viewport owner
 (`.stage.nova`), and the development renderer identity. Servo verification
 checks that the descriptor is mounted, source/token provenance agrees, and the
-Nova root owns the viewport. This is composition evidence, not release-runtime
+Nova root owns the viewport. When the opt-in host bridge is enabled, the bundle
+also emits a runtime-ready record containing only the version and matching
+source/token hashes; `turing-nova` validates that record before retaining typed
+command observations. This is composition evidence, not release-runtime
 approval.
 
 Run the reproducible headless interaction proof with:

@@ -17,6 +17,7 @@ use std::thread;
 
 const PACKAGE_RELATIVE: &str = "apps/nova-shell";
 const ENGINE_COMMAND_PREFIX: &str = "TURING_ENGINE_COMMAND\t";
+const RUNTIME_READY_PREFIX: &str = "TURING_RUNTIME_READY\t";
 const MAX_ENGINE_RECORD_BYTES: usize = 64 * 1024;
 
 /// Typed command kinds observed at the development Servo boundary.
@@ -170,12 +171,47 @@ struct EngineRecord {
     payload_bytes: usize,
 }
 
+#[derive(Debug, Eq, PartialEq)]
+struct RuntimeRecord {
+    version: u16,
+    source_sha256: String,
+    tokens_sha256: String,
+}
+
 /// Bounded host-side observation state for one development launch.
 #[derive(Debug, Default, Eq, PartialEq)]
 struct BridgeState {
+    runtime_ready: bool,
     accepted_commands: u64,
     last_command: Option<EngineCommandKind>,
     recent_commands: Vec<EngineCommandKind>,
+}
+
+fn valid_sha256(value: &str) -> bool {
+    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+}
+
+fn parse_runtime_record(line: &str) -> Option<RuntimeRecord> {
+    let record = line
+        .find(RUNTIME_READY_PREFIX)
+        .map(|index| &line[index..])?;
+    let fields: Vec<&str> = record[RUNTIME_READY_PREFIX.len()..].split('\t').collect();
+    if fields.len() != 3 {
+        return None;
+    }
+    let version = fields[0].parse().ok()?;
+    if version != 1
+        || !valid_sha256(fields[1])
+        || !valid_sha256(fields[2])
+        || !fields[1].eq_ignore_ascii_case(fields[2])
+    {
+        return None;
+    }
+    Some(RuntimeRecord {
+        version,
+        source_sha256: fields[1].to_ascii_uppercase(),
+        tokens_sha256: fields[2].to_ascii_uppercase(),
+    })
 }
 
 impl BridgeState {
@@ -221,7 +257,22 @@ fn observe_engine_output<R: Read + Send + 'static>(
         let reader = BufReader::new(output);
         for line in reader.lines() {
             let Ok(line) = line else { break };
-            if let Some(record) = parse_engine_record(&line) {
+            if let Some(record) = parse_runtime_record(&line) {
+                if let Ok(mut bridge) = state.lock() {
+                    bridge.runtime_ready = true;
+                }
+                println!(
+                    "turing-nova: runtime ready v{} source_sha256={} tokens_sha256={}",
+                    record.version, record.source_sha256, record.tokens_sha256
+                );
+            } else if let Some(record) = parse_engine_record(&line) {
+                let ready = state
+                    .lock()
+                    .map(|bridge| bridge.runtime_ready)
+                    .unwrap_or(false);
+                if !ready {
+                    continue;
+                }
                 if let Ok(mut bridge) = state.lock() {
                     bridge.observe(&record);
                 }
@@ -255,7 +306,8 @@ fn launch_servo(servo: &Path, url: String) -> Result<std::process::ExitStatus, S
     let _ = observer.join();
     if let Ok(state) = bridge.lock() {
         println!(
-            "turing-nova: observed_commands={} recent_commands={}",
+            "turing-nova: runtime_ready={} observed_commands={} recent_commands={}",
+            state.runtime_ready,
             state.accepted_commands,
             state.recent_commands.len()
         );
@@ -362,5 +414,21 @@ mod tests {
         assert_eq!(state.accepted_commands, 130);
         assert_eq!(state.last_command, Some(EngineCommandKind::TabsCreate));
         assert_eq!(state.recent_commands.len(), 128);
+    }
+
+    #[test]
+    fn runtime_record_requires_matching_sha256_provenance() {
+        let hash = "EAD9704DF31179007F31B32661A8F09119BAF82C4F5454ACD486D258C0C0C84F";
+        let line = format!("prefix TURING_RUNTIME_READY\t1\t{hash}\t{hash}");
+        let record = super::parse_runtime_record(&line).expect("matching runtime record");
+        assert_eq!(record.version, 1);
+        assert_eq!(record.source_sha256, hash);
+        assert!(
+            super::parse_runtime_record(&format!(
+                "TURING_RUNTIME_READY\t1\t{hash}\t{}",
+                "0".repeat(64)
+            ))
+            .is_none()
+        );
     }
 }
