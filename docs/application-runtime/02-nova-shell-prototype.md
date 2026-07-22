@@ -108,9 +108,11 @@ window.__TURING_ENGINE__.dispatch({
 
 The Nova root emits commands for navigation, history, tabs, sidebar state,
 reader/split view, URL copy, keyboard input, and every actionable control,
-input, and change event. The adapter retains only the last 128 commands for
-development inspection through `snapshot()`; it is not a persistence or
-authority boundary.
+input, and change event. The adapter accepts only version 1 commands from its
+allowlist and rejects unknown types, unserializable payloads, and payloads
+larger than 64 KiB before retaining or logging them. It retains only the last
+128 accepted commands for development inspection through `snapshot()`; it is
+not a persistence or authority boundary.
 
 The local component state continues to provide the prototype behavior. A
 Rust-owned host must replace the adapter and validate identity, origin,

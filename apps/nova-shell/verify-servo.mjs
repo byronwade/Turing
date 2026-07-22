@@ -190,6 +190,25 @@ try {
   await clickSelector(".vtab.on button.xc", "active-tab close control");
   await sleep(450);
 
+  const rejected = await execute(`const before = window.__TURING_ENGINE__.snapshot();
+    const unknown = window.__TURING_ENGINE__.dispatch({
+      version: 1, type: 'unknown.command', payload: {},
+    });
+    const oversized = window.__TURING_ENGINE__.dispatch({
+      version: 1, type: 'tabs.create', payload: { value: 'x'.repeat(65537) },
+    });
+    const after = window.__TURING_ENGINE__.snapshot();
+    return {
+      unknown,
+      oversized,
+      commandDelta: after.commands.length - before.commands.length,
+      rejectedDelta: after.rejectedCommands - before.rejectedCommands,
+    };`);
+  if (rejected.unknown !== false || rejected.oversized !== false
+    || rejected.commandDelta !== 0 || rejected.rejectedDelta !== 2) {
+    throw new Error(`Adapter rejection assertion failed: ${JSON.stringify(rejected)}`);
+  }
+
   const snapshot = await execute("return window.__TURING_ENGINE__.snapshot();");
   const types = snapshot.commands.map((command) => command.type);
   for (const required of [

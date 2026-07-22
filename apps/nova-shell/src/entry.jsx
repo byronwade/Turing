@@ -3,9 +3,28 @@ import Nova from "../../../docs/ui-runtime/design-lab/turing-nova-design-source.
 
 const commandHistory = [];
 const ENGINE_CONSOLE_PREFIX = "TURING_ENGINE_COMMAND";
+const MAX_ENGINE_PAYLOAD_BYTES = 64 * 1024;
+const SUPPORTED_ENGINE_COMMANDS = new Set([
+  "navigation.history",
+  "navigation.navigate",
+  "navigation.copy-url",
+  "shell.view.open",
+  "shell.sidebar.toggle",
+  "tabs.close.request",
+  "tabs.create",
+  "tabs.activate",
+  "view.reader.toggle",
+  "view.split.toggle",
+  "ui.control.click",
+  "ui.control.pointerdown",
+  "ui.control.input",
+  "ui.control.change",
+  "ui.keyboard",
+]);
 const engineState = {
   version: 1,
   lastCommand: null,
+  rejectedCommands: 0,
 };
 const bridgeEnabled = (() => {
   try {
@@ -21,6 +40,23 @@ const bridgeEnabled = (() => {
 window.__TURING_ENGINE__ = {
   version: 1,
   dispatch(command) {
+    if (!command || command.version !== 1 || typeof command.type !== "string"
+      || !SUPPORTED_ENGINE_COMMANDS.has(command.type)) {
+      engineState.rejectedCommands += 1;
+      return false;
+    }
+    let serializedPayload;
+    try {
+      serializedPayload = JSON.stringify(command.payload ?? {});
+    } catch {
+      engineState.rejectedCommands += 1;
+      return false;
+    }
+    if (serializedPayload === undefined
+      || new TextEncoder().encode(serializedPayload).byteLength > MAX_ENGINE_PAYLOAD_BYTES) {
+      engineState.rejectedCommands += 1;
+      return false;
+    }
     engineState.lastCommand = command;
     commandHistory.push(command);
     if (commandHistory.length > 128) commandHistory.shift();
@@ -28,12 +64,14 @@ window.__TURING_ENGINE__ = {
     if (bridgeEnabled && typeof console !== "undefined" && typeof console.log === "function") {
       // The native host observes the type and payload size only. Raw payloads
       // stay inside the page adapter so typed input is not written to stdout.
-      console.log([ENGINE_CONSOLE_PREFIX, command.version, command.type, JSON.stringify(command.payload)].join("\t"));
+      console.log([ENGINE_CONSOLE_PREFIX, command.version, command.type, serializedPayload].join("\t"));
     }
+    return true;
   },
   snapshot() {
     return {
       ...engineState,
+      supportedTypes: [...SUPPORTED_ENGINE_COMMANDS],
       commands: commandHistory.slice(),
     };
   },
