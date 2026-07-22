@@ -68,6 +68,18 @@ canonical source is bundled, and writes `dist/build-metadata.json`. The
 metadata includes the source SHA-256, byte and line counts, compiler/runtime
 versions, output size, and bundle inputs.
 
+Run the reproducible headless interaction proof with:
+
+```powershell
+npm run verify:servo
+```
+
+It starts Servo WebDriver, asserts that Nova owns the full viewport, dispatches
+the equivalent DOM click/input/keyboard events for the address surface, enters
+`example.com`, submits the command field, and checks that click, input, and
+navigation records reached the adapter. It uses only Node's built-in
+HTTP/process APIs and the local Servo executable.
+
 To use another Servo checkout:
 
 ```powershell

@@ -6,7 +6,8 @@
     "build": "node build.mjs",
     "check": "node build.mjs --check",
     "clean": "node build.mjs --clean",
-    "launch:servo": "node build.mjs && node launch-servo.mjs"
+    "launch:servo": "node build.mjs && node launch-servo.mjs",
+    "verify:servo": "node build.mjs --check && node verify-servo.mjs"
   },
   "dependencies": {
     "lucide-preact": "1.25.0",
