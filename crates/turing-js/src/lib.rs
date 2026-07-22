@@ -50,13 +50,16 @@
 //! boundary.
 //!
 //! Everything else returns a typed error rather than a partial evaluation:
-//! by-reference capture of mutable bindings, multi-level capture, named
-//! function expressions, `class`, `try`/`catch`, `async`/`await`, generators,
-//! `eval`, array-literal and call-argument spread (object-literal spread,
-//! `{...x}`, is implemented), and prototype semantics. Modules are not a
-//! general feature either — `import`/`export` parse only the two narrow
-//! forms real usage needs (see `parse_import_statement`), everything else
-//! about them still refuses.
+//! by-reference capture of mutable bindings, multi-level capture, `class`,
+//! `try`/`catch`, `async`/`await`, generators, `eval`, and prototype
+//! semantics. Spread is implemented in every position real usage needs it —
+//! object-literal (`{...x}`), array-literal (`[...x]`), and call-argument,
+//! the last scoped to method calls (`arr.push(...run)`) specifically, since
+//! that is the only call form real usage ever spreads into (see
+//! `CallArgument`'s own doc comment). Modules are not a general feature
+//! either — `import`/`export` parse only the two narrow forms real usage
+//! needs (see `parse_import_statement`), everything else about them still
+//! refuses.
 //!
 //! Regular expressions are implemented, scoped to what real usage needs
 //! rather than full ECMAScript regex syntax — see the [`regex`] module doc
@@ -681,6 +684,7 @@ fn lex(source: &str, tolerate_unknown: bool) -> Result<(Vec<Token>, Vec<usize>),
                 | ">="
                 | "&&"
                 | "||"
+                | "??"
                 | "=>"
                 | "++"
                 | "--"
@@ -1093,10 +1097,15 @@ enum Expr {
     /// trailing call carried a `?.` — real Nova usage never needs to tell
     /// those two apart on the same fused node (see
     /// [`Expr::OptionalChain`]'s doc comment).
+    ///
+    /// `arguments` may include `CallArgument::Spread` (`arr.push(...run)`,
+    /// `arr.splice(at, 0, ...block)`) — the only call form real Nova usage
+    /// spreads an argument into (see `CallArgument`'s own doc comment for
+    /// why every other call form's arguments stay a plain `Vec<Expr>`).
     MethodCall {
         object: Box<Expr>,
         name: String,
-        arguments: Vec<Expr>,
+        arguments: Vec<CallArgument>,
         optional: bool,
     },
     /// Wraps a member/call chain that contains at least one `?.` link.
@@ -1153,6 +1162,28 @@ enum ArrayElement {
     /// spreading nothing: real JS array/iterable spread has no such
     /// tolerance — `[...null]` throws in real JS too, unlike `{...null}`,
     /// which is a real, specified no-op.
+    Spread(Expr),
+}
+
+/// One argument in a call's argument list.
+///
+/// Only `Expr::MethodCall` accepts `Spread` — real Nova usage never
+/// spreads into a plain function call, an indirect call, or a
+/// constructor (confirmed absent by an AST scan; the two real call-
+/// argument spreads are `arr.push(...run)` and `arr.splice(at, 0,
+/// ...block)`, both method calls). `Parser::plain_arguments` converts
+/// this back to a bare `Vec<Expr>` for every other call form, refusing a
+/// `Spread` there with its own explicit message rather than a confusing
+/// generic parse error.
+#[derive(Clone, Debug, PartialEq)]
+enum CallArgument {
+    /// A plain value.
+    Item(Expr),
+    /// `...expr` — appends every element of an array or `Set`, in order,
+    /// to the arguments being gathered. Same non-tolerance of a non-
+    /// array/`Set` source as `ArrayElement::Spread` — real JS throws for
+    /// spreading a non-iterable into a call the same way it does into an
+    /// array literal.
     Spread(Expr),
 }
 
@@ -1774,7 +1805,7 @@ impl<'a> Parser<'a> {
         if self.arrow_ahead() {
             return self.parse_arrow();
         }
-        let target = self.parse_logical_or()?;
+        let target = self.parse_nullish()?;
         if self.eat_punct("?") {
             // Right-associative: the branches recurse into `parse_assignment`
             // (not back into the ternary's own precedence level), so a chain
@@ -1935,6 +1966,28 @@ impl<'a> Parser<'a> {
             body,
             min_arity,
         })
+    }
+
+    /// `a ?? b` — nullish coalescing, real usage: `s.split ?? null`,
+    /// `s.ratio ?? 0.5`. A separate precedence level above `||`/`&&`
+    /// rather than folded into `parse_logical_or`, matching real JS
+    /// grammar, where `??` cannot be mixed with `&&`/`||` in the same
+    /// expression without parentheses — not enforced here (0 real cases
+    /// need the enforcement, only the correct short-circuit), but kept as
+    /// its own level regardless since that is what real JS's own grammar
+    /// specifies and costs nothing extra to get right.
+    fn parse_nullish(&mut self) -> Result<Expr, JsError> {
+        let mut left = self.parse_logical_or()?;
+        while self.check_punct("??") {
+            self.position += 1;
+            let right = Box::new(self.parse_logical_or()?);
+            left = Expr::Logical {
+                operator: "??".to_string(),
+                left: Box::new(left),
+                right,
+            };
+        }
+        Ok(left)
     }
 
     fn parse_logical_or(&mut self) -> Result<Expr, JsError> {
@@ -2400,10 +2453,13 @@ impl<'a> Parser<'a> {
                         }
                     }
                     // A call applied to any other expression: an indirect
-                    // call through whatever function value it produced.
+                    // call through whatever function value it produced. 0
+                    // real Nova uses spread an argument into this call
+                    // shape, so it stays a plain `Vec<Expr>` — see
+                    // `CallArgument`'s own doc comment.
                     other => Expr::CallValue {
                         callee: Box::new(other),
-                        arguments,
+                        arguments: Self::plain_arguments(arguments)?,
                     },
                 };
             } else {
@@ -2460,7 +2516,9 @@ impl<'a> Parser<'a> {
             },
             Token::Ident(name) => {
                 if self.check_punct("(") {
-                    let arguments = self.parse_argument_list()?;
+                    // 0 real Nova uses spread an argument into a plain
+                    // named call — see `CallArgument`'s own doc comment.
+                    let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                     return Ok(Expr::Call {
                         callee: name,
                         arguments,
@@ -2495,7 +2553,7 @@ impl<'a> Parser<'a> {
         match name.as_str() {
             "RegExp" => {
                 self.position += 1;
-                let arguments = self.parse_argument_list()?;
+                let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                 if arguments.is_empty() || arguments.len() > 2 {
                     return Err(JsError::Unsupported {
                         feature:
@@ -2512,7 +2570,7 @@ impl<'a> Parser<'a> {
             // takes at most one, an iterable.
             "Set" => {
                 self.position += 1;
-                let arguments = self.parse_argument_list()?;
+                let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                 if arguments.len() > 1 {
                     return Err(JsError::Unsupported {
                         feature: "`new Set` with more than one argument".to_string(),
@@ -2525,7 +2583,7 @@ impl<'a> Parser<'a> {
             // real `new Map(entries)` is a real (if unused-here) shape.
             "Map" => {
                 self.position += 1;
-                let arguments = self.parse_argument_list()?;
+                let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                 if !arguments.is_empty() {
                     return Err(JsError::Unsupported {
                         feature: "`new Map` with a seed argument".to_string(),
@@ -2537,7 +2595,7 @@ impl<'a> Parser<'a> {
             // date-string argument.
             "Date" => {
                 self.position += 1;
-                let arguments = self.parse_argument_list()?;
+                let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                 if !arguments.is_empty() {
                     return Err(JsError::Unsupported {
                         feature: "`new Date` with an argument".to_string(),
@@ -2551,7 +2609,7 @@ impl<'a> Parser<'a> {
             // comment for why this is an inert stub).
             "ResizeObserver" => {
                 self.position += 1;
-                let arguments = self.parse_argument_list()?;
+                let arguments = Self::plain_arguments(self.parse_argument_list()?)?;
                 if arguments.len() != 1 {
                     return Err(JsError::Unsupported {
                         feature: "`new ResizeObserver` without exactly one callback argument"
@@ -2764,17 +2822,40 @@ impl<'a> Parser<'a> {
     }
 
     /// Parses `(a, b, c)` call arguments, the `(` still ahead.
-    fn parse_argument_list(&mut self) -> Result<Vec<Expr>, JsError> {
+    fn parse_argument_list(&mut self) -> Result<Vec<CallArgument>, JsError> {
         self.expect_punct("(")?;
         let mut arguments = Vec::new();
         while !self.check_punct(")") {
-            arguments.push(self.parse_expression()?);
+            if self.eat_punct("...") {
+                arguments.push(CallArgument::Spread(self.parse_expression()?));
+            } else {
+                arguments.push(CallArgument::Item(self.parse_expression()?));
+            }
             if !self.eat_punct(",") {
                 break;
             }
         }
         self.expect_punct(")")?;
         Ok(arguments)
+    }
+
+    /// Converts a parsed argument list back to a plain `Vec<Expr>`,
+    /// refusing any `CallArgument::Spread` with an explicit message —
+    /// used by every call form except `Expr::MethodCall`, the only one
+    /// real Nova usage ever spreads an argument into (see
+    /// `CallArgument`'s own doc comment).
+    fn plain_arguments(arguments: Vec<CallArgument>) -> Result<Vec<Expr>, JsError> {
+        arguments
+            .into_iter()
+            .map(|argument| match argument {
+                CallArgument::Item(value) => Ok(value),
+                CallArgument::Spread(_) => Err(JsError::Unsupported {
+                    feature: "call-argument spread except directly inside a method call \
+                              (`object.method(...args)`)"
+                        .to_string(),
+                }),
+            })
+            .collect()
     }
 
     /// Parses `(a, b, c)` parameter names, the `(` still ahead, and returns
@@ -3707,6 +3788,17 @@ pub enum Op {
         name: String,
         argc: usize,
     },
+    /// Pop an array of already-gathered arguments (built by `Op::NewArray(0)`
+    /// and `Op::ArrayPush`/`Op::ArraySpreadPush`, see `Expr::MethodCall`'s
+    /// handling), then the receiver; call `name` as a method on it with
+    /// those elements as its arguments, unpacked in order. Otherwise
+    /// identical to `Op::CallMethod` — the two share `Vm::dispatch_method_call`'s
+    /// own dispatch logic — this only exists because a call with a spread
+    /// argument (`arr.push(...run)`) does not know its final argument
+    /// count until run time, unlike `CallMethod`'s fixed `argc`.
+    CallMethodSpread {
+        name: String,
+    },
     /// Pop `upvalues` captured values and push a closure over function
     /// `index`. The values were pushed in upvalue order, index 0 deepest.
     MakeClosure {
@@ -3799,6 +3891,13 @@ pub enum Op {
     /// one that emitted this check, since they all share one jump target.
     /// Otherwise leave the value and fall through to read it normally.
     JumpIfNullishPeek(usize),
+    /// `??`'s short-circuit: if the top of stack is *not* `null`/
+    /// `undefined`, leave it and jump — the left operand decided the
+    /// result, so `??`'s right operand never evaluates, the same
+    /// short-circuit contract `JumpIfFalsePeek`/`JumpIfTruePeek` already
+    /// keep for `&&`/`||`. Otherwise leave the (nullish) value for the
+    /// caller to `Op::Pop` before evaluating the right operand.
+    JumpIfNotNullishPeek(usize),
     /// Call function `index` with `argc` arguments from the stack.
     Call {
         index: usize,
@@ -4531,12 +4630,17 @@ impl Compiler {
                 right,
             } => {
                 // Short-circuit: the left value stays on the stack when it
-                // decides the result, which is what `a || b` evaluates to.
+                // decides the result, which is what `a || b`/`a ?? b`
+                // evaluate to. Same tail for all three operators — only
+                // which condition keeps the left value differs.
                 self.expression(left)?;
-                let jump = if operator == "&&" {
-                    self.emit_jump_if_false_peek()
-                } else {
-                    self.emit_jump_if_true_peek()
+                let jump = match operator.as_str() {
+                    "&&" => self.emit_jump_if_false_peek(),
+                    "||" => self.emit_jump_if_true_peek(),
+                    // "??" — real JS's nullish coalescing, distinct from
+                    // `||`: `0 ?? 5` is `0` (present, not nullish), while
+                    // `0 || 5` is `5` (falsy).
+                    _ => self.emit_jump_if_not_nullish_peek(),
                 };
                 self.code.push(Op::Pop);
                 self.expression(right)?;
@@ -4576,13 +4680,44 @@ impl Compiler {
                     let jump = self.emit_jump_if_nullish_peek();
                     self.optional_chain_jumps.push(jump);
                 }
-                for argument in arguments {
-                    self.expression(argument)?;
+                if arguments
+                    .iter()
+                    .any(|argument| matches!(argument, CallArgument::Spread(_)))
+                {
+                    // Real shapes: `arr.push(...run)`, `arr.splice(at, 0,
+                    // ...block)`. The final argument count is not known
+                    // until run time, so the arguments are gathered into a
+                    // real array first — the same `Op::NewArray(0)` +
+                    // `Op::ArrayPush`/`Op::ArraySpreadPush` sequence an
+                    // array literal containing a spread already uses — and
+                    // `Op::CallMethodSpread` unpacks that array as the
+                    // call's arguments at run time.
+                    self.code.push(Op::NewArray(0));
+                    for argument in arguments {
+                        match argument {
+                            CallArgument::Item(value) => {
+                                self.expression(value)?;
+                                self.code.push(Op::ArrayPush);
+                            }
+                            CallArgument::Spread(source) => {
+                                self.expression(source)?;
+                                self.code.push(Op::ArraySpreadPush);
+                            }
+                        }
+                    }
+                    self.code.push(Op::CallMethodSpread { name: name.clone() });
+                } else {
+                    for argument in arguments {
+                        let CallArgument::Item(value) = argument else {
+                            unreachable!("no Spread in this branch")
+                        };
+                        self.expression(value)?;
+                    }
+                    self.code.push(Op::CallMethod {
+                        name: name.clone(),
+                        argc: arguments.len(),
+                    });
                 }
-                self.code.push(Op::CallMethod {
-                    name: name.clone(),
-                    argc: arguments.len(),
-                });
             }
             Expr::ObjectLiteral { entries } => {
                 self.code.push(Op::NewObject);
@@ -4901,6 +5036,11 @@ impl Compiler {
         self.code.len() - 1
     }
 
+    fn emit_jump_if_not_nullish_peek(&mut self) -> usize {
+        self.code.push(Op::JumpIfNotNullishPeek(usize::MAX));
+        self.code.len() - 1
+    }
+
     fn patch(&mut self, index: usize) {
         let target = self.code.len();
         match &mut self.code[index] {
@@ -4908,7 +5048,8 @@ impl Compiler {
             | Op::JumpIfFalse(slot)
             | Op::JumpIfFalsePeek(slot)
             | Op::JumpIfTruePeek(slot)
-            | Op::JumpIfNullishPeek(slot) => *slot = target,
+            | Op::JumpIfNullishPeek(slot)
+            | Op::JumpIfNotNullishPeek(slot) => *slot = target,
             _ => {}
         }
     }
@@ -5783,6 +5924,19 @@ impl Vm {
                         continue;
                     }
                 }
+                Op::JumpIfNotNullishPeek(target) => {
+                    if !stack
+                        .last()
+                        .is_some_and(|value| matches!(value, Value::Null | Value::Undefined))
+                    {
+                        // Present (not nullish): `??`'s left operand
+                        // decided the result, so leave it — unlike
+                        // `JumpIfNullishPeek`, no replacement, since `5 ??
+                        // x` must read `5`, not `undefined`.
+                        pointer = *target;
+                        continue;
+                    }
+                }
                 Op::Call { index, argc } => {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
@@ -5850,33 +6004,30 @@ impl Vm {
                     let split = stack.len().saturating_sub(*argc);
                     let arguments = stack.split_off(split);
                     let receiver = pop(&mut stack);
-                    // An own property holding a function/closure wins over
-                    // any built-in — the same own-property-shadows-prototype
-                    // rule real JS follows, and how a stored callback prop
-                    // that happens to share a name with a built-in method
-                    // (rare, but not impossible) still calls correctly.
-                    let own =
-                        match &receiver {
-                            Value::Object(handle) | Value::Array(handle) => {
-                                let object = runtime.heap.get(*handle).map_err(|error| {
-                                    JsError::TypeError {
-                                        message: error.to_string(),
-                                    }
-                                })?;
-                                object.get(name).cloned()
-                            }
-                            _ => None,
-                        };
-                    let result =
-                        if let Some(callee @ (Value::Function(_) | Value::Closure(_))) = own {
-                            self.call_function_value(
-                                program, callee, arguments, &stack, &locals, runtime, host,
-                            )?
-                        } else {
-                            self.call_builtin_method(
-                                program, receiver, name, arguments, &stack, &locals, runtime, host,
-                            )?
-                        };
+                    let result = self.dispatch_method_call(
+                        program, receiver, name, arguments, &stack, &locals, runtime, host,
+                    )?;
+                    stack.push(result);
+                }
+                Op::CallMethodSpread { name } => {
+                    let args_array = pop(&mut stack);
+                    let receiver = pop(&mut stack);
+                    // Always a `Value::Array`: the compiler only ever emits
+                    // this op right after the `Op::NewArray(0)` +
+                    // `Op::ArrayPush`/`Op::ArraySpreadPush` sequence that
+                    // builds one — see `Expr::MethodCall`'s handling.
+                    let Value::Array(handle) = args_array else {
+                        return Err(JsError::TypeError {
+                            message: format!(
+                                "malformed spread call: expected an array of gathered \
+                                 arguments, got {args_array}"
+                            ),
+                        });
+                    };
+                    let arguments = array_elements(runtime, handle)?;
+                    let result = self.dispatch_method_call(
+                        program, receiver, name, arguments, &stack, &locals, runtime, host,
+                    )?;
                     stack.push(result);
                 }
                 Op::Return => return Ok(pop(&mut stack)),
@@ -5884,6 +6035,49 @@ impl Vm {
             pointer += 1;
         }
         Ok(Value::Undefined)
+    }
+
+    /// Resolves and calls `name` as a method on `receiver` with
+    /// `arguments`, however the caller happened to gather them (a fixed
+    /// `argc` off the stack for `Op::CallMethod`, or unpacked from a
+    /// spread-built array for `Op::CallMethodSpread`) — both share this,
+    /// so the own-property-vs-built-in dispatch decision lives in exactly
+    /// one place. An own property of `receiver` holding a function or
+    /// closure wins over any built-in — the same own-property-shadows-
+    /// prototype rule real JS follows, and how a stored callback prop that
+    /// happens to share a name with a built-in method (rare, but not
+    /// impossible) still calls correctly.
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_method_call(
+        &self,
+        program: &Program,
+        receiver: Value,
+        name: &str,
+        arguments: Vec<Value>,
+        stack: &[Value],
+        locals: &[Value],
+        runtime: &mut Runtime,
+        host: &mut dyn Host,
+    ) -> Result<Value, JsError> {
+        let own = match &receiver {
+            Value::Object(handle) | Value::Array(handle) => {
+                let object = runtime
+                    .heap
+                    .get(*handle)
+                    .map_err(|error| JsError::TypeError {
+                        message: error.to_string(),
+                    })?;
+                object.get(name).cloned()
+            }
+            _ => None,
+        };
+        if let Some(callee @ (Value::Function(_) | Value::Closure(_))) = own {
+            self.call_function_value(program, callee, arguments, stack, locals, runtime, host)
+        } else {
+            self.call_builtin_method(
+                program, receiver, name, arguments, stack, locals, runtime, host,
+            )
+        }
     }
 
     /// Calls `callee` (must be a `Value::Function`/`Value::Closure`) with
@@ -7913,6 +8107,100 @@ mod tests {
                 "expected a refusal for spreading {source}"
             );
         }
+    }
+
+    #[test]
+    fn call_argument_spread_matches_the_real_array_push_shape() {
+        // Real shape: `vis.push(...run);` — a method call whose single
+        // argument is entirely a spread.
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1]; let run = [2, 3]; \
+                 a.push(...run); \
+                 return a.length;"
+            ),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1]; let run = [2, 3]; \
+                 a.push(...run); \
+                 return a[0] + a[1] + a[2];"
+            ),
+            Value::Number(6.0)
+        );
+    }
+
+    #[test]
+    fn call_argument_spread_mixes_with_plain_arguments() {
+        // Real shape: `arr.splice(at, 0, ...block)` — plain arguments
+        // before a trailing spread. `.splice` itself is not implemented
+        // yet (a separate task), so this exercises the same mixed-argument
+        // gathering machinery through `.push`, which is.
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1]; let extra = [2, 3]; \
+                 a.push(0, ...extra, 4); \
+                 return a.length;"
+            ),
+            Value::Number(5.0)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1]; let extra = [2, 3]; \
+                 a.push(0, ...extra, 4); \
+                 return a[1] + a[2] + a[3] + a[4];"
+            ),
+            // 0 + 2 + 3 + 4
+            Value::Number(9.0)
+        );
+    }
+
+    #[test]
+    fn call_argument_spread_except_in_a_method_call_is_refused() {
+        // 0 real Nova uses spread into a plain function call, an indirect
+        // call, or a constructor.
+        assert!(matches!(
+            compile(
+                "function f(a) { return a; } function main() { let xs = [1]; return f(...xs); } main();"
+            ),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("function main() { let xs = [1]; return new Set(...xs); } main();"),
+            Err(JsError::Unsupported { .. })
+        ));
+    }
+
+    #[test]
+    fn nullish_coalescing_falls_back_only_on_null_or_undefined() {
+        // Real shapes: `s.split ?? null`, `s.ratio ?? 0.5`.
+        assert_eq!(eval_in_fn("return null ?? 5;"), Value::Number(5.0));
+        assert_eq!(eval_in_fn("let u; return u ?? 5;"), Value::Number(5.0));
+        // The defining difference from `||`: a present-but-falsy left
+        // operand is kept, not replaced.
+        assert_eq!(eval_in_fn("return 0 ?? 5;"), Value::Number(0.0));
+        assert_eq!(
+            eval_in_fn("return \"\" ?? \"fallback\";"),
+            Value::String(String::new())
+        );
+        assert_eq!(eval_in_fn("return false ?? true;"), Value::Boolean(false));
+    }
+
+    #[test]
+    fn nullish_coalescing_does_not_evaluate_the_right_operand_when_left_is_present() {
+        // A captured `const` array, mutated through `.push` — not a
+        // reassigned `let` counter, which this engine's closures cannot
+        // capture (mutable capture is a separate, unrelated limitation;
+        // see `Value::Closure`'s own doc comment).
+        assert_eq!(
+            eval_in_fn(
+                "const seen = []; let bump = () => { seen.push(1); return 1; }; \
+                 let x = 5 ?? bump(); \
+                 return seen.length;"
+            ),
+            Value::Number(0.0)
+        );
     }
 
     #[test]
