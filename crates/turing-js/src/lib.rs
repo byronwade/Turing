@@ -625,6 +625,21 @@ fn lex(source: &str, tolerate_unknown: bool) -> Result<(Vec<Token>, Vec<usize>),
             index += 3;
             continue;
         }
+        // `?.` (optional chaining) before the single-character `?` and `.`
+        // punctuators, but only when not followed by a digit — `cond ? .5 :
+        // x` is a ternary whose then-branch is the decimal literal `.5`, not
+        // `cond` followed by an optional-chain operator on `.5`.
+        if two == "?."
+            && !source
+                .as_bytes()
+                .get(index + 2)
+                .is_some_and(u8::is_ascii_digit)
+        {
+            starts.push(index);
+            tokens.push(Token::Punct(two.to_string()));
+            index += 2;
+            continue;
+        }
         if matches!(
             two,
             "==" | "!="
@@ -980,10 +995,14 @@ enum Expr {
     ArrayLiteral {
         elements: Vec<Expr>,
     },
-    /// `object.name` or `object[key]`.
+    /// `object.name` or `object[key]`. `optional` is true only when *this*
+    /// link had its own `?.`/`?.[` token — see [`Expr::OptionalChain`] for
+    /// how a check here affects later links in the same chain that have no
+    /// `?.` of their own.
     Member {
         object: Box<Expr>,
         key: Box<Expr>,
+        optional: bool,
     },
     /// `object.name = value` or `object[key] = value`.
     SetMember {
@@ -1008,10 +1027,33 @@ enum Expr {
     /// does a String or Array receiver fall back to one of a fixed set of
     /// built-in methods, refusing with a typed error for anything neither
     /// path recognises.
+    ///
+    /// `optional` is true when this link's own member access or its own
+    /// trailing call carried a `?.` — real Nova usage never needs to tell
+    /// those two apart on the same fused node (see
+    /// [`Expr::OptionalChain`]'s doc comment).
     MethodCall {
         object: Box<Expr>,
         name: String,
         arguments: Vec<Expr>,
+        optional: bool,
+    },
+    /// Wraps a member/call chain that contains at least one `?.` link.
+    ///
+    /// Real optional chaining needs more than "each `?.` checks its own
+    /// immediate access": `stripRef.current?.querySelector(".x")` must skip
+    /// `.querySelector(".x")` entirely — not just fail to read a property —
+    /// when `stripRef.current` is nullish, even though `.querySelector`'s
+    /// own call has no `?.` token of its own. A per-node independent check
+    /// cannot express that; the fix is a single jump target shared by every
+    /// optional link in the chain, placed once at the end of `inner`. When
+    /// any link's nullish check fires, it jumps straight past every
+    /// remaining link — however many, optional or not — landing here with
+    /// `Value::Undefined` already on the stack. See `Compiler`'s handling of
+    /// this variant and of `Expr::Member`/`Expr::MethodCall`'s `optional`
+    /// field for how the shared target is collected and patched.
+    OptionalChain {
+        inner: Box<Expr>,
     },
 }
 
@@ -1124,6 +1166,7 @@ fn desugar_array_pattern(
         let read = Expr::Member {
             object: Box::new(Expr::Variable(temp.clone())),
             key: Box::new(Expr::Number(index as f64)),
+            optional: false,
         };
         statements.push(Stmt::Declare {
             name,
@@ -1152,6 +1195,7 @@ fn desugar_object_pattern(
         let read = Expr::Member {
             object: Box::new(Expr::Variable(temp.clone())),
             key: Box::new(Expr::Str(key)),
+            optional: false,
         };
         statements.push(Stmt::Declare {
             name,
@@ -1630,7 +1674,16 @@ impl<'a> Parser<'a> {
             let value = Box::new(self.parse_assignment()?);
             return match target {
                 Expr::Variable(name) => Ok(Expr::Assign { name, value }),
-                Expr::Member { object, key } => Ok(Expr::SetMember { object, key, value }),
+                // `optional: false` only — an optional-chain target
+                // (`a?.b = 1`) is a real syntax error in JS, and `target`
+                // would have come back wrapped in `Expr::OptionalChain`
+                // rather than a bare `Member` if it contained any `?.`, so
+                // it falls to the refusal below instead of matching here.
+                Expr::Member {
+                    object,
+                    key,
+                    optional: false,
+                } => Ok(Expr::SetMember { object, key, value }),
                 _ => Err(JsError::UnexpectedToken {
                     found: "expression".to_string(),
                     expected: "a variable or property on the left of `=`".to_string(),
@@ -1662,7 +1715,15 @@ impl<'a> Parser<'a> {
                 // computed key (`arr[next()] += 1`) — so this compiles each
                 // exactly once rather than desugaring to two references of
                 // them. See `Expr::CompoundMember`.
-                Expr::Member { object, key } => Ok(Expr::CompoundMember {
+                // Same `optional: false`-only reasoning as the `=` case just
+                // above: `a?.b += 1` is a syntax error in real JS, and an
+                // optional target would already have come back wrapped in
+                // `Expr::OptionalChain`.
+                Expr::Member {
+                    object,
+                    key,
+                    optional: false,
+                } => Ok(Expr::CompoundMember {
                     object,
                     key,
                     operator,
@@ -1964,7 +2025,18 @@ impl<'a> Parser<'a> {
         if self.check_keyword("delete") {
             self.position += 1;
             let operand = self.parse_unary()?;
-            let Expr::Member { object, key } = operand else {
+            // `optional: false` only: real Nova usage never writes `delete
+            // a?.b` (and per spec `delete` on an optional chain still just
+            // evaluates the chain and deletes at the end, a shape 0 real
+            // call sites need) — an optional operand comes back wrapped in
+            // `Expr::OptionalChain`, so it already falls through to the
+            // refusal below rather than matching here.
+            let Expr::Member {
+                object,
+                key,
+                optional: false,
+            } = operand
+            else {
                 return Err(JsError::Unsupported {
                     feature: "delete of anything but a member expression".to_string(),
                 });
@@ -1994,13 +2066,78 @@ impl<'a> Parser<'a> {
         Ok(expression)
     }
 
-    /// Consumes any run of `.name` and `[key]` suffixes.
+    /// Consumes any run of `.name`, `[key]`, `(args)` suffixes and their
+    /// optional-chaining forms `?.name`, `?.[key]`, `?.(args)`.
     ///
     /// A loop rather than recursion into `parse_primary`, so `a.b.c` costs one
     /// level of grammatical nesting rather than three.
+    ///
+    /// If any link used `?.`, the whole chain is wrapped in a single
+    /// `Expr::OptionalChain` on the way out — see that variant's doc comment
+    /// for why one shared wrapper (rather than marking each link) is what
+    /// makes a nullish check skip every later link, not just the one that
+    /// carried the `?.` token.
     fn parse_member_suffix(&mut self, mut object: Expr) -> Result<Expr, JsError> {
+        let mut saw_optional = false;
         loop {
-            if self.eat_punct(".") {
+            if self.eat_punct("?.") {
+                saw_optional = true;
+                if self.check_punct("(") {
+                    // `?.(args)` — real Nova usage (`el?.closest?.(".dropsp")`)
+                    // only ever writes this immediately after a member access
+                    // that is *itself* already optional; the `?.` on the call
+                    // confirms the same short-circuit rather than introducing
+                    // an independent check on the looked-up function value
+                    // (which the fused `CallMethod` opcode below has no way
+                    // to check separately from its receiver). Anything else
+                    // — a plain member, or no member at all — is refused
+                    // rather than silently checking the wrong value.
+                    let arguments = self.parse_argument_list()?;
+                    object = match object {
+                        Expr::Member {
+                            object: receiver,
+                            key,
+                            optional: true,
+                        } if matches!(*key, Expr::Str(_)) => {
+                            let Expr::Str(name) = *key else {
+                                unreachable!("checked above")
+                            };
+                            Expr::MethodCall {
+                                object: receiver,
+                                name,
+                                arguments,
+                                optional: true,
+                            }
+                        }
+                        _ => {
+                            return Err(JsError::Unsupported {
+                                feature: "`?.(` except directly after an optional member access"
+                                    .to_string(),
+                            });
+                        }
+                    };
+                } else if self.eat_punct("[") {
+                    let key = self.parse_expression()?;
+                    self.expect_punct("]")?;
+                    object = Expr::Member {
+                        object: Box::new(object),
+                        key: Box::new(key),
+                        optional: true,
+                    };
+                } else {
+                    let Token::Ident(name) = self.advance() else {
+                        return Err(JsError::UnexpectedToken {
+                            found: "token".to_string(),
+                            expected: "a property name after `?.`".to_string(),
+                        });
+                    };
+                    object = Expr::Member {
+                        object: Box::new(object),
+                        key: Box::new(Expr::Str(name)),
+                        optional: true,
+                    };
+                }
+            } else if self.eat_punct(".") {
                 let Token::Ident(name) = self.advance() else {
                     return Err(JsError::UnexpectedToken {
                         found: "token".to_string(),
@@ -2010,6 +2147,7 @@ impl<'a> Parser<'a> {
                 object = Expr::Member {
                     object: Box::new(object),
                     key: Box::new(Expr::Str(name)),
+                    optional: false,
                 };
             } else if self.eat_punct("[") {
                 let key = self.parse_expression()?;
@@ -2017,6 +2155,7 @@ impl<'a> Parser<'a> {
                 object = Expr::Member {
                     object: Box::new(object),
                     key: Box::new(key),
+                    optional: false,
                 };
             } else if self.check_punct("(") {
                 let arguments = self.parse_argument_list()?;
@@ -2024,10 +2163,15 @@ impl<'a> Parser<'a> {
                     // `receiver.name(args)`: a dedicated node so the
                     // receiver compiles exactly once — see
                     // `Expr::MethodCall`'s own doc comment for why this is
-                    // not just `CallValue` over a `Member`.
+                    // not just `CallValue` over a `Member`. `optional` comes
+                    // straight from the member access just fused in — an
+                    // earlier `?.` further back in the chain, if any, is
+                    // handled by the shared `Expr::OptionalChain` jump
+                    // target, not by this node's own flag.
                     Expr::Member {
                         object: receiver,
                         key,
+                        optional,
                     } if matches!(*key, Expr::Str(_)) => {
                         let Expr::Str(name) = *key else {
                             unreachable!("checked above")
@@ -2036,6 +2180,7 @@ impl<'a> Parser<'a> {
                             object: receiver,
                             name,
                             arguments,
+                            optional,
                         }
                     }
                     // A call applied to any other expression: an indirect
@@ -2046,8 +2191,15 @@ impl<'a> Parser<'a> {
                     },
                 };
             } else {
-                return Ok(object);
+                break;
             }
+        }
+        if saw_optional {
+            Ok(Expr::OptionalChain {
+                inner: Box::new(object),
+            })
+        } else {
+            Ok(object)
         }
     }
 
@@ -3298,6 +3450,13 @@ pub enum Op {
     JumpIfFalsePeek(usize),
     /// Jump if truthy, leaving the value.
     JumpIfTruePeek(usize),
+    /// Optional-chaining short-circuit: if the top of stack is `null` or
+    /// `undefined`, pop it, push `Value::Undefined` in its place (`null?.x`
+    /// evaluates to `undefined`, never `null`), and jump — past every
+    /// remaining link of the enclosing `Expr::OptionalChain`, not just the
+    /// one that emitted this check, since they all share one jump target.
+    /// Otherwise leave the value and fall through to read it normally.
+    JumpIfNullishPeek(usize),
     /// Call function `index` with `argc` arguments from the stack.
     Call {
         index: usize,
@@ -3377,6 +3536,13 @@ struct Compiler {
     /// The upvalues the function currently being compiled captures, in the
     /// order it will read them.
     upvalues: Vec<Upvalue>,
+    /// Pending `Op::JumpIfNullishPeek` indices for the `Expr::OptionalChain`
+    /// currently being compiled, collected so they can all be patched to the
+    /// same target once `inner` is fully compiled. Saved and restored around
+    /// each `Expr::OptionalChain` (see its handling in `expression`) so a
+    /// nested chain — e.g. an optional chain inside a call argument of an
+    /// outer one — patches only its own jumps, not the outer chain's.
+    optional_chain_jumps: Vec<usize>,
 }
 
 impl Compiler {
@@ -3391,6 +3557,7 @@ impl Compiler {
             max_slot: 0,
             enclosing_scopes: None,
             upvalues: Vec::new(),
+            optional_chain_jumps: Vec::new(),
         }
     }
 
@@ -3936,8 +4103,19 @@ impl Compiler {
                 object,
                 name,
                 arguments,
+                optional,
             } => {
                 self.expression(object)?;
+                // A nullish receiver here means an earlier `?.` fired (this
+                // link's own, or the member access just fused into it) —
+                // short-circuit before evaluating arguments, matching real
+                // JS, which never evaluates a short-circuited call's
+                // arguments. The jump lands at the enclosing
+                // `Expr::OptionalChain`'s shared end target, not here.
+                if *optional {
+                    let jump = self.emit_jump_if_nullish_peek();
+                    self.optional_chain_jumps.push(jump);
+                }
                 for argument in arguments {
                     self.expression(argument)?;
                 }
@@ -3981,10 +4159,31 @@ impl Compiler {
                 }
                 self.code.push(Op::NewArray(elements.len()));
             }
-            Expr::Member { object, key } => {
+            Expr::Member {
+                object,
+                key,
+                optional,
+            } => {
                 self.expression(object)?;
+                if *optional {
+                    let jump = self.emit_jump_if_nullish_peek();
+                    self.optional_chain_jumps.push(jump);
+                }
                 self.expression(key)?;
                 self.code.push(Op::GetProperty);
+            }
+            Expr::OptionalChain { inner } => {
+                // Save/restore rather than just clearing: a nested optional
+                // chain (e.g. inside a call argument of an outer one) must
+                // patch only the jumps it itself emits while compiling
+                // `inner`, not the outer chain's — restoring the outer's
+                // collected-so-far jumps afterward keeps them separate.
+                let outer_jumps = std::mem::take(&mut self.optional_chain_jumps);
+                self.expression(inner)?;
+                let mine = std::mem::replace(&mut self.optional_chain_jumps, outer_jumps);
+                for jump in mine {
+                    self.patch(jump);
+                }
             }
             Expr::SetMember { object, key, value } => {
                 self.expression(object)?;
@@ -4185,13 +4384,19 @@ impl Compiler {
         self.code.len() - 1
     }
 
+    fn emit_jump_if_nullish_peek(&mut self) -> usize {
+        self.code.push(Op::JumpIfNullishPeek(usize::MAX));
+        self.code.len() - 1
+    }
+
     fn patch(&mut self, index: usize) {
         let target = self.code.len();
         match &mut self.code[index] {
             Op::Jump(slot)
             | Op::JumpIfFalse(slot)
             | Op::JumpIfFalsePeek(slot)
-            | Op::JumpIfTruePeek(slot) => *slot = target,
+            | Op::JumpIfTruePeek(slot)
+            | Op::JumpIfNullishPeek(slot) => *slot = target,
             _ => {}
         }
     }
@@ -4844,6 +5049,21 @@ impl Vm {
                 }
                 Op::JumpIfTruePeek(target) => {
                     if stack.last().is_some_and(Value::truthy) {
+                        pointer = *target;
+                        continue;
+                    }
+                }
+                Op::JumpIfNullishPeek(target) => {
+                    if stack
+                        .last()
+                        .is_some_and(|value| matches!(value, Value::Null | Value::Undefined))
+                    {
+                        // `null?.x` and `undefined?.x` both evaluate to
+                        // `undefined`, not the original nullish value —
+                        // unlike `JumpIfFalsePeek`/`JumpIfTruePeek`, which
+                        // leave the operand itself for `&&`/`||`.
+                        pop(&mut stack);
+                        stack.push(Value::Undefined);
                         pointer = *target;
                         continue;
                     }
@@ -7814,6 +8034,121 @@ mod tests {
         assert_eq!(
             eval_in_fn("return \"a\" + +\"3\";"),
             Value::String("a3".to_string())
+        );
+    }
+
+    #[test]
+    fn optional_member_access_returns_the_property_when_the_object_is_present() {
+        assert_eq!(
+            eval_in_fn("let o = { a: 1 }; return o?.a;"),
+            Value::Number(1.0)
+        );
+    }
+
+    #[test]
+    fn optional_member_access_short_circuits_to_undefined_when_the_object_is_nullish() {
+        assert_eq!(eval_in_fn("let o = null; return o?.a;"), Value::Undefined);
+        assert_eq!(eval_in_fn("let o; return o?.a;"), Value::Undefined);
+        // `null?.a` is `undefined`, not `null` — `JumpIfNullishPeek` replaces
+        // the value it checked, unlike `JumpIfFalsePeek`/`JumpIfTruePeek`,
+        // which leave the original operand for `&&`/`||`.
+        assert_eq!(
+            eval_in_fn("let o = null; return (o?.a) === undefined && o === null;"),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn a_nullish_earlier_link_short_circuits_every_later_link_even_a_plain_one() {
+        // The real Nova shape this fixes: `stripRef.current?.querySelector(...)`
+        // — a plain (non-`?.`) call fused onto an optional member access
+        // must still be skipped when the earlier `?.` fires, not just fail
+        // to read a property. A naive per-node-independent check would
+        // wrongly try to read `.c` off `undefined` here and refuse instead
+        // of short-circuiting the whole chain.
+        assert_eq!(eval_in_fn("let a = null; return a?.b.c;"), Value::Undefined);
+        // The `?.` only checks `a` itself, not the value `a.b` reads back —
+        // real JS only re-checks nullishness at an actual `?.` token, so
+        // when `a` is present but `a.b` happens to be `null`, the following
+        // plain `.c` still throws exactly like an ordinary property access
+        // would. Confirms the short-circuit isn't over-firing on every
+        // nullish intermediate value, only on a checked receiver.
+        assert!(matches!(
+            evaluate("function main() { let a = { b: null }; return a?.b.c; } main();"),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn optional_chain_with_two_links_short_circuits_from_either_and_reads_through_when_present() {
+        assert_eq!(
+            eval_in_fn("let a = null; return a?.b?.c;"),
+            Value::Undefined
+        );
+        assert_eq!(
+            eval_in_fn("let a = { b: null }; return a?.b?.c;"),
+            Value::Undefined
+        );
+        assert_eq!(
+            eval_in_fn("let a = { b: { c: 7 } }; return a?.b?.c;"),
+            Value::Number(7.0)
+        );
+    }
+
+    #[test]
+    fn optional_computed_member_access() {
+        assert_eq!(
+            eval_in_fn("let o = { x: 9 }; let k = \"x\"; return o?.[k];"),
+            Value::Number(9.0)
+        );
+        assert_eq!(
+            eval_in_fn("let o = null; let k = \"x\"; return o?.[k];"),
+            Value::Undefined
+        );
+    }
+
+    #[test]
+    fn optional_method_call_runs_when_the_receiver_is_present() {
+        assert_eq!(
+            eval_in_fn("let o = { greet() { return \"hi\"; } }; return o?.greet();"),
+            Value::String("hi".to_string())
+        );
+    }
+
+    #[test]
+    fn optional_method_call_short_circuits_without_evaluating_arguments() {
+        // A short-circuited call must not evaluate its arguments — the same
+        // contract `&&`/`||` already keep for their untaken operand.
+        assert_eq!(
+            eval_in_fn(
+                "let counter = 0; let o = null; o?.greet(counter = counter + 1); return counter;"
+            ),
+            Value::Number(0.0)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let counter = 0; let o = { greet(n) { return n; } }; \
+                 o?.greet(counter = counter + 1); return counter;"
+            ),
+            Value::Number(1.0)
+        );
+    }
+
+    #[test]
+    fn optional_member_then_optional_call_matches_the_one_real_nova_shape() {
+        // `el?.closest?.(".dropsp")` — real usage always writes the second
+        // `?.` immediately after a member access that is itself already
+        // optional.
+        assert_eq!(
+            eval_in_fn(
+                "let el = { closest(sel) { return \"found:\" + sel; } }; \
+                 return el?.closest?.(\".x\");"
+            ),
+            Value::String("found:.x".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let el = null; return el?.closest?.(\".x\");"),
+            Value::Undefined
         );
     }
 
