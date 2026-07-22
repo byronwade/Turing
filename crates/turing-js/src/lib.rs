@@ -1913,8 +1913,15 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_unary_inner(&mut self) -> Result<Expr, JsError> {
+        // `+` here is prefix numeric coercion (`+e.key - 1`, `+c.dataset.id`
+        // — real Nova usage, always coercing a `dataset`/event-key string
+        // to a number), never ambiguous with binary addition: this method
+        // only runs where a fresh operand is expected, and `parse_additive`
+        // — one precedence level up — is what recognizes `+` as an infix
+        // operator between two already-parsed operands. The same
+        // both-unary-and-binary token already works this way for `-`.
         if let Token::Punct(value) = self.peek()
-            && matches!(value.as_str(), "-" | "!")
+            && matches!(value.as_str(), "-" | "!" | "+")
         {
             let operator = value.clone();
             self.position += 1;
@@ -3267,6 +3274,11 @@ pub enum Op {
     Div,
     Rem,
     Negate,
+    /// Prefix `+x` — coerce to a number, the same coercion `Negate` already
+    /// applies before negating. Real Nova usage: `+e.key - 1`,
+    /// `+c.dataset.id` — `dataset`/event-key values are always strings,
+    /// coerced to numbers before arithmetic or comparison.
+    ToNumber,
     Not,
     /// Loose equality, which applies numeric coercion between types.
     Equal,
@@ -3856,6 +3868,7 @@ impl Compiler {
                 self.expression(operand)?;
                 self.code.push(match operator.as_str() {
                     "-" => Op::Negate,
+                    "+" => Op::ToNumber,
                     _ => Op::Not,
                 });
             }
@@ -4789,6 +4802,10 @@ impl Vm {
                 Op::Negate => {
                     let value = pop(&mut stack);
                     stack.push(Value::Number(-to_number(&value)));
+                }
+                Op::ToNumber => {
+                    let value = pop(&mut stack);
+                    stack.push(Value::Number(to_number(&value)));
                 }
                 Op::Not => {
                     let value = pop(&mut stack);
@@ -7777,6 +7794,26 @@ mod tests {
         assert_eq!(
             eval_in_fn("let o = { a: 1 }; delete o.a; return o.a === undefined;"),
             Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn unary_plus_coerces_to_a_number() {
+        // Real Nova usage: `+e.key - 1`, `+c.dataset.id` — a DOM `dataset`/
+        // event-key value is always a string; unary `+` coerces it to a
+        // number before arithmetic, the same coercion `-x` (`Negate`)
+        // already applies before negating.
+        assert_eq!(eval_in_fn("return +\"42\";"), Value::Number(42.0));
+        assert_eq!(
+            eval_in_fn("let x = \"5\"; return +x - 1;"),
+            Value::Number(4.0)
+        );
+        assert_eq!(eval_in_fn("return +true;"), Value::Number(1.0));
+        // Not ambiguous with binary `+` (string concatenation) — a leading
+        // `+` in an operand position is always the unary coercion.
+        assert_eq!(
+            eval_in_fn("return \"a\" + +\"3\";"),
+            Value::String("a3".to_string())
         );
     }
 
