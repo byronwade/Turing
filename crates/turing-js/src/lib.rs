@@ -423,6 +423,16 @@ const KEYWORDS: &[&str] = &[
 ];
 
 /// Keywords that name a feature this implementation refuses outright.
+///
+/// `delete` is deliberately absent — like `typeof`, it is a real,
+/// implemented (if scoped) feature now, not a blanket refusal, and this
+/// table's lookup fires at the very start of `parse_statement_inner` too,
+/// before any expression parsing runs. Real Nova usage is always a bare
+/// `delete object.key;` statement, not an assignment or a return value, so
+/// that early check would refuse it before `Parser::parse_unary_inner`'s
+/// own, more specific handling ever ran. `typeof`'s explicit refusal inside
+/// `parse_unary_inner` is unaffected by that same statement-level check for
+/// the identical reason — it, too, is not in this table.
 const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("class", "class"),
     ("try", "try/catch"),
@@ -433,7 +443,6 @@ const REFUSED_KEYWORDS: &[(&str, &str)] = &[
     ("await", "await"),
     ("yield", "generators"),
     ("new", "constructors"),
-    ("delete", "delete"),
     ("instanceof", "instanceof"),
     ("switch", "switch"),
     ("do", "do/while"),
@@ -896,6 +905,15 @@ enum Expr {
     Unary {
         operator: String,
         operand: Box<Expr>,
+    },
+    /// `delete object.key` / `delete object[key]`. Scoped to exactly that
+    /// shape — real Nova usage never targets a bare variable or anything
+    /// else `delete` can grammatically apply to — refused rather than
+    /// mishandled at parse time by `Parser::parse_unary_inner`, which only
+    /// builds this node when its operand is already an `Expr::Member`.
+    Delete {
+        object: Box<Expr>,
+        key: Box<Expr>,
     },
     Binary {
         operator: String,
@@ -1928,6 +1946,23 @@ impl<'a> Parser<'a> {
             return Err(JsError::Unsupported {
                 feature: "typeof".to_string(),
             });
+        }
+        // Real Nova usage: `delete rowEl.dataset.dragged`, `delete g[gid]` —
+        // always a member expression, never a bare variable or anything
+        // else `delete` can grammatically apply to (real JS allows
+        // `delete x` too, though it does nothing useful outside `with`
+        // blocks this engine doesn't support either). Checked ahead of
+        // `parse_primary`'s blanket keyword refusal the same way `new
+        // RegExp` is carved out of `new`'s.
+        if self.check_keyword("delete") {
+            self.position += 1;
+            let operand = self.parse_unary()?;
+            let Expr::Member { object, key } = operand else {
+                return Err(JsError::Unsupported {
+                    feature: "delete of anything but a member expression".to_string(),
+                });
+            };
+            return Ok(Expr::Delete { object, key });
         }
         self.parse_primary()
     }
@@ -3095,6 +3130,24 @@ impl ObjectData {
         charged
     }
 
+    /// Removes a property if present, for `delete`. `O(n)` in the object's
+    /// own size — every entry after the removed one shifts down by one
+    /// position in `entries`, and `index` must track that shift so a later
+    /// lookup does not read the wrong slot — accepted the same way this
+    /// object model accepts other small-object-sized costs elsewhere (real
+    /// usage deletes from short-lived UI-state maps, not documents).
+    fn remove(&mut self, key: &str) {
+        let Some(at) = self.index.remove(key) else {
+            return;
+        };
+        self.entries.remove(at);
+        for position in self.index.values_mut() {
+            if *position > at {
+                *position -= 1;
+            }
+        }
+    }
+
     /// Returns keys in the order enumeration will need.
     ///
     /// Integer-like keys ascending first, then the remaining keys in insertion
@@ -3190,6 +3243,12 @@ pub enum Op {
     GetProperty,
     /// Pop value, key, object; set the property and push the value back.
     SetProperty,
+    /// Pop key then object; remove the property if present and push
+    /// `true` — real JS `delete` semantics for a configurable own property
+    /// (which is every property this engine's object model has, since it
+    /// does not model non-configurable ones), true regardless of whether
+    /// the key existed to begin with.
+    DeleteProperty,
     /// Pop source, then target; copy every own property of `source` onto
     /// `target` (spreading nothing for `null`/`undefined`) and push
     /// `target` back. Used by object-literal spread (`{...source}`).
@@ -3920,6 +3979,11 @@ impl Compiler {
                 self.expression(value)?;
                 self.code.push(Op::SetProperty);
             }
+            Expr::Delete { object, key } => {
+                self.expression(object)?;
+                self.expression(key)?;
+                self.code.push(Op::DeleteProperty);
+            }
             Expr::Call { callee, arguments } => {
                 // Resolution order: a declared function wins a name collision
                 // (a program's own declaration is not shadowed by the host);
@@ -4604,6 +4668,24 @@ impl Vm {
                         });
                     }
                     stack.push(value);
+                }
+                Op::DeleteProperty => {
+                    let key = pop(&mut stack);
+                    let object = pop(&mut stack);
+                    let (Value::Object(handle) | Value::Array(handle)) = object else {
+                        return Err(JsError::TypeError {
+                            message: format!("cannot delete a property of {object}"),
+                        });
+                    };
+                    let object =
+                        runtime
+                            .heap
+                            .get_mut(handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    object.remove(&property_key(&key));
+                    stack.push(Value::Boolean(true));
                 }
                 Op::SpreadInto => {
                     let source = pop(&mut stack);
@@ -7646,6 +7728,83 @@ mod tests {
             .call(&program, "main", Vec::new(), &mut NoHost::default())
             .expect_err("refused");
         assert!(matches!(error, JsError::UnboundOperation { .. }));
+    }
+
+    #[test]
+    fn delete_removes_a_property_by_dot_or_bracket_access() {
+        // Real Nova usage: `delete rowEl.dataset.dragged`, `delete g[gid]`,
+        // `delete scrollMem.current[id]` — always a member expression,
+        // dot or bracket, ending in an object/array whose property goes
+        // away. `delete` itself evaluates to `true`.
+        assert_eq!(
+            eval_in_fn(
+                "let o = { a: 1, b: 2 }; \
+                 let removed = delete o.a; \
+                 return removed && o.a === undefined && o.b === 2;"
+            ),
+            Value::Boolean(true)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let o = {}; o[\"k\"] = 5; \
+                 let removed = delete o[\"k\"]; \
+                 return removed && o.k === undefined;"
+            ),
+            Value::Boolean(true)
+        );
+        // Deleting a key that was never present still returns `true` —
+        // real JS `delete` semantics for a configurable (here: every)
+        // property, present or not.
+        assert_eq!(
+            eval_in_fn("let o = {}; return delete o.nope;"),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn delete_as_a_bare_statement_is_not_refused_before_it_parses() {
+        // The exact real Nova shape: `delete g[gid];` and `delete scrollMem.
+        // current[id];` are always bare statements, not an assignment or
+        // return value's operand. `delete` is intentionally absent from
+        // `REFUSED_KEYWORDS` (see that constant's own doc comment) because
+        // `Parser::parse_statement_inner` runs a blanket keyword check
+        // against that table *before any expression parsing at all* — with
+        // `delete` present there, every real call site would have refused
+        // before `parse_unary_inner`'s own, more specific handling ever ran,
+        // even though the exact same source works fine as an assignment's
+        // right-hand side (see `delete_removes_a_property_by_dot_or_
+        // bracket_access`, which never triggered this).
+        assert_eq!(
+            eval_in_fn("let o = { a: 1 }; delete o.a; return o.a === undefined;"),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn delete_on_an_array_element_removes_it_without_shrinking_length() {
+        // Arrays share the same object heap representation as plain
+        // objects (see `Value::Array`'s own doc comment) — `delete arr[i]`
+        // removes that index's own property the same way, and — matching
+        // real JS — does not shift later elements down or shrink `length`;
+        // the slot just reads back `undefined`.
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1, 2, 3]; delete a[1]; \
+                 return a[0] + (a[1] === undefined ? 0 : a[1]) + a[2] + a.length;"
+            ),
+            Value::Number(1.0 + 0.0 + 3.0 + 3.0)
+        );
+    }
+
+    #[test]
+    fn delete_of_anything_but_a_member_expression_still_refuses() {
+        // Real usage never targets a bare variable — refused rather than
+        // silently doing nothing (deleting a local binding is not
+        // meaningful in this engine's model, unlike a real property).
+        assert!(matches!(
+            compile("let x = 1; delete x;"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]
