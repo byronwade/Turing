@@ -90,9 +90,11 @@ the equivalent DOM click/input/keyboard events for the address surface, enters
 `example.com`, submits the command field, and then drives new-tab, profile and
 settings navigation, settings input, tab-position/sidebar, reader, split-view,
 tab-close, History, Downloads, Extensions, and Ask Turing controls. It also
-checks the read-only runtime composition descriptor and that the resulting
-typed records reached the adapter. It uses only Node's built-in HTTP/process
-APIs and the local Servo executable.
+removes a history row and flips an Appearance settings switch, verifying that
+those controls change component state and emit the typed `settings.toggle`
+command. It checks the read-only runtime composition descriptor and that the
+resulting typed records reached the adapter. It uses only Node's built-in
+HTTP/process APIs and the local Servo executable.
 
 To use another Servo checkout:
 
@@ -119,8 +121,9 @@ window.__TURING_ENGINE__.dispatch({
 ```
 
 The Nova root emits commands for navigation, history, tabs, sidebar state,
-reader/split view, URL copy, keyboard input, and every actionable control,
-input, and change event. The adapter accepts only version 1 commands from its
+reader/split view, URL copy, settings changes, keyboard input, and every
+actionable control, input, and change event. The adapter accepts only version 1
+commands from its
 allowlist and rejects unknown types, unserializable payloads, and payloads
 larger than 64 KiB before retaining or logging them. It retains only the last
 128 accepted commands for development inspection through `snapshot()`; it is
@@ -151,10 +154,11 @@ Windows:
 - the Nova root filled the viewport without the removed design-lab header or
   outer presentation canvas;
 - WebDriver drove the address, new-tab, profile/settings, settings-input,
-  sidebar, reader, split-view, and tab-close surfaces through the rendered DOM;
+  settings-toggle, history-removal, sidebar, reader, split-view, and tab-close
+  surfaces through the rendered DOM;
 - the resulting adapter trace contained click, input, change, keyboard,
-  navigation, tab, shell-view, sidebar, reader, split-view, and tab-close
-  command records.
+  navigation, tab, shell-view, sidebar, reader, split-view, settings-toggle,
+  history, and tab-close command records.
 
 These results prove this bounded development path only. They do not prove
 native Turing chrome, real network navigation, profile persistence,

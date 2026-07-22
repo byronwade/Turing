@@ -16,9 +16,9 @@ The [Nova Surface-to-Contract Map](surface-contract-map.md) is the implementatio
 
 The captured source content is preserved from the supplied attachment with repository LF line-ending normalization. The manifest records the committed bytes exactly. SHA-256:
 
-`EAD9704DF31179007F31B32661A8F09119BAF82C4F5454ACD486D258C0C0C84F`
+`C812F5545C8EF4B6FEB4E488CCA091E96787042493623B57CB7AAEE0366B50D5`
 
-It contains 7,713 lines and 500,326 bytes. It is retained as the source artifact for the intended Turing-owned JSX build path, not as an external React release dependency.
+It contains 7,723 lines and 501,515 bytes. It is retained as the source artifact for the intended Turing-owned JSX build path, not as an external React release dependency.
 
 ## Authority boundaries
 

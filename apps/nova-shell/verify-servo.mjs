@@ -188,6 +188,12 @@ try {
   await clickSelector("button.avatar", "profile control");
   await clickText("button.mitem", "History", "history menu item");
   await assertPageText("History", "history page");
+  const historyBefore = await execute("return { count: document.querySelectorAll('.hrow').length, first: document.querySelector('.hrow')?.dataset.url || '' };");
+  await clickSelector(".hrow .del", "history remove control");
+  const historyAfter = await execute("return { count: document.querySelectorAll('.hrow').length, first: document.querySelector('.hrow')?.dataset.url || '' };");
+  if (historyAfter.count !== historyBefore.count || historyAfter.first === historyBefore.first) {
+    throw new Error(`History removal did not update state: ${JSON.stringify(historyBefore)} -> ${JSON.stringify(historyAfter)}`);
+  }
   await clickSelector("button.avatar", "profile control after history");
   await clickText("button.mitem", "Downloads", "downloads menu item");
   await assertPageText("Downloads", "downloads page");
@@ -207,6 +213,12 @@ try {
     return input.value;`);
   await sleep(250);
   await clickText("a", "Appearance", "appearance settings navigation");
+  const settingBefore = await execute("return document.querySelector('.sw')?.className || '';");
+  await clickSelector(".sw", "settings switch");
+  const settingAfter = await execute("return document.querySelector('.sw')?.className || '';");
+  if (settingAfter === settingBefore) {
+    throw new Error(`Settings switch did not update state: ${settingBefore} -> ${settingAfter}`);
+  }
   await clickText("button", "Left", "left tab-position control");
   await clickTitle("sidebar", "sidebar control");
   await clickSelector("button.site", "toolbar address control");
@@ -250,6 +262,7 @@ try {
     "shell.view.open",
     "view.reader.toggle",
     "view.split.toggle",
+    "settings.toggle",
     "tabs.close.request",
   ]) {
     if (!types.includes(required)) {

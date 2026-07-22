@@ -37,6 +37,7 @@ enum EngineCommandKind {
     TabsActivate,
     ViewReaderToggle,
     ViewSplitToggle,
+    SettingsToggle,
     UiControlClick,
     UiControlPointerdown,
     UiControlInput,
@@ -57,6 +58,7 @@ impl EngineCommandKind {
             "tabs.activate" => Self::TabsActivate,
             "view.reader.toggle" => Self::ViewReaderToggle,
             "view.split.toggle" => Self::ViewSplitToggle,
+            "settings.toggle" => Self::SettingsToggle,
             "ui.control.click" => Self::UiControlClick,
             "ui.control.pointerdown" => Self::UiControlPointerdown,
             "ui.control.input" => Self::UiControlInput,
@@ -78,6 +80,7 @@ impl EngineCommandKind {
             Self::TabsActivate => "tabs.activate",
             Self::ViewReaderToggle => "view.reader.toggle",
             Self::ViewSplitToggle => "view.split.toggle",
+            Self::SettingsToggle => "settings.toggle",
             Self::UiControlClick => "ui.control.click",
             Self::UiControlPointerdown => "ui.control.pointerdown",
             Self::UiControlInput => "ui.control.input",
@@ -418,7 +421,7 @@ mod tests {
 
     #[test]
     fn runtime_record_requires_matching_sha256_provenance() {
-        let hash = "EAD9704DF31179007F31B32661A8F09119BAF82C4F5454ACD486D258C0C0C84F";
+        let hash = "C812F5545C8EF4B6FEB4E488CCA091E96787042493623B57CB7AAEE0366B50D5";
         let line = format!("prefix TURING_RUNTIME_READY\t1\t{hash}\t{hash}");
         let record = super::parse_runtime_record(&line).expect("matching runtime record");
         assert_eq!(record.version, 1);

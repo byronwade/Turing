@@ -16,6 +16,7 @@ const SUPPORTED_ENGINE_COMMANDS = new Set([
   "tabs.activate",
   "view.reader.toggle",
   "view.split.toggle",
+  "settings.toggle",
   "ui.control.click",
   "ui.control.pointerdown",
   "ui.control.input",

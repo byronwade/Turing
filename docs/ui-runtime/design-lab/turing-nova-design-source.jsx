@@ -37,7 +37,7 @@ function emitEngineCommand(type, payload = {}) {
 
 function describeControl(event) {
   const target = event.target && event.target.closest
-    ? event.target.closest("button,input,textarea,select,[role=button],[role=switch],[data-id],[data-gid]")
+    ? event.target.closest("button,input,textarea,select,a,[role=button],[role=switch],[data-id],[data-gid]")
     : null;
   if (!target) return null;
   return {
@@ -1875,9 +1875,16 @@ export default function Nova() {
     adblock: true, https: true, dnt: true, block3p: true, fingerprint: true,
     safeBrowse: true, memSaver: true, energy: false, preload: true, hwaccel: true,
     prefetch: true, quic: true, autofill: true, passwords: true, sync: true, sugg: true,
-    devmode: false, fade: true, autozen: true,
+    devmode: false, fade: true, autozen: true, clearCookies: false, bookmarksBar: false,
+    askDownload: false, restoreSession: true, unlockFill: true, paymentMethods: true,
+    preferPasskeys: true, noHttpFill: true,
+    filterEasyList: true, filterEasyPrivacy: true, filterPeterLowe: true,
+    filterBadware: true, filterAnnoyances: false, filterRegional: false,
   });
-  const toggle = useCallback((k) => setFlags((f) => ({ ...f, [k]: !f[k] })), []);
+  const toggle = useCallback((k) => {
+    emitEngineCommand("settings.toggle", { key: k });
+    setFlags((f) => ({ ...f, [k]: !f[k] }));
+  }, []);
 
   const sweep = useCallback((clr = "ac") => {
     setSweepClr(clr);
@@ -2895,7 +2902,11 @@ export default function Nova() {
     });
   }, [active, note]);
 
-  const delHistory = useCallback((id) => { /* concept: no-op removal animation slot */ }, []);
+  const [historyEntries, setHistoryEntries] = useState(HISTORY);
+  const delHistory = useCallback((id) => {
+    setHistoryEntries((entries) => entries.filter((entry) => entry.id !== id));
+    emitEngineCommand("navigation.history", { action: "remove", id });
+  }, []);
 
   return (
     <div
@@ -3187,7 +3198,7 @@ export default function Nova() {
           tabs={tabs} spaces={spaces} spaceId={spaceId} reading={reading} notesBySpace={notesBySpace} layouts={layouts} sched={sched} setSched={setSched}
           agentLog={agentLog} setAgentLog={setAgentLog} agentCaps={agentCaps} setAgentCaps={setAgentCaps}
           watches={watches} setWatches={setWatches} conns={conns} setConns={setConns} />}
-        {view === "history" && <HistoryPage onDel={delHistory} note={note} />}
+        {view === "history" && <HistoryPage entries={historyEntries} onDel={delHistory} note={note} />}
         {view === "agents" && (
           <AgentsPage sec={agentSec} setSec={setAgentSec} log={agentLog} setLog={setAgentLog}
             caps={agentCaps} setCaps={setAgentCaps} sched={sched} setSched={setSched}
@@ -3203,7 +3214,7 @@ export default function Nova() {
         {view === "canvas" && <CanvasPage tabs={tabs} note={note} />}
         {view === "migrate" && <MigrationPage note={note} />}
         {view === "extensions" && <ExtensionsPage note={note} />}
-        {view === "downloads" && <DownloadsPage />}
+        {view === "downloads" && <DownloadsPage note={note} />}
 
         {/* popovers */}
         {pop && <div className="backdrop" onClick={() => setPop(null)} />}
@@ -4143,11 +4154,11 @@ function SettingsPage({ sec, setSec, flags, toggle, tabPos, setTabPos, textScale
           {sec === "general" && <GeneralSec flags={flags} toggle={toggle} />}
           {sec === "workspace" && <WorkspaceSec tabs={tabs} spaces={spaces} spaceId={spaceId} reading={reading} notesBySpace={notesBySpace} layouts={layouts}
             agentCaps={agentCaps} watches={watches} agentLog={agentLog} note={note} />}
-          {sec === "passwords" && <PasswordsSec vault={vault} setVault={setVault} locked={vaultLocked} setLocked={setVaultLocked} note={note} go={go} />}
+          {sec === "passwords" && <PasswordsSec vault={vault} setVault={setVault} locked={vaultLocked} setLocked={setVaultLocked} note={note} go={go} flags={flags} toggle={toggle} />}
           {sec === "autofill" && <AutofillSec flags={flags} toggle={toggle} />}
           {sec === "search" && <SearchSec flags={flags} toggle={toggle} />}
           {sec === "about" && <AboutSec />}
-          {sec === "downloads" && <DownloadsSettings />}
+          {sec === "downloads" && <DownloadsSettings flags={flags} toggle={toggle} note={note} />}
           {sec === "a11y" && <A11ySec flags={flags} toggle={toggle} />}
           {sec === "migrate" && <MigrationPage note={() => {}} />}
           {sec === "developer" && <DeveloperSec flags={flags} toggle={toggle} />}
@@ -4215,9 +4226,9 @@ function PrivacySec({ flags, toggle }) {
 
 function ShieldsSec({ flags, toggle }) {
   const lists = [
-    ["EasyList", "78,204 rules", true], ["EasyPrivacy", "51,880 rules", true],
-    ["Peter Lowe’s List", "3,120 rules", true], ["uBlock filters — Badware", "9,441 rules", true],
-    ["Fanboy’s Annoyances", "44,010 rules", false], ["Regional — Nova Community", "6,502 rules", false],
+    ["EasyList", "78,204 rules", "filterEasyList"], ["EasyPrivacy", "51,880 rules", "filterEasyPrivacy"],
+    ["Peter Lowe’s List", "3,120 rules", "filterPeterLowe"], ["uBlock filters — Badware", "9,441 rules", "filterBadware"],
+    ["Fanboy’s Annoyances", "44,010 rules", "filterAnnoyances"], ["Regional — Nova Community", "6,502 rules", "filterRegional"],
   ];
   return (
     <>
@@ -4234,8 +4245,8 @@ function ShieldsSec({ flags, toggle }) {
       <div className="sect">
         <div className="sect-h">Filter lists</div>
         <div className="card">
-          {lists.map(([n, c, on]) => (
-            <Row key={n} icon={<LayoutGrid size={15} />} title={n} desc={c}><Toggle on={on} onClick={() => { }} /></Row>
+          {lists.map(([n, c, k]) => (
+            <Row key={n} icon={<LayoutGrid size={15} />} title={n} desc={c}><SW k={k} flags={flags} toggle={toggle} /></Row>
           ))}
           <div className="row"><button className="btn gho"><Plus size={14} /> Add custom filter list</button><span className="val" style={{ marginLeft: "auto" }}>Updated 2h ago</span></div>
         </div>
@@ -4253,7 +4264,7 @@ function CookiesSec({ flags, toggle }) {
         <div className="sect-h">Default behavior</div>
         <div className="card">
           <Row icon={<Cookie size={16} />} title="Block third-party cookies" desc="Recommended. First-party cookies still work so you stay logged in."><SW k="block3p" flags={flags} toggle={toggle} /></Row>
-          <Row icon={<Trash2 size={16} />} title="Clear cookies when Turing closes" desc="Keep exceptions for sites you choose."><Toggle on={false} onClick={() => { }} /></Row>
+          <Row icon={<Trash2 size={16} />} title="Clear cookies when Turing closes" desc="Keep exceptions for sites you choose."><SW k="clearCookies" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
       <div className="sect">
@@ -4434,7 +4445,7 @@ function AppearanceSec({ tabPos, setTabPos, flags, toggle, textScale, setTextSca
               ))}
             </div>
           </Row>
-          <Row icon={<Bookmark size={16} />} title="Show bookmarks bar" desc="Always visible under the toolbar."><Toggle on={false} onClick={() => { }} /></Row>
+          <Row icon={<Bookmark size={16} />} title="Show bookmarks bar" desc="Always visible under the toolbar."><SW k="bookmarksBar" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
     </>
@@ -4449,7 +4460,7 @@ function GeneralSec({ flags, toggle }) {
       <div className="sect"><div className="sect-h">On startup</div>
         <div className="card">
           <Row icon={<Home size={16} />} title="Open the New Tab page" desc="What Nova shows when it launches."><span className="pill">New Tab <ChevronDown size={14} color="var(--tx3)" /></span></Row>
-          <Row icon={<RefreshCw size={16} />} title="Continue where you left off" desc="Restore tabs from your last session."><Toggle on onClick={() => { }} /></Row>
+          <Row icon={<RefreshCw size={16} />} title="Continue where you left off" desc="Restore tabs from your last session."><SW k="restoreSession" flags={flags} toggle={toggle} /></Row>
           <Row icon={<Sparkles size={16} />} title="Show suggestions in address bar" desc="Search and history suggestions as you type."><SW k="sugg" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
@@ -4471,13 +4482,13 @@ function AutofillSec({ flags, toggle }) {
         <div className="card">
           <Row icon={<Key size={16} />} title="Offer to save passwords" desc="Prompt to store new logins securely."><SW k="passwords" flags={flags} toggle={toggle} /></Row>
           <Row icon={<ShieldCheck size={16} />} title="Password health check" desc="3 reused · 1 weak · 0 leaked"><button className="btn gho" style={{ height: 28 }}>Review</button></Row>
-          <Row icon={<Fingerprint size={16} />} title="Require device unlock" desc="Face or fingerprint before autofilling."><Toggle on onClick={() => { }} /></Row>
+          <Row icon={<Fingerprint size={16} />} title="Require device unlock" desc="Face or fingerprint before autofilling."><SW k="unlockFill" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
       <div className="sect"><div className="sect-h">Autofill</div>
         <div className="card">
           <Row icon={<CircleUser size={16} />} title="Addresses & more" desc="2 saved profiles"><SW k="autofill" flags={flags} toggle={toggle} /></Row>
-          <Row icon={<Key size={16} />} title="Payment methods" desc="Cards are tokenized; full numbers never stored."><Toggle on onClick={() => { }} /></Row>
+          <Row icon={<Key size={16} />} title="Payment methods" desc="Cards are tokenized; full numbers never stored."><SW k="paymentMethods" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
     </>
@@ -4546,14 +4557,14 @@ function AboutSec() {
   );
 }
 
-function DownloadsSettings() {
+function DownloadsSettings({ flags, toggle, note }) {
   return (
     <>
       <div className="ptitle">Downloads</div>
       <div className="psub">Where files land and how they’re handled.</div>
       <div className="card">
-        <Row icon={<Download size={16} />} title="Location" desc="/Users/nova/Downloads"><button className="btn gho" style={{ height: 28 }}>Change</button></Row>
-        <Row icon={<ChevronRight size={16} />} title="Ask where to save each file" desc="Prompt for a location every time."><Toggle on={false} onClick={() => { }} /></Row>
+        <Row icon={<Download size={16} />} title="Location" desc="/Users/nova/Downloads"><button className="btn gho" style={{ height: 28 }} onClick={() => note("A native folder picker will be connected here")}>Change</button></Row>
+        <Row icon={<ChevronRight size={16} />} title="Ask where to save each file" desc="Prompt for a location every time."><SW k="askDownload" flags={flags} toggle={toggle} /></Row>
       </div>
     </>
   );
@@ -4561,7 +4572,7 @@ function DownloadsSettings() {
 function ExtensionsInline() { return <ExtensionsPage embedded />; }
 
 /* ---------- History page (virtualized) ---------- */
-function HistoryPage({ onDel, note }) {
+function HistoryPage({ entries = HISTORY, onDel, note }) {
   const [q, setQ] = useState("");
   const [range, setRange] = useState("all");
   const [focus, setFocus] = useState(false);
@@ -4575,13 +4586,13 @@ function HistoryPage({ onDel, note }) {
   const list = useMemo(() => {
     const ql = q.trim().toLowerCase();
     if (cleared) return [];
-    return HISTORY.filter((h) => {
+    return entries.filter((h) => {
       if (range === "today" && h.day !== "Today") return false;
       if (range === "week" && !["Today", "Yesterday", "Mon, Jul 13", "Sun, Jul 12", "Sat, Jul 11"].includes(h.day)) return false;
       if (!ql) return true;
       return h.t.toLowerCase().includes(ql) || h.u.toLowerCase().includes(ql);
     });
-  }, [q, range, cleared]);
+  }, [entries, q, range, cleared]);
 
   const { start, end, pad } = useVirtual(ref, ROW, list.length);
   const slice = list.slice(start, end);
@@ -4953,7 +4964,7 @@ function VaultRow({ e, open, onOpen, onCopy, onDelete, onUpdate }) {
     </div>
   );
 }
-function PasswordsSec({ vault, setVault, locked, setLocked, note, go }) {
+function PasswordsSec({ vault, setVault, locked, setLocked, note, go, flags, toggle }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(null);
   const [gen, setGen] = useState(false);
@@ -5052,9 +5063,9 @@ function PasswordsSec({ vault, setVault, locked, setLocked, note, go }) {
       </div>
       <div className="sect"><div className="sect-h">How filling works</div>
         <div className="card">
-          <Row icon={<Fingerprint size={16} />} title="Require unlock before filling" desc="Touch ID each time a password leaves the vault."><Toggle on onClick={() => { }} /></Row>
-          <Row icon={<KeyRound size={16} />} title="Prefer passkeys" desc="Use a passkey instead of a password where the site supports it."><Toggle on onClick={() => { }} /></Row>
-          <Row icon={<Ban size={16} />} title="Never fill on http:// pages" desc="Refuse to autofill over an unencrypted connection."><Toggle on onClick={() => { }} /></Row>
+          <Row icon={<Fingerprint size={16} />} title="Require unlock before filling" desc="Touch ID each time a password leaves the vault."><SW k="unlockFill" flags={flags} toggle={toggle} /></Row>
+          <Row icon={<KeyRound size={16} />} title="Prefer passkeys" desc="Use a passkey instead of a password where the site supports it."><SW k="preferPasskeys" flags={flags} toggle={toggle} /></Row>
+          <Row icon={<Ban size={16} />} title="Never fill on http:// pages" desc="Refuse to autofill over an unencrypted connection."><SW k="noHttpFill" flags={flags} toggle={toggle} /></Row>
         </div>
       </div>
     </>
@@ -6791,7 +6802,7 @@ function TimeMachinePage({ onRestore, onFork, note }) {
   );
 }
 
-function DownloadsPage() {
+function DownloadsPage({ note }) {
   const [items, setItems] = useState([
     { n: "thorbis-quote-1042.pdf", z: "1.2 MB", d: "mercury.com", t: "2 min ago", st: "done" },
     { n: "site-photos-jul.zip", z: "48.1 MB of 112 MB", d: "linear.app", t: "now", st: "active", pct: 43 },
@@ -6819,8 +6830,8 @@ function DownloadsPage() {
                   <div className="dl-s mono">{it.d} · {it.z} · {it.t}</div>
                   {it.st === "active" && <div className="dl-bar"><i style={{ width: it.pct + "%" }} /></div>}
                 </div>
-                {it.st === "done" && <button className="hclear" style={{ height: 28 }}>Show in folder</button>}
-                {it.st === "active" && <button className="hclear" style={{ height: 28 }}>Pause</button>}
+                {it.st === "done" && <button className="hclear" style={{ height: 28 }} onClick={() => note && note("A native folder reveal will be connected here")}>Show in folder</button>}
+                {it.st === "active" && <button className="hclear" style={{ height: 28 }} onClick={() => note && note("Download paused in the prototype")}>Pause</button>}
                 {it.st === "blocked" && <span className="dl-blk"><ShieldCheck size={12} /> Blocked by Shield</span>}
                 {false && null}
                 <button className="xc" style={{ opacity: .6 }} onClick={() => setItems((xs) => xs.filter((x) => x.n !== it.n))}><X size={12} /></button>
