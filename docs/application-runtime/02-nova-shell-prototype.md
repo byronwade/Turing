@@ -92,9 +92,14 @@ settings navigation, settings input, tab-position/sidebar, reader, split-view,
 tab-close, History, Downloads, Extensions, and Ask Turing controls. It also
 removes a history row and flips an Appearance settings switch, verifying that
 those controls change component state and emit the typed `settings.toggle`
-command. It checks the read-only runtime composition descriptor and that the
-resulting typed records reached the adapter. It uses only Node's built-in
-HTTP/process APIs and the local Servo executable.
+command. The route matrix also opens Agent Mode, Research Canvas, Time Machine,
+Resource Truth Center, migration, Agents, and Workspace & export. It opens and
+dismisses the Reading list, Project notes, Task manager, Capture, Focus session,
+Site controls, Keyboard shortcuts, and developer-gated DevTools surfaces through
+the command palette and Escape handling. It checks the read-only runtime
+composition descriptor and that the resulting typed records reached the
+adapter. It uses only Node's built-in HTTP/process APIs and the local Servo
+executable.
 
 To use another Servo checkout:
 
@@ -156,6 +161,11 @@ Windows:
 - WebDriver drove the address, new-tab, profile/settings, settings-input,
   settings-toggle, history-removal, sidebar, reader, split-view, and tab-close
   surfaces through the rendered DOM;
+- the command palette opened the major secondary pages and returned to the
+  shell, including Agent Mode, Research Canvas, Time Machine, Resources,
+  migration, Agents, and Workspace & export;
+- the command palette opened and Escape dismissed the secondary panels,
+  dialogs, popovers, shortcuts surface, and developer-gated DevTools;
 - the resulting adapter trace contained click, input, change, keyboard,
   navigation, tab, shell-view, sidebar, reader, split-view, settings-toggle,
   history, and tab-close command records.

@@ -117,6 +117,24 @@ async function clickTitle(fragment, label) {
   await sleep(250);
 }
 
+async function runCommand(label) {
+  await clickSelector("button.site", `${label} command launcher`);
+  await execute(`const input = document.querySelector('.cmd-in input');
+    if (!input) throw new Error('Command palette input was not rendered');
+    input.focus();
+    input.value = ${JSON.stringify(label)};
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return input.value;`);
+  await sleep(250);
+  await execute(`const target = [...document.querySelectorAll('.cmd-it')]
+    .find((element) => element.textContent.trim().startsWith(${JSON.stringify(label)}));
+    if (!target) throw new Error(${JSON.stringify(`${label} command was not rendered`)});
+    target.click();
+    return true;`);
+  await sleep(350);
+}
+
 async function assertPageText(text, label) {
   const result = await execute(`const page = document.querySelector('.scroll');
     return {
@@ -125,6 +143,27 @@ async function assertPageText(text, label) {
       routeText: document.body.innerText.slice(0, 320),
     };`);
   if (!result.found) throw new Error(`${label} was not rendered: ${JSON.stringify(result)}`);
+}
+
+async function assertBodyText(text, label) {
+  const result = await execute(`return {
+    found: document.body.innerText.toLowerCase().includes(${JSON.stringify(text.toLowerCase())}),
+    body: document.body.innerText.slice(0, 500),
+  };`);
+  if (!result.found) throw new Error(`${label} was not rendered: ${JSON.stringify(result)}`);
+}
+
+async function dismissOverlay(label) {
+  await execute(`window.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape', code: 'Escape', keyCode: 27, which: 27,
+      bubbles: true, cancelable: true,
+    }));`);
+  await sleep(250);
+  const open = await execute(`return {
+    overlays: document.querySelectorAll('.ovl, .sidep, .pop, .tabsrch, .findbar').length,
+    shortcuts: Boolean(document.querySelector('[role="dialog"][aria-label="Keyboard shortcuts"]')),
+  };`);
+  if (open.overlays || open.shortcuts) throw new Error(`${label} did not dismiss: ${JSON.stringify(open)}`);
 }
 
 async function waitForNovaMount() {
@@ -220,6 +259,52 @@ try {
     throw new Error(`Settings switch did not update state: ${settingBefore} -> ${settingAfter}`);
   }
   await clickText("button", "Left", "left tab-position control");
+
+  // Exercise the secondary product surfaces through the same command palette
+  // a user uses, keeping the route matrix on the rendered application shell.
+  await runCommand("Agent Mode");
+  await assertPageText("Agent Mode", "agent mode page");
+  await runCommand("Research Canvas");
+  await assertBodyText("Research Canvas", "research canvas surface");
+  await runCommand("Time Machine");
+  await assertPageText("Time Machine", "time machine page");
+  await runCommand("Resource Truth Center");
+  await assertPageText("Resources", "resource truth center page");
+  await runCommand("Import from another browser");
+  await assertPageText("Move in · move out", "migration page");
+  await runCommand("Agents");
+  await assertPageText("Agents", "agents page");
+  await runCommand("Workspace & export");
+  await assertPageText("Workspace & export", "workspace export settings");
+
+  await clickSelector("button.vnew-top", "return to new-tab shell");
+  await runCommand("Reading list");
+  await assertBodyText("Reading list", "reading list panel");
+  await dismissOverlay("reading list panel");
+  await runCommand("Project notes");
+  await assertBodyText("Project notes", "project notes panel");
+  await dismissOverlay("project notes panel");
+  await runCommand("Task manager");
+  await assertBodyText("Task manager", "task manager dialog");
+  await dismissOverlay("task manager dialog");
+  await runCommand("Capture");
+  await assertBodyText("Capture", "capture dialog");
+  await dismissOverlay("capture dialog");
+  await runCommand("Focus session");
+  await assertBodyText("Focus session", "focus session dialog");
+  await dismissOverlay("focus session dialog");
+  await runCommand("Site controls");
+  await assertBodyText("Site controls", "site controls popover");
+  await dismissOverlay("site controls popover");
+  await runCommand("Keyboard shortcuts");
+  await assertBodyText("Keyboard shortcuts", "keyboard shortcuts dialog");
+  await dismissOverlay("keyboard shortcuts dialog");
+  await runCommand("Developer");
+  await assertPageText("Developer", "developer settings page");
+  await clickSelector(".sw", "developer mode switch");
+  await runCommand("DevTools");
+  await assertBodyText("Elements", "DevTools elements panel");
+  await dismissOverlay("DevTools panel");
   await clickTitle("sidebar", "sidebar control");
   await clickSelector("button.site", "toolbar address control");
   await clickText("button.qa", "Reader", "reader command");
