@@ -1,5 +1,21 @@
 # Research Log
 
+## 2026-07-21 - Named function expressions: a wrong first read, corrected by the data before writing code
+
+Direct continuation of the entry below, still "continue building." After the default-parameter fix, the harness's next refusal was named by the compiler itself as `"named function expressions (self-reference is capture)"` — a carry-over message from before this engine had any closure/capture machinery, when binding a function expression's own name as a real, capturable local was genuinely out of reach.
+
+Read literally, that message pointed straight at real self-recursion — squarely inside the closure/upvalue capture system already deferred all session as "the hard part." An advisor consultation on that premise agreed: scope real usage and design before writing any code, don't start editing on the same pass that closed the last four blockers.
+
+Grepping real usage before acting on that framing overturned it. Every real named function expression in the file is `memo(function Name(...) {...})` — React's devtools-name idiom for giving an inline memoized component a readable name, never used for recursion. A script checking every one of the 8 real occurrences for a self-reference inside its own body found zero. The name is decorative, not structural, in every case that exists.
+
+Brought this back to the same advisor rather than silently switching approach — the conflict was explicit (their guidance said "closure work, consult first"; the data said "the feature named in the error message isn't the feature real usage needs"). The advisor's own read of the error message, not the actual usage, had shaped the original guidance, and reversed cleanly once shown the grep: the fix is a one-line parser change — consume and discard the name token instead of refusing on sight — no capture machinery touched at all.
+
+Verified this is safe under the engine's "never silently wrong" rule without needing any self-reference *detection*: a body that never mentions its own dropped name behaves exactly as before. A body that *did* try to reference it resolves through the ordinary scope chain if an enclosing binding of the same name exists (unobservably different from real JS today, since Milestone 1's `memo` is an identity no-op anyway), or — since this compiler's existing `Expr::Call` resolution order already falls through to a host-operation lookup, checked at the call site rather than at compile time, when no local/global/upvalue binds a name — refuses at *run* time with a typed `JsError::UnboundOperation` once no host recognizes it either. A dedicated regression test using a name genuinely unbound anywhere (`fib`, self-calling inside its own now-anonymous body) confirms this: it compiles, then refuses honestly at the call, never computing a wrong answer. 152 -> 154 tests.
+
+Re-running the harness afterward lands on `delete is not implemented` — a new, distinct, honest refusal (the `delete obj.prop` operator), left open, not yet scoped.
+
+The methodological point worth keeping: an error message names the *symptom* the compiler's own reasoning produced, not necessarily the actual shape of real usage. Grep the real file before accepting a refusal's own framing of the problem — the difference here was between a multi-session closure-machinery project and a one-line fix.
+
 ## 2026-07-21 - Object shorthand/method properties, then default parameter values, closing two more blockers
 
 Direct continuation of the entry below, same empirical loop, still on "continue building."
