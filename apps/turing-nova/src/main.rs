@@ -12,28 +12,79 @@ use std::fmt::Write as _;
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
+use std::sync::{Arc, Mutex};
 use std::thread;
 
 const PACKAGE_RELATIVE: &str = "apps/nova-shell";
 const ENGINE_COMMAND_PREFIX: &str = "TURING_ENGINE_COMMAND\t";
 const MAX_ENGINE_RECORD_BYTES: usize = 64 * 1024;
-const SUPPORTED_ENGINE_COMMANDS: &[&str] = &[
-    "navigation.history",
-    "navigation.navigate",
-    "navigation.copy-url",
-    "shell.view.open",
-    "shell.sidebar.toggle",
-    "tabs.close.request",
-    "tabs.create",
-    "tabs.activate",
-    "view.reader.toggle",
-    "view.split.toggle",
-    "ui.control.click",
-    "ui.control.pointerdown",
-    "ui.control.input",
-    "ui.control.change",
-    "ui.keyboard",
-];
+
+/// Typed command kinds observed at the development Servo boundary.
+///
+/// The host deliberately classifies intent without trusting page payloads as
+/// browser authority. A future IPC receiver can attach identity and policy
+/// validation before translating a command into `turing-ui-model` state.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EngineCommandKind {
+    NavigationHistory,
+    NavigationNavigate,
+    NavigationCopyUrl,
+    ShellViewOpen,
+    ShellSidebarToggle,
+    TabsCloseRequest,
+    TabsCreate,
+    TabsActivate,
+    ViewReaderToggle,
+    ViewSplitToggle,
+    UiControlClick,
+    UiControlPointerdown,
+    UiControlInput,
+    UiControlChange,
+    UiKeyboard,
+}
+
+impl EngineCommandKind {
+    fn parse(value: &str) -> Option<Self> {
+        Some(match value {
+            "navigation.history" => Self::NavigationHistory,
+            "navigation.navigate" => Self::NavigationNavigate,
+            "navigation.copy-url" => Self::NavigationCopyUrl,
+            "shell.view.open" => Self::ShellViewOpen,
+            "shell.sidebar.toggle" => Self::ShellSidebarToggle,
+            "tabs.close.request" => Self::TabsCloseRequest,
+            "tabs.create" => Self::TabsCreate,
+            "tabs.activate" => Self::TabsActivate,
+            "view.reader.toggle" => Self::ViewReaderToggle,
+            "view.split.toggle" => Self::ViewSplitToggle,
+            "ui.control.click" => Self::UiControlClick,
+            "ui.control.pointerdown" => Self::UiControlPointerdown,
+            "ui.control.input" => Self::UiControlInput,
+            "ui.control.change" => Self::UiControlChange,
+            "ui.keyboard" => Self::UiKeyboard,
+            _ => return None,
+        })
+    }
+
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::NavigationHistory => "navigation.history",
+            Self::NavigationNavigate => "navigation.navigate",
+            Self::NavigationCopyUrl => "navigation.copy-url",
+            Self::ShellViewOpen => "shell.view.open",
+            Self::ShellSidebarToggle => "shell.sidebar.toggle",
+            Self::TabsCloseRequest => "tabs.close.request",
+            Self::TabsCreate => "tabs.create",
+            Self::TabsActivate => "tabs.activate",
+            Self::ViewReaderToggle => "view.reader.toggle",
+            Self::ViewSplitToggle => "view.split.toggle",
+            Self::UiControlClick => "ui.control.click",
+            Self::UiControlPointerdown => "ui.control.pointerdown",
+            Self::UiControlInput => "ui.control.input",
+            Self::UiControlChange => "ui.control.change",
+            Self::UiKeyboard => "ui.keyboard",
+        }
+    }
+}
 
 fn repository_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -115,8 +166,27 @@ fn file_url(path: &Path) -> Result<String, String> {
 #[derive(Debug, Eq, PartialEq)]
 struct EngineRecord {
     version: u16,
-    kind: String,
+    kind: EngineCommandKind,
     payload_bytes: usize,
+}
+
+/// Bounded host-side observation state for one development launch.
+#[derive(Debug, Default, Eq, PartialEq)]
+struct BridgeState {
+    accepted_commands: u64,
+    last_command: Option<EngineCommandKind>,
+    recent_commands: Vec<EngineCommandKind>,
+}
+
+impl BridgeState {
+    fn observe(&mut self, record: &EngineRecord) {
+        self.accepted_commands += 1;
+        self.last_command = Some(record.kind);
+        self.recent_commands.push(record.kind);
+        if self.recent_commands.len() > 128 {
+            self.recent_commands.remove(0);
+        }
+    }
 }
 
 fn parse_engine_record(line: &str) -> Option<EngineRecord> {
@@ -130,27 +200,36 @@ fn parse_engine_record(line: &str) -> Option<EngineRecord> {
         return None;
     }
     let version = fields[0].parse().ok()?;
-    let kind = fields[1];
-    if version != 1 || !SUPPORTED_ENGINE_COMMANDS.contains(&kind) {
+    let kind = EngineCommandKind::parse(fields[1]);
+    if version != 1 {
         return None;
     }
+    let kind = kind?;
     let payload_bytes = fields[2].len();
-    (payload_bytes <= MAX_ENGINE_RECORD_BYTES).then(|| EngineRecord {
+    (payload_bytes <= MAX_ENGINE_RECORD_BYTES).then_some(EngineRecord {
         version,
-        kind: kind.to_owned(),
+        kind,
         payload_bytes,
     })
 }
 
-fn observe_engine_output<R: Read + Send + 'static>(output: R) -> thread::JoinHandle<()> {
+fn observe_engine_output<R: Read + Send + 'static>(
+    output: R,
+    state: Arc<Mutex<BridgeState>>,
+) -> thread::JoinHandle<()> {
     thread::spawn(move || {
         let reader = BufReader::new(output);
         for line in reader.lines() {
             let Ok(line) = line else { break };
             if let Some(record) = parse_engine_record(&line) {
+                if let Ok(mut bridge) = state.lock() {
+                    bridge.observe(&record);
+                }
                 println!(
                     "turing-nova: engine command v{} type={} payload_bytes={}",
-                    record.version, record.kind, record.payload_bytes
+                    record.version,
+                    record.kind.as_str(),
+                    record.payload_bytes
                 );
             }
         }
@@ -168,11 +247,19 @@ fn launch_servo(servo: &Path, url: String) -> Result<std::process::ExitStatus, S
         .stdout
         .take()
         .ok_or_else(|| "Servo stdout pipe was unavailable".to_owned())?;
-    let observer = observe_engine_output(output);
+    let bridge = Arc::new(Mutex::new(BridgeState::default()));
+    let observer = observe_engine_output(output, Arc::clone(&bridge));
     let status = child
         .wait()
         .map_err(|error| format!("cannot wait for Servo: {error}"))?;
     let _ = observer.join();
+    if let Ok(state) = bridge.lock() {
+        println!(
+            "turing-nova: observed_commands={} recent_commands={}",
+            state.accepted_commands,
+            state.recent_commands.len()
+        );
+    }
     Ok(status)
 }
 
@@ -232,6 +319,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::file_url;
+    use super::{BridgeState, EngineCommandKind, EngineRecord};
     use std::path::Path;
 
     #[test]
@@ -250,7 +338,7 @@ mod tests {
         )
         .expect("known command is accepted");
         assert_eq!(record.version, 1);
-        assert_eq!(record.kind, "navigation.navigate");
+        assert_eq!(record.kind, EngineCommandKind::NavigationNavigate);
         assert!(record.payload_bytes > 0);
     }
 
@@ -258,5 +346,21 @@ mod tests {
     fn engine_record_rejects_unknown_or_wrong_version() {
         assert!(super::parse_engine_record("TURING_ENGINE_COMMAND\t2\ttabs.create\t{}").is_none());
         assert!(super::parse_engine_record("TURING_ENGINE_COMMAND\t1\tsecret.read\t{}").is_none());
+    }
+
+    #[test]
+    fn bridge_state_keeps_only_bounded_typed_history() {
+        let record = EngineRecord {
+            version: 1,
+            kind: EngineCommandKind::TabsCreate,
+            payload_bytes: 2,
+        };
+        let mut state = BridgeState::default();
+        for _ in 0..130 {
+            state.observe(&record);
+        }
+        assert_eq!(state.accepted_commands, 130);
+        assert_eq!(state.last_command, Some(EngineCommandKind::TabsCreate));
+        assert_eq!(state.recent_commands.len(), 128);
     }
 }

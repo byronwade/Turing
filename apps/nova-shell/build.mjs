@@ -45,6 +45,8 @@ const result = await build({
   metafile: true,
   define: {
     "process.env.NODE_ENV": '"production"',
+    __TURING_NOVA_SOURCE_SHA256__: JSON.stringify(sourceHash),
+    __TURING_NOVA_TOKENS_SHA256__: JSON.stringify(tokens.source_sha256),
   },
   alias: {
     react: resolve(here, "node_modules/preact/compat"),

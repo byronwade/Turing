@@ -98,4 +98,26 @@ if (!root) {
   throw new Error("Nova shell mount point is missing");
 }
 
+// The host can inspect this immutable composition identity without reaching
+// into component state or treating the development renderer as release UI.
+window.__TURING_RUNTIME__ = {
+  version: 1,
+  authoring: "canonical-nova-jsx",
+  sourceSha256: __TURING_NOVA_SOURCE_SHA256__,
+  tokensSha256: __TURING_NOVA_TOKENS_SHA256__,
+  viewportOwner: ".stage.nova",
+  renderer: "preact-compat-on-servo-development",
+  snapshot() {
+    return {
+      version: this.version,
+      authoring: this.authoring,
+      sourceSha256: this.sourceSha256,
+      tokensSha256: this.tokensSha256,
+      viewportOwner: this.viewportOwner,
+      renderer: this.renderer,
+      mounted: Boolean(document.querySelector(this.viewportOwner)),
+    };
+  },
+};
+
 render(h(Nova, null), root);

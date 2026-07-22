@@ -69,6 +69,13 @@ writes `dist/build-metadata.json`. The metadata includes the source and design
 token SHA-256 values, byte and line counts, compiler/runtime versions, output
 size, and bundle inputs. A stale token projection fails the build.
 
+The bundle also exposes a read-only `window.__TURING_RUNTIME__` composition
+descriptor. It reports the canonical source hash, token hash, viewport owner
+(`.stage.nova`), and the development renderer identity. Servo verification
+checks that the descriptor is mounted, source/token provenance agrees, and the
+Nova root owns the viewport. This is composition evidence, not release-runtime
+approval.
+
 Run the reproducible headless interaction proof with:
 
 ```powershell
@@ -79,9 +86,10 @@ It starts Servo WebDriver, asserts that Nova owns the full viewport, dispatches
 the equivalent DOM click/input/keyboard events for the address surface, enters
 `example.com`, submits the command field, and then drives new-tab, profile and
 settings navigation, settings input, tab-position/sidebar, reader, split-view,
-and tab-close controls. It checks that the resulting typed records reached the
-adapter. It uses only Node's built-in HTTP/process APIs and the local Servo
-executable.
+tab-close, History, Downloads, Extensions, and Ask Turing controls. It also
+checks the read-only runtime composition descriptor and that the resulting
+typed records reached the adapter. It uses only Node's built-in HTTP/process
+APIs and the local Servo executable.
 
 To use another Servo checkout:
 
@@ -123,9 +131,12 @@ perform a real browser action.
 When launched by `turing-nova`, the URL contains the opt-in
 `turing_engine_bridge=1` flag. The adapter emits a tab-delimited development
 record to Servo's console; the Rust host validates protocol version and command
-type and reports only command type and payload byte length. It never writes raw
-typed payload values to host output. This is an observable prototype bridge,
-not an IPC or privileged command path.
+type and payload byte length. It never writes raw typed payload values to host
+output. The host classifies accepted records into a typed `EngineCommandKind`
+and retains only a 128-entry in-memory observation ledger for the launch. The
+ledger is diagnostic state, not browser state or authority: it does not parse
+URLs, mint tab identities, mutate profiles, or execute commands. This is an
+observable prototype bridge, not an IPC or privileged command path.
 
 ## Verified behavior
 

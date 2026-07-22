@@ -117,6 +117,16 @@ async function clickTitle(fragment, label) {
   await sleep(250);
 }
 
+async function assertPageText(text, label) {
+  const result = await execute(`const page = document.querySelector('.scroll');
+    return {
+      found: Boolean(page && page.innerText.includes(${JSON.stringify(text)})),
+      pageText: page ? page.innerText.slice(0, 240) : '',
+      routeText: document.body.innerText.slice(0, 320),
+    };`);
+  if (!result.found) throw new Error(`${label} was not rendered: ${JSON.stringify(result)}`);
+}
+
 async function waitForNovaMount() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     try {
@@ -143,9 +153,15 @@ try {
     stage: Boolean(document.querySelector('.stage')),
     nova: Boolean(document.querySelector('.nova')),
     outerCanvas: Boolean(document.querySelector('.canvas, .holder, .zbar, .zexit')),
+    runtime: window.__TURING_RUNTIME__ ? window.__TURING_RUNTIME__.snapshot() : null,
     viewport: [window.innerWidth, window.innerHeight],
   };`);
-  if (!viewport.root || !viewport.stage || !viewport.nova || viewport.outerCanvas) {
+  if (!viewport.root || !viewport.stage || !viewport.nova || viewport.outerCanvas
+    || !viewport.runtime || !viewport.runtime.mounted
+    || viewport.runtime.authoring !== "canonical-nova-jsx"
+    || viewport.runtime.renderer !== "preact-compat-on-servo-development"
+    || !/^[A-F0-9]{64}$/.test(viewport.runtime.sourceSha256)
+    || viewport.runtime.sourceSha256 !== viewport.runtime.tokensSha256) {
     throw new Error(`Nova viewport assertion failed: ${JSON.stringify(viewport)}`);
   }
 
@@ -170,7 +186,17 @@ try {
   // are deliberately DOM interactions, not direct adapter calls.
   await clickSelector("button.newtab", "new-tab control");
   await clickSelector("button.avatar", "profile control");
+  await clickText("button.mitem", "History", "history menu item");
+  await assertPageText("History", "history page");
+  await clickSelector("button.avatar", "profile control after history");
+  await clickText("button.mitem", "Downloads", "downloads menu item");
+  await assertPageText("Downloads", "downloads page");
+  await clickSelector("button.avatar", "profile control after downloads");
+  await clickText("button.mitem", "Extensions", "extensions menu item");
+  await assertPageText("Extensions", "extensions page");
+  await clickSelector("button.avatar", "profile control after extensions");
   await clickText("button.mitem", "Settings", "settings menu item");
+  await assertPageText("Settings", "settings page");
   const settingsInput = await execute("return Boolean(document.querySelector('.pnav-search input'));");
   if (!settingsInput) throw new Error("Settings search input was not rendered");
   await execute(`const input = document.querySelector('.pnav-search input');
@@ -187,6 +213,9 @@ try {
   await clickText("button.qa", "Reader", "reader command");
   await clickSelector("button.site", "toolbar address control");
   await clickText("button.qa", "Split", "split command");
+  await clickTitle("Ask Turing", "Ask Turing control");
+  await execute(`if (!document.querySelector('.ai-htitle')) throw new Error('Ask Turing panel was not rendered');`);
+  await clickSelector("button.ai-hbtn[title^='Close']", "Ask Turing close control");
   await clickSelector(".vtab.on button.xc", "active-tab close control");
   await sleep(450);
 
