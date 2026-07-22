@@ -925,9 +925,14 @@ enum Expr {
     /// evaluates to a function value. It does not capture enclosing locals —
     /// a reference to one is refused at compile time as undefined rather than
     /// captured — so it is a first-class value, not yet a closure.
+    ///
+    /// `min_arity` is the count of leading parameters with no default value
+    /// (`parameters.len()` when none has one) — see [`Function::min_arity`]'s
+    /// doc comment for how it relaxes the call-site arity check.
     Lambda {
         parameters: Vec<String>,
         body: Vec<Stmt>,
+        min_arity: usize,
     },
     /// Postfix `x++` / `x--`: assigns `x + delta` but evaluates to the old
     /// value of `x`.
@@ -1035,6 +1040,7 @@ enum Stmt {
         name: String,
         parameters: Vec<String>,
         body: Vec<Stmt>,
+        min_arity: usize,
     },
     Return(Option<Expr>),
 }
@@ -1157,6 +1163,19 @@ fn apply_pattern_default(read: Expr, default: Option<Expr>) -> Expr {
             then_branch: Box::new(default_expr),
             else_branch: Box::new(read),
         },
+    }
+}
+
+/// Formats an arity-mismatch error's argument-count description: `"3"` when
+/// `min == max` (no default parameters, the ordinary case), `"3 to 4"`
+/// otherwise — used at both the compile-time named-call check and the
+/// runtime function-value call check, so a caller sees the same wording
+/// either way.
+fn arity_range(min_arity: usize, arity: usize) -> String {
+    if min_arity == arity {
+        arity.to_string()
+    } else {
+        format!("{min_arity} to {arity}")
     }
 }
 
@@ -1405,7 +1424,7 @@ impl<'a> Parser<'a> {
                 expected: "a function name".to_string(),
             });
         };
-        let (parameters, prelude) = self.parse_parameter_list()?;
+        let (parameters, prelude, min_arity) = self.parse_parameter_list()?;
         self.expect_punct("{")?;
         let mut body = prelude;
         while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
@@ -1416,6 +1435,7 @@ impl<'a> Parser<'a> {
             name,
             parameters,
             body,
+            min_arity,
         })
     }
 
@@ -1682,20 +1702,22 @@ impl<'a> Parser<'a> {
     /// inherit its rule that capturing an enclosing local is refused, not
     /// silently captured.
     fn parse_arrow(&mut self) -> Result<Expr, JsError> {
-        let (parameters, prelude) = if self.check_punct("(") {
+        let (parameters, prelude, min_arity) = if self.check_punct("(") {
             self.parse_parameter_list()?
         } else {
             // A bare, unparenthesised arrow parameter is always a plain
             // identifier in real JS too — a destructured single parameter
             // needs its own parens (`({a}) => ...`), which takes the branch
-            // above.
+            // above. It cannot carry a default either (`x = 1 => ...` is not
+            // valid JS grammar; that needs parens too), so it is always
+            // required.
             let Token::Ident(name) = self.advance() else {
                 return Err(JsError::UnexpectedToken {
                     found: "token".to_string(),
                     expected: "an arrow parameter".to_string(),
                 });
             };
-            (vec![name], Vec::new())
+            (vec![name], Vec::new(), 1)
         };
         self.expect_punct("=>")?;
         let mut body = prelude;
@@ -1709,7 +1731,11 @@ impl<'a> Parser<'a> {
             // `x => expr` is `x => { return expr; }`.
             body.push(Stmt::Return(Some(self.parse_assignment()?)));
         }
-        Ok(Expr::Lambda { parameters, body })
+        Ok(Expr::Lambda {
+            parameters,
+            body,
+            min_arity,
+        })
     }
 
     fn parse_logical_or(&mut self) -> Result<Expr, JsError> {
@@ -2149,7 +2175,7 @@ impl<'a> Parser<'a> {
                 }
             };
             if self.check_punct("(") {
-                let (parameters, prelude) = self.parse_parameter_list()?;
+                let (parameters, prelude, min_arity) = self.parse_parameter_list()?;
                 self.expect_punct("{")?;
                 let mut body = prelude;
                 while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
@@ -2158,7 +2184,11 @@ impl<'a> Parser<'a> {
                 self.expect_punct("}")?;
                 entries.push(ObjectEntry::Property(
                     key,
-                    Expr::Lambda { parameters, body },
+                    Expr::Lambda {
+                        parameters,
+                        body,
+                        min_arity,
+                    },
                 ));
             } else if self.eat_punct(":") {
                 entries.push(ObjectEntry::Property(key, self.parse_assignment()?));
@@ -2220,14 +2250,18 @@ impl<'a> Parser<'a> {
                 feature: "named function expressions (self-reference is capture)".to_string(),
             });
         }
-        let (parameters, prelude) = self.parse_parameter_list()?;
+        let (parameters, prelude, min_arity) = self.parse_parameter_list()?;
         self.expect_punct("{")?;
         let mut body = prelude;
         while !self.check_punct("}") && !matches!(self.peek(), Token::Eof) {
             body.push(self.parse_statement()?);
         }
         self.expect_punct("}")?;
-        Ok(Expr::Lambda { parameters, body })
+        Ok(Expr::Lambda {
+            parameters,
+            body,
+            min_arity,
+        })
     }
 
     /// Parses `(a, b, c)` call arguments, the `(` still ahead.
@@ -2252,12 +2286,34 @@ impl<'a> Parser<'a> {
     /// the same desugar a `const { a, b } = ...` declaration goes through.
     /// A plain identifier parameter is unaffected: no synthetic name, no
     /// prelude statement, identical to before this existed.
-    fn parse_parameter_list(&mut self) -> Result<(Vec<String>, Vec<Stmt>), JsError> {
+    /// Parses `(a, b, [c, d], {e}, f = 1)`.
+    ///
+    /// Returns the bound parameter names, the prelude statements a
+    /// destructured parameter or a default value desugars to (run at the
+    /// very start of the body, before anything the caller wrote), and
+    /// `min_arity` — the count of leading parameters with no default value.
+    ///
+    /// Real Nova usage: `over = 6`, `clr = "ac"`. A default is real,
+    /// observed syntax on a *plain* (non-destructured) parameter and, in
+    /// both real cases, is the last parameter in the list — every call site
+    /// either omits it entirely or supplies every parameter. Scoped to
+    /// exactly that trailing shape: once a plain parameter has a default,
+    /// any further parameter (plain-without-default or destructured, which
+    /// has no top-level default of its own) refuses rather than silently
+    /// picking some other arity semantics real usage never needed.
+    fn parse_parameter_list(&mut self) -> Result<(Vec<String>, Vec<Stmt>, usize), JsError> {
         self.expect_punct("(")?;
         let mut parameters = Vec::new();
         let mut prelude = Vec::new();
+        let mut min_arity = 0;
+        let mut seen_default = false;
         while !self.check_punct(")") {
             if self.check_punct("[") || self.check_punct("{") {
+                if seen_default {
+                    return Err(JsError::Unsupported {
+                        feature: "a destructured parameter after a default parameter".to_string(),
+                    });
+                }
                 let temp = self.next_pattern_temp();
                 let statements = if self.check_punct("[") {
                     let bindings = self.parse_array_pattern()?;
@@ -2283,6 +2339,7 @@ impl<'a> Parser<'a> {
                 // in `locals` at this slot by the time the body runs) takes
                 // its place, so only the per-property reads remain.
                 prelude.extend(statements.into_iter().skip(1));
+                min_arity += 1;
             } else {
                 let Token::Ident(parameter) = self.advance() else {
                     return Err(JsError::UnexpectedToken {
@@ -2290,6 +2347,28 @@ impl<'a> Parser<'a> {
                         expected: "a parameter name".to_string(),
                     });
                 };
+                if self.eat_punct("=") {
+                    let default = self.parse_assignment()?;
+                    // `param = param === undefined ? default : param` — the
+                    // same `=== undefined` semantics (not merely falsy)
+                    // `apply_pattern_default` already gives destructuring
+                    // defaults, so an explicit falsy argument (`over(x, 0)`)
+                    // is kept, not silently replaced.
+                    prelude.push(Stmt::Expression(Expr::Assign {
+                        name: parameter.clone(),
+                        value: Box::new(apply_pattern_default(
+                            Expr::Variable(parameter.clone()),
+                            Some(default),
+                        )),
+                    }));
+                    seen_default = true;
+                } else if seen_default {
+                    return Err(JsError::Unsupported {
+                        feature: "a required parameter after a default parameter".to_string(),
+                    });
+                } else {
+                    min_arity += 1;
+                }
                 parameters.push(parameter);
             }
             if !self.eat_punct(",") {
@@ -2297,7 +2376,7 @@ impl<'a> Parser<'a> {
             }
         }
         self.expect_punct(")")?;
-        Ok((parameters, prelude))
+        Ok((parameters, prelude, min_arity))
     }
 
     /// Parses `[pattern] = value` or `{pattern} = value`, the `const`/`let`/
@@ -3152,8 +3231,19 @@ pub enum Op {
 pub struct Function {
     /// Source name, for diagnostics.
     pub name: String,
-    /// Parameter count.
+    /// Parameter count — the most arguments a call may pass.
     pub arity: usize,
+    /// The fewest arguments a call may pass — the count of leading
+    /// parameters with no default value. Equal to `arity` for a function
+    /// with no default parameters. A call site is valid when `min_arity <=
+    /// argc <= arity`; the VM's own frame setup already fills any local
+    /// slot beyond `argc` with `Value::Undefined` regardless of this field
+    /// (see `run_function_with_upvalues`), so no other runtime change is
+    /// needed to support default parameters — each defaulted parameter's
+    /// own body prelude (`param = param === undefined ? default : param`,
+    /// built by `apply_pattern_default`) is what actually applies the
+    /// default when a caller omitted it.
+    pub min_arity: usize,
     /// Number of local slots the frame needs.
     pub locals: usize,
     /// Instruction stream.
@@ -3185,8 +3275,9 @@ struct Upvalue {
 
 struct Compiler {
     functions: Vec<Function>,
-    /// Function name to table index, resolved for calls.
-    signatures: Vec<(String, usize, usize)>,
+    /// Function name to table index, resolved for calls: `(name, index,
+    /// min_arity, arity)` — see [`Function::min_arity`]'s doc comment.
+    signatures: Vec<(String, usize, usize, usize)>,
     /// Top-level `const`/`let`/`var` bindings, name to global slot plus
     /// whether reassignment is refused. Unlike `scopes`, this is never saved
     /// or swapped by `fill_function` — a script-level binding is visible to a
@@ -3227,12 +3318,15 @@ impl Compiler {
         // and so mutual recursion resolves.
         for statement in statements {
             if let Stmt::Function {
-                name, parameters, ..
+                name,
+                parameters,
+                min_arity,
+                ..
             } = statement
             {
                 let index = self.signatures.len() + 1;
                 self.signatures
-                    .push((name.clone(), index, parameters.len()));
+                    .push((name.clone(), index, *min_arity, parameters.len()));
             }
         }
         // Top-level `const`/`let`/`var` bindings are hoisted into the flat
@@ -3271,6 +3365,7 @@ impl Compiler {
         let placeholder = || Function {
             name: "<reserved>".to_string(),
             arity: 0,
+            min_arity: 0,
             locals: 0,
             code: Vec::new(),
         };
@@ -3288,11 +3383,13 @@ impl Compiler {
                 name,
                 parameters,
                 body,
+                min_arity,
             } = statement
             {
                 // A top-level declaration has no enclosing function to
                 // capture from; any upvalues would be a compiler bug.
-                let captured = self.fill_function(index, name, parameters, body, None)?;
+                let captured =
+                    self.fill_function(index, name, parameters, body, *min_arity, None)?;
                 debug_assert!(captured.is_empty());
                 index += 1;
             }
@@ -3311,6 +3408,7 @@ impl Compiler {
         self.functions[0] = Function {
             name: "<top>".to_string(),
             arity: 0,
+            min_arity: 0,
             locals,
             code,
         };
@@ -3381,6 +3479,7 @@ impl Compiler {
         name: &str,
         parameters: &[String],
         body: &[Stmt],
+        min_arity: usize,
         enclosing: Option<Vec<Scope>>,
     ) -> Result<Vec<Upvalue>, JsError> {
         let outer_code = core::mem::take(&mut self.code);
@@ -3407,6 +3506,7 @@ impl Compiler {
         self.functions[index] = Function {
             name: name.to_string(),
             arity: parameters.len(),
+            min_arity,
             locals: self.max_slot,
             code: core::mem::take(&mut self.code),
         };
@@ -3426,18 +3526,26 @@ impl Compiler {
         &mut self,
         parameters: &[String],
         body: &[Stmt],
+        min_arity: usize,
     ) -> Result<(usize, Vec<Upvalue>), JsError> {
         let index = self.functions.len();
         self.functions.push(Function {
             name: "<anonymous>".to_string(),
             arity: 0,
+            min_arity: 0,
             locals: 0,
             code: Vec::new(),
         });
         // The lambda captures from wherever it is defined: the current scopes.
         let enclosing = self.scopes.clone();
-        let captured =
-            self.fill_function(index, "<anonymous>", parameters, body, Some(enclosing))?;
+        let captured = self.fill_function(
+            index,
+            "<anonymous>",
+            parameters,
+            body,
+            min_arity,
+            Some(enclosing),
+        )?;
         Ok((index, captured))
     }
 
@@ -3641,10 +3749,10 @@ impl Compiler {
                     self.code.push(Op::LoadLocal(slot));
                 } else if let Some(upvalue) = self.resolve_upvalue(name)? {
                     self.code.push(Op::LoadUpvalue(upvalue));
-                } else if let Some(&(_, index, _)) = self
+                } else if let Some(&(_, index, ..)) = self
                     .signatures
                     .iter()
-                    .find(|(candidate, _, _)| candidate == name)
+                    .find(|(candidate, ..)| candidate == name)
                 {
                     // A top-level `function` declaration referenced as a
                     // plain value (stored, passed as a callback, used as a
@@ -3808,13 +3916,14 @@ impl Compiler {
                 // then a local variable holding a function value (an indirect
                 // call); then a host-bound operation, checked at the call
                 // because the compiler does not hold the host's table.
-                if let Some(&(_, index, arity)) =
-                    self.signatures.iter().find(|(name, _, _)| name == callee)
+                if let Some(&(_, index, min_arity, arity)) =
+                    self.signatures.iter().find(|(name, ..)| name == callee)
                 {
-                    if arguments.len() != arity {
+                    if arguments.len() < min_arity || arguments.len() > arity {
                         return Err(JsError::TypeError {
                             message: format!(
-                                "{callee} expects {arity} argument(s), got {}",
+                                "{callee} expects {} argument(s), got {}",
+                                arity_range(min_arity, arity),
                                 arguments.len()
                             ),
                         });
@@ -3890,8 +3999,12 @@ impl Compiler {
                     argc: arguments.len(),
                 });
             }
-            Expr::Lambda { parameters, body } => {
-                let (index, upvalues) = self.compile_lambda(parameters, body)?;
+            Expr::Lambda {
+                parameters,
+                body,
+                min_arity,
+            } => {
+                let (index, upvalues) = self.compile_lambda(parameters, body, *min_arity)?;
                 if upvalues.is_empty() {
                     // No captures: a plain function value, cheaper than a
                     // closure and identical in behaviour.
@@ -4119,9 +4232,15 @@ impl Vm {
                 name: name.to_string(),
             });
         };
-        if function.arity != arguments.len() {
+        if arguments.len() < function.min_arity || arguments.len() > function.arity {
             return Err(JsError::OperationArity {
                 name: name.to_string(),
+                // The lower bound would be more precise for a defaulted
+                // function, but `OperationArity` reports a single expected
+                // count everywhere else it's used (host-operation arity,
+                // which never has defaults) — `arity` (the max) keeps this
+                // one embedder-facing call site consistent with those
+                // rather than growing a min/max shape only this call needs.
                 expected: function.arity,
                 got: arguments.len(),
             });
@@ -4754,11 +4873,11 @@ impl Vm {
             .ok_or_else(|| JsError::TypeError {
                 message: "call to an unknown function value".to_owned(),
             })?;
-        if function.arity != arguments.len() {
+        if arguments.len() < function.min_arity || arguments.len() > function.arity {
             return Err(JsError::TypeError {
                 message: format!(
                     "a function value expects {} argument(s), got {}",
-                    function.arity,
+                    arity_range(function.min_arity, function.arity),
                     arguments.len()
                 ),
             });
@@ -5960,6 +6079,125 @@ mod tests {
         let error = compile("function f(a, b) { return a; } function main() { return f(1); }")
             .expect_err("refused");
         assert!(matches!(error, JsError::TypeError { .. }));
+    }
+
+    #[test]
+    fn a_trailing_default_parameter_applies_only_when_the_argument_is_omitted() {
+        // The real Nova shapes: `function useVirtual(ref, rowH, count, over
+        // = 6) {}` called as `useVirtual(ref, ROW, list.length)` (one fewer
+        // argument than declared), and `useCallback((clr = "ac") => {...})`
+        // called as `sweep()` (zero arguments). A named call short of the
+        // full parameter count is no longer a compile-time arity refusal
+        // when the missing parameters all have defaults. Declared at the
+        // top level, not nested in `main`, since nested function
+        // declarations are their own separate refusal.
+        fn call(source: &str) -> Value {
+            let program = compile(source).expect("compiles");
+            Vm::default()
+                .call(&program, "main", Vec::new(), &mut NoHost::default())
+                .expect("runs")
+        }
+        assert_eq!(
+            call(
+                "function withDefault(a, b, over = 6) { return a + b + over; } \
+                 function main() { return withDefault(1, 2); }"
+            ),
+            Value::Number(9.0)
+        );
+        // An explicit argument is kept — even a falsy one — never
+        // overridden by the default (`apply_pattern_default`'s `===
+        // undefined` check, not a truthiness check).
+        assert_eq!(
+            call(
+                "function withDefault(a, b, over = 6) { return a + b + over; } \
+                 function main() { return withDefault(1, 2, 0); }"
+            ),
+            Value::Number(3.0),
+            "an explicit 0 must not be replaced by the default"
+        );
+        assert_eq!(
+            call(
+                "function withDefault(a, b, over = 6) { return a + b + over; } \
+                 function main() { return withDefault(1, 2, 100); }"
+            ),
+            Value::Number(103.0)
+        );
+    }
+
+    #[test]
+    fn a_default_parameter_on_an_arrow_function_value_applies_the_same_way() {
+        // `sweep()` calls through `Op::CallValue`, not the named-call path
+        // `a_trailing_default_parameter_applies_only_when_the_argument_is_
+        // omitted` exercises — a distinct compile-time check and a distinct
+        // runtime check (`call_function_value`) both need the same range.
+        assert_eq!(
+            eval_in_fn("let sweep = (clr = \"ac\") => clr; return sweep();"),
+            Value::String("ac".to_string())
+        );
+        assert_eq!(
+            eval_in_fn("let sweep = (clr = \"ac\") => clr; return sweep(\"other\");"),
+            Value::String("other".to_string())
+        );
+    }
+
+    #[test]
+    fn a_call_below_the_minimum_or_above_the_maximum_arity_still_refuses() {
+        // A defaulted parameter narrows the exact-match check to a range —
+        // it must not remove it. Below `min_arity` (omitting a required,
+        // non-defaulted parameter) and above `arity` (an extra argument
+        // past the last declared parameter, defaulted or not) both still
+        // refuse, the same as `wrong_argument_count_is_refused` already
+        // proves for a function with no defaults at all.
+        assert!(matches!(
+            compile(
+                "function f(a, b, over = 6) { return a; } function main() { return f(1); } main();"
+            ),
+            Err(JsError::TypeError { .. })
+        ));
+        assert!(matches!(
+            compile(
+                "function f(a, over = 6) { return a; } \
+                 function main() { return f(1, 2, 3); } main();"
+            ),
+            Err(JsError::TypeError { .. })
+        ));
+    }
+
+    #[test]
+    fn vm_call_the_embedder_entry_point_also_honours_default_parameters() {
+        // `Op::Call`/`Op::CallValue` (the two paths a script's own calls
+        // take) are covered above; `Vm::call` is the third, separate arity
+        // check — the embedder-facing entry point (how `turing-engine`
+        // invokes `Nova()`/an event handler by name from outside the
+        // script). It must accept a short call the same way.
+        let program =
+            compile("function withDefault(a, over = 6) { return a + over; }").expect("compiles");
+        assert_eq!(
+            Vm::default()
+                .call(
+                    &program,
+                    "withDefault",
+                    vec![Value::Number(1.0)],
+                    &mut NoHost::default(),
+                )
+                .expect("runs"),
+            Value::Number(7.0)
+        );
+    }
+
+    #[test]
+    fn a_parameter_after_a_default_parameter_is_refused() {
+        // Real usage only ever has a default parameter last — non-trailing
+        // defaults are a real, rarer JS shape this engine does not model,
+        // refused rather than mishandled.
+        assert!(matches!(
+            compile("function f(a = 1, b) { return a + b; }"),
+            Err(JsError::Unsupported { .. })
+        ));
+        assert!(matches!(
+            compile("function f(a = 1, [b, c]) { return a; }"),
+            Err(JsError::Unsupported { .. })
+        ));
     }
 
     #[test]
@@ -7753,6 +7991,7 @@ mod tests {
             functions: vec![Function {
                 name: "main".to_owned(),
                 arity: 0,
+                min_arity: 0,
                 locals: 0,
                 code: vec![op, Op::Return],
             }],
