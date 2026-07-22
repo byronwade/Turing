@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "ui-runtime" / "machine" / "design-source-manifest.json"
 SCHEMA = ROOT / "docs" / "ui-runtime" / "machine" / "design-source-manifest.schema.json"
+TOKENS = ROOT / "design" / "tokens.json"
 
 
 def fail(message: str) -> None:
@@ -48,10 +49,22 @@ def main() -> int:
     if line_count != manifest["line_count"]:
         fail(f"line count mismatch: expected {manifest['line_count']}, got {line_count}")
 
+    try:
+        tokens = json.loads(TOKENS.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        fail(f"cannot read shared design tokens: {exc}")
+    if tokens.get("source") != manifest["source_path"]:
+        fail("shared design tokens point at a different source path")
+    if tokens.get("source_sha256") != digest:
+        fail(
+            "shared design tokens are stale: "
+            f"expected source_sha256 {digest}, got {tokens.get('source_sha256')}"
+        )
+
     print(
         "design-source validation passed: "
         f"{manifest['source_path']} sha256={digest} "
-        f"bytes={len(data)} lines={line_count} no-claim"
+        f"bytes={len(data)} lines={line_count} tokens-provenance-ok no-claim"
     )
     return 0
 

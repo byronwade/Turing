@@ -113,7 +113,7 @@ pub const DARK: Theme = Theme {
     accent: rgb(0x2E8DFF),
     accent_soft: rgb(0x171F36),
     good: rgb(0x34D399),
-    warn: rgb(0xF3B75F),
+    warn: rgb(0xFBBF24),
     bad: rgb(0xF87171),
 };
 
@@ -132,7 +132,7 @@ pub const LIGHT: Theme = Theme {
     accent: rgb(0x2E8DFF),
     accent_soft: rgb(0xE1ECFB),
     good: rgb(0x0F9955),
-    warn: rgb(0xA66A00),
+    warn: rgb(0xC07C1D),
     bad: rgb(0xDC3535),
 };
 

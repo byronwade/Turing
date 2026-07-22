@@ -27,6 +27,11 @@ Generate Rust constants, selected-toolkit declarations, optional React CSS varia
 
 The current primary visual/layout reference is the captured [Turing Nova design source](design-lab/README.md) and its verbatim [JSX artifact](design-lab/turing-nova-design-source.jsx). Until its visual contracts are extracted into the shared design data, changes to browser-facing hierarchy, panel composition, spacing, typography, themes, density, motion intent, or named surface states must be reconciled against that artifact. This elevates the supplied concept shell to the design reference without making React the product runtime or behavioral source of truth.
 
+`tools/validate_design_source.py` verifies that `design/tokens.json` names
+this source and carries its current SHA-256. A source revision therefore
+cannot pass repository validation while leaving shared token provenance on an
+older artifact; token values still require an intentional extraction review.
+
 ## Design lab capabilities
 
 - component gallery and state fixtures;
