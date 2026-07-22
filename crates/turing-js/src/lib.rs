@@ -1050,9 +1050,9 @@ enum Expr {
     ObjectLiteral {
         entries: Vec<ObjectEntry>,
     },
-    /// `[a, b, c]`, in source order.
+    /// `[a, b, c]` / `[a, ...b, c]`, in source order.
     ArrayLiteral {
-        elements: Vec<Expr>,
+        elements: Vec<ArrayElement>,
     },
     /// `object.name` or `object[key]`. `optional` is true only when *this*
     /// link had its own `?.`/`?.[` token — see [`Expr::OptionalChain`] for
@@ -1136,6 +1136,22 @@ enum ObjectEntry {
     /// computed method is refused by `Parser::parse_object_literal`
     /// rather than modeled.
     Computed(Expr, Expr),
+}
+
+/// One element of an array literal.
+#[derive(Clone, Debug, PartialEq)]
+enum ArrayElement {
+    /// A plain value.
+    Item(Expr),
+    /// `...expr` — appends every element of an array or `Set`, in order,
+    /// to the array under construction. Real Nova usage:
+    /// `[...document.querySelectorAll(".ttabs .ttab")]`, `[...sel]` (a
+    /// `Set`). Unlike `ObjectEntry::Spread`, `null`/`undefined` (and
+    /// anything else that is not an array or `Set`) refuses rather than
+    /// spreading nothing: real JS array/iterable spread has no such
+    /// tolerance — `[...null]` throws in real JS too, unlike `{...null}`,
+    /// which is a real, specified no-op.
+    Spread(Expr),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2566,12 +2582,11 @@ impl<'a> Parser<'a> {
                     feature: "array elision (holes)".to_string(),
                 });
             }
-            if self.check_punct("...") {
-                return Err(JsError::Unsupported {
-                    feature: "array spread".to_string(),
-                });
+            if self.eat_punct("...") {
+                elements.push(ArrayElement::Spread(self.parse_assignment()?));
+            } else {
+                elements.push(ArrayElement::Item(self.parse_assignment()?));
             }
-            elements.push(self.parse_assignment()?);
             if !self.eat_punct(",") {
                 break;
             }
@@ -3220,7 +3235,9 @@ impl<'a> Parser<'a> {
                         Expr::ObjectLiteral {
                             entries: Vec::new(),
                         },
-                        Expr::ArrayLiteral { elements: children },
+                        Expr::ArrayLiteral {
+                            elements: children.into_iter().map(ArrayElement::Item).collect(),
+                        },
                     ],
                 },
                 end,
@@ -3286,7 +3303,9 @@ impl<'a> Parser<'a> {
                 arguments: vec![
                     tag_arg,
                     props_arg,
-                    Expr::ArrayLiteral { elements: children },
+                    Expr::ArrayLiteral {
+                        elements: children.into_iter().map(ArrayElement::Item).collect(),
+                    },
                 ],
             },
             end,
@@ -3516,6 +3535,20 @@ pub enum Op {
     NewObject,
     /// Pop `n` elements and push an array of them, element 0 deepest.
     NewArray(usize),
+    /// Pop a value, then an array; append the value at the array's current
+    /// `length` and push the array back (still the same array, ready for
+    /// the next element or as the literal's final result). Used only when
+    /// an array literal contains at least one spread element — `Op::
+    /// NewArray(n)`'s fixed-count form stays the fast path when it does
+    /// not, since a spread's element count is not known until runtime.
+    ArrayPush,
+    /// Pop a source value, then an array; append every element of the
+    /// source (an array or a `Set`, in order) starting at the array's
+    /// current `length`, and push the array back. Anything else for the
+    /// source refuses — see [`ArrayElement::Spread`]'s doc comment for why
+    /// this, unlike `Op::SpreadInto`, is not tolerant of `null`/
+    /// `undefined`.
+    ArraySpreadPush,
     /// Push a copy of the top of stack.
     Dup,
     /// Push a copy of the top two stack values, in the same order: `[.., a,
@@ -4374,13 +4407,43 @@ impl Compiler {
                 }
             }
             Expr::ArrayLiteral { elements } => {
-                // Elements are pushed in source order, element 0 deepest, and
-                // NewArray gathers them; keeping the count on the op means the
-                // VM does not scan for a marker.
-                for element in elements {
-                    self.expression(element)?;
+                if elements
+                    .iter()
+                    .any(|e| matches!(e, ArrayElement::Spread(_)))
+                {
+                    // A spread's element count is not known until runtime,
+                    // so the fixed-count `Op::NewArray(n)` fast path below
+                    // does not apply — build incrementally instead. Each
+                    // `Op::ArrayPush`/`Op::ArraySpreadPush` leaves the same
+                    // array back on the stack, so no `Dup`/`Pop` dance is
+                    // needed the way `ObjectEntry`'s handling above needs
+                    // (those ops there serve double duty as plain
+                    // assignment's own value-producing form; these do not).
+                    self.code.push(Op::NewArray(0));
+                    for element in elements {
+                        match element {
+                            ArrayElement::Item(value) => {
+                                self.expression(value)?;
+                                self.code.push(Op::ArrayPush);
+                            }
+                            ArrayElement::Spread(source) => {
+                                self.expression(source)?;
+                                self.code.push(Op::ArraySpreadPush);
+                            }
+                        }
+                    }
+                } else {
+                    // Elements are pushed in source order, element 0
+                    // deepest, and NewArray gathers them; keeping the count
+                    // on the op means the VM does not scan for a marker.
+                    for element in elements {
+                        let ArrayElement::Item(value) = element else {
+                            unreachable!("no Spread elements in this branch")
+                        };
+                        self.expression(value)?;
+                    }
+                    self.code.push(Op::NewArray(elements.len()));
                 }
-                self.code.push(Op::NewArray(elements.len()));
             }
             Expr::Member {
                 object,
@@ -5035,6 +5098,96 @@ impl Vm {
                                 message: error.to_string(),
                             })?;
                     stack.push(Value::Array(reference));
+                }
+                Op::ArrayPush => {
+                    let value = pop(&mut stack);
+                    let array = pop(&mut stack);
+                    let Value::Array(handle) = array else {
+                        return Err(JsError::TypeError {
+                            message: format!("cannot append to {array}"),
+                        });
+                    };
+                    let object =
+                        runtime
+                            .heap
+                            .get_mut(handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    let length = object.get("length").map(to_number).unwrap_or(0.0).max(0.0) as u64;
+                    // Charged like one slot of `Op::NewArray`'s literal
+                    // form, so building `[a, ...b, c]` up incrementally
+                    // does not become a cheaper way to add new literal
+                    // elements than writing them in a spread-free literal.
+                    let mut charged =
+                        object.set(length.to_string(), value) as u64 + ELEMENT_OVERHEAD_BYTES;
+                    #[allow(clippy::cast_precision_loss)]
+                    let new_length = Value::Number((length + 1) as f64);
+                    charged += object.set("length".to_owned(), new_length) as u64;
+                    runtime.bytes = runtime.bytes.saturating_add(charged);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    stack.push(Value::Array(handle));
+                }
+                Op::ArraySpreadPush => {
+                    let source = pop(&mut stack);
+                    let array = pop(&mut stack);
+                    let Value::Array(handle) = array else {
+                        return Err(JsError::TypeError {
+                            message: format!("cannot append to {array}"),
+                        });
+                    };
+                    let elements = match source {
+                        Value::Array(source_handle) => array_elements(runtime, source_handle)?,
+                        Value::Set(source_handle) => runtime
+                            .heap
+                            .get(source_handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?
+                            .entries
+                            .iter()
+                            .map(|(_, value)| value.clone())
+                            .collect(),
+                        other => {
+                            return Err(JsError::TypeError {
+                                message: format!("cannot spread {other} into an array"),
+                            });
+                        }
+                    };
+                    let object =
+                        runtime
+                            .heap
+                            .get_mut(handle)
+                            .map_err(|error| JsError::TypeError {
+                                message: error.to_string(),
+                            })?;
+                    let mut length =
+                        object.get("length").map(to_number).unwrap_or(0.0).max(0.0) as u64;
+                    // Each copied element is only charged its own key-length
+                    // cost, the same as `Op::SpreadInto` (object spread) —
+                    // not the flatter `Op::ArrayPush`/`Op::NewArray` literal
+                    // charge, since a spread element is not new data: the
+                    // source it came from was already charged in full when
+                    // it was built.
+                    let mut charged = 0u64;
+                    for element in elements {
+                        charged += object.set(length.to_string(), element) as u64;
+                        length += 1;
+                    }
+                    #[allow(clippy::cast_precision_loss)]
+                    let new_length = Value::Number(length as f64);
+                    charged += object.set("length".to_owned(), new_length) as u64;
+                    runtime.bytes = runtime.bytes.saturating_add(charged);
+                    if runtime.bytes > self.byte_limit {
+                        return Err(JsError::ByteLimitExceeded {
+                            limit: self.byte_limit,
+                        });
+                    }
+                    stack.push(Value::Array(handle));
                 }
                 Op::GetProperty => {
                     let key = pop(&mut stack);
@@ -7452,15 +7605,99 @@ mod tests {
     }
 
     #[test]
-    fn array_holes_and_spread_are_refused() {
+    fn array_holes_are_refused() {
+        // Array spread — the other half of this test's old name — is now
+        // implemented; see `array_spread_appends_every_element_in_order`
+        // and friends below.
         assert!(matches!(
             compile("let a = [1, , 3];"),
             Err(JsError::Unsupported { .. })
         ));
-        assert!(matches!(
-            compile("let a = [...b];"),
-            Err(JsError::Unsupported { .. })
-        ));
+    }
+
+    #[test]
+    fn array_spread_appends_every_element_in_order() {
+        // Real shape: `[...document.querySelectorAll(".ttabs .ttab")]`,
+        // `[...m.querySelectorAll(".mitem")]` — copying an array-like
+        // result into a fresh array.
+        assert_eq!(
+            eval_in_fn("let src = [1, 2, 3]; let copy = [...src]; return copy.length;"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn("let src = [1, 2, 3]; let copy = [...src]; return copy[1];"),
+            Value::Number(2.0)
+        );
+    }
+
+    #[test]
+    fn array_spread_mixes_with_plain_items_and_multiple_spreads() {
+        // Real shape: `[...ids]` alongside ordinary items elsewhere in the
+        // file's other array literals — this exercises the general mixed
+        // case, items and spreads interleaved and in more than one spread
+        // position, which the fast (`Op::NewArray(n)`) path never sees.
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1, 2]; let b = [5, 6]; \
+                 let combined = [0, ...a, 3, ...b, 7]; \
+                 return combined.length;"
+            ),
+            Value::Number(7.0)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let a = [1, 2]; let b = [5, 6]; \
+                 let combined = [0, ...a, 3, ...b, 7]; \
+                 return combined[0] + combined[1] + combined[2] + combined[3] + \
+                        combined[4] + combined[5] + combined[6];"
+            ),
+            Value::Number(0.0 + 1.0 + 2.0 + 3.0 + 5.0 + 6.0 + 7.0)
+        );
+    }
+
+    #[test]
+    fn array_spread_of_a_set_yields_its_elements_deduped_in_insertion_order() {
+        // The real shape this closes the loop on: `new Set(seed)` (see
+        // `new_set_seeded_from_an_array_or_another_set_constructs_without_
+        // refusing`) populates a real, deduped, order-preserving `Set` —
+        // but nothing could observe that from JS source until array spread
+        // existed. `[...new Set([1, 2, 2, 3])]` is exactly the real Nova
+        // idiom (`const doms = [...new Set(tabs.map(...))]`), and proves
+        // both the seeding and the spread in one shot: 4 written, 3 kept,
+        // in first-seen order.
+        assert_eq!(
+            eval_in_fn("let s = new Set([1, 2, 2, 3]); let out = [...s]; return out.length;"),
+            Value::Number(3.0)
+        );
+        assert_eq!(
+            eval_in_fn(
+                "let s = new Set([1, 2, 2, 3]); let out = [...s]; \
+                 return out[0] === 1 && out[1] === 2 && out[2] === 3;"
+            ),
+            Value::Boolean(true)
+        );
+    }
+
+    #[test]
+    fn array_spread_of_an_empty_source_adds_nothing() {
+        assert_eq!(
+            eval_in_fn("let out = [1, ...[], 2]; return out.length;"),
+            Value::Number(2.0)
+        );
+    }
+
+    #[test]
+    fn array_spread_of_anything_but_an_array_or_set_is_refused() {
+        // Unlike object spread, real JS array/iterable spread is not
+        // tolerant of `null`/`undefined` either — both throw, the same as
+        // any other non-iterable source.
+        for source in ["null", "undefined", "5", "{}"] {
+            let program = format!("function main() {{ return [...{source}]; }} main();");
+            assert!(
+                matches!(evaluate(&program), Err(JsError::TypeError { .. })),
+                "expected a refusal for spreading {source}"
+            );
+        }
     }
 
     #[test]
